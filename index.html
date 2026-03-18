@@ -8141,8 +8141,7 @@ function switchPratiqueTab(tab) {
 </script>
 
 
-
-
+<script>
 /* ════════════════════════════════════════
    LAZY LOADING IMAGES — IntersectionObserver
 ════════════════════════════════════════ */
@@ -8171,7 +8170,9 @@ function switchPratiqueTab(tab) {
   /* Exposer pour les images ajoutées dynamiquement */
   window._lazyObserve = function(img){ _lazyObs.observe(img); };
 })();
+</script>
 
+<script>
 /* ════════════════════════════════════════
    MODE NUIT AUTOMATIQUE
    Thème sombre entre Isha (~21h) et Fajr (~5h)
@@ -8217,6 +8218,7 @@ function switchPratiqueTab(tab) {
   /* Vérifier toutes les 5 minutes */
   _setInterval(_checkNight, 5*60*1000, 'nightMode');
 })();
+</script>
 
 <script>
 /* ════════════════════════════════════════
@@ -8642,6 +8644,7 @@ var _waveform = (function(){
 </script>
 
 
+<script>
 /* ════════════════════════════════════════
    POINT D'ENTRÉE UNIQUE — _appInit
    Tous les inits DOMContentLoaded consolidés ici
@@ -8682,6 +8685,7 @@ document.addEventListener('DOMContentLoaded', function _appInit() {
     });
   }
 });
+</script>
 
 
 <script>
