@@ -2968,7 +2968,7 @@ body{
   <div class="ab-input-meta">
     <span id="abEngLabel">&#x1F54C; Baye IA</span>
     <button class="ab-lang-btn" id="abLangBtn" onclick="abToggleLang()" title="Langue vocale">🇫🇷 FR</button>
-    <button class="ab-key-btn" onclick="abToggleConfig()" title="Configurer cle API">&#x1F511;</button>
+    <button class="ab-key-btn" onclick="abToggleConfig()" title="Clé API Ask Baye" id="abKeyBtn">&#x1F511;</button>
     <button class="ab-clr-btn" onclick="abClear()">&#x2715; Vider</button>
   </div>
 </div>
@@ -4126,6 +4126,8 @@ function showAdminContent(){
       localStorage.setItem('ab_anthropic_key', d.key);
       var inp=document.getElementById('abApiKey');
       if(inp&&!inp.value) inp.value=d.key;
+      /* Synchroniser aussi dans app_config pour tous les utilisateurs */
+      firebase.database().ref('app_config/ab_key').set({key: d.key, updatedAt: Date.now()});
     });
     /* Mot de passe admin (hash) */
     firebase.database().ref('streamer_config/admin_pwd').once('value',function(snap){
@@ -5376,19 +5378,34 @@ var AB_SUGGESTIONS = {
 /* ── Init ── */
 function abInit() {
   renderAbSuggestions();
+  /* Essayer d'abord le localStorage */
   var key = localStorage.getItem(AB_KEY_STORE) || '';
-  var cfg = document.getElementById('abConfig');
   if (key) {
-    var inp = document.getElementById('abApiKey');
-    if (inp) inp.value = key;
-    var st = document.getElementById('abKeyStatus');
-    if (st) { st.textContent = '✅ Clé configurée — Ask Baye est prêt'; st.style.color = '#A8F0C0'; }
-    // Clé déjà là : masquer la config
-    if (cfg) cfg.style.display = 'none';
+    _abHideConfig();
   } else {
-    // Pas de clé : afficher la config automatiquement
-    if (cfg) cfg.style.display = 'block';
+    /* Charger depuis Firebase app_config/ab_key (accessible à tous) */
+    _fbInit(function() {
+      firebase.database().ref('app_config/ab_key').once('value', function(snap) {
+        var d = snap.val();
+        var k = (d && d.key) ? d.key : '';
+        if (k) {
+          localStorage.setItem(AB_KEY_STORE, k);
+          _abHideConfig();
+        } else {
+          /* Pas de clé globale — afficher le formulaire */
+          var cfg = document.getElementById('abConfig');
+          if (cfg) cfg.style.display = 'block';
+        }
+      });
+    });
   }
+}
+
+function _abHideConfig() {
+  var cfg = document.getElementById('abConfig');
+  if (cfg) cfg.style.display = 'none';
+  var st = document.getElementById('abKeyStatus');
+  if (st) { st.textContent = '✅ Ask Baye est prêt'; st.style.color = '#A8F0C0'; }
 }
 
 function setEngine(e, btn) {
@@ -5512,6 +5529,12 @@ function abSaveKey() {
     return;
   }
   localStorage.setItem(AB_KEY_STORE, key);
+  /* Sauvegarder dans Firebase app_config pour tous les utilisateurs */
+  _fbInit(function() {
+    firebase.database().ref('app_config/ab_key').set({key: key, updatedAt: Date.now()});
+    /* Aussi dans streamer_config pour backup admin */
+    firebase.database().ref('streamer_config/ab_key').set({key: key, updatedAt: Date.now()});
+  });
   fbSaveAbKey(key); /* Sync Firebase → tous les appareils */
   var st = document.getElementById('abKeyStatus');
   if (st) { st.textContent = '✅ Clé enregistrée — Ask Baye est actif !'; st.style.color = '#A8F0C0'; }
@@ -5565,9 +5588,21 @@ async function abSend() {
 
   var key = localStorage.getItem(AB_KEY_STORE) || '';
   if (!key) {
-    showToast('🔑 Ajoutez votre clé API Anthropic — appuyez sur 🔑');
-    var cfg = document.getElementById('abConfig');
-    if (cfg) cfg.style.display = 'block';
+    /* Tenter Firebase une dernière fois */
+    _fbInit(function() {
+      firebase.database().ref('app_config/ab_key').once('value', function(snap) {
+        var d = snap.val();
+        if (d && d.key) {
+          localStorage.setItem(AB_KEY_STORE, d.key);
+          _abHideConfig();
+          abSend(); /* Relancer */
+        } else {
+          showToast('🔑 Ajoutez votre clé API Anthropic — appuyez sur 🔑');
+          var cfg = document.getElementById('abConfig');
+          if (cfg) cfg.style.display = 'block';
+        }
+      });
+    });
     return;
   }
 
