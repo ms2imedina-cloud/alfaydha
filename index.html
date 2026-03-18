@@ -14,10 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 <link rel="dns-prefetch" href="https://www.gstatic.com">
-<!-- Firebase SDKs — chargés immédiatement -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<!-- Firebase SDKs — chargement dynamique sécurisé -->
 <script>
 (function(){
   var cfg={
@@ -29,8 +26,35 @@
     messagingSenderId:"312192806539",
     appId:"1:312192806539:web:6b04f18611d0c7dbc4ee8e"
   };
-  if(!firebase.apps.length) firebase.initializeApp(cfg);
-  window._fbReady=true;
+  window._fbConfig = cfg;
+  window._fbReady  = false;
+
+  function loadScript(src, cb){
+    var s=document.createElement('script');
+    s.src=src; s.async=false;
+    s.onload=cb;
+    s.onerror=function(){ console.error('[Firebase] Échec chargement: '+src); cb(); };
+    document.head.appendChild(s);
+  }
+
+  var BASE='https://www.gstatic.com/firebasejs/9.23.0/';
+  loadScript(BASE+'firebase-app-compat.js', function(){
+    loadScript(BASE+'firebase-database-compat.js', function(){
+      loadScript(BASE+'firebase-auth-compat.js', function(){
+        try{
+          if(typeof firebase !== 'undefined'){
+            if(!firebase.apps.length) firebase.initializeApp(window._fbConfig);
+            window._fbReady = true;
+            console.log('[Firebase] Prêt ✅');
+          } else {
+            console.error('[Firebase] Objet firebase introuvable après chargement');
+          }
+        }catch(e){
+          console.error('[Firebase] Erreur init:',e);
+        }
+      });
+    });
+  });
 })();
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -1355,13 +1379,18 @@ body{
 <div id="toast"></div>
 
 <!-- Écran chargement auth — affiché pendant vérification session -->
+<style>
+@keyframes spin{to{transform:rotate(360deg)}}
+/* Fallback CSS : force disparition du loading si JS/Firebase bloqué après 7s */
+@keyframes authFadeOut{0%,84%{opacity:1;visibility:visible;pointer-events:auto}100%{opacity:0;visibility:hidden;pointer-events:none}}
+#authLoading{animation:authFadeOut 7s ease forwards;}
+</style>
 <div id="authLoading" style="position:fixed;inset:0;z-index:9000;background:#0F7B3F;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;transition:opacity .5s ease">
   <img data-logo="1" src="" style="width:72px;height:72px;border-radius:50%;border:2px solid #D4AF37;box-shadow:0 0 0 8px rgba(212,175,55,.1)">
   <div style="font-family:'Amiri',serif;font-size:28px;color:#fff">Baye Niass World</div>
   <div style="width:40px;height:40px;border:3px solid rgba(212,175,55,.3);border-top-color:#D4AF37;border-radius:50%;animation:spin .8s linear infinite"></div>
   <div style="font-size:13px;color:rgba(255,255,255,.5);font-style:italic">Vérification de la session…</div>
 </div>
-<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 
 <!-- ═══════════════════════════════════════
      PAGE D'ACCUEIL — CONNEXION GOOGLE
@@ -4286,6 +4315,7 @@ function goLiveYT(){
     // ── ARRÊTER ──
     save(DIR_KEY,{isLive:false,url:'',mode:'youtube'}); fbStopLive();
     _ytLive=false;
+    window._isStreaming = false;
     updateDirectUI();
     renderChannels();
     stopPlayer();
@@ -4305,6 +4335,7 @@ function goLiveYT(){
       return;
     }
     _ytLive=true;
+    window._isStreaming = true;
     var data={isLive:true,url:url,mode:'youtube',startedAt:Date.now()};
     save(DIR_KEY,data); fbSetLive(true,data);
     // Feedback immédiat sur le bouton
@@ -4443,6 +4474,7 @@ function goLiveWR(){
   if(d.isLive&&d.mode==='webrtc'){
     // ── ARRÊTER ──
     _wrtcLive=false;
+    window._isStreaming = false;
     clearInterval(_wrtcVtimer);
     if(_wrtcStream){_wrtcStream.getTracks().forEach(function(t){t.stop()});_wrtcStream=null;}
     var vid=document.getElementById('localVid'); if(vid){vid.style.display='none';vid.srcObject=null;}
@@ -4752,6 +4784,7 @@ async function lkConnect(url, token){
 
 function lkOnConnected(){
   _lkLive = true;
+  window._isStreaming = true;
 
   var urlVal = (document.getElementById('lkUrl')||{}).value||'';
   var apiKey = (document.getElementById('lkApiKey')||{}).value||'';
@@ -4898,6 +4931,7 @@ function lkShowPlayerViewer(){
 
 function lkStopBroadcast(){
   _lkLive=false;
+  window._isStreaming = false;
   clearInterval(_lkDurTimer);
 
   // Déconnecter la room LiveKit
@@ -6613,6 +6647,9 @@ switchZikrTab=function(tab){
 ════════════════════════════════════════════════════════════ */
 
 /* ── 1. LIVE — Streamer publie son état ── */
+/* ══ FLAG GLOBAL STREAMER — vrai si cet appareil diffuse actuellement ══ */
+window._isStreaming = false;
+
 function fbSetLive(isLive, data) {
   _fbInit(function() {
     var payload = isLive ? {
@@ -6917,11 +6954,8 @@ function fbSyncAllUsers() {
     firebase.database().ref('faydha_direct').on('value', function(snap) {
       var d = snap.val();
       if (!d) return;
-      var isStreamer = (typeof _lkLive !== 'undefined' && _lkLive) ||
-                       (typeof _lLkLive !== 'undefined' && _lLkLive) ||
-                       (typeof _ytLive !== 'undefined' && _ytLive) ||
-                       (typeof _wrtcLive !== 'undefined' && _wrtcLive);
-      if (isStreamer) return; /* Le streamer ne reçoit pas ses propres updates */
+      /* Ignorer si cet appareil est en train de streamer */
+      if (window._isStreaming) return;
       try { localStorage.setItem('faydha_direct', JSON.stringify(d)); } catch(e) {}
       renderChannels && renderChannels();
       if (d.isLive && !_fbChatEnabled) fbWatchChat();
@@ -6994,6 +7028,23 @@ document.addEventListener('DOMContentLoaded', function() {
     if (abKey) { var inp=document.getElementById('abApiKey'); if(inp&&!inp.value) inp.value=abKey; }
   }, 500);
 
+  /* ── Fallback : si Firebase ne répond pas en 5s, afficher welcome quand même ── */
+  var _authResolved = false;
+  var _userConnected = false;
+  function _showWelcome() {
+    if (_userConnected) return;
+    var loading = document.getElementById('authLoading');
+    if (loading) { loading.style.opacity='0'; setTimeout(function(){ loading.style.display='none'; }, 400); }
+    var w = document.getElementById('welcome');
+    if (w) { w.classList.remove('hidden'); setTimeout(function(){ w.style.opacity='1'; }, 50); }
+  }
+  var _fbTimeout = setTimeout(function() {
+    if (!_authResolved) {
+      console.warn('[Auth] Firebase timeout — affichage welcome sans auth');
+      _showWelcome();
+    }
+  }, 5000);
+
   /* Firebase Auth + Sync */
   _fbInit(function() {
 
@@ -7010,12 +7061,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     /* Auth state — protection anti-boucle absolue */
-    var _userConnected = false;
-    var _authResolved = false;
     firebase.auth().onAuthStateChanged(function(user) {
       /* Cacher le loading screen dès que Firebase répond — toujours */
       if (!_authResolved) {
         _authResolved = true;
+        clearTimeout(_fbTimeout);
         var loading = document.getElementById('authLoading');
         if (loading) { loading.style.opacity='0'; setTimeout(function(){ loading.style.display='none'; }, 500); }
       }
@@ -7030,17 +7080,13 @@ document.addEventListener('DOMContentLoaded', function() {
           /* Vraie déconnexion */
           _userConnected = false;
           localStorage.removeItem('faydha_profile');
-          var w = document.getElementById('welcome');
-          if (w) { w.classList.remove('hidden'); w.style.opacity='1'; }
+          _showWelcome();
           return;
         }
-        /* Pas connecté → afficher login après 1.5s */
+        /* Pas connecté → afficher login après 1s */
         setTimeout(function() {
-          if (!_userConnected) {
-            var w = document.getElementById('welcome');
-            if (w) { w.classList.remove('hidden'); w.style.opacity='1'; }
-          }
-        }, 1500);
+          if (!_userConnected) _showWelcome();
+        }, 1000);
       }
     });
 
@@ -7059,12 +7105,8 @@ function _fbSyncUser(user) {
     var d = snap.val();
     if (!d) return;
 
-    /* Ne JAMAIS écraser si on est l'admin/streamer actif */
-    var isStreamer = (user.email === ADMIN_EMAIL) ||
-                    (typeof _lkLive !== 'undefined' && _lkLive) ||
-                    (typeof _wrtcLive !== 'undefined' && _wrtcLive) ||
-                    (typeof _ytLive !== 'undefined' && _ytLive);
-    if (isStreamer) return;
+    /* Ignorer si cet appareil est en train de streamer */
+    if (window._isStreaming) return;
 
     try { localStorage.setItem('faydha_direct', JSON.stringify(d)); } catch(e) {}
     renderChannels && renderChannels();
