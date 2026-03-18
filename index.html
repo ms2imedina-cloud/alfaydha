@@ -3722,19 +3722,19 @@ async function _playLiveKitViewer(d) {
     var _vDone = false;
     var _vTO   = setTimeout(function() {
       if (_vDone) return; _vDone = true; _vRef.off('value');
-      _showLiveError(wrap, "Aucun live en cours — Le streamer n'a pas démarré");
+      _showLiveError(wrap, "Aucun live en cours — réessayez plus tard");
     }, 10000);
     _vRef.on('value', function(snap) {
       if (_vDone) return;
       var pub = snap.val();
-      if (!pub || !pub.url) return; /* Attendre publication */
+      if (!pub || !pub.url) return;
       _vDone = true; clearTimeout(_vTO); _vRef.off('value');
-      /* Toujours générer un token FRAIS côté spectateur */
+      /* Générer token frais côté spectateur si credentials disponibles */
       if (pub.apiKey && pub.apiSecret) {
-        lkGenerateViewerToken(pub.apiKey, pub.apiSecret, pub.room || 'faydha-live')
+        var _r = pub.room || 'faydha-live';
+        lkGenerateViewerToken(pub.apiKey, pub.apiSecret, _r)
           .then(function(vt) { lkJoinAsViewer(pub.url, vt); })
           .catch(function(e) {
-            /* Fallback token pré-généré */
             if (pub.token) lkJoinAsViewer(pub.url, pub.token);
             else _showLiveError(wrap, 'Erreur token: ' + e.message);
           });
@@ -4639,7 +4639,8 @@ function lkExtractRoomName(token) {
     var parts = token.split('.');
     if (parts.length < 2) return 'faydha-live';
     var payload = JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
-    return (payload.video && payload.video.room) ? payload.video.room : 'faydha-live';
+    var r = (payload.video && payload.video.room) ? payload.video.room.trim() : '';
+    return r || 'faydha-live'; /* Jamais vide */
   } catch(e) { return 'faydha-live'; }
 }
 
@@ -4892,7 +4893,6 @@ function lkOnConnected(){
   _lkLive = true;
   window._isStreaming = true;
 
-  /* Lire depuis les globales — fiables même si DOM fermé */
   var urlVal    = _lkUrl    || (document.getElementById('lkUrl')||{}).value||'';
   var apiKey    = _lkApiKey || (document.getElementById('lkApiKey')||{}).value||'';
   var apiSecret = _lkApiSecret || (document.getElementById('lkApiSecret')||{}).value||'';
@@ -4911,11 +4911,10 @@ function lkOnConnected(){
   save(DIR_KEY,{isLive:true, url:urlVal, mode:'livekit', startedAt:Date.now()});
   fbSetLive(true,{isLive:true,url:urlVal,mode:'livekit',startedAt:Date.now()});
 
-  /* Extraire roomName */
+  /* Extraire roomName — jamais vide */
   _lkRoomName = 'faydha-live';
   try { if (tokenVal && tokenVal.startsWith('eyJ')) _lkRoomName = lkExtractRoomName(tokenVal); } catch(e) {}
 
-  /* Publier token viewer + renouvellement automatique */
   (async function(){
     async function _pubViewer() {
       var vd = { url: urlVal, room: _lkRoomName, generatedAt: Date.now() };
@@ -4924,17 +4923,13 @@ function lkOnConnected(){
           vd.token     = await lkGenerateViewerToken(apiKey, apiSecret, _lkRoomName);
           vd.apiKey    = apiKey;
           vd.apiSecret = apiSecret;
-        } catch(e) { console.error('[LK] viewer token error:', e.message); }
+        } catch(e) { console.error('[LK] viewer token:', e.message); }
       }
-      /* Toujours écrire même sans token pour que les spectateurs voient l'URL */
-      await new Promise(function(resolve) {
-        _fbInit(function() {
-          firebase.database().ref('app_config/livekit_viewer').set(vd, resolve);
-        });
+      await new Promise(function(r) {
+        _fbInit(function() { firebase.database().ref('app_config/livekit_viewer').set(vd, r); });
       });
     }
     await _pubViewer();
-    /* Renouveler toutes les 55 min */
     if (_lkRenewalTimer) clearInterval(_lkRenewalTimer);
     if (apiKey && apiSecret) {
       _lkRenewalTimer = setInterval(async function() {
