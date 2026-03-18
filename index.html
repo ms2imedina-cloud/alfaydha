@@ -4782,32 +4782,26 @@ async function lkConnect(url, token){
   var LK = window.LivekitClient;
   if(!LK){ throw new Error('SDK LiveKit non chargé'); }
 
+  /* VideoPresets standards LiveKit v2 */
+  var _vSimulcast = [];
+  try { _vSimulcast = [LK.VideoPresets.h180, LK.VideoPresets.h360, LK.VideoPresets.h720]; } catch(e) {}
+
   _lkRoom = new LK.Room({
     adaptiveStream: true,
     dynacast:       true,
-    stopLocalTrackOnUnpublish: true,
-    reconnectPolicy: { maxRetries: 5, retryDelayMs: 1000 },
     videoCaptureDefaults: {
-      resolution: { width:1920, height:1080, frameRate:30, aspectRatio:16/9 }
+      resolution: (LK.VideoPresets&&LK.VideoPresets.h1080)?LK.VideoPresets.h1080.resolution:{width:1920,height:1080,frameRate:30}
     },
-    videoCodec: 'h264',
     audioCaptureDefaults: {
       autoGainControl:  false,
       echoCancellation: true,
       noiseSuppression: true,
       sampleRate:   48000,
-      sampleSize:   24,
-      channelCount: 2,
-      latency:      0
+      channelCount: 2
     },
     publishDefaults: {
-      audioPreset:  { maxBitrate: 320000 },
-      videoEncoding: { maxBitrate: 5000000, maxFramerate: 30 },
-      videoSimulcastLayers: [
-        { width:320,  height:180,  encoding:{ maxBitrate:150000,  maxFramerate:15 } },
-        { width:640,  height:360,  encoding:{ maxBitrate:500000,  maxFramerate:24 } },
-        { width:1280, height:720,  encoding:{ maxBitrate:1500000, maxFramerate:30 } }
-      ]
+      audioPreset: (LK.AudioPresets&&LK.AudioPresets.musicStereo)?LK.AudioPresets.musicStereo:{maxBitrate:320000},
+      videoSimulcastLayers: _vSimulcast.length ? _vSimulcast : undefined
     }
   });
 
@@ -4835,17 +4829,16 @@ async function lkConnect(url, token){
     if(videoTrack){
       var lkVideoTrack = new LK.LocalVideoTrack(videoTrack);
       await _lkRoom.localParticipant.publishTrack(lkVideoTrack, {
-        source:   LK.Track.Source.Camera,
-        simulcast: true,
-        videoEncoding: { maxBitrate: 5000000, maxFramerate: 30 },
-        videoCodec: 'h264'
+        source:    LK.Track.Source.Camera,
+        simulcast: true
       });
     }
     if(audioTrack){
       var lkAudioTrack = new LK.LocalAudioTrack(audioTrack);
+      var _aPreset = (LK.AudioPresets&&LK.AudioPresets.musicStereo)?LK.AudioPresets.musicStereo:{maxBitrate:320000};
       await _lkRoom.localParticipant.publishTrack(lkAudioTrack, {
-        source: LK.Track.Source.Microphone,
-        audioPreset: { maxBitrate: 320000 }
+        source:      LK.Track.Source.Microphone,
+        audioPreset: _aPreset
       });
     }
   }
