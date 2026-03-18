@@ -3723,7 +3723,8 @@ async function _playLiveKitViewer(d) {
 
       if (pub && pub.url && pub.apiKey && pub.apiSecret) {
         /* Config disponible → générer token UNIQUE par spectateur (évite conflits) */
-        lkGenerateViewerToken(pub.apiKey, pub.apiSecret)
+        var _room = pub.room || 'faydha-live';
+        lkGenerateViewerToken(pub.apiKey, pub.apiSecret, _room)
           .then(function(token) {
             if (token) {
               lkJoinAsViewer(pub.url, token);
@@ -4626,7 +4627,17 @@ async function lkGenerateToken(apiKey, apiSecret, roomName, participantName) {
   return si+'.'+toB64url(sig);
 }
 
-async function lkGenerateViewerToken(apiKey, apiSecret) {
+/* Extraire roomName depuis un token JWT LiveKit */
+function lkExtractRoomName(token) {
+  try {
+    var parts = token.split('.');
+    if (parts.length < 2) return 'faydha-live';
+    var payload = JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
+    return (payload.video && payload.video.room) ? payload.video.room : 'faydha-live';
+  } catch(e) { return 'faydha-live'; }
+}
+
+async function lkGenerateViewerToken(apiKey, apiSecret, roomName) {
   var name='viewer-'+Math.random().toString(36).slice(2,8);
   function toB64url(bytes){
     var bin='',arr=new Uint8Array(bytes);
@@ -4637,7 +4648,7 @@ async function lkGenerateViewerToken(apiKey, apiSecret) {
   var now=Math.floor(Date.now()/1000);
   var h=encodeJSON({alg:'HS256',typ:'JWT'});
   var p=encodeJSON({iss:apiKey,sub:name,iat:now,nbf:now,exp:now+21600,
-    video:{room:'faydha-live',roomJoin:true,roomCreate:false,canPublish:false,canSubscribe:true,canPublishData:false,hidden:true,recorder:false}});
+    video:{room:(roomName||'faydha-live'),roomJoin:true,roomCreate:false,canPublish:false,canSubscribe:true,canPublishData:false,hidden:true,recorder:false}});
   var si=h+'.'+p;
   var key=await crypto.subtle.importKey('raw',new TextEncoder().encode(apiSecret),{name:'HMAC',hash:'SHA-256'},false,['sign']);
   var sig=await crypto.subtle.sign('HMAC',key,new TextEncoder().encode(si));
@@ -4804,9 +4815,18 @@ function lkOnConnected(){
   save(DIR_KEY,{isLive:true, url:urlVal, mode:'livekit', startedAt:Date.now()});
   fbSetLive(true,{isLive:true,url:urlVal,mode:'livekit',startedAt:Date.now()});
 
+  /* Extraire roomName depuis le token streamer */
+  var _streamRoomName = 'faydha-live';
+  try {
+    var _tkToCheck = tokenVal || (typeof token !== 'undefined' ? token : '');
+    if (_tkToCheck && _tkToCheck.startsWith('eyJ')) {
+      _streamRoomName = lkExtractRoomName(_tkToCheck);
+    }
+  } catch(e) {}
+
   /* Publier config viewer dans Firebase */
   _fbInit(function() {
-    var viewerData = { url: urlVal, startedAt: Date.now() };
+    var viewerData = { url: urlVal, room: _streamRoomName, startedAt: Date.now() };
     if (apiKey && apiSecret) {
       /* Cas idéal : spectateurs génèrent leur propre token unique */
       viewerData.apiKey    = apiKey;
