@@ -632,6 +632,7 @@ body{
 }
 .fullscreen-overlay.open{display:flex}
 .fs-player{flex:1;position:relative}
+.fs-player .lk-logo-ovl{position:absolute;top:14px;right:14px;z-index:30;pointer-events:none;opacity:.9}.fs-player .lk-logo-ovl img{width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid rgba(212,175,55,.85);box-shadow:0 2px 14px rgba(0,0,0,.7),0 0 0 3px rgba(212,175,55,.2)}
 .fs-player iframe,
 .fs-player video{width:100%;height:100%;border:none;display:block;object-fit:contain}
 .fs-controls{
@@ -3880,6 +3881,14 @@ function openFullscreen(){
   var player=document.getElementById('mainPlayer').cloneNode(true);
   player.style.cssText='width:100%;height:100%;';
   fsPlayer.appendChild(player);
+  /* Logo overlay en fullscreen */
+  var _fsOvl = document.createElement('div');
+  _fsOvl.className = 'lk-logo-ovl';
+  var _fsImg = document.createElement('img');
+  _fsImg.src = (typeof _LOGO_SRC !== 'undefined') ? _LOGO_SRC : '';
+  _fsImg.alt = 'Baye Niass World';
+  _fsOvl.appendChild(_fsImg);
+  fsPlayer.appendChild(_fsOvl);
   // Réactiver autoplay si iframe
   var iframes=player.querySelectorAll('iframe');
   iframes.forEach(function(f){
