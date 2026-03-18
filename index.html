@@ -4249,14 +4249,11 @@ function selMode(m){
     youtube:'📺 YouTube Live — ∞ viewers',
     sfu:'☁ LiveKit Cloud — 100 viewers · Gratuit'
   };
-  document.getElementById('dpTitle').textContent=titles[m];
+  var _dpt=document.getElementById('dpTitle'); if(_dpt) _dpt.textContent=titles[m]||'';
   // Pour LiveKit : afficher le preview caméra et charger la config sauvegardée
   if(m==='sfu'){
-    var prev=document.getElementById('lkCamPreview');
-    var ctrl=document.getElementById('lkCamCtrl');
-    if(prev) prev.style.display='block';
-    if(ctrl) ctrl.style.display='flex';
-    lkLoadConfig();
+    /* Charger config sauvegardée dans les champs */
+    setTimeout(lkLoadConfig, 50);
   }
 }
 
