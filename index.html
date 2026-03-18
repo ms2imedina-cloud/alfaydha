@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <link rel="canonical" href="https://ms2imedina-cloud.github.io/alfaydha/">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Baye Niass World — Médina Baye</title>
 <meta name="theme-color" content="#0F7B3F">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1348,6 +1348,240 @@ body{
   font-size: 13px;
   color: var(--text3);
   direction: rtl;
+}
+
+
+/* ══════════════════════════════════════════════════════
+   RESPONSIVE — Tous écrans : mobile → Smart TV 105"
+   Breakpoints :
+   < 480px   : petit smartphone
+   480-768px : grand smartphone / petite tablette
+   768-1024px: tablette (iPad, 10-13")
+   1024-1440px: PC 13-17"
+   1440-1920px: grand écran / TV 24-42"
+   > 1920px  : TV 55-105"
+══════════════════════════════════════════════════════ */
+
+/* ── Base : centré comme une app mobile ── */
+html { background: #0a0a0a; }
+
+body {
+  max-width: 480px;
+  margin: 0 auto;
+  box-shadow: 0 0 80px rgba(0,0,0,.4);
+}
+
+/* ── Tablette 768px+ ── */
+@media (min-width: 768px) {
+  :root {
+    --nav-h: 72px;
+    --fs-body-large: 17px;
+    --fs-body-medium: 15px;
+  }
+  body {
+    max-width: 600px;
+    font-size: 17px;
+  }
+  .nav-label { font-size: 12px; }
+  .nav-icon  { font-size: 22px; }
+  .player-container { border-radius: 16px; margin: .8rem 1.2rem .4rem; }
+  .channel-card { padding: .85rem 1.1rem; }
+  .ch-name { font-size: 15px; }
+  .ch-avatar { width: 46px; height: 46px; }
+  .admin-panel { max-width: 580px; border-radius: 24px 24px 0 0; }
+  #playerLogoOverlay img { width: 44px; height: 44px; }
+  #fsLogoImg { width: 52px !important; height: 52px !important; }
+  .fs-title { font-size: 18px; }
+  .wlc-title { font-size: 42px; }
+}
+
+/* ── PC 1024px+ ── */
+@media (min-width: 1024px) {
+  :root { --nav-h: 76px; }
+  body {
+    max-width: 720px;
+    font-size: 18px;
+    box-shadow: 0 0 120px rgba(0,0,0,.5);
+  }
+  .nav-label { font-size: 13px; letter-spacing: .06em; }
+  .nav-icon  { font-size: 24px; }
+  .nav-btn   { gap: 5px; }
+  .player-container {
+    margin: 1rem 1.4rem .5rem;
+    border-radius: 18px;
+  }
+  .channels-list { gap: .6rem; padding: .5rem 1.3rem 1rem; }
+  .channel-card { padding: .95rem 1.2rem; border-radius: 16px; }
+  .ch-name  { font-size: 16px; }
+  .ch-meta  { font-size: 13px; }
+  .ch-avatar { width: 50px; height: 50px; border-radius: 13px; }
+  .admin-panel { max-width: 680px; border-radius: 28px 28px 0 0; }
+  .sec-title { font-size: 17px; }
+  .dp-field  { font-size: 15px; padding: .65rem .9rem; }
+  .dp-btn    { font-size: 15px; padding: .7rem 1.1rem; }
+  .chat-wrap { height: 380px; }
+  .ab-bubble { font-size: 15px; max-width: 78%; }
+  #playerLogoOverlay img { width: 50px; height: 50px; }
+  #fsLogoImg { width: 60px !important; height: 60px !important; }
+  .fs-title  { font-size: 20px; }
+  .fs-btn    { font-size: 15px; padding: .4rem .8rem; }
+  .fs-close  { width: 40px; height: 40px; font-size: 18px; }
+  .wlc-title { font-size: 48px; }
+  .wlc-cards { padding: 0 1.5rem; }
+  .wlc-card  { padding: 1.1rem 1.3rem; }
+}
+
+/* ── Grand PC / TV 24-42" : 1440px+ ── */
+@media (min-width: 1440px) {
+  :root { --nav-h: 84px; }
+  body {
+    max-width: 900px;
+    font-size: 19px;
+    border-radius: 0;
+  }
+  .nav-label { font-size: 14px; }
+  .nav-icon  { font-size: 26px; }
+  .player-container {
+    margin: 1.2rem 1.6rem .6rem;
+    border-radius: 20px;
+  }
+  .channel-card { padding: 1.1rem 1.4rem; border-radius: 18px; }
+  .ch-name  { font-size: 17px; }
+  .ch-meta  { font-size: 14px; }
+  .ch-avatar { width: 56px; height: 56px; border-radius: 14px; font-size: 20px; }
+  .admin-panel { max-width: 860px; }
+  .live-tabs .lt-btn { font-size: 14px; padding: .65rem .5rem .55rem; }
+  .chat-wrap { height: 440px; }
+  .chat-bubble { font-size: 15px; }
+  .chat-inp { font-size: 15px; }
+  .ab-bubble { font-size: 16px; max-width: 72%; }
+  #playerLogoOverlay img { width: 58px; height: 58px; }
+  #fsLogoImg { width: 70px !important; height: 70px !important; }
+  .fs-title  { font-size: 22px; }
+  .fs-btn    { font-size: 16px; padding: .5rem 1rem; }
+  .fs-close  { width: 46px; height: 46px; font-size: 20px; top: 16px; right: 16px; }
+  .wlc-title { font-size: 56px; }
+  .wlc-logo  { width: 110px; height: 110px; }
+  .sp-logo   { width: 90px; height: 90px; }
+  .mode-grid { gap: .7rem; }
+}
+
+/* ── TV 55-105" : 1920px+ ── */
+@media (min-width: 1920px) {
+  :root { --nav-h: 96px; }
+  body {
+    max-width: 1200px;
+    font-size: 22px;
+  }
+  .nav-label { font-size: 16px; letter-spacing: .08em; }
+  .nav-icon  { font-size: 30px; }
+  .nav-btn   { gap: 7px; padding: .7rem .15rem .5rem; }
+  .player-container {
+    margin: 1.5rem 2rem .8rem;
+    border-radius: 24px;
+    border-width: 2px;
+  }
+  .channels-list { gap: .8rem; padding: .6rem 1.8rem 1.2rem; }
+  .channel-card { padding: 1.3rem 1.6rem; border-radius: 20px; }
+  .ch-name  { font-size: 20px; }
+  .ch-meta  { font-size: 16px; }
+  .ch-avatar { width: 68px; height: 68px; border-radius: 16px; font-size: 24px; }
+  .ch-arrow { font-size: 22px; }
+  .admin-panel { max-width: 1100px; max-height: 90vh; }
+  .admin-tabs { gap: .5rem; padding: .5rem 1.2rem; }
+  .adm-tab { font-size: 15px; padding: .6rem .9rem; }
+  .sec-title { font-size: 22px; }
+  .f-input  { font-size: 18px; padding: .75rem 1rem; }
+  .dp-field { font-size: 17px; padding: .75rem 1rem; }
+  .dp-btn   { font-size: 18px; padding: .85rem 1.3rem; }
+  .dp-note  { font-size: 14px; }
+  .live-tabs .lt-btn { font-size: 16px; padding: .75rem .6rem .65rem; }
+  .chat-wrap { height: 560px; }
+  .chat-bubble { font-size: 17px; border-radius: 0 14px 14px 14px; }
+  .chat-name { font-size: 14px; }
+  .chat-text { font-size: 16px; }
+  .chat-inp  { font-size: 17px; padding: .6rem 1.1rem; }
+  .chat-send { width: 42px; height: 42px; font-size: 18px; }
+  .ab-bubble { font-size: 19px; max-width: 68%; line-height: 1.7; }
+  .ab-textarea { font-size: 18px; }
+  .ab-send-btn { font-size: 22px; }
+  #playerLogoOverlay img { width: 72px; height: 72px; }
+  #fsLogoImg { width: 90px !important; height: 90px !important; }
+  .fs-title  { font-size: 28px; }
+  .fs-btn    { font-size: 18px; padding: .6rem 1.2rem; border-radius: 10px; }
+  .fs-close  { width: 56px; height: 56px; font-size: 24px; top: 20px; right: 20px; }
+  .wlc-title { font-size: 72px; }
+  .wlc-logo  { width: 140px; height: 140px; }
+  .wlc-card  { padding: 1.4rem 1.6rem; border-radius: 20px; }
+  .wlc-card-icon { width: 66px; height: 66px; font-size: 30px; border-radius: 18px; }
+  .wlc-card-title { font-size: 20px; }
+  .wlc-card-desc  { font-size: 14px; }
+  .sp-logo   { width: 110px; height: 110px; }
+  .sp-name   { font-size: 60px; }
+  .prog-item { padding: .85rem 1.4rem; }
+  .prog-title { font-size: 18px; }
+  .prog-desc  { font-size: 14px; }
+  #userAvatarBar img { width: 38px; height: 38px; }
+  #userAvatarName { font-size: 16px; }
+}
+
+/* ── Très grand TV 4K 85-105" : 2560px+ ── */
+@media (min-width: 2560px) {
+  body { max-width: 1600px; font-size: 28px; }
+  :root { --nav-h: 110px; }
+  .nav-label { font-size: 18px; }
+  .nav-icon  { font-size: 36px; }
+  .player-container { margin: 2rem 2.5rem 1rem; border-radius: 28px; }
+  .channel-card { padding: 1.6rem 2rem; border-radius: 24px; }
+  .ch-name  { font-size: 24px; }
+  .ch-avatar { width: 82px; height: 82px; }
+  #playerLogoOverlay img { width: 90px; height: 90px; }
+  #fsLogoImg { width: 110px !important; height: 110px !important; }
+  .fs-title  { font-size: 36px; }
+  .fs-btn    { font-size: 22px; padding: .8rem 1.6rem; }
+  .fs-close  { width: 70px; height: 70px; font-size: 30px; }
+  .chat-wrap { height: 700px; }
+  .chat-text { font-size: 20px; }
+  .ab-bubble { font-size: 24px; }
+}
+
+/* ── Fond sombre autour de l'app sur grands écrans ── */
+@media (min-width: 768px) {
+  html {
+    background: linear-gradient(135deg, #050f07 0%, #0a1a0d 50%, #060e08 100%);
+  }
+}
+
+/* ── Player container : hauteur max sur grands écrans ── */
+@media (min-width: 1024px) {
+  .player-container {
+    aspect-ratio: 16/9;
+    max-height: 60vh;
+  }
+  .fullscreen-overlay .fs-player {
+    max-height: calc(100vh - 60px);
+  }
+}
+
+/* ── Smart TV : curseur visible, focus visible ── */
+@media (min-width: 1440px) {
+  * { cursor: auto !important; }
+  button, a, [onclick] { cursor: pointer !important; }
+  button:focus, a:focus, input:focus, textarea:focus {
+    outline: 3px solid rgba(212,175,55,.6);
+    outline-offset: 2px;
+  }
+  .channel-card:focus, .wlc-card:focus {
+    outline: 3px solid var(--gold);
+    transform: translateY(-3px);
+  }
+}
+
+/* ── Navigation TV : touches fléchées ── */
+@media (min-width: 1920px) {
+  .nav-btn { min-width: 80px; }
+  .nav-live-badge { font-size: 10px; padding: 1px 5px; }
+  .lt-btn { min-width: 80px; }
 }
 
 </style>
@@ -4108,6 +4342,18 @@ document.addEventListener('keydown', function(e){
   if(e.key==='Escape' && _adminIn){
     closeAdmin();
   }
+  /* Navigation Smart TV — touches fléchées */
+  if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
+    var navBtns=['nav-umma','nav-wird','nav-live','nav-ens','nav-ai'];
+    var cur=navBtns.findIndex(function(id){return document.getElementById(id)&&document.getElementById(id).classList.contains('active');});
+    var next=e.key==='ArrowRight'?Math.min(cur+1,navBtns.length-1):Math.max(cur-1,0);
+    var btn=document.getElementById(navBtns[next]);
+    if(btn&&next!==cur) btn.click();
+  }
+  /* Entrée pour valider */
+  if(e.key==='Enter'&&document.activeElement&&document.activeElement.classList.contains('channel-card')){
+    document.activeElement.click();
+  }
 });
 
 function showAdminContent(){
@@ -5139,7 +5385,7 @@ async function lkJoinAsViewer(url, token){
         wrap.innerHTML = '';
         var vid = document.createElement('video');
         vid.autoplay = true; vid.playsInline = true; vid.controls = true;
-        vid.style.cssText = 'width:100%;height:100%;object-fit:cover;background:#000';
+        vid.style.cssText = 'width:100%;height:100%;object-fit:contain;background:#000';
         track.attach(vid);
         wrap.appendChild(vid);
         /* Tenter lecture auto */
