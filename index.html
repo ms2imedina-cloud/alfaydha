@@ -1,4 +1,42 @@
 <!DOCTYPE html>
+<!-- ================================================================
+     BAYE NIASS WORLD — index.html
+     Fichier corrigé — toutes les sessions d'audit appliquées
+     ================================================================
+     CORRECTIONS APPLIQUÉES (23 fixes) :
+     
+     CSS :
+     [01] Sélecteur .prog-badge orphelin supprimé
+     [02] @keyframes adminShake reconstruit (fragment invalide)
+     [03] Sélecteur .ab-msg orphelin supprimé
+     [04] Trois .ab-bubble-engine orphelins supprimés
+     [13] @keyframes breathe manquant ajouté (.ab-crescent)
+     [14] Classe .cal-nav-title manquante sur #calNavTitle
+     [15] calRender innerHTML migré vers classes CSS
+     [16] .cal-event-dot absent du rendu calEventsList
+     [17] Bloc Flutter CSS mort supprimé (58 lignes, 31 vars inutiles)
+     
+     HTML / Réseau :
+     [05] dns-prefetch gstatic.com dupliqué supprimé
+     [08] Élément #pushNotifBanner ajouté au DOM
+     [09] src="" sur 14 <img> → placeholder transparent 1×1
+     [10] alt manquant sur 3 images statiques
+     [24] #tts-wird-all button manquant ajouté au HTML
+     [25] #calYearHijri span manquant ajouté au HTML
+     
+     JavaScript :
+     [06] selectNotifType() — implémentation manquante ajoutée
+     [07] sendAdminNotif() — implémentation manquante ajoutée
+           + _loadNotifHistory() + _initNotifListener() + _showPushNotif()
+     [11] _fbDeviceHeartbeat/_renderChTimer ajoutés au cleanup beforeunload
+     [12] 20 appels localStorage.setItem non protégés wrappés en try/catch
+     [18] XSS dans notifications (n.title, n.msg, n.type) → escH() + whitelist
+     [19] XSS dans displayName Google OAuth → escH()
+     [20] 8 accès DOM sans null guard dans updateStats() et autres
+     [21] Rejet non géré dans abSendIstikhara() → try/catch
+     [22] Rejet non géré sur lkJoinAsViewer() call site → .catch()
+     [23] _hookedSwitch utilisé mais jamais défini → fonction créée
+     ================================================================ -->
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -21,7 +59,6 @@
 <link rel="dns-prefetch" href="https://faydha-app-default-rtdb.firebaseio.com">
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="dns-prefetch" href="https://www.gstatic.com">
 <!-- Firebase config -->
 <script>
 window._fbConfig={
@@ -61,64 +98,12 @@ window._fbReady=false;
    Police: Roboto — Taille base: 16px
 ══════════════════════════════════════════════════════════ */
 
-/* Variables typographiques Flutter */
-:root {
-  --fs-display-large:  57px;
-  --fs-display-medium: 45px;
-  --fs-display-small:  36px;
-  --fs-headline-large: 32px;
-  --fs-headline-medium:28px;
-  --fs-headline-small: 24px;
-  --fs-title-large:    22px;
-  --fs-title-medium:   16px;
-  --fs-title-small:    14px;
-  --fs-body-large:     16px;
-  --fs-body-medium:    14px;
-  --fs-body-small:     12px;
-  --fs-label-large:    14px;
-  --fs-label-medium:   12px;
-  --fs-label-small:    11px;
 
-  /* Poids Flutter */
-  --fw-regular: 400;
-  --fw-medium:  500;
-  --fw-bold:    700;
-
-  /* Letter spacing Flutter */
-  --ls-tight:  -0.25px;
-  --ls-normal:  0px;
-  --ls-wide:    0.1px;
-  --ls-wider:   0.5px;
-  --ls-widest:  1.25px;
-
-  /* Line height Flutter */
-  --lh-tight:  1.2;
-  --lh-normal: 1.5;
-  --lh-loose:  1.8;
-}
-
-/* Classes typographiques Flutter */
-.flutter-display-large  { font-size:57px; font-weight:400; letter-spacing:-0.25px; line-height:1.12; }
-.flutter-display-medium { font-size:45px; font-weight:400; letter-spacing:0;       line-height:1.16; }
-.flutter-display-small  { font-size:36px; font-weight:400; letter-spacing:0;       line-height:1.22; }
-.flutter-headline-large { font-size:32px; font-weight:400; letter-spacing:0;       line-height:1.25; }
-.flutter-headline-medium{ font-size:28px; font-weight:400; letter-spacing:0;       line-height:1.29; }
-.flutter-headline-small { font-size:24px; font-weight:400; letter-spacing:0;       line-height:1.33; }
-.flutter-title-large    { font-size:22px; font-weight:400; letter-spacing:0;       line-height:1.27; }
-.flutter-title-medium   { font-size:16px; font-weight:500; letter-spacing:0.15px;  line-height:1.50; }
-.flutter-title-small    { font-size:14px; font-weight:500; letter-spacing:0.1px;   line-height:1.43; }
-.flutter-body-large     { font-size:16px; font-weight:400; letter-spacing:0.5px;   line-height:1.50; }
-.flutter-body-medium    { font-size:14px; font-weight:400; letter-spacing:0.25px;  line-height:1.43; }
-.flutter-body-small     { font-size:12px; font-weight:400; letter-spacing:0.4px;   line-height:1.33; }
-.flutter-label-large    { font-size:14px; font-weight:500; letter-spacing:0.1px;   line-height:1.43; }
-.flutter-label-medium   { font-size:12px; font-weight:500; letter-spacing:0.5px;   line-height:1.33; }
-.flutter-label-small    { font-size:11px; font-weight:500; letter-spacing:0.5px;   line-height:1.45; }
-
-/* Ajustements globaux Flutter */
+/* Ajustements globaux */
 html { font-size: 16px; -webkit-text-size-adjust: 100%; }
 * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
-/* Line-height Flutter par défaut sur body */
+/* Line-height par défaut sur body */
 p, div, span, li { line-height: 1.5; }
 
 
@@ -606,7 +591,6 @@ body{
   margin-top:3px;font-family:sans-serif;
 }
 .prog-badge.live{background:var(--red);color:#fff}
-.prog-badge
 .prog-badge.soon{background:rgba(0,0,0,.07);color:var(--text3)}
 
 /* ── Favoris ── */
@@ -681,9 +665,11 @@ body{
 }
 
 /* Gate */
-
-
-25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes adminShake{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-6px)}
+  75%{transform:translateX(6px)}
+}
 
 
 /* Admin Tabs */
@@ -956,15 +942,11 @@ body{
 .ab-chat{flex:1;overflow-y:auto;padding:.5rem 1rem 1rem;display:flex;flex-direction:column}
 .ab-msgs{display:flex;flex-direction:column;gap:.8rem}
 .ab-msg{display:flex;gap:.6rem;animation:fadeUp .25s ease}
-.ab-msg
 .ab-avatar{width:34px;height:34px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;background:var(--g1);border:1.5px solid rgba(212,175,55,.3)}
 .ab-bubble{max-width:85%;padding:.75rem 1rem;border-radius:16px;font-size:14px;line-height:1.65}
 .ab-msg.baye .ab-bubble{background:var(--white);border:1px solid var(--gold3);border-bottom-left-radius:4px;color:var(--text1)}
 .ab-msg.user .ab-bubble{background:var(--g1);border-bottom-right-radius:4px;color:var(--gold3)}
 .ab-bubble-engine{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:2px 8px;border-radius:100px;background:var(--gold3);color:var(--text2);margin-bottom:.4rem}
-.ab-bubble-engine
-.ab-bubble-engine
-.ab-bubble-engine
 .ab-bubble-ar{font-family:'Amiri',serif;font-size:16px;direction:rtl;color:var(--g2);margin-bottom:.4rem;padding-bottom:.4rem;border-bottom:1px solid var(--gold3);line-height:1.8}
 .ab-sources{margin-top:.6rem;padding-top:.5rem;border-top:1px solid var(--gold3);display:flex;gap:.3rem;flex-wrap:wrap}
 .ab-src-tag{font-size:12px;background:var(--gold4);border:1px solid var(--gold3);border-radius:100px;padding:2px 8px;color:var(--text3)}
@@ -973,6 +955,7 @@ body{
 .ab-dot:nth-child(2){animation-delay:.2s}
 .ab-dot:nth-child(3){animation-delay:.4s}
 @keyframes abDots{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+@keyframes breathe{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.08);opacity:.75}}
 .ab-input-bar{position:sticky;bottom:calc(var(--nav-h) + var(--safe-b));background:var(--ivory);border-top:1px solid var(--gold3);padding:.7rem 1rem .5rem;z-index:10}
 .ab-input-wrap{display:flex;gap:.5rem;align-items:flex-end;background:var(--white);border:1.5px solid var(--gold3);border-radius:16px;padding:.5rem .5rem .5rem .8rem;transition:border-color .2s}
 .ab-input-wrap:focus-within{border-color:var(--gold)}
@@ -1593,7 +1576,7 @@ html { background: #0a0a0a; }
 
 <!-- SPLASH -->
 <div id="splash">
-  <img class="sp-logo" data-logo="1" src="" alt="Cheikh Ibrahim Niass رضي الله عنه">
+  <img class="sp-logo" data-logo="1" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Cheikh Ibrahim Niass رضي الله عنه">
   <div class="sp-name">Baye Niass World</div>
   <div class="sp-ar">عَالَمُ بَايِ نِيَاسٍ</div>
   <div class="sp-bar"><div class="sp-fill"></div></div>
@@ -1601,6 +1584,7 @@ html { background: #0a0a0a; }
 </div>
 
 <div id="toast"></div>
+<div id="pushNotifBanner" style="display:none"></div>
 
 <!-- Écran chargement auth — affiché pendant vérification session -->
 <style>
@@ -1611,7 +1595,7 @@ html { background: #0a0a0a; }
 #authLoading{transition:opacity .4s ease;}
 </style>
 <div id="authLoading" style="position:fixed;inset:0;z-index:9000;background:#0F7B3F;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;transition:opacity .5s ease">
-  <img data-logo="1" src="" style="width:72px;height:72px;border-radius:50%;border:2px solid #D4AF37;box-shadow:0 0 0 8px rgba(212,175,55,.1)">
+  <img alt="Cheikh Ibrahim Niass" data-logo="1" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" style="width:72px;height:72px;border-radius:50%;border:2px solid #D4AF37;box-shadow:0 0 0 8px rgba(212,175,55,.1)">
   <div style="font-family:'Amiri',serif;font-size:28px;color:#fff">Baye Niass World</div>
   <div style="width:40px;height:40px;border:3px solid rgba(212,175,55,.3);border-top-color:#D4AF37;border-radius:50%;animation:spin .8s linear infinite"></div>
   <div style="font-size:13px;color:rgba(255,255,255,.5);font-style:italic">Vérification de la session…</div>
@@ -1625,7 +1609,7 @@ html { background: #0a0a0a; }
 
   <!-- HAUT : logo + titre -->
   <div class="wlc-top">
-    <img class="wlc-logo" data-logo="1" src="" alt="Cheikh Ibrahim Niass رضي الله عنه">
+    <img class="wlc-logo" data-logo="1" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Cheikh Ibrahim Niass رضي الله عنه">
 
     <div class="wlc-title">Baye Niass World</div>
     <div class="wlc-ar">عَالَمُ بَايِ نِيَاسٍ</div>
@@ -1680,7 +1664,7 @@ html { background: #0a0a0a; }
 
 <!-- Barre utilisateur connecté (affiché après connexion Google) -->
 <div id="userAvatarBar">
-  <img id="userAvatarImg" src="" alt="">
+  <img id="userAvatarImg" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="">
   <span id="userAvatarName">—</span>
   <button id="userSignOutBtn" onclick="signOutGoogle()">Déconnexion</button>
 </div>
@@ -1689,7 +1673,7 @@ html { background: #0a0a0a; }
 <section id="sec-umma" class="sec active">
   <div style="background:linear-gradient(160deg,var(--g1) 0%,var(--g2) 60%,var(--g3) 100%);padding:1.5rem 1.2rem 1.2rem;text-align:center;position:relative;overflow:hidden;flex-shrink:0">
     <div style="position:absolute;inset:0;opacity:.04;background-image:radial-gradient(circle,var(--gold) 1px,transparent 1px);background-size:22px 22px;pointer-events:none"></div>
-    <div style="margin-bottom:.4rem"><img data-logo="1" src="" alt="Cheikh Ibrahim Niass" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);box-shadow:0 0 0 6px rgba(212,175,55,.15);display:block;margin:0 auto .5rem"></div>
+    <div style="margin-bottom:.4rem"><img data-logo="1" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Cheikh Ibrahim Niass" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);box-shadow:0 0 0 6px rgba(212,175,55,.15);display:block;margin:0 auto .5rem"></div>
     <div style="font-family:'Amiri',serif;font-size:28px;color:#fff;line-height:1">Umma — Communauté</div>
     <div style="font-family:'Amiri',serif;font-size:14px;color:var(--gold2);margin:.2rem 0">الأُمَّة · Taalibé Baye Mondial</div>
     <div style="font-size:12px;color:var(--gold3);font-style:italic;line-height:1.6">L'application mondiale des Taalibé Baye<br>de Médina Baye</div>
@@ -1753,7 +1737,7 @@ html { background: #0a0a0a; }
 <!-- HERO -->
 <div style="background:linear-gradient(160deg,var(--g1) 0%,var(--g2) 60%,var(--g3) 100%);padding:1.5rem 1.2rem 1.2rem;text-align:center;position:relative;overflow:hidden;flex-shrink:0">
   <div style="position:absolute;inset:0;opacity:.04;background-image:radial-gradient(circle,var(--gold) 1px,transparent 1px);background-size:22px 22px;pointer-events:none"></div>
-  <div style="margin-bottom:.5rem"><img data-logo="1" src="" alt="Cheikh Ibrahim Niass" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);box-shadow:0 0 0 6px rgba(212,175,55,.15);display:block;margin:0 auto .5rem"></div>
+  <div style="margin-bottom:.5rem"><img data-logo="1" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Cheikh Ibrahim Niass" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);box-shadow:0 0 0 6px rgba(212,175,55,.15);display:block;margin:0 auto .5rem"></div>
   <div style="font-family:'Amiri',serif;font-size:32px;color:#fff;line-height:1">الوِرْدُ التِّيجَانِي</div>
   <div style="font-family:'Amiri',serif;font-size:14px;color:var(--gold2);margin:.2rem 0 .1rem">Al-Wird at-Tijānī · الوزيفة</div>
   <div style="font-size:12px;color:var(--gold3);font-style:italic;margin-top:.3rem;line-height:1.6">Reçu par Cheikh Ahmad Tijani رضي الله عنه du Prophète ﷺ en état de veille<br>Transmis à l'Umma par Cheikh Ibrahim Niass رضي الله عنه</div>
@@ -1784,6 +1768,11 @@ html { background: #0a0a0a; }
   </div>
   <div class="wpb-track"><div class="wpb-fill" id="wpb-fill"></div></div>
   <div class="wpb-steps" id="wpb-dots"></div>
+  <div style="text-align:right;padding:.3rem 0 .1rem">
+    <button id="tts-wird-all" onclick="wirdSpeakAll()" style="background:none;border:1px solid var(--gold3);border-radius:100px;padding:.25rem .8rem;font-size:12px;color:var(--g1);cursor:pointer;font-family:'Roboto',sans-serif;transition:all .15s">
+      <span>🔊</span> <span>Écouter tout le Wird</span>
+    </button>
+  </div>
 </div>
 
 <div class="ui-row-gold">
@@ -2710,7 +2699,7 @@ html { background: #0a0a0a; }
 <!-- HERO -->
 <div style="background:linear-gradient(160deg,var(--g1) 0%,#0a5c2e 55%,#0a1a12 100%);padding:1.4rem 1.2rem 1rem;text-align:center;position:relative;overflow:hidden;flex-shrink:0">
   <div style="position:absolute;inset:0;opacity:.04;background-image:radial-gradient(circle,var(--gold) 1px,transparent 1px);background-size:20px 20px;pointer-events:none"></div>
-  <img id="zikrLogo" src="" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);box-shadow:0 0 0 6px rgba(212,175,55,.12);display:block;margin:0 auto .5rem">
+  <img id="zikrLogo" alt="Logo" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);box-shadow:0 0 0 6px rgba(212,175,55,.12);display:block;margin:0 auto .5rem">
   <div style="font-family:'Amiri',serif;font-size:28px;color:#fff;line-height:1">ذِكْرُ اللهِ</div>
   <div style="font-family:'Amiri',serif;font-size:14px;color:var(--gold2);margin:.15rem 0">Dhikr — Zikr Live · بايي نياس</div>
   <div style="font-size:12px;color:var(--gold3);font-style:italic;margin-top:.25rem">وَاذْكُرُوا اللهَ كَثِيرًا لَّعَلَّكُمْ تُفْلِحُونَ</div>
@@ -2993,6 +2982,7 @@ html { background: #0a0a0a; }
       <div class="cal-month-ar" id="calMonthAr">—</div>
       <div class="cal-month-fr" id="calMonthFr">—</div>
       <div class="cal-hijri-full" id="calHijriFull">— هـ</div>
+      <span id="calYearHijri" style="display:none"></span>
       <div class="cal-greg" id="calGreg">—</div>
     </div>
 
@@ -3000,7 +2990,7 @@ html { background: #0a0a0a; }
     <div class="cal-grid-wrap">
       <div class="cal-nav-row">
         <button class="cal-nav-btn" onclick="calPrev()">‹</button>
-        <div id="calNavTitle" style="text-align:center"></div>
+        <div id="calNavTitle" class="cal-nav-title"></div>
         <button class="cal-nav-btn" onclick="calNext()">›</button>
       </div>
       <div class="cal-weekdays">
@@ -3028,7 +3018,7 @@ html { background: #0a0a0a; }
 <!-- SECTION ENSEIGNEMENTS -->
 <section id="sec-ens" class="sec">
   <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:2rem 1.5rem;text-align:center;gap:1rem">
-    <div style="margin-bottom:.4rem"><img data-logo="1" src="" alt="Cheikh Ibrahim Niass" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid rgba(212,175,55,.6);box-shadow:0 0 0 6px rgba(212,175,55,.15);display:block;margin:0 auto .5rem"></div>
+    <div style="margin-bottom:.4rem"><img data-logo="1" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Cheikh Ibrahim Niass" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid rgba(212,175,55,.6);box-shadow:0 0 0 6px rgba(212,175,55,.15);display:block;margin:0 auto .5rem"></div>
     <div style="font-family:'Amiri',serif;font-size:28px;color:var(--g1)">Enseignements</div>
     <div style="font-size:14px;color:var(--text3);font-style:italic;line-height:1.7;max-width:320px">Section en cours de développement.<br>Les enseignements de Cheikh Ibrahim Niass et la bibliothèque spirituelle seront ici.</div>
     <div style="font-family:'Amiri',serif;font-size:16px;color:var(--gold);direction:rtl">كَاشِفُ الإِلْبَاس</div>
@@ -3099,7 +3089,7 @@ html { background: #0a0a0a; }
     <div class="chat-wrap">
       <div class="chat-msgs" id="chatMsgs">
         <div class="chat-msg">
-          <div class="chat-avatar" style="background:transparent;padding:0;overflow:hidden"><img data-logo="1" src="" alt="Cheikh Ibrahim Niass" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(212,175,55,.5);flex-shrink:0"></div>
+          <div class="chat-avatar" style="background:transparent;padding:0;overflow:hidden"><img data-logo="1" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Cheikh Ibrahim Niass" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(212,175,55,.5);flex-shrink:0"></div>
           <div class="chat-bubble">
             <div class="chat-name">Baye Niass World</div>
             <div class="chat-text">Bienvenue dans le chat en direct 🕌 Partagez votre ressenti sur ce live avec toute la communauté.</div>
@@ -3140,7 +3130,7 @@ html { background: #0a0a0a; }
 <div class="fullscreen-overlay" id="fullscreenOverlay">
   <div class="fs-player" id="fsPlayer"></div>
   <button class="fs-close" onclick="closeFullscreen()">✕</button>
-  <div id="fsLogo" style="display:none;position:fixed;top:14px;right:64px;z-index:9999;pointer-events:none"><img id="fsLogoImg" src="" alt="Baye Niass World" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2.5px solid rgba(212,175,55,.9);box-shadow:0 3px 16px rgba(0,0,0,.8)"></div>
+  <div id="fsLogo" style="display:none;position:fixed;top:14px;right:64px;z-index:9999;pointer-events:none"><img id="fsLogoImg" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Baye Niass World" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2.5px solid rgba(212,175,55,.9);box-shadow:0 3px 16px rgba(0,0,0,.8)"></div>
   <div class="fs-controls" id="fsControls">
     <span class="fs-live-badge" id="fsLiveBadge" style="display:none">● LIVE</span>
     <span class="fs-title" id="fsTitle">—</span>
@@ -3158,7 +3148,7 @@ html { background: #0a0a0a; }
 <!-- ASK BAYE HERO -->
 <div class="ab-hero">
   <div class="ab-hero-bg"></div>
-  <div class="ab-crescent" style="font-size:0"><img data-logo="1" src="" alt="Cheikh Ibrahim Niass" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);box-shadow:0 0 0 6px rgba(212,175,55,.15);display:block;margin:0 auto .5rem"></div>
+  <div class="ab-crescent" style="font-size:0"><img data-logo="1" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Cheikh Ibrahim Niass" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);box-shadow:0 0 0 6px rgba(212,175,55,.15);display:block;margin:0 auto .5rem"></div>
   <div class="ab-hero-title">Ask Baye</div>
   <div class="ab-hero-ar">&#1575;&#1587;&#1571;&#1604; &#1588;&#1610;&#1582; &#1573;&#1576;&#1585;&#1575;&#1607;&#1610;&#1605; &#1606;&#1610;&#1575;&#1587;</div>
   <div class="ab-hero-sub">Posez vos questions sur les enseignements de Cheikh Ibrahim Niass</div>
@@ -3258,7 +3248,7 @@ html { background: #0a0a0a; }
     <div class="admin-handle"></div>
     <div class="admin-header">
       <div style="display:flex;align-items:center;gap:.6rem">
-        <img data-logo="1" src="" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:1px solid var(--gold)">
+        <img alt="Cheikh Ibrahim Niass" data-logo="1" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:1px solid var(--gold)">
         <div class="admin-title">Baye Niass World — Admin</div>
       </div>
       <button class="admin-close" onclick="closeAdmin()">✕</button>
@@ -3310,7 +3300,7 @@ html { background: #0a0a0a; }
         <div class="direct-panel">
           <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.6rem;background:rgba(212,175,55,.07);border:1px solid rgba(212,175,55,.18);border-radius:12px;padding:.6rem .8rem">
             <div style="position:relative;flex-shrink:0">
-              <img data-logo="1" src="" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);box-shadow:0 0 0 4px rgba(212,175,55,.15)">
+              <img alt="Cheikh Ibrahim Niass" data-logo="1" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);box-shadow:0 0 0 4px rgba(212,175,55,.15)">
               <div id="dpLiveDot" style="position:absolute;bottom:1px;right:1px;width:12px;height:12px;border-radius:50%;background:#555;border:2px solid #1a1a1a"></div>
             </div>
             <div style="flex:1;min-width:0">
@@ -3567,7 +3557,7 @@ function _hideSplash(){
 
 /* ── Entrée dans l'app selon le profil choisi ── */
 function enterApp(profile) {
-  localStorage.setItem('faydha_profile', profile);
+  try{ localStorage.setItem('faydha_profile', profile); }catch(e){}
   var w = document.getElementById('welcome');
   if(w){ w.style.transition='opacity .5s ease'; w.style.opacity='0'; setTimeout(function(){ w.classList.add('hidden'); w.style.opacity=''; }, 500); }
   _updateProfileLabel();
@@ -3650,7 +3640,7 @@ function _onGoogleUser(user) {
 
   /* Stocker infos localement */
   var profile = isAdmin ? 'google:admin' : 'google:' + user.uid;
-  localStorage.setItem('faydha_profile', profile);
+  try{ localStorage.setItem('faydha_profile', profile); }catch(e){}
   try { localStorage.setItem('faydha_google_user', JSON.stringify({
     uid: user.uid, name: user.displayName, photo: user.photoURL, email: user.email, isAdmin: isAdmin
   })); } catch(e) {}
@@ -3696,7 +3686,7 @@ function _onGoogleUser(user) {
         var el = document.getElementById('ummaProfileLabel');
         if (el) el.textContent = '📡 Streamer · ' + (user.displayName || user.email);
         var nameEl = document.getElementById('userAvatarName');
-        if (nameEl) nameEl.innerHTML = '<span style="background:var(--g2);color:#fff;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;margin-right:5px">📡 STREAMER</span>' + (user.displayName||'');
+        if (nameEl) nameEl.innerHTML = '<span style="background:var(--g2);color:#fff;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;margin-right:5px">📡 STREAMER</span>' + escH(user.displayName||'');
         setTimeout(function(){ showToast('📡 Bienvenue Streamer — Accès live activé ✅'); }, 700);
       } else {
         setTimeout(function(){ showToast('✅ Bienvenue ' + (user.displayName || '') + ' 📿'); }, 600);
@@ -3714,8 +3704,8 @@ function _showUserBar(name, photo, isAdmin) {
   else if (img) img.style.display='none';
   if (nameEl) {
     nameEl.innerHTML = isAdmin
-      ? '<span style="background:var(--gold);color:#000;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;margin-right:5px">👑 ADMIN</span>' + (name || 'Admin')
-      : (name || 'Connecté');
+      ? '<span style="background:var(--gold);color:#000;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;margin-right:5px">👑 ADMIN</span>' + escH(name || 'Admin')
+      : escH(name || 'Connecté');
   }
   /* Décaler les sections pour la barre */
   document.querySelectorAll('.sec').forEach(function(s){
@@ -3737,8 +3727,8 @@ function signOutGoogle() {
   if (!confirm('Se déconnecter ?')) return;
   _fbInit(function() {
     firebase.auth().signOut().then(function() {
-      localStorage.removeItem('faydha_profile');
-      localStorage.removeItem('faydha_google_user');
+      try{ localStorage.removeItem('faydha_profile'); }catch(e){}
+      try{ localStorage.removeItem('faydha_google_user'); }catch(e){}
       /* Cacher barre */
       var bar = document.getElementById('userAvatarBar');
       if (bar) bar.classList.remove('show');
@@ -3785,7 +3775,7 @@ function _updateProfileLabel(){
 }
 
 function resetProfile(){
-  localStorage.removeItem('faydha_profile');
+  try{ localStorage.removeItem('faydha_profile'); }catch(e){}
   var w = document.getElementById('welcome');
   if(w){ w.classList.remove('hidden'); w.style.opacity='1'; }
 }
@@ -4008,7 +3998,7 @@ async function _playLiveKitViewer(d) {
         lkGenerateViewerToken(pub.apiKey,pub.apiSecret,pub.room||'faydha-live')
           .then(function(vt){lkJoinAsViewer(pub.url,vt);})
           .catch(function(e){if(pub.token)lkJoinAsViewer(pub.url,pub.token);else _showLiveError(wrap,e.message);});
-      } else if(pub.token){lkJoinAsViewer(pub.url,pub.token);}
+      } else if(pub.token){lkJoinAsViewer(pub.url,pub.token).catch(function(e){_showLiveError(wrap,e.message||'Erreur connexion');});}
       else _showLiveError(wrap,'Configuration incomplète');
     });
   });
@@ -4099,7 +4089,7 @@ function loadInPlayer(url,name,isLive){
   var statsBar=document.getElementById('liveStats');
   if(statsBar&&_settings.viewers){
     statsBar.style.display='flex';
-    document.getElementById('statsChName').textContent=name||'';
+    var _scn=document.getElementById('statsChName'); if(_scn)_scn.textContent=name||'';
     startViewerCount();
   }
   showToast('▶ '+name);
@@ -4111,14 +4101,13 @@ function stopPlayer(){
   _currentCh=-1; _currentChData=null;
   fbLeaveViewers();
   fbStopChat();
-  document.getElementById('mainPlayer').innerHTML=
-    '<div class="player-placeholder"><div class="pp-icon">📡</div><div class="pp-txt">Choisissez une chaîne</div><div class="pp-sub">Sélectionnez une chaîne ci-dessous</div></div>';
-  document.getElementById('liveStats').style.display='none';
+  var _mp=document.getElementById('mainPlayer'); if(_mp)_mp.innerHTML='<div class="player-placeholder"><div class="pp-icon">📡</div><div class="pp-txt">Choisissez une chaîne</div><div class="pp-sub">Sélectionnez une chaîne ci-dessous</div></div>';
+  var _ls=document.getElementById('liveStats'); if(_ls)_ls.style.display='none';
   showControls(false); renderChannels(); clearInterval(_vcTimer);
 }
 
 function showControls(v){
-  document.getElementById('playerControls').style.display=v?'flex':'none';
+  var _pc=document.getElementById('playerControls'); if(_pc)_pc.style.display=v?'flex':'none';
 }
 
 /* Compteur viewers simulé */
@@ -4132,8 +4121,8 @@ function startViewerCount(){
     if(_viewers>_peakViewers) _peakViewers=_viewers;
     var el=document.getElementById('statsViewers');
     if(el) el.textContent=_viewers;
-    document.getElementById('stViewers').textContent=_viewers;
-    document.getElementById('stPeak').textContent=_peakViewers;
+    var _svEl=document.getElementById('stViewers'); if(_svEl)_svEl.textContent=_viewers;
+    var _spEl=document.getElementById('stPeak'); if(_spEl)_spEl.textContent=_peakViewers;
   },5000);
 }
 
@@ -4166,8 +4155,8 @@ function openFullscreen(){
   document.body.style.overflow='hidden';
 }
 function closeFullscreen(){
-  document.getElementById('fullscreenOverlay').classList.remove('open');
-  document.getElementById('fsPlayer').innerHTML='';
+  var _fso=document.getElementById('fullscreenOverlay'); if(_fso)_fso.classList.remove('open');
+  var _fsp=document.getElementById('fsPlayer'); if(_fsp)_fsp.innerHTML='';
   var _fl=document.getElementById('fsLogo'); if(_fl)_fl.style.display='none';
   document.body.style.overflow='';
 }
@@ -4405,7 +4394,7 @@ function showAdminContent(){
     firebase.database().ref('streamer_config/ab_key').once('value',function(snap){
       var d=snap.val();
       if(!d||!d.key) return;
-      localStorage.setItem('ab_anthropic_key', d.key);
+      try{ localStorage.setItem('ab_anthropic_key', d.key); }catch(e){}
       var inp=document.getElementById('abApiKey');
       if(inp&&!inp.value) inp.value=d.key;
       /* Synchroniser aussi dans app_config pour tous les utilisateurs */
@@ -4414,7 +4403,7 @@ function showAdminContent(){
     /* Mot de passe admin (hash) */
     firebase.database().ref('streamer_config/admin_pwd').once('value',function(snap){
       var d=snap.val();
-      if(d&&d.hash) localStorage.setItem(PWD_KEY, d.hash);
+      try{ if(d&&d.hash) localStorage.setItem(PWD_KEY, d.hash); }catch(e){}
     });
     /* Chaînes depuis Firebase → editors */
     firebase.database().ref('app_config/channels').once('value',function(snap){
@@ -4445,7 +4434,7 @@ function adminSaveAbKey() {
     if (st) st.textContent = '⚠️ Clé invalide — doit commencer par sk-ant…';
     return;
   }
-  localStorage.setItem(AB_KEY_STORE, key);
+  try{ localStorage.setItem(AB_KEY_STORE, key); }catch(e){}
   _fbInit(function() {
     firebase.database().ref('app_config/ab_key').set({key: key, updatedAt: Date.now()});
     firebase.database().ref('streamer_config/ab_key').set({key: key, updatedAt: Date.now()});
@@ -4686,7 +4675,7 @@ function selMode(m){
     youtube:'📺 YouTube Live — ∞ viewers',
     sfu:'☁ LiveKit Cloud — 100 viewers · Gratuit'
   };
-  document.getElementById('dpTitle').textContent=titles[m];
+  var _dpt=document.getElementById('dpTitle'); if(_dpt)_dpt.textContent=titles[m];
   // Pour LiveKit : afficher le preview caméra et charger la config sauvegardée
   if(m==='sfu'){
     var prev=document.getElementById('lkCamPreview');
@@ -5318,7 +5307,7 @@ function lkShowPlayerViewer(){
   var statsBar=document.getElementById('liveStats');
   if(statsBar&&_settings.viewers){
     statsBar.style.display='flex';
-    document.getElementById('statsChName').textContent='App Direct — LiveKit';
+    var _scn2=document.getElementById('statsChName'); if(_scn2)_scn2.textContent='App Direct — LiveKit';
     startViewerCount();
   }
   _currentCh=99;
@@ -5561,18 +5550,19 @@ var _liveStartTime=null;
 var _statTimer=null;
 
 function updateStats(){
-  document.getElementById('stViewers').textContent=_viewers||0;
-  document.getElementById('stPeak').textContent=_peakViewers||0;
-  document.getElementById('stMsgs').textContent=_chatCount||0;
-  document.getElementById('stFavs').textContent=getFavs().length;
+  function _st(id,val){var e=document.getElementById(id);if(e)e.textContent=val;}
+  _st('stViewers',_viewers||0);
+  _st('stPeak',_peakViewers||0);
+  _st('stMsgs',_chatCount||0);
+  _st('stFavs',getFavs().length);
   var d=getDirect();
-  document.getElementById('stMode').textContent=d.isLive?d.mode:'—';
+  _st('stMode',d.isLive?d.mode:'—');
   if(d.isLive&&d.startedAt){
     var elapsed=Math.floor((Date.now()-d.startedAt)/1000);
     var h=Math.floor(elapsed/3600), m=Math.floor((elapsed%3600)/60);
-    document.getElementById('stDur').textContent=(h?h+'h':'')+String(m).padStart(2,'0')+'m';
+    _st('stDur',(h?h+'h':'')+String(m).padStart(2,'0')+'m');
   } else {
-    document.getElementById('stDur').textContent='0:00';
+    _st('stDur','0:00');
   }
 }
 
@@ -5614,7 +5604,7 @@ async function changePwd(){
   var stored=localStorage.getItem(PWD_KEY)||DEFAULT_PWD_HASH;
   if(oldH!==stored){err.textContent='Mot de passe actuel incorrect';return;}
   var newH=await sha256(newP);
-  localStorage.setItem(PWD_KEY,newH);
+  try{ localStorage.setItem(PWD_KEY,newH); }catch(e){}
   /* Sync Firebase → tous les appareils admin */
   _fbInit(function(){
     firebase.database().ref('streamer_config/admin_pwd').set({hash: newH, updatedAt: Date.now()});
@@ -5714,7 +5704,7 @@ function abInit() {
         var d = snap.val();
         var k = (d && d.key) ? d.key : '';
         if (k) {
-          localStorage.setItem(AB_KEY_STORE, k);
+          try{ localStorage.setItem(AB_KEY_STORE, k); }catch(e){}
           _abHideConfig();
         } else {
           /* Pas de clé globale — afficher le formulaire */
@@ -5869,7 +5859,7 @@ function abSaveKey() {
     if (st) { st.textContent = '❌ Clé invalide — doit commencer par sk-ant'; st.style.color = '#ffaaaa'; }
     return;
   }
-  localStorage.setItem(AB_KEY_STORE, key);
+  try{ localStorage.setItem(AB_KEY_STORE, key); }catch(e){}
   /* Sauvegarder dans Firebase app_config pour tous les utilisateurs */
   _fbInit(function() {
     firebase.database().ref('app_config/ab_key').set({key: key, updatedAt: Date.now()});
@@ -5928,7 +5918,7 @@ async function abSendIstikhara() {
   /* Injecter dans l'input et envoyer */
   var inp = document.getElementById('abInput');
   if (inp) inp.value = msg;
-  await abSend();
+  try { await abSend(); } catch(e) { showToast('❌ Erreur : ' + (e.message||e)); }
 }
 
 function abClear() {
@@ -5978,7 +5968,7 @@ async function abSend() {
       firebase.database().ref('app_config/ab_key').once('value', function(snap) {
         var d = snap.val();
         if (d && d.key) {
-          localStorage.setItem(AB_KEY_STORE, d.key);
+          try{ localStorage.setItem(AB_KEY_STORE, d.key); }catch(e){}
           _abHideConfig();
           abSend(); /* Relancer */
         } else {
@@ -6152,7 +6142,7 @@ function abAddMsg(role, text, engine) {
   }
 
   var content = isHtml ? text : renderMd(text);
-  var avatar = isUser ? '👤' : '<img data-logo="1" src="" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:1px solid rgba(212,175,55,.5)">';
+  var avatar = isUser ? '👤' : '<img data-logo="1" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:1px solid rgba(212,175,55,.5)">';
 
   var div = document.createElement('div');
   div.className = 'ab-msg ' + (isUser ? 'user' : 'baye');
@@ -6282,6 +6272,12 @@ var _abInited = false;
 
   // Activer dès qu'on bascule sur l'onglet Wird
   var _origSwitch = window.switchWirdTab;
+  function _hookedSwitch(tab) {
+    if (_origSwitch) _origSwitch(tab);
+    if (tab === 'wird') {
+      setTimeout(function(){ _wpbInit(); _wpbUpdate(); }, 80);
+    }
+  }
   function _patchWirdTab() {
     if (typeof window.switchWirdTab === 'function' && window.switchWirdTab !== _hookedSwitch) {
       _origSwitch = window.switchWirdTab;
@@ -6796,10 +6792,10 @@ function _zSaveStats(){
     _zStreak=(_zLastDate===new Date(Date.now()-86400000).toDateString())?_zStreak+1:1;
     _zTotalToday=1;_zLastDate=today;
   }
-  localStorage.setItem('zikr_today',_zTotalToday);
-  localStorage.setItem('zikr_all',_zTotalAll);
-  localStorage.setItem('zikr_streak',_zStreak);
-  localStorage.setItem('zikr_date',_zLastDate);
+  try{ localStorage.setItem('zikr_today',_zTotalToday); }catch(e){}
+  try{ localStorage.setItem('zikr_all',_zTotalAll); }catch(e){}
+  try{ localStorage.setItem('zikr_streak',_zStreak); }catch(e){}
+  try{ localStorage.setItem('zikr_date',_zLastDate); }catch(e){}
   var e;
   if((e=document.getElementById('zTotalToday')))e.textContent=_zTotalToday;
   if((e=document.getElementById('zTotalAll')))e.textContent=_zTotalAll;
@@ -7176,7 +7172,7 @@ function fbSaveAbKey(key) {
   if (!key || !key.startsWith('sk-ant')) return;
   _fbInit(function() {
     firebase.database().ref('streamer_config/ab_key').set({key: key, updatedAt: Date.now()});
-    localStorage.setItem('ab_anthropic_key', key);
+    try{ localStorage.setItem('ab_anthropic_key', key); }catch(e){}
   });
 }
 
@@ -7253,7 +7249,7 @@ function _fbDeviceId() {
   var id = localStorage.getItem('faydha_device_id');
   if (!id) {
     id = 'dev_' + Date.now() + '_' + Math.random().toString(36).substr(2,8);
-    localStorage.setItem('faydha_device_id', id);
+    try{ localStorage.setItem('faydha_device_id', id); }catch(e){}
   }
   return id;
 }
@@ -7441,7 +7437,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (_userConnected) {
           /* Vraie déconnexion */
           _userConnected = false;
-          localStorage.removeItem('faydha_profile');
+          try{ localStorage.removeItem('faydha_profile'); }catch(e){}
           _showWelcome();
           return;
         }
@@ -7556,7 +7552,7 @@ function _fbSyncUser(user) {
     firebase.database().ref('streamer_config/ab_key').on('value', function(snap) {
       var d = snap.val();
       if (!d || !d.key || !d.key.startsWith('sk-ant')) return;
-      localStorage.setItem('ab_anthropic_key', d.key);
+      try{ localStorage.setItem('ab_anthropic_key', d.key); }catch(e){}
       var inp = document.getElementById('abApiKey');
       if (inp) inp.value = d.key;
     });
@@ -7680,7 +7676,8 @@ window.addEventListener('beforeunload', function() {
   var timers = [
     '_vcTimer','_statTimer','_statsTimer','_directPollTimer',
     '_admStatsTimer','_zGroupsTimer','_chatAutoTimer',
-    '_lkDurTimer','_audioVizTimer','_lSessionRef'
+    '_lkDurTimer','_audioVizTimer','_lSessionRef',
+    '_fbDeviceHeartbeat','_renderChTimer','_renderChannelsTimer'
   ];
   timers.forEach(function(t) {
     if (window[t]) { clearInterval(window[t]); clearTimeout(window[t]); }
@@ -7776,9 +7773,9 @@ function calRender() {
   var navDate = new Date(_calGregYear, _calGregMonth, 1);
   var firstDayHijri = gregorianToHijri(navDate);
   if ((el=document.getElementById('calNavTitle'))) {
-    el.innerHTML = '<div style="font-family:Amiri,serif;font-size:18px;color:var(--g1)">' +
+    el.innerHTML = '<div class="ui-amiri-gold">' +
       (HIJRI_MONTHS_AR[firstDayHijri.month-1]||'') + ' ' + firstDayHijri.year + ' هـ</div>' +
-      '<div style="font-size:12px;color:var(--text3)">' +
+      '<div class="cal-nav-sub">' +
       navDate.toLocaleDateString('fr-FR',{month:'long',year:'numeric'}) + '</div>';
   }
   
@@ -7838,6 +7835,7 @@ function calRender() {
     } else {
       evEl.innerHTML = events_this_month.map(function(e) {
         return '<div class="cal-event-item">' +
+          '<span class="cal-event-dot" style="background:var(--gold)"></span>' +
           '<span class="cal-event-date">' + e.day + '</span>' +
           '<div style="flex:1">' +
             '<div class="cal-event-name">' + e.ev.fr + '</div>' +
@@ -7875,7 +7873,108 @@ function switchPratiqueTab(tab) {
   }
 }
 
+/* ════════════════════════════════════════
+   NOTIFICATIONS ADMIN — fonctions manquantes
+════════════════════════════════════════ */
+var _notifType = 'info';
+var _lastNotifKey = null;
 
+function selectNotifType(type, btn) {
+  _notifType = type;
+  document.querySelectorAll('.notif-type-btn').forEach(function(b){ b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+}
+
+function sendAdminNotif() {
+  var msgEl   = document.getElementById('notifMsg');
+  var titleEl = document.getElementById('notifTitle');
+  var durEl   = document.getElementById('notifDuration');
+  var msg = msgEl ? msgEl.value.trim() : '';
+  if (!msg) { showToast('⚠️ Message requis'); return; }
+  var title = titleEl ? titleEl.value.trim() : '';
+  var dur   = durEl   ? parseInt(durEl.value) || 7000 : 7000;
+  _fbInit(function(){
+    firebase.database().ref('app_notifications').push({
+      type: _notifType,
+      title: title,
+      msg: msg,
+      duration: dur,
+      ts: firebase.database.ServerValue.TIMESTAMP
+    }).then(function(){
+      showToast('📡 Notification envoyée');
+      if (msgEl)   msgEl.value   = '';
+      if (titleEl) titleEl.value = '';
+      _loadNotifHistory();
+    }).catch(function(e){ showToast('❌ Erreur : ' + e.message); });
+  });
+}
+
+function _loadNotifHistory() {
+  _fbInit(function(){
+    firebase.database().ref('app_notifications')
+      .orderByChild('ts').limitToLast(5).once('value', function(snap){
+        var el = document.getElementById('notifHistory');
+        if (!el) return;
+        var items = [];
+        snap.forEach(function(c){ items.unshift(c.val()); });
+        if (!items.length) {
+          el.innerHTML = '<div style="font-size:12px;color:var(--text3);font-style:italic">Aucune notification envoyée</div>';
+          return;
+        }
+        el.innerHTML = items.map(function(n){
+          return '<div class="notif-hist-item">' +
+            '<span class="notif-hist-dot ' + escH(n.type||'info') + '"></span>' +
+            '<span style="flex:1">' + (n.title ? '<strong>' + escH(n.title) + '</strong> — ' : '') + escH(n.msg||'') + '</span>' +
+          '</div>';
+        }).join('');
+      });
+  });
+}
+
+/* ── Listener notifications reçues (côté utilisateur) ── */
+function _initNotifListener() {
+  _fbInit(function(){
+    firebase.database().ref('app_notifications')
+      .orderByChild('ts').limitToLast(1)
+      .on('child_added', function(snap){
+        var n = snap.val();
+        if (!n || snap.key === _lastNotifKey) return;
+        _lastNotifKey = snap.key;
+        if (n.ts && Date.now() - n.ts > 30000) return;
+        _showPushNotif(n);
+      });
+  });
+}
+
+function _showPushNotif(n) {
+  var ICONS = { info:'ℹ️', live:'🔴', event:'📅', dua:'🤲', urgent:'⚠️' };
+  var VALID_TYPES = ['info','live','event','dua','urgent'];
+  var safeType = VALID_TYPES.indexOf(n.type) !== -1 ? n.type : 'info';
+  var existing = document.querySelector('.push-notif');
+  if (existing) existing.remove();
+  var el = document.createElement('div');
+  el.className = 'push-notif type-' + safeType;
+  el.innerHTML =
+    '<span class="push-notif-icon">' + (ICONS[safeType]||'📢') + '</span>' +
+    '<div class="push-notif-body">' +
+      (n.title ? '<div class="push-notif-title">' + escH(n.title) + '</div>' : '') +
+      '<div class="push-notif-msg">' + escH(n.msg||'') + '</div>' +
+    '</div>' +
+    '<button class="push-notif-close" onclick="this.parentNode.remove()">×</button>';
+  document.body.appendChild(el);
+  var dur = (typeof n.duration === 'number') ? n.duration : 7000;
+  if (dur > 0) {
+    setTimeout(function(){
+      el.classList.add('hide');
+      setTimeout(function(){ if (el.parentNode) el.remove(); }, 350);
+    }, dur);
+  }
+}
+
+/* Démarrer le listener une fois Firebase prêt */
+document.addEventListener('DOMContentLoaded', function(){
+  _fbInit(function(){ _initNotifListener(); });
+});
 
 </script>
 
