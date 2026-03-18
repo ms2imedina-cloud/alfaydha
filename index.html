@@ -3479,8 +3479,21 @@ function signOutGoogle() {
 /* Auth géré dans le DOMContentLoaded principal ci-dessus */
 // Splash désactivé — disparaît immédiatement au chargement
 document.addEventListener('DOMContentLoaded', function(){
-  /* Cacher splash rapidement — max 1.5s */
+  /* Cacher splash à 1.2s */
   setTimeout(_hideSplash, 1200);
+  /* Cacher authLoading à 1.5s MAX — Firebase s'initialise en arrière-plan */
+  setTimeout(function(){
+    var loading = document.getElementById('authLoading');
+    if (loading) {
+      loading.style.cssText += 'opacity:0!important;pointer-events:none!important;transition:opacity .25s ease!important;';
+      setTimeout(function(){ if(loading.parentNode) loading.parentNode.removeChild(loading); }, 300);
+    }
+    var w = document.getElementById('welcome');
+    if (w && w.classList.contains('hidden')) {
+      w.classList.remove('hidden');
+      setTimeout(function(){ w.style.opacity='1'; }, 30);
+    }
+  }, 1500);
 });
 
 /* L'accès est contrôlé par Firebase Auth — voir onAuthStateChanged */
@@ -6992,7 +7005,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!_authResolved) {
       _showWelcome();
     }
-  }, 3500);
+  }, 800);
 
   /* Firebase Auth + Sync */
   _fbInit(function() {
