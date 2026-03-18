@@ -3332,20 +3332,15 @@ function signInWithGoogle() {
   function _resetBtn() {
     if (btn) { btn.disabled = false; btn.innerHTML = _googleBtnHTML(); }
   }
-
   function _launch() {
     try {
       var provider = new firebase.auth.GoogleAuthProvider();
       provider.setCustomParameters({ prompt: 'select_account' });
-
       if (_isIOS() || _isSafari()) {
         try { sessionStorage.setItem('gauth_pending', '1'); } catch(e) {}
-        firebase.auth().signInWithRedirect(provider).catch(function(err) {
-          _resetBtn(); showToast('⚠️ ' + err.message);
-        });
+        firebase.auth().signInWithRedirect(provider).catch(function(err){ _resetBtn(); showToast('⚠️ ' + err.message); });
         return;
       }
-
       firebase.auth().signInWithPopup(provider)
         .then(function(result) {
           firebase.database().ref('users/' + result.user.uid).set({
@@ -3361,23 +3356,19 @@ function signInWithGoogle() {
             showToast('⚠️ ' + err.message);
           }
         });
-    } catch(e) {
-      _resetBtn();
-      showToast('⚠️ Firebase non disponible — réessayez dans un instant');
-    }
+    } catch(e) { _resetBtn(); showToast('⚠️ Service indisponible — réessayez'); }
   }
-
-  /* Attendre Firebase max 10s */
-  var _t = 0;
-  (function _wait(){
+  /* Lancer directement si Firebase prêt, sinon attendre max 8s */
+  var _waited = 0;
+  (function _poll(){
     if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
       _launch();
-    } else if (_t < 10000) {
-      _t += 300;
-      setTimeout(_wait, 300);
+    } else if (_waited < 8000) {
+      _waited += 250;
+      setTimeout(_poll, 250);
     } else {
       _resetBtn();
-      showToast('⚠️ Service indisponible — vérifiez votre connexion');
+      showToast('⚠️ Connexion impossible — vérifiez votre réseau');
     }
   })();
 }
@@ -3484,21 +3475,18 @@ function signOutGoogle() {
 /* Auth géré dans le DOMContentLoaded principal ci-dessus */
 // Splash désactivé — disparaît immédiatement au chargement
 document.addEventListener('DOMContentLoaded', function(){
-  /* Cacher splash à 1.2s */
-  setTimeout(_hideSplash, 1200);
-  /* Cacher authLoading à 1.5s MAX — Firebase s'initialise en arrière-plan */
-  setTimeout(function(){
-    var loading = document.getElementById('authLoading');
-    if (loading) {
-      loading.style.cssText += 'opacity:0!important;pointer-events:none!important;transition:opacity .25s ease!important;';
-      setTimeout(function(){ if(loading.parentNode) loading.parentNode.removeChild(loading); }, 300);
-    }
-    var w = document.getElementById('welcome');
-    if (w && w.classList.contains('hidden')) {
-      w.classList.remove('hidden');
-      setTimeout(function(){ w.style.opacity='1'; }, 30);
-    }
-  }, 1500);
+  /* Splash se cache quand Firebase est prêt OU max 2.5s
+     Cela évite le flash : splash → login → app pour utilisateurs connectés */
+  var _splashHidden = false;
+  function _doHideSplash(){
+    if(_splashHidden) return;
+    _splashHidden = true;
+    _hideSplash();
+  }
+  var _splashPoll = setInterval(function(){
+    if(window._fbReady){ clearInterval(_splashPoll); _doHideSplash(); }
+  }, 80);
+  setTimeout(function(){ clearInterval(_splashPoll); _doHideSplash(); }, 2500);
 });
 
 /* L'accès est contrôlé par Firebase Auth — voir onAuthStateChanged */
@@ -3595,7 +3583,12 @@ var _currentCh=-1, _currentChData=null;
 var _settings=getSettings();
 
 var _renderChannelsTimer=null;
+var _renderChTimer=null;
 function renderChannels(){
+  if(_renderChTimer) return;
+  _renderChTimer=setTimeout(function(){ _renderChTimer=null; _renderChannelsFn(); },60);
+}
+function _renderChannelsFn(){
   if(_renderChannelsTimer) return;
   _renderChannelsTimer=setTimeout(function(){_renderChannelsTimer=null;_doRenderChannels();},80);
 }
@@ -4430,15 +4423,6 @@ function _startAudioMeter(stream) {
   } catch(e){}
 }
 
-function _stopAudioMeter() {
-  clearInterval(_audioMeterTimer);
-  if(_audioCtx){ try{_audioCtx.close();}catch(e){} _audioCtx=null; }
-  _audioAnalyser=null;
-  var bar=document.getElementById('audioBar');
-  var lbl=document.getElementById('audioLabel');
-  if(bar) bar.style.width='0%';
-  if(lbl) lbl.textContent='—';
-}
 
 async function toggleCam(){
   if(_wrtcStream){
@@ -5810,16 +5794,7 @@ var _abInited = false;
       window.switchWirdTab = _hookedSwitch;
     }
   }
-  function _hookedSwitch(tab) {
-    _origSwitch(tab);
-    if (tab === 'wird') {
-      setTimeout(function(){
-        _wpbInit();
-        _wpbUpdate();
-      }, 80);
-    }
-  }
-
+  
   // Activer aussi au clic nav wird
   document.addEventListener('DOMContentLoaded', function(){
     var navBtn = document.getElementById('nav-wird');
@@ -6857,37 +6832,8 @@ function fbDismissBanner() {
 }
 
 /* ── 7. LISTENER TEMPS RÉEL — Clé Anthropic ── */
-function fbWatchAbKey() {
-  _fbInit(function() {
-    firebase.database().ref('streamer_config/ab_key').on('value', function(snap) {
-      var d = snap.val();
-      if (!d || !d.key || !d.key.startsWith('sk-ant')) return;
-      localStorage.setItem('ab_anthropic_key', d.key);
-      var inp = document.getElementById('abApiKey');
-      if (inp) inp.value = d.key;
-      /* Activer Ask Baye si clé disponible */
-      var cfg = document.getElementById('abConfig');
-      var sugs = document.getElementById('abSuggestions');
-      if (cfg && cfg.style.display !== 'none') cfg.style.display = 'none';
-      if (sugs && sugs.style.display === 'none') sugs.style.display = 'block';
-    });
-  });
-}
 
 /* ── 8. LISTENER TEMPS RÉEL — Config LiveKit ── */
-function fbWatchLkConfig() {
-  _fbInit(function() {
-    firebase.database().ref('streamer_config/livekit').on('value', function(snap) {
-      var d = snap.val();
-      if (!d || !d.apiKey) return;
-      var cfg = {url:d.url||'',apiKey:d.apiKey,apiSecret:d.apiSecret||'',token:d.token||''};
-      try { localStorage.setItem('faydha_lk_config', JSON.stringify(cfg)); } catch(e) {}
-      /* Remplir tous les champs disponibles */
-      fillLkFields(cfg);
-    });
-  });
-}
-
 /* Remplir les champs LiveKit depuis un objet config */
 function fillLkFields(cfg) {
   if (!cfg) { try { cfg=JSON.parse(localStorage.getItem('faydha_lk_config')||'{}'); } catch(e){ cfg={}; } }
@@ -6896,40 +6842,7 @@ function fillLkFields(cfg) {
 }
 
 /* ── 9. LISTENER TEMPS RÉEL — Chaînes ── */
-function fbWatchChannels() {
-  _fbInit(function() {
-    firebase.database().ref('app_config/channels').on('value', function(snap) {
-      var d = snap.val();
-      if (!d || !d.data) return;
-      try {
-        var chs = JSON.parse(d.data);
-        if (!Array.isArray(chs) || !chs.length) return;
-        var cur = localStorage.getItem('faydha_ch5');
-        if (cur === d.data) return;
-        localStorage.setItem('faydha_ch5', JSON.stringify(chs));
-        if (typeof renderChannels === 'function') renderChannels();
-      } catch(e) {}
-    });
-  });
-}
-
 /* ── 10. LISTENER TEMPS RÉEL — Programme ── */
-function fbWatchProgramme() {
-  _fbInit(function() {
-    firebase.database().ref('app_config/programme').on('value', function(snap) {
-      var d = snap.val();
-      if (!d || !d.data) return;
-      try {
-        var prog = JSON.parse(d.data);
-        if (!Array.isArray(prog)) return;
-        localStorage.setItem('faydha_prog', JSON.stringify(prog));
-        if (typeof buildProgList === 'function') buildProgList();
-        if (typeof renderProg === 'function') renderProg();
-      } catch(e) {}
-    });
-  });
-}
-
 /* ── 11. LISTENER TEMPS RÉEL — Chat live ── */
 function fbWatchChat() {
   if (_fbChatListener) return;
@@ -6946,32 +6859,6 @@ function fbWatchChat() {
 }
 
 /* ── 12. LISTENER — Paramètre chat global ── */
-function fbWatchChatSetting() {
-  _fbInit(function() {
-    firebase.database().ref('app_config/settings/chat').on('value', function(snap) {
-      var d = snap.val();
-      if (!d) return;
-      /* Montrer/cacher la zone de saisie chat selon le setting */
-      var chatInput = document.querySelector('.chat-input-wrap, #chatInputWrap, .chat-send');
-      if (chatInput) chatInput.style.display = d.enabled ? '' : 'none';
-      var chatDisabled = document.getElementById('chatDisabledMsg');
-      if (!chatDisabled && !d.enabled) {
-        /* Créer le message "chat désactivé" si besoin */
-        var msgs = document.getElementById('chatMsgs');
-        if (msgs) {
-          var msg = document.createElement('div');
-          msg.id = 'chatDisabledMsg';
-          msg.style.cssText = 'text-align:center;padding:1rem;color:var(--text3);font-style:italic;font-size:13px';
-          msg.textContent = 'Chat désactivé par l\'admin';
-          msgs.appendChild(msg);
-        }
-      } else if (chatDisabled && d.enabled) {
-        chatDisabled.remove();
-      }
-    });
-  });
-}
-
 /* ── Démarrer les listeners au chargement de l'app ── */
 
 /* ════════════════════════════════════════════════════════════
@@ -7021,7 +6908,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!_authResolved) {
       _showWelcome();
     }
-  }, 800);
+  }, 5000);
 
   /* Firebase Auth + Sync */
   _fbInit(function() {
@@ -7064,10 +6951,10 @@ document.addEventListener('DOMContentLoaded', function() {
           _showWelcome();
           return;
         }
-        /* Pas connecté → afficher login après 1s */
+        /* Pas connecté → afficher login */
         setTimeout(function() {
           if (!_userConnected) _showWelcome();
-        }, 600);
+        }, 200);
       }
     });
 
