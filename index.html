@@ -3721,24 +3721,24 @@ async function _playLiveKitViewer(d) {
     firebase.database().ref('app_config/livekit_viewer').once('value', function(snap) {
       var pub = snap.val();
 
-      if (pub && pub.url && pub.apiKey && pub.apiSecret) {
-        /* Config disponible → générer token UNIQUE par spectateur (évite conflits) */
-        var _room = pub.room || 'faydha-live';
-        lkGenerateViewerToken(pub.apiKey, pub.apiSecret, _room)
-          .then(function(token) {
-            if (token) {
-              lkJoinAsViewer(pub.url, token);
-            } else {
-              _showLiveError(wrap, 'Impossible de générer le token viewer');
-            }
-          })
-          .catch(function(e) { _showLiveError(wrap, e.message); });
-        return;
-      }
-
-      if (pub && pub.url && pub.token) {
-        /* Token fixe disponible → l'utiliser directement */
-        lkJoinAsViewer(pub.url, pub.token);
+      if (pub && pub.url) {
+        /* Priorité 1 : token pré-généré par le streamer (le plus fiable) */
+        if (pub.token) {
+          lkJoinAsViewer(pub.url, pub.token);
+          return;
+        }
+        /* Priorité 2 : générer token côté spectateur si apiKey+apiSecret disponibles */
+        if (pub.apiKey && pub.apiSecret) {
+          var _room = pub.room || 'faydha-live';
+          lkGenerateViewerToken(pub.apiKey, pub.apiSecret, _room)
+            .then(function(vt) {
+              if (vt) lkJoinAsViewer(pub.url, vt);
+              else _showLiveError(wrap, 'Token non générable — réessayez');
+            })
+            .catch(function(e) { _showLiveError(wrap, e.message); });
+          return;
+        }
+        _showLiveError(wrap, 'Configuration live incomplète — le streamer doit redémarrer le live');
         return;
       }
 
@@ -4818,25 +4818,32 @@ function lkOnConnected(){
   /* Extraire roomName depuis le token streamer */
   var _streamRoomName = 'faydha-live';
   try {
-    var _tkToCheck = tokenVal || (typeof token !== 'undefined' ? token : '');
+    var _tkToCheck = tokenVal || '';
     if (_tkToCheck && _tkToCheck.startsWith('eyJ')) {
       _streamRoomName = lkExtractRoomName(_tkToCheck);
     }
   } catch(e) {}
 
-  /* Publier config viewer dans Firebase */
-  _fbInit(function() {
+  /* Générer et publier token viewer directement — méthode la plus fiable */
+  (async function(){
     var viewerData = { url: urlVal, room: _streamRoomName, startedAt: Date.now() };
-    if (apiKey && apiSecret) {
-      /* Cas idéal : spectateurs génèrent leur propre token unique */
-      viewerData.apiKey    = apiKey;
-      viewerData.apiSecret = apiSecret;
-    } else if (tokenVal) {
-      /* Fallback : token pré-généré partagé */
-      viewerData.token = tokenVal;
+    try {
+      if (apiKey && apiSecret) {
+        /* Générer token viewer côté streamer → plus fiable que côté spectateur */
+        var vToken = await lkGenerateViewerToken(apiKey, apiSecret, _streamRoomName);
+        viewerData.token     = vToken;
+        viewerData.apiKey    = apiKey;
+        viewerData.apiSecret = apiSecret;
+      } else if (tokenVal) {
+        viewerData.token = tokenVal;
+      }
+    } catch(e) {
+      if (tokenVal) viewerData.token = tokenVal;
     }
-    firebase.database().ref('app_config/livekit_viewer').set(viewerData);
-  });
+    _fbInit(function() {
+      firebase.database().ref('app_config/livekit_viewer').set(viewerData);
+    });
+  })();
 
   // UI admin
   var btn=document.getElementById('lkBtn');
