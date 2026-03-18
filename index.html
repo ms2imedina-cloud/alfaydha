@@ -4489,6 +4489,7 @@ function goLiveWR(){
     // ── DÉMARRER ──
     if(!_wrtcStream){showToast('⚠️ Activez d\'abord la caméra 📷');return;}
     _wrtcLive=true;
+    window._isStreaming = true; /* AVANT fbSetLive pour bloquer le listener */
     var badge=document.getElementById('camBadge'); if(badge)badge.style.display='block';
     var vcnt=document.getElementById('camVcnt'); if(vcnt)vcnt.style.display='flex';
     var wrBtn=document.getElementById('wrBtn'); if(wrBtn){wrBtn.textContent='⏹ Arrêter WebRTC';wrBtn.style.background='#4CAF50';}
@@ -4683,6 +4684,9 @@ async function goLiveLK(){
     showToast('⚠️ URL invalide — ex: wss://xxx.livekit.cloud'); return;
   }
 
+  /* Marquer immédiatement comme streamer AVANT tout appel Firebase */
+  window._isStreaming = true;
+
   /* Générer token JWT automatiquement (valide 24h) */
   var token;
   if(manToken && manToken.startsWith('eyJ')){
@@ -4708,6 +4712,7 @@ async function goLiveLK(){
     if(typeof LivekitClient==='undefined') await lkLoadSDK();
     await lkConnect(url, token);
   } catch(e) {
+    window._isStreaming = false; /* rollback si connexion échoue */
     var btn2=document.getElementById('lkBtn');
     if(btn2){btn2.textContent='🔴 Démarrer LiveKit';btn2.style.background='';btn2.disabled=false;}
     showToast('⚠️ Erreur connexion LiveKit: '+e.message);
@@ -7116,20 +7121,24 @@ function _fbSyncUser(user) {
       /* Premier appel ET live actif → bannière seulement (pas de "terminé") */
       if (_wasLive === null) {
         _wasLive = true;
-        /* Live déjà en cours quand l'utilisateur arrive → bannière */
-        setTimeout(function() {
-          if (typeof _fbShowLiveBanner === 'function') _fbShowLiveBanner(d);
-        }, 1500);
+        /* Live déjà en cours quand l'utilisateur arrive → bannière (pas pour le streamer) */
+        if (!window._isStreaming) {
+          setTimeout(function() {
+            if (typeof _fbShowLiveBanner === 'function') _fbShowLiveBanner(d);
+          }, 1500);
+        }
       } else if (_wasLive === false) {
-        /* Live qui vient de démarrer → bannière + navigation */
+        /* Live qui vient de démarrer → bannière + navigation (pas pour le streamer) */
         _wasLive = true;
-        setTimeout(function() {
-          if (typeof _fbShowLiveBanner === 'function') _fbShowLiveBanner(d);
-        }, 800);
-        setTimeout(function() {
-          var navLive = document.getElementById('nav-live');
-          if (typeof showSec === 'function') showSec('live', navLive);
-        }, 1500);
+        if (!window._isStreaming) {
+          setTimeout(function() {
+            if (typeof _fbShowLiveBanner === 'function') _fbShowLiveBanner(d);
+          }, 800);
+          setTimeout(function() {
+            var navLive = document.getElementById('nav-live');
+            if (typeof showSec === 'function') showSec('live', navLive);
+          }, 1500);
+        }
       }
     } else {
       if (_wasLive === true) {
