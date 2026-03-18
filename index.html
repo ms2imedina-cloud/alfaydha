@@ -160,9 +160,7 @@ body{
   transition:opacity .3s ease,visibility .3s ease;
 }
 #splash.hidden{opacity:0;visibility:hidden;pointer-events:none}
-/* Fallback CSS : splash disparaît après 3s si JS bloque */
-@keyframes splashOut{0%,60%{opacity:1;visibility:visible}100%{opacity:0;visibility:hidden;pointer-events:none}}
-#splash{animation:splashOut 3s ease forwards;}
+/* splash contrôlé uniquement par JS */
 .sp-logo{width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);box-shadow:0 0 0 8px rgba(212,175,55,.1)}
 .sp-name{font-family:'Amiri',serif;font-size:45px;color:#fff;line-height:1}
 .sp-ar{font-family:'Amiri',serif;font-size:20px;color:var(--gold2);direction:rtl}
@@ -3311,8 +3309,10 @@ body{
 // Masquer le splash — déclenché par la fin de l'animation de la barre
 function _hideSplash(){
   var s=document.getElementById('splash');
-  if(s && !s.classList.contains('hidden')){ s.classList.add('hidden'); }
-  /* L'accès à l'app est géré par onAuthStateChanged — ne pas ouvrir welcome ici */
+  if(!s||s._hiding) return;
+  s._hiding=true;
+  s.style.cssText+='opacity:0!important;visibility:hidden!important;pointer-events:none!important;transition:opacity .25s ease!important;';
+  setTimeout(function(){ if(s&&s.parentNode) s.parentNode.removeChild(s); }, 300);
 }
 
 /* ── Entrée dans l'app selon le profil choisi ── */
@@ -3480,7 +3480,7 @@ function signOutGoogle() {
 // Splash désactivé — disparaît immédiatement au chargement
 document.addEventListener('DOMContentLoaded', function(){
   /* Cacher splash rapidement — max 1.5s */
-  setTimeout(_hideSplash, 1500);
+  setTimeout(_hideSplash, 1200);
 });
 
 /* L'accès est contrôlé par Firebase Auth — voir onAuthStateChanged */
@@ -6979,15 +6979,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if (_userConnected) return;
     var loading = document.getElementById('authLoading');
     if (loading) {
-      loading.style.animation = 'none'; /* Annuler toute animation CSS */
-      loading.style.opacity = '0';
-      loading.style.pointerEvents = 'none';
-      setTimeout(function(){
-        if (loading.parentNode) loading.parentNode.removeChild(loading);
-      }, 420);
+      loading.style.cssText += 'opacity:0!important;pointer-events:none!important;transition:opacity .25s ease!important;';
+      setTimeout(function(){ if(loading.parentNode) loading.parentNode.removeChild(loading); }, 300);
     }
     var w = document.getElementById('welcome');
-    if (w) { w.classList.remove('hidden'); setTimeout(function(){ w.style.opacity='1'; }, 50); }
+    if (w) {
+      w.classList.remove('hidden');
+      setTimeout(function(){ w.style.opacity='1'; }, 30);
+    }
   }
   var _fbTimeout = setTimeout(function() {
     if (!_authResolved) {
@@ -7018,10 +7017,8 @@ document.addEventListener('DOMContentLoaded', function() {
         clearTimeout(_fbTimeout);
         var loading = document.getElementById('authLoading');
         if (loading) {
-          loading.style.animation = 'none';
-          loading.style.opacity = '0';
-          loading.style.pointerEvents = 'none';
-          setTimeout(function(){ if(loading.parentNode) loading.parentNode.removeChild(loading); }, 420);
+          loading.style.cssText += 'opacity:0!important;pointer-events:none!important;transition:opacity .25s ease!important;';
+          setTimeout(function(){ if(loading.parentNode) loading.parentNode.removeChild(loading); }, 300);
         }
       }
 
@@ -7170,7 +7167,7 @@ function _fbSyncUser(user) {
   }
 }
 
-var _zAudioPlayingvar _zAudioPlaying=false,_zAudioCount=0,_zAudioTarget=100,_zAudioSpeed=3000,_zVizTimer=null;
+var _zAudioPlaying=false,_zAudioCount=0,_zAudioTarget=100,_zAudioSpeed=3000,_zVizTimer=null;
 var _zCurAudioKey='lahila';
 var _zAudioZikrs={
   lahila:{ar:'لَا إِلَهَ إِلَّا اللهُ',target:100,rate:.75},
