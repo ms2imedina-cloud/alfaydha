@@ -3064,14 +3064,6 @@ body{
               <input class="dp-field" id="ytUrl" type="url" placeholder="https://youtube.com/live/XXXX">
               <button class="dp-btn" id="ytBtn" onclick="goLiveYT()">🔴 Go Live</button>
             </div>
-            <!-- Qualité YouTube -->
-            <div style="display:flex;gap:.4rem;margin:.4rem 0;flex-wrap:wrap">
-              <div style="font-size:11px;color:rgba(212,175,55,.6);width:100%;letter-spacing:.08em;text-transform:uppercase">Qualité vidéo</div>
-              <button onclick="setYTQuality('hd2160')" id="ytq4k" style="flex:1;padding:.3rem .2rem;font-size:11px;border-radius:6px;border:1px solid rgba(212,175,55,.3);background:rgba(212,175,55,.08);color:var(--gold2);cursor:pointer;transition:all .15s" title="4K Ultra HD">4K</button>
-              <button onclick="setYTQuality('hd1440')" id="ytq2k" style="flex:1;padding:.3rem .2rem;font-size:11px;border-radius:6px;border:1px solid rgba(212,175,55,.3);background:rgba(212,175,55,.08);color:var(--gold2);cursor:pointer;transition:all .15s" title="2K QHD">2K</button>
-              <button onclick="setYTQuality('hd1080')" id="ytq1080" style="flex:1;padding:.3rem .2rem;font-size:11px;border-radius:6px;border:1px solid var(--gold);background:rgba(212,175,55,.25);color:var(--gold2);cursor:pointer;font-weight:700;transition:all .15s" title="1080p FHD">1080p ✓</button>
-              <button onclick="setYTQuality('hd720')" id="ytq720" style="flex:1;padding:.3rem .2rem;font-size:11px;border-radius:6px;border:1px solid rgba(212,175,55,.3);background:rgba(212,175,55,.08);color:var(--gold2);cursor:pointer;transition:all .15s" title="720p HD">720p</button>
-            </div>
             <div class="dp-note" id="ytNote">Collez l'URL YouTube Live puis Go Live</div>
             <div style="margin-top:.7rem;border-top:1px solid rgba(212,175,55,.2);padding-top:.6rem">
               <div style="font-size:12px;color:var(--gold2);font-weight:600;letter-spacing:.1em;margin-bottom:.45rem">GUIDE RAPIDE</div>
@@ -3663,9 +3655,6 @@ function extractYTId(url){
 function playChannel(ch,idx){
   if(!ch.url){showToast('⚠️ Aucune URL — configurez via Admin ⚙');return;}
   _currentCh=idx; _currentChData=ch;
-  /* Appliquer la qualité préférée de la chaîne */
-  var qMap={'4k':'hd2160','2k':'hd1440','1080p':'hd1080','720p':'hd720'};
-  if (typeof _ytQuality !== 'undefined') _ytQuality = qMap[ch.quality||'1080p'] || 'hd1080';
   loadInPlayer(ch.url, ch.name||(idx!==undefined?'Chaîne '+(idx+1):''), ch.isLive);
   renderChannels();
   showControls(true);
@@ -3816,28 +3805,16 @@ function loadInPlayer(url,name,isLive){
   var ytId=extractYTId(url);
   if(ytId){
     var iframe=document.createElement('iframe');
-    /* Forcer qualité maximale YouTube : hd=1, vq=hd1080, origin pour permissions */
-    var _q = (typeof _ytQuality !== 'undefined') ? _ytQuality : 'hd1080';
-    var ytParams='?autoplay=1&rel=0&hd=1&vq='+_q+'&modestbranding=1&iv_load_policy=3&cc_load_policy=0&fs=1&color=white';
-    iframe.src='https://www.youtube.com/embed/'+ytId+ytParams;
-    iframe.allow='accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture;fullscreen;web-share';
-    iframe.setAttribute('loading','eager');
+    iframe.src='https://www.youtube.com/embed/'+ytId+'?autoplay=1&rel=0';
+    iframe.allow='accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture;fullscreen';
     iframe.allowFullscreen=true;
     iframe.style.cssText='width:100%;height:100%;border:none;display:block';
     wrap.appendChild(iframe);
   } else {
     var vid=document.createElement('video');
-    vid.src=url;
-    vid.controls=true; vid.autoplay=true; vid.playsInline=true;
-    vid.preload='auto';
-    vid.setAttribute('crossorigin','anonymous');
+    vid.src=url; vid.controls=true; vid.autoplay=true; vid.playsInline=true;
     vid.style.cssText='width:100%;height:100%;object-fit:contain;background:#000';
-    /* Forcer qualité max sur les flux HLS/DASH */
-    if(url.includes('.m3u8')){
-      vid.setAttribute('x-webkit-airplay','allow');
-    }
     wrap.appendChild(vid);
-    vid.play().catch(function(){});
   }
   // Stats bar
   var statsBar=document.getElementById('liveStats');
@@ -4228,9 +4205,6 @@ function switchAdmTab(id){
    ADMIN — ÉDITEUR 5 CHAÎNES
 ════════════════════════════════════════ */
 function buildChEditors(){
-  /* Sync qualités depuis sauvegarde */
-  var _syncChs=getChannels();
-  _syncChs.forEach(function(ch,i){ if(ch.quality && typeof _chQualities!=='undefined') _chQualities[i]=ch.quality||'1080p'; });
   var container=document.getElementById('chEditors');
   if(!container)return;
   var chs=getChannels();
@@ -4245,7 +4219,7 @@ function buildChEditors(){
           '<span>Chaîne '+(i+1)+'</span>'+
           (ch.isLive?' <span style="color:var(--red);font-size:12px;font-weight:700;animation:ldPulse 1.4s infinite">● LIVE</span>':'')+
         '</span>'+
-        '<span style="font-size:12px;color:var(--gold2);font-style:italic">📺 '+((ch.quality||'1080p').toUpperCase())+'</span>'+
+        '<span style="font-size:12px;color:var(--text3);font-style:italic">1080p · 30fps · AAC 48kHz</span>'+
       '</div>'+
       '<div class="f-row">'+
         '<div class="f-row-h">'+
@@ -4258,49 +4232,15 @@ function buildChEditors(){
         '</div>'+
         '<label class="f-check"><input type="checkbox" id="chL'+i+'"'+(ch.isLive?' checked':'')+'> Marquer EN DIRECT (badge rouge pulsant)</label>'+
       '</div>'+
-      /* Sélecteur qualité par chaîne */
-      '<div style="margin-top:.4rem">'+
-        '<div style="font-size:11px;color:rgba(15,123,63,.7);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.3rem">Qualité vidéo preferée</div>'+
-        '<div style="display:flex;gap:.3rem">'+
-          '<button type="button" onclick="chSetQ('+i+',\'4k\')" id="chq'+i+'_4k" class="chq-btn"'+(ch.quality===\'4k\'?' style="border-color:var(--gold);background:rgba(212,175,55,.25);font-weight:700"':'')+'>4K</button>'+
-          '<button type="button" onclick="chSetQ('+i+',\'2k\')" id="chq'+i+'_2k" class="chq-btn"'+(ch.quality===\'2k\'?' style="border-color:var(--gold);background:rgba(212,175,55,.25);font-weight:700"':'')+'>2K</button>'+
-          '<button type="button" onclick="chSetQ('+i+',\'1080p\')" id="chq'+i+'_1080" class="chq-btn"'+((ch.quality||\'1080p\')==='1080p'?' style="border-color:var(--gold);background:rgba(212,175,55,.25);font-weight:700"':'')+'>1080p</button>'+
-          '<button type="button" onclick="chSetQ('+i+',\'720p\')" id="chq'+i+'_720" class="chq-btn"'+(ch.quality===\'720p\'?' style="border-color:var(--gold);background:rgba(212,175,55,.25);font-weight:700"':'')+'>720p</button>'+
-        '</div>'+
-      '</div>'+
-      '<div style="background:rgba(15,123,63,.06);border-radius:8px;padding:.4rem .7rem;margin-top:.35rem;display:flex;gap:.5rem;flex-wrap:wrap">'+
-        '<span style="font-size:11px;color:var(--text3)">🎬 <strong class="ui-g1">H.264 / H.265</strong></span>'+
-        '<span style="font-size:11px;color:var(--text3)">🔊 <strong class="ui-g1">AAC 48kHz Stéréo</strong></span>'+
-        '<span style="font-size:11px;color:var(--text3)">📡 <strong class="ui-g1">YouTube · HLS · RTMP</strong></span>'+
+      // Qualité info panel
+      '<div style="background:rgba(15,123,63,.06);border-radius:8px;padding:.45rem .7rem;margin-top:.3rem;display:flex;gap:.6rem;flex-wrap:wrap">'+
+        '<span style="font-size:12px;color:var(--text3);display:flex;align-items:center;gap:.25rem">🎬 <strong class="ui-g1">1920×1080</strong></span>'+
+        '<span style="font-size:12px;color:var(--text3);display:flex;align-items:center;gap:.25rem">⚡ <strong class="ui-g1">30 fps</strong></span>'+
+        '<span style="font-size:12px;color:var(--text3);display:flex;align-items:center;gap:.25rem">🔊 <strong class="ui-g1">AAC 48kHz Stéréo</strong></span>'+
+        '<span style="font-size:12px;color:var(--text3);display:flex;align-items:center;gap:.25rem">📡 <strong class="ui-g1">H.264 · HLS/RTMP</strong></span>'+
       '</div>';
     container.appendChild(block);
   });
-}
-
-/* Boutons qualité chaînes */
-(function(){
-  var s=document.createElement('style');
-  s.textContent='.chq-btn{flex:1;padding:.28rem .1rem;font-size:11px;border-radius:6px;border:1px solid rgba(212,175,55,.3);background:rgba(212,175,55,.06);color:var(--gold2);cursor:pointer;transition:all .15s;font-family:Roboto,sans-serif}';
-  document.head.appendChild(s);
-})();
-
-var _chQualities = ['1080p','1080p','1080p','1080p','1080p']; /* qualité par chaîne */
-
-function chSetQ(idx, q) {
-  _chQualities[idx] = q;
-  var keys = ['4k','2k','1080p','720p'];
-  keys.forEach(function(k) {
-    var b = document.getElementById('chq'+idx+'_'+k.replace('p',''));
-    if (!b) return;
-    var active = (k === q);
-    b.style.borderColor = active ? 'var(--gold)' : 'rgba(212,175,55,.3)';
-    b.style.background  = active ? 'rgba(212,175,55,.25)' : 'rgba(212,175,55,.06)';
-    b.style.fontWeight  = active ? '700' : '400';
-  });
-  /* Mettre à jour le badge qualité dans l'en-tête */
-  var chs = getChannels();
-  if (chs[idx]) chs[idx].quality = q;
-  save(CH_KEY, chs);
 }
 
 function saveChannels(){
@@ -4310,7 +4250,6 @@ function saveChannels(){
     ch.url =(document.getElementById('chU'+i)||{}).value||'';
     ch.badge=(document.getElementById('chB'+i)||{}).value||'';
     ch.isLive=!!(document.getElementById('chL'+i)||{}).checked;
-    ch.quality=_chQualities[i]||ch.quality||'1080p';
   });
   save(CH_KEY,chs);
   /* Sync Firebase → tous les spectateurs reçoivent les chaînes à jour */
@@ -4375,29 +4314,6 @@ function updateDirectUI(){
 
 // YouTube
 var _ytLive=false;
-var _ytQuality = 'hd1080'; /* Qualité YouTube par défaut */
-
-function setYTQuality(q) {
-  _ytQuality = q;
-  var btns = ['ytq4k','ytq2k','ytq1080','ytq720'];
-  var ids  = {'hd2160':'ytq4k','hd1440':'ytq2k','hd1080':'ytq1080','hd720':'ytq720'};
-  btns.forEach(function(id) {
-    var b = document.getElementById(id);
-    if (!b) return;
-    var active = (ids[q] === id);
-    b.style.border    = active ? '1px solid var(--gold)' : '1px solid rgba(212,175,55,.3)';
-    b.style.background= active ? 'rgba(212,175,55,.25)'  : 'rgba(212,175,55,.08)';
-    b.style.fontWeight= active ? '700' : '400';
-    b.textContent = b.title.split(' ')[0] + (active ? ' ✓' : '');
-  });
-  /* Rechanger le player si déjà actif */
-  var iframe = document.querySelector('#mainPlayer iframe');
-  if (iframe && iframe.src.includes('youtube.com/embed')) {
-    iframe.src = iframe.src.replace(/vq=[^&]+/, 'vq='+q).replace(/hd=\d/, 'hd=1');
-  }
-  showToast('📺 Qualité : ' + {'hd2160':'4K Ultra HD','hd1440':'2K QHD','hd1080':'1080p FHD','hd720':'720p HD'}[q]);
-}
-
 function goLiveYT(){
   var d=getDirect();
   if(d.isLive&&d.mode==='youtube'){
@@ -4515,11 +4431,9 @@ async function toggleCam(){
         audio:{
           echoCancellation:true,
           noiseSuppression:true,
-          autoGainControl:false,
+          autoGainControl:true,
           sampleRate:48000,
-          sampleSize:24,
-          channelCount:2,
-          latency:0
+          channelCount:2
         }
       });
       var vid=document.getElementById('localVid'); if(vid){vid.srcObject=_wrtcStream;vid.style.display='block';vid.play().catch(function(){});}
@@ -4658,11 +4572,9 @@ async function lkToggleCam(){
         audio:{
           echoCancellation:true,
           noiseSuppression:true,
-          autoGainControl:false,
+          autoGainControl:true,
           sampleRate:48000,
-          sampleSize:24,
-          channelCount:2,
-          latency:0
+          channelCount:2
         }
       });
       var vid=document.getElementById('lkLocalVid');
@@ -4925,20 +4837,10 @@ async function lkConnect(url, token){
     },
     videoCodec: 'h264',
     audioCaptureDefaults: {
-      autoGainControl:  false,
+      autoGainControl: true,
       echoCancellation: true,
       noiseSuppression: true,
-      sampleRate:   48000,
-      sampleSize:   24,
-      channelCount: 2
-    },
-    publishDefaults: {
-      audioPreset: { maxBitrate: 320000 },
-      videoSimulcastLayers: [
-        LK.VideoPresets.h180,
-        LK.VideoPresets.h360,
-        LK.VideoPresets.h720
-      ]
+      sampleRate: 48000
     }
   });
 
@@ -4973,8 +4875,7 @@ async function lkConnect(url, token){
     if(audioTrack){
       var lkAudioTrack = new LK.LocalAudioTrack(audioTrack);
       await _lkRoom.localParticipant.publishTrack(lkAudioTrack, {
-        source: LK.Track.Source.Microphone,
-        audioPreset: { maxBitrate: 320000 }
+        source: LK.Track.Source.Microphone
       });
     }
   }
@@ -7400,7 +7301,7 @@ function _zStopViz(){
 </script>
 
 <script>/* ══ LOGO — source unique centralisée ══ */
-var _LOGO_SRC = "data:image/jpeg;base64,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";
+var _LOGO_SRC = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABsSFBcUERsXFhceHBsgKEIrKCUlKFE6PTBCYFVlZF9VXVtqeJmBanGQc1tdhbWGkJ6jq62rZ4C8ybqmx5moq6T/2wBDARweHigjKE4rK06kbl1upKSkpKSkpKSkpKSkpKSkpKSkpKSkpKSkpKSkpKSkpKSkpKSkpKSkpKSkpKSkpKSkpKT/wAARCAA4ADgDASIAAhEBAxEB/8QAGgAAAgMBAQAAAAAAAAAAAAAAAAUCAwQBBv/EADAQAAEEAQMCAwUJAQAAAAAAAAEAAgMRBBIhQRMxBVFhBhQiMoEjQlJTcZGhwdHh/8QAFwEBAQEBAAAAAAAAAAAAAAAAAwIBAP/EAB0RAAICAgMBAAAAAAAAAAAAAAABAhEhQQMSMXH/2gAMAwEAAhEDEQA/APTKt762b38/JdkJa2wsUuWxhLAC9w2IG1KJypGpNukXPYSbO/qVF0Zrf+FmfnTAfDGxo/dRPiYaB1Y3fq0/0gSvZThI0faNNte8Vwey7F4g3qiKX4SdgeCoQ5MMzCYniQ8gHcKM7WvFiMuri1S7RJ+jIEHsQUJR4fK+LN6TpDpfYAI2vj690Jou1ZjG7hYpJomh8sm4cdTux9U6SeLEGJNOS46Q7VqJoAHhTyLAnG8lXW1TmHoSWBZIogBQyWNlh1NNCr32WkNuUlp+be7sFUZkTI43Dcu80WNDISNdJHNqieWuH3hwmfv0zIhIZNYF6hQF8WsuHFqdOCLBjcP8WOTNPu+je7O1ACykqw3Wx/ikZc8Lo3jvrHnQ5Qp+zEeP7i2SNxdLVOJHy79kK4xpBDpK88NbkMa5xAeTdHv5JosXicL5IRJDXVjOoDzHIXSVo2LpmefS2Oo2v23BA7FY3y9eNjyQL77rbAJ5aJto5DhShPhQMLpZngNG54H1QU2N3URb1GY8T3Bwt52rvsksjDpJrYnZNpYjlyhseoQt+Ucu9R/1Wy+GDpXI9kTQOeEkcEPPpV7MZfRe6IucATqcOK80LNEMPDyGytzHOrb4WXfohU29BHtlB7NVUapCFZxUYZNVhzQEn8Wxw/IbJPkaIY/xHufQIQsUUZ4L5/GooWGPCjs/mPSifJmyHappHPPqdkIWmkHbAD6oQhccf//Z";
 document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('[data-logo]').forEach(function(el) {
     el.src = _LOGO_SRC;
