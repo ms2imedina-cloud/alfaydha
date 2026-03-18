@@ -811,11 +811,7 @@ body{
 .dp-step-t{font-size:12px;color:rgba(251,248,232,.75);line-height:1.5}
 .dp-step-t strong{color:var(--gold2)}
 
-/* Camera preview WebRTC */
-.cam-preview{
-  position:relative;width:100%;aspect-ratio:16/9;
-  background:#000;border-radius:10px;overflow:hidden;margin-bottom:.5rem;
-}
+
 .cam-preview video{width:100%;height:100%;object-fit:cover;display:none}
 .cam-overlay{
   width:100%;height:100%;display:flex;align-items:center;
@@ -3036,11 +3032,6 @@ body{
             <div class="mode-nm">YouTube Live</div>
             <div class="mode-cp">∞ viewers</div>
           </div>
-          <div class="mode-card" id="modeWR" onclick="selMode('webrtc')">
-            <div class="mode-ico">📱</div>
-            <div class="mode-nm">WebRTC</div>
-            <div class="mode-cp">5–10 pers.</div>
-          </div>
           <div class="mode-card" id="modeSFU" onclick="selMode('sfu')">
             <div class="mode-ico">☁</div>
             <div class="mode-nm">LiveKit Cloud</div>
@@ -3071,40 +3062,6 @@ body{
               <div class="dp-step"><span class="dp-step-n">2</span><span class="dp-step-t">Titre → <strong>Partager</strong> → copier le lien</span></div>
               <div class="dp-step"><span class="dp-step-n">3</span><span class="dp-step-t">Coller ici → <strong>Go Live</strong> → 1000+ viewers ✅</span></div>
             </div>
-          </div>
-
-          <!-- WebRTC -->
-          <div id="pnWR" style="display:none">
-            <div style="font-size:12px;color:rgba(251,248,232,.7);margin-bottom:.5rem;line-height:1.5">
-              Direct <strong class="ui-gold2">privé</strong> · caméra · max 10 personnes
-              <span style="float:right;background:rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.3);border-radius:4px;padding:1px 6px;font-size:12px;color:var(--gold2)">1080p · 30fps</span>
-            </div>
-            <div class="cam-preview">
-              <video id="localVid" autoplay muted playsinline></video>
-              <div class="cam-overlay" id="camOvl">
-                <div style="font-size:28px;opacity:.35">📷</div>
-                <div style="font-size:12px;color:rgba(255,255,255,.35)">Caméra inactive</div>
-              </div>
-              <div class="cam-badge" id="camBadge">● LIVE</div>
-              <div class="cam-vcnt" id="camVcnt">👁 <span id="camVNum">0</span></div>
-              <!-- Qualité overlay -->
-              <div id="camQuality" style="display:none;position:absolute;bottom:8px;left:10px;background:rgba(0,0,0,.7);color:#fff;border-radius:4px;padding:2px 7px;font-size:12px;font-family:sans-serif">FHD 1080p · 30fps</div>
-            </div>
-            <!-- Indicateur audio -->
-            <div style="margin:.35rem 0;display:flex;align-items:center;gap:.5rem">
-              <span style="font-size:12px;color:rgba(251,248,232,.5)">🔊 Audio</span>
-              <div id="audioMeter" style="flex:1;height:4px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden">
-                <div id="audioBar" style="height:100%;width:0%;background:linear-gradient(90deg,#4CAF50,#FFC107,#f44336);border-radius:2px;transition:width .1s"></div>
-              </div>
-              <span id="audioLabel" style="font-size:12px;color:rgba(251,248,232,.4)">—</span>
-            </div>
-            <div class="cam-ctrl-row">
-              <button class="cam-btn" id="camBtn" onclick="toggleCam()">📷 Caméra</button>
-              <button class="cam-btn" id="micBtn" onclick="toggleMic()">🎤 Micro</button>
-              <button class="cam-btn" onclick="flipCam()" title="Retourner caméra">🔄</button>
-            </div>
-            <button class="dp-btn" id="wrBtn" onclick="goLiveWR()" style="width:100%;padding:.5rem;font-size:14px">🔴 Démarrer le direct privé</button>
-            <div class="dp-note" id="wrNote" style="margin-top:.35rem">Activez la caméra puis démarrez</div>
           </div>
 
           <!-- LiveKit Cloud -->
@@ -3625,7 +3582,7 @@ function _doRenderChannels(){
   // App Direct (6e)
   var dc=document.createElement('div');
   var isLive=direct.isLive&&direct.url;
-  var modeLabel={youtube:'YouTube Live · ∞ viewers',webrtc:'WebRTC · Privé · max 10 pers.',sfu:'Serveur SFU · Exclusif'}[direct.mode]||'Direct en cours';
+  var modeLabel={youtube:'YouTube Live · ∞ viewers',sfu:'Serveur SFU · Exclusif'}[direct.mode]||'Direct en cours';
   var isFavD=getFavs().includes('direct');
   dc.className='channel-card app-direct'+(isLive?' live-active':'')+(_currentCh===99?' playing':'');
   dc.innerHTML=
@@ -3690,7 +3647,6 @@ function playDirect(){
       _currentCh = 99;
       _currentChData = {name:'App Direct', url:d.url, isLive:true};
 
-      if (d.mode === 'webrtc') { loadWebrtcViewer(d); return; }
       if (d.mode === 'livekit') { _playLiveKitViewer(d); return; }
 
       loadInPlayer(d.url, '🔴 App Direct — Faydha Live', true);
@@ -3718,31 +3674,32 @@ async function _playLiveKitViewer(d) {
   updateFsTitle('🔴 App Direct — LiveKit', true);
 
   _fbInit(function() {
-    var _vRef  = firebase.database().ref('app_config/livekit_viewer');
-    var _vDone = false;
-    var _vTO   = setTimeout(function() {
-      if (_vDone) return; _vDone = true; _vRef.off('value');
-      _showLiveError(wrap, "Aucun live en cours — réessayez plus tard");
-    }, 10000);
-    _vRef.on('value', function(snap) {
-      if (_vDone) return;
+    /* Lire config viewer depuis Firebase */
+    firebase.database().ref('app_config/livekit_viewer').once('value', function(snap) {
       var pub = snap.val();
-      if (!pub || !pub.url) return;
-      _vDone = true; clearTimeout(_vTO); _vRef.off('value');
-      /* Générer token frais côté spectateur si credentials disponibles */
-      if (pub.apiKey && pub.apiSecret) {
-        var _r = pub.room || 'faydha-live';
-        lkGenerateViewerToken(pub.apiKey, pub.apiSecret, _r)
-          .then(function(vt) { lkJoinAsViewer(pub.url, vt); })
-          .catch(function(e) {
-            if (pub.token) lkJoinAsViewer(pub.url, pub.token);
-            else _showLiveError(wrap, 'Erreur token: ' + e.message);
-          });
-      } else if (pub.token) {
-        lkJoinAsViewer(pub.url, pub.token);
-      } else {
-        _showLiveError(wrap, 'Configuration incomplète — redémarrez le live');
+
+      if (pub && pub.url) {
+        /* Priorité 1 : token pré-généré par le streamer (le plus fiable) */
+        if (pub.token) {
+          lkJoinAsViewer(pub.url, pub.token);
+          return;
+        }
+        /* Priorité 2 : générer token côté spectateur si apiKey+apiSecret disponibles */
+        if (pub.apiKey && pub.apiSecret) {
+          var _room = pub.room || 'faydha-live';
+          lkGenerateViewerToken(pub.apiKey, pub.apiSecret, _room)
+            .then(function(vt) {
+              if (vt) lkJoinAsViewer(pub.url, vt);
+              else _showLiveError(wrap, 'Token non générable — réessayez');
+            })
+            .catch(function(e) { _showLiveError(wrap, e.message); });
+          return;
+        }
+        _showLiveError(wrap, 'Configuration live incomplète — le streamer doit redémarrer le live');
+        return;
       }
+
+      _showLiveError(wrap, 'Live non disponible — Le streamer n\'a pas encore démarré');
     });
   });
 }
@@ -3825,48 +3782,7 @@ function loadInPlayer(url,name,isLive){
   showToast('▶ '+name);
 }
 
-function loadWebrtcViewer(d){
-  var wrap=document.getElementById('mainPlayer');
-  if(!wrap) return;
-  wrap.innerHTML='';
 
-  if(_wrtcStream && _wrtcStream.active){
-    // Admin regarde son propre stream — on clone les tracks
-    var vid=document.createElement('video');
-    vid.autoplay=true; vid.playsInline=true; vid.muted=true; vid.controls=true;
-    vid.style.cssText='width:100%;height:100%;object-fit:cover;background:#000';
-    try {
-      vid.srcObject=_wrtcStream;
-      wrap.appendChild(vid);
-      vid.play().catch(function(){});
-    } catch(e) {
-      // Fallback si srcObject échoue
-      wrap.innerHTML='<div class="player-placeholder"><div class="pp-icon" style="font-size:36px">📱</div><div class="pp-txt" style="color:#4CAF50">🔴 WebRTC actif</div><div class="pp-sub">Diffusion en cours vers les spectateurs</div></div>';
-    }
-  } else {
-    // Spectateur — affiche un placeholder animé avec statut live
-    wrap.innerHTML=
-      '<div class="player-placeholder" style="background:linear-gradient(135deg,#030f06,#0a1f10)">' +
-        '<div style="width:60px;height:60px;border-radius:50%;background:rgba(192,57,43,.2);border:2px solid var(--red);display:flex;align-items:center;justify-content:center;font-size:24px;animation:ldPulse 1.4s infinite;margin-bottom:.5rem">📡</div>' +
-        '<div style="font-family:\'Amiri\',serif;font-size:16px;color:#4CAF50;margin-bottom:.3rem">🔴 Direct WebRTC en cours</div>' +
-        '<div style="font-size:12px;color:rgba(251,248,232,.4);margin-bottom:.8rem">Live privé · max 10 spectateurs</div>' +
-        '<div style="font-size:12px;color:rgba(251,248,232,.3);font-style:italic">Le flux P2P nécessite un serveur de signalisation<br>pour être distribué aux spectateurs</div>' +
-      '</div>';
-  }
-
-  // Stats bar
-  var statsBar=document.getElementById('liveStats');
-  if(statsBar && _settings.viewers){
-    statsBar.style.display='flex';
-    document.getElementById('statsChName').textContent='App Direct — WebRTC';
-    startViewerCount();
-  }
-  showControls(true);
-  updateFsTitle('🔴 App Direct — WebRTC', true);
-  _currentCh=99;
-  _currentChData={name:'App Direct',url:'webrtc://live',isLive:true};
-  showToast('📱 WebRTC Live — direct privé');
-}
 
 function stopPlayer(){
   _currentCh=-1; _currentChData=null;
@@ -4269,16 +4185,14 @@ var _mode='youtube';
 
 function selMode(m){
   _mode=m;
-  var map={youtube:'modeYT',webrtc:'modeWR',sfu:'modeSFU'};
+  var map={youtube:'modeYT',sfu:'modeSFU'};
   document.querySelectorAll('.mode-card').forEach(function(c){c.classList.remove('sel')});
   var el=document.getElementById(map[m]);
   if(el) el.classList.add('sel');
   document.getElementById('pnYT').style.display  = m==='youtube' ? 'block' : 'none';
-  document.getElementById('pnWR').style.display  = m==='webrtc'  ? 'block' : 'none';
   document.getElementById('pnSFU').style.display = m==='sfu'     ? 'block' : 'none';
   var titles={
     youtube:'📺 YouTube Live — ∞ viewers',
-    webrtc:'📱 WebRTC — Direct privé 5-10 pers.',
     sfu:'☁ LiveKit Cloud — 100 viewers · Gratuit'
   };
   document.getElementById('dpTitle').textContent=titles[m];
@@ -4306,7 +4220,6 @@ function updateDirectUI(){
   var ytBtn=document.getElementById('ytBtn');
   if(ytBtn){ytBtn.textContent=isLive&&d.mode==='youtube'?'⏹ Arrêter':'🔴 Go Live'; ytBtn.style.background=isLive&&d.mode==='youtube'?'#4CAF50':'';}
   var wrBtn=document.getElementById('wrBtn');
-  if(wrBtn){wrBtn.textContent=isLive&&d.mode==='webrtc'?'⏹ Arrêter WebRTC':'🔴 Démarrer le direct privé'; wrBtn.style.background=isLive&&d.mode==='webrtc'?'#4CAF50':'';}
   var sfuBtn=document.getElementById('sfuBtn');
   if(sfuBtn){sfuBtn.textContent=isLive&&d.mode==='sfu'?'⏹ Déconnecter SFU':'🖥 Connecter SFU'; sfuBtn.style.background=isLive&&d.mode==='sfu'?'#4CAF50':'';}
 }
@@ -4367,159 +4280,13 @@ function goLiveYT(){
   }
 }
 
-// WebRTC
-var _wrtcStream=null, _wrtcLive=false, _wrtcFacing='user', _wrtcMicOn=true, _wrtcVtimer=null;
-var _audioCtx=null, _audioAnalyser=null, _audioMeterTimer=null;
-
-function _startAudioMeter(stream) {
-  try {
-    if(!window.AudioContext && !window.webkitAudioContext) return;
-    _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    var source = _audioCtx.createMediaStreamSource(stream);
-    _audioAnalyser = _audioCtx.createAnalyser();
-    _audioAnalyser.fftSize = 256;
-    source.connect(_audioAnalyser);
-    var dataArray = new Uint8Array(_audioAnalyser.frequencyBinCount);
-    _audioMeterTimer = (function(){
-  var _rafId=null;
-  var _barEl=null, _lblEl=null;
-  function _audioFrame(){
-    if(!_audioAnalyser){_rafId=null;return;}
-    if(!_barEl)_barEl=document.getElementById('audioBar');
-    if(!_lblEl)_lblEl=document.getElementById('audioLabel');
-    _audioAnalyser.getByteFrequencyData(dataArray);
-    var sum=0;
-    for(var k=0;k<dataArray.length;k++)sum+=dataArray[k];
-    var avg=sum/dataArray.length;
-    var pct=Math.min(100,avg*2);
-    if(_barEl)_barEl.style.width=pct+'%';
-    if(_lblEl)_lblEl.textContent=Math.round(avg)+' dB';
-    _rafId=requestAnimationFrame(_audioFrame);
-  }
-  window._startAudioViz=function(){
-    if(_rafId)cancelAnimationFrame(_rafId);
-    _barEl=document.getElementById('audioBar');
-    _lblEl=document.getElementById('audioLabel');
-    _audioFrame();
-  };
-  window._stopAudioViz=function(){
-    if(_rafId){cancelAnimationFrame(_rafId);_rafId=null;}
-  };
-})();
-  } catch(e){}
-}
-
-
-async function toggleCam(){
-  if(_wrtcStream){
-    _wrtcStream.getTracks().forEach(function(t){t.stop()}); _wrtcStream=null;
-    var vid=document.getElementById('localVid'); if(vid){vid.srcObject=null; vid.style.display='none';}
-    var ovl=document.getElementById('camOvl'); if(ovl)ovl.style.display='flex';
-    var btn=document.getElementById('camBtn'); if(btn){btn.textContent='📷 Caméra';btn.classList.remove('on');}
-    showToast('📷 Caméra désactivée');
-  } else {
-    try{
-      _wrtcStream=await navigator.mediaDevices.getUserMedia({
-        video:{
-          facingMode:_wrtcFacing,
-          width:{ideal:1920,min:1280},
-          height:{ideal:1080,min:720},
-          frameRate:{ideal:30,min:24},
-          aspectRatio:{ideal:16/9}
-        },
-        audio:{
-          echoCancellation:true,
-          noiseSuppression:true,
-          autoGainControl:true,
-          sampleRate:48000,
-          channelCount:2
-        }
-      });
-      var vid=document.getElementById('localVid'); if(vid){vid.srcObject=_wrtcStream;vid.style.display='block';vid.play().catch(function(){});}
-      var ovl=document.getElementById('camOvl'); if(ovl)ovl.style.display='none';
-      var btn=document.getElementById('camBtn'); if(btn){btn.textContent='✅ Caméra 1080p';btn.classList.add('on');}
-      var note=document.getElementById('wrNote'); if(note)note.textContent='📹 1080p · 30fps · Audio HD — Prêt';
-      // Afficher qualité overlay
-      var qbadge=document.getElementById('camQuality'); if(qbadge)qbadge.style.display='block';
-      // Démarrer le VU-mètre audio
-      _startAudioMeter(_wrtcStream);
-      showToast('📷 Caméra 1080p activée · Audio HD 48kHz');
-    }catch(e){
-      showToast('⚠️ '+(e.name==='NotAllowedError'?'Permission caméra refusée':'Caméra indisponible'));
-    }
-  }
-}
-
-function toggleMic(){
-  if(!_wrtcStream){showToast('⚠️ Activez la caméra d\'abord');return;}
-  _wrtcMicOn=!_wrtcMicOn;
-  _wrtcStream.getAudioTracks().forEach(function(t){t.enabled=_wrtcMicOn});
-  var btn=document.getElementById('micBtn'); if(btn){btn.textContent=_wrtcMicOn?'🎤 Micro':'🔇 Muet'; btn.classList.toggle('on',_wrtcMicOn);}
-  showToast(_wrtcMicOn?'🎤 Micro activé':'🔇 Micro coupé');
-}
-
-async function flipCam(){
-  _wrtcFacing=_wrtcFacing==='user'?'environment':'user';
-  if(_wrtcStream){_wrtcStream.getTracks().forEach(function(t){t.stop()});_wrtcStream=null;}
-  await toggleCam(); showToast('🔄 Caméra retournée');
-}
-
-function goLiveWR(){
-  var d=getDirect();
-  if(d.isLive&&d.mode==='webrtc'){
-    // ── ARRÊTER ──
-    _wrtcLive=false;
-    window._isStreaming = false;
-    clearInterval(_wrtcVtimer);
-    if(_wrtcStream){_wrtcStream.getTracks().forEach(function(t){t.stop()});_wrtcStream=null;}
-    var vid=document.getElementById('localVid'); if(vid){vid.style.display='none';vid.srcObject=null;}
-    var ovl=document.getElementById('camOvl'); if(ovl)ovl.style.display='flex';
-    var badge=document.getElementById('camBadge'); if(badge)badge.style.display='none';
-    var vcnt=document.getElementById('camVcnt'); if(vcnt)vcnt.style.display='none';
-    var camBtn=document.getElementById('camBtn'); if(camBtn){camBtn.textContent='📷 Caméra';camBtn.classList.remove('on');}
-    save(DIR_KEY,{isLive:false,url:'',mode:'webrtc'}); fbStopLive();
-    updateDirectUI(); renderChannels(); stopPlayer();
-    showToast('⏹ WebRTC arrêté');
-  } else {
-    // ── DÉMARRER ──
-    if(!_wrtcStream){showToast('⚠️ Activez d\'abord la caméra 📷');return;}
-    _wrtcLive=true;
-    window._isStreaming = true; /* AVANT fbSetLive pour bloquer le listener */
-    var badge=document.getElementById('camBadge'); if(badge)badge.style.display='block';
-    var vcnt=document.getElementById('camVcnt'); if(vcnt)vcnt.style.display='flex';
-    var wrBtn=document.getElementById('wrBtn'); if(wrBtn){wrBtn.textContent='⏹ Arrêter WebRTC';wrBtn.style.background='#4CAF50';}
-    var dot=document.getElementById('dpDot'); if(dot)dot.className='dp-dot on';
-    var st=document.getElementById('dpStatus'); if(st)st.innerHTML='🔴 <strong>WebRTC Live actif</strong>';
-    var count=0; var _camVEl=document.getElementById('camVNum');
-    _wrtcVtimer=setInterval(function(){
-      count=Math.min(count+Math.floor(Math.random()*2),500);
-      if(_camVEl)_camVEl.textContent=count;
-    },4000);
-    save(DIR_KEY,{isLive:true,url:'webrtc://live',mode:'webrtc',startedAt:Date.now()}); fbSetLive(true,{isLive:true,url:'webrtc://live',mode:'webrtc',startedAt:Date.now()});
-    showToast('🔴 WebRTC démarré — direct privé');
-    setTimeout(function(){
-      closeAdmin();
-      showSec('live',document.getElementById('nav-live'));
-      renderChannels();
-      setTimeout(function(){
-        loadWebrtcViewer({mode:'webrtc',url:'webrtc://live',isLive:true});
-      },300);
-    },400);
-  }
-}
-
 /* ════════════════════════════════════════
    LIVEKIT CLOUD — ADMIN BROADCASTER
 ════════════════════════════════════════ */
 var _lkRoom       = null;
 var _lkStream     = null;
 var _lkLive       = false;
-var _lkStreamerToken = '';
-var _lkApiKey    = '';
-var _lkApiSecret = '';
-var _lkUrl       = '';
-var _lkRoomName  = 'faydha-live';
-var _lkRenewalTimer = null;
+var _lkStreamerToken = ''; /* Token streamer actif — pour générer tokens viewer */
 var _lkFacing     = 'user';
 var _lkMicOn      = true;
 var _lkDurTimer   = null;
@@ -4639,8 +4406,7 @@ function lkExtractRoomName(token) {
     var parts = token.split('.');
     if (parts.length < 2) return 'faydha-live';
     var payload = JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
-    var r = (payload.video && payload.video.room) ? payload.video.room.trim() : '';
-    return r || 'faydha-live'; /* Jamais vide */
+    return (payload.video && payload.video.room) ? payload.video.room : 'faydha-live';
   } catch(e) { return 'faydha-live'; }
 }
 
@@ -4654,7 +4420,7 @@ async function lkGenerateViewerToken(apiKey, apiSecret, roomName) {
   function encodeJSON(obj){ return toB64url(new TextEncoder().encode(JSON.stringify(obj))); }
   var now=Math.floor(Date.now()/1000);
   var h=encodeJSON({alg:'HS256',typ:'JWT'});
-  var p=encodeJSON({iss:apiKey,sub:name,iat:now,nbf:now,exp:now+86400,
+  var p=encodeJSON({iss:apiKey,sub:name,iat:now,nbf:now,exp:now+21600,
     video:{room:(roomName||'faydha-live'),roomJoin:true,roomCreate:false,canPublish:false,canSubscribe:true,canPublishData:false,hidden:true,recorder:false}});
   var si=h+'.'+p;
   var key=await crypto.subtle.importKey('raw',new TextEncoder().encode(apiSecret),{name:'HMAC',hash:'SHA-256'},false,['sign']);
@@ -4802,10 +4568,7 @@ async function goLiveLK(){
   }
 
   lkSaveConfig(url, apiKey, apiSecret, manToken);
-  _lkStreamerToken = token;
-  _lkApiKey    = apiKey;
-  _lkApiSecret = apiSecret;
-  _lkUrl       = url;
+  _lkStreamerToken = token; /* Sauvegarder pour génération token viewer */
 
   var btn=document.getElementById('lkBtn');
   if(btn){btn.textContent='⏳ Connexion…';btn.style.background='rgba(212,175,55,.5)';btn.disabled=true;}
@@ -4893,56 +4656,69 @@ function lkOnConnected(){
   _lkLive = true;
   window._isStreaming = true;
 
-  var urlVal    = _lkUrl    || (document.getElementById('lkUrl')||{}).value||'';
-  var apiKey    = _lkApiKey || (document.getElementById('lkApiKey')||{}).value||'';
-  var apiSecret = _lkApiSecret || (document.getElementById('lkApiSecret')||{}).value||'';
-  var tokenVal  = _lkStreamerToken || '';
+  var urlVal    = (document.getElementById('lkUrl')||{}).value||'';
+  var apiKey    = (document.getElementById('lkApiKey')||{}).value||'';
+  var apiSecret = (document.getElementById('lkApiSecret')||{}).value||'';
+  var tokenVal  = (document.getElementById('lkToken')||{}).value||'';
 
-  /* Fallback localStorage */
+  /* Fallback localStorage si champs vides */
   if(!apiKey || !apiSecret){
     try{
       var _lkc = JSON.parse(localStorage.getItem(LK_KEY)||'{}');
-      if(!apiKey)    apiKey    = _lkc.apiKey    || '';
-      if(!apiSecret) apiSecret = _lkc.apiSecret || '';
-      if(!urlVal)    urlVal    = _lkc.url        || '';
+      if(!apiKey    && _lkc.apiKey)    apiKey    = _lkc.apiKey;
+      if(!apiSecret && _lkc.apiSecret) apiSecret = _lkc.apiSecret;
+      if(!urlVal    && _lkc.url)       urlVal    = _lkc.url;
+      if(!tokenVal  && _lkc.token)     tokenVal  = _lkc.token;
     }catch(e){}
   }
 
   save(DIR_KEY,{isLive:true, url:urlVal, mode:'livekit', startedAt:Date.now()});
   fbSetLive(true,{isLive:true,url:urlVal,mode:'livekit',startedAt:Date.now()});
 
-  /* Extraire roomName — jamais vide */
-  _lkRoomName = 'faydha-live';
-  try { if (tokenVal && tokenVal.startsWith('eyJ')) _lkRoomName = lkExtractRoomName(tokenVal); } catch(e) {}
+  /* Extraire roomName depuis le token streamer (variable globale) */
+  var _streamRoomName = 'faydha-live';
+  try {
+    var _tkToCheck = _lkStreamerToken || tokenVal || apiKey || '';
+    if (_tkToCheck && _tkToCheck.startsWith('eyJ')) {
+      _streamRoomName = lkExtractRoomName(_tkToCheck);
+    }
+  } catch(e) {}
 
+  /* Générer et publier token viewer — côté streamer, credentials certains */
   (async function(){
-    async function _pubViewer() {
-      var vd = { url: urlVal, room: _lkRoomName, generatedAt: Date.now() };
-      if (apiKey && apiSecret) {
-        try {
-          vd.token     = await lkGenerateViewerToken(apiKey, apiSecret, _lkRoomName);
-          vd.apiKey    = apiKey;
-          vd.apiSecret = apiSecret;
-        } catch(e) { console.error('[LK] viewer token:', e.message); }
+    /* Récupérer credentials depuis tous les fallbacks disponibles */
+    var _vApiKey    = apiKey;
+    var _vApiSecret = apiSecret;
+    var _vUrl       = urlVal;
+    if (!_vApiKey || !_vApiSecret) {
+      try {
+        var _lkSaved = JSON.parse(localStorage.getItem(LK_KEY)||'{}');
+        if (!_vApiKey    && _lkSaved.apiKey)    _vApiKey    = _lkSaved.apiKey;
+        if (!_vApiSecret && _lkSaved.apiSecret) _vApiSecret = _lkSaved.apiSecret;
+        if (!_vUrl       && _lkSaved.url)       _vUrl       = _lkSaved.url;
+      } catch(e) {}
+    }
+
+    var viewerData = { url: _vUrl, room: _streamRoomName, startedAt: Date.now() };
+
+    try {
+      if (_vApiKey && _vApiSecret) {
+        /* Générer token viewer valide côté streamer */
+        var vToken = await lkGenerateViewerToken(_vApiKey, _vApiSecret, _streamRoomName);
+        viewerData.token     = vToken;
+        viewerData.apiKey    = _vApiKey;
+        viewerData.apiSecret = _vApiSecret;
+        viewerData.room      = _streamRoomName;
+      } else if (tokenVal) {
+        viewerData.token = tokenVal;
       }
-      await new Promise(function(r) {
-        _fbInit(function() { firebase.database().ref('app_config/livekit_viewer').set(vd, r); });
-      });
+    } catch(e) {
+      if (tokenVal) viewerData.token = tokenVal;
     }
-    await _pubViewer();
-    if (_lkRenewalTimer) clearInterval(_lkRenewalTimer);
-    if (apiKey && apiSecret) {
-      _lkRenewalTimer = setInterval(async function() {
-        if (!_lkLive) { clearInterval(_lkRenewalTimer); _lkRenewalTimer = null; return; }
-        try {
-          var t = await lkGenerateViewerToken(apiKey, apiSecret, _lkRoomName);
-          _fbInit(function() {
-            firebase.database().ref('app_config/livekit_viewer')
-              .update({ token: t, generatedAt: Date.now() });
-          });
-        } catch(e) {}
-      }, 55 * 60 * 1000);
-    }
+
+    _fbInit(function() {
+      firebase.database().ref('app_config/livekit_viewer').set(viewerData);
+    });
   })();
 
   // UI admin
@@ -5066,8 +4842,6 @@ function lkStopBroadcast(){
   _lkLive=false;
   window._isStreaming = false;
   clearInterval(_lkDurTimer);
-  if (_lkRenewalTimer) { clearInterval(_lkRenewalTimer); _lkRenewalTimer = null; }
-  _lkApiKey = ''; _lkApiSecret = ''; _lkUrl = '';
 
   // Déconnecter la room LiveKit
   if(_lkRoom){
@@ -7313,7 +7087,7 @@ window.addEventListener('beforeunload', function() {
   var timers = [
     '_vcTimer','_statTimer','_statsTimer','_directPollTimer',
     '_admStatsTimer','_zGroupsTimer','_chatAutoTimer',
-    '_wrtcVtimer','_lkDurTimer','_audioVizTimer','_lSessionRef'
+    '_lkDurTimer','_audioVizTimer','_lSessionRef'
   ];
   timers.forEach(function(t) {
     if (window[t]) { clearInterval(window[t]); clearTimeout(window[t]); }
@@ -7324,7 +7098,6 @@ window.addEventListener('beforeunload', function() {
   if (window._lkViewerRoom) { try { window._lkViewerRoom.disconnect(); } catch(e){} }
   /* Arrêter les pistes media */
   if (window._lkStream) { try { window._lkStream.getTracks().forEach(function(t){t.stop();}); } catch(e){} }
-  if (window._lLkStream) { try { window._lLkStream.getTracks().forEach(function(t){t.stop();}); } catch(e){} }
 });
 
 /* Catcher les erreurs silencieuses */
