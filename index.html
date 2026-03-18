@@ -632,7 +632,6 @@ body{
 }
 .fullscreen-overlay.open{display:flex}
 .fs-player{flex:1;position:relative}
-.fs-player .lk-logo-ovl{position:absolute;top:14px;right:14px;z-index:30;pointer-events:none;opacity:.9}.fs-player .lk-logo-ovl img{width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid rgba(212,175,55,.85);box-shadow:0 2px 14px rgba(0,0,0,.7),0 0 0 3px rgba(212,175,55,.2)}
 .fs-player iframe,
 .fs-player video{width:100%;height:100%;border:none;display:block;object-fit:contain}
 .fs-controls{
@@ -2914,6 +2913,10 @@ body{
 <div class="fullscreen-overlay" id="fullscreenOverlay">
   <div class="fs-player" id="fsPlayer"></div>
   <button class="fs-close" onclick="closeFullscreen()">✕</button>
+  <!-- Logo Baye Niass World sur fullscreen -->
+  <div id="fsLogo" style="display:none;position:absolute;top:12px;right:60px;z-index:3200;pointer-events:none">
+    <img id="fsLogoImg" src="" alt="Baye Niass World" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2.5px solid rgba(212,175,55,.9);box-shadow:0 3px 16px rgba(0,0,0,.8)">
+  </div>
   <div class="fs-controls" id="fsControls">
     <span class="fs-live-badge" id="fsLiveBadge" style="display:none">● LIVE</span>
     <span class="fs-title" id="fsTitle">—</span>
@@ -3879,16 +3882,20 @@ function openFullscreen(){
   overlay.classList.add('open');
   fsPlayer.innerHTML='';
   var player=document.getElementById('mainPlayer').cloneNode(true);
-  player.style.cssText='width:100%;height:100%;';
+  player.style.cssText='width:100%;height:100%;position:relative;';
+  /* Supprimer les logos clonés du mainPlayer */
+  player.querySelectorAll('.lk-logo-ovl,#playerLogoOverlay').forEach(function(e){e.remove();});
   fsPlayer.appendChild(player);
-  /* Logo overlay en fullscreen */
-  var _fsOvl = document.createElement('div');
-  _fsOvl.className = 'lk-logo-ovl';
-  var _fsImg = document.createElement('img');
-  _fsImg.src = (typeof _LOGO_SRC !== 'undefined') ? _LOGO_SRC : '';
-  _fsImg.alt = 'Baye Niass World';
-  _fsOvl.appendChild(_fsImg);
-  fsPlayer.appendChild(_fsOvl);
+  /* Afficher logo sur YouTube iframe et LiveKit vidéo */
+  var _hasMedia = player.querySelector('iframe,video') !== null;
+  var _fsLogoEl = document.getElementById('fsLogo');
+  var _fsLogoImg = document.getElementById('fsLogoImg');
+  if (_fsLogoEl && _hasMedia) {
+    if (_fsLogoImg && typeof _LOGO_SRC !== 'undefined') _fsLogoImg.src = _LOGO_SRC;
+    _fsLogoEl.style.display = 'block';
+  } else if (_fsLogoEl) {
+    _fsLogoEl.style.display = 'none';
+  }
   // Réactiver autoplay si iframe
   var iframes=player.querySelectorAll('iframe');
   iframes.forEach(function(f){
@@ -3900,6 +3907,7 @@ function openFullscreen(){
 function closeFullscreen(){
   document.getElementById('fullscreenOverlay').classList.remove('open');
   document.getElementById('fsPlayer').innerHTML='';
+  var _fl=document.getElementById('fsLogo'); if(_fl) _fl.style.display='none';
   document.body.style.overflow='';
 }
 function updateFsTitle(name,isLive){
