@@ -3722,25 +3722,27 @@ async function _playLiveKitViewer(d) {
     var _vDone = false;
     var _vTO   = setTimeout(function() {
       if (_vDone) return; _vDone = true; _vRef.off('value');
-      _showLiveError(wrap, "Timeout — Le streamer n'a pas encore démarré");
+      _showLiveError(wrap, "Aucun live en cours — Le streamer n'a pas démarré");
     }, 10000);
     _vRef.on('value', function(snap) {
       if (_vDone) return;
       var pub = snap.val();
-      if (!pub || !pub.url) return; /* Attendre */
+      if (!pub || !pub.url) return; /* Attendre publication */
       _vDone = true; clearTimeout(_vTO); _vRef.off('value');
+      /* Toujours générer un token FRAIS côté spectateur */
       if (pub.apiKey && pub.apiSecret) {
-        var _r = pub.room || 'faydha-live';
-        lkGenerateViewerToken(pub.apiKey, pub.apiSecret, _r)
+        lkGenerateViewerToken(pub.apiKey, pub.apiSecret, pub.room || 'faydha-live')
           .then(function(vt) { lkJoinAsViewer(pub.url, vt); })
           .catch(function(e) {
+            /* Fallback token pré-généré */
             if (pub.token) lkJoinAsViewer(pub.url, pub.token);
             else _showLiveError(wrap, 'Erreur token: ' + e.message);
           });
-        return;
+      } else if (pub.token) {
+        lkJoinAsViewer(pub.url, pub.token);
+      } else {
+        _showLiveError(wrap, 'Configuration incomplète — redémarrez le live');
       }
-      if (pub.token) { lkJoinAsViewer(pub.url, pub.token); return; }
-      _showLiveError(wrap, 'Configuration incomplète — redémarrez le live');
     });
   });
 }
@@ -4512,12 +4514,12 @@ function goLiveWR(){
 var _lkRoom       = null;
 var _lkStream     = null;
 var _lkLive       = false;
-var _lkStreamerToken = ''; /* Token streamer actif — pour générer tokens viewer */
+var _lkStreamerToken = '';
 var _lkApiKey    = '';
 var _lkApiSecret = '';
 var _lkUrl       = '';
 var _lkRoomName  = 'faydha-live';
-var _lkTokenRenewalTimer = null;
+var _lkRenewalTimer = null;
 var _lkFacing     = 'user';
 var _lkMicOn      = true;
 var _lkDurTimer   = null;
@@ -4890,7 +4892,7 @@ function lkOnConnected(){
   _lkLive = true;
   window._isStreaming = true;
 
-  /* Lire depuis les globales (fiables même si DOM fermé) */
+  /* Lire depuis les globales — fiables même si DOM fermé */
   var urlVal    = _lkUrl    || (document.getElementById('lkUrl')||{}).value||'';
   var apiKey    = _lkApiKey || (document.getElementById('lkApiKey')||{}).value||'';
   var apiSecret = _lkApiSecret || (document.getElementById('lkApiSecret')||{}).value||'';
@@ -4909,49 +4911,47 @@ function lkOnConnected(){
   save(DIR_KEY,{isLive:true, url:urlVal, mode:'livekit', startedAt:Date.now()});
   fbSetLive(true,{isLive:true,url:urlVal,mode:'livekit',startedAt:Date.now()});
 
-  /* Extraire roomName depuis le token streamer (variable globale) */
-  var _streamRoomName = 'faydha-live';
-  try {
-    var _tkToCheck = _lkStreamerToken || tokenVal || apiKey || '';
-    if (_tkToCheck && _tkToCheck.startsWith('eyJ')) {
-      _streamRoomName = lkExtractRoomName(_tkToCheck);
-    }
-  } catch(e) {}
-
-  /* Générer et publier token   /* Extraire roomName depuis le token streamer */
+  /* Extraire roomName */
   _lkRoomName = 'faydha-live';
-  try {
-    if (tokenVal && tokenVal.startsWith('eyJ')) _lkRoomName = lkExtractRoomName(tokenVal);
-  } catch(e) {}
+  try { if (tokenVal && tokenVal.startsWith('eyJ')) _lkRoomName = lkExtractRoomName(tokenVal); } catch(e) {}
 
-  /* Publier token viewer + renouvellement auto */
+  /* Publier token viewer + renouvellement automatique */
   (async function(){
-    async function _pub() {
+    async function _pubViewer() {
       var vd = { url: urlVal, room: _lkRoomName, generatedAt: Date.now() };
       if (apiKey && apiSecret) {
         try {
           vd.token     = await lkGenerateViewerToken(apiKey, apiSecret, _lkRoomName);
           vd.apiKey    = apiKey;
           vd.apiSecret = apiSecret;
-        } catch(e) { if (tokenVal) vd.token = tokenVal; }
-      } else if (tokenVal) { vd.token = tokenVal; }
-      return new Promise(function(r){ _fbInit(function(){
-        firebase.database().ref('app_config/livekit_viewer').set(vd, r);
-      }); });
+        } catch(e) { console.error('[LK] viewer token error:', e.message); }
+      }
+      /* Toujours écrire même sans token pour que les spectateurs voient l'URL */
+      await new Promise(function(resolve) {
+        _fbInit(function() {
+          firebase.database().ref('app_config/livekit_viewer').set(vd, resolve);
+        });
+      });
     }
-    await _pub();
-    if (_lkTokenRenewalTimer) clearInterval(_lkTokenRenewalTimer);
+    await _pubViewer();
+    /* Renouveler toutes les 55 min */
+    if (_lkRenewalTimer) clearInterval(_lkRenewalTimer);
     if (apiKey && apiSecret) {
-      _lkTokenRenewalTimer = setInterval(async function() {
-        if (!_lkLive){ clearInterval(_lkTokenRenewalTimer); _lkTokenRenewalTimer=null; return; }
+      _lkRenewalTimer = setInterval(async function() {
+        if (!_lkLive) { clearInterval(_lkRenewalTimer); _lkRenewalTimer = null; return; }
         try {
           var t = await lkGenerateViewerToken(apiKey, apiSecret, _lkRoomName);
-          _fbInit(function(){ firebase.database().ref('app_config/livekit_viewer')
-            .update({ token:t, generatedAt:Date.now() }); });
-        } catch(e){}
-      }, 55*60*1000);
+          _fbInit(function() {
+            firebase.database().ref('app_config/livekit_viewer')
+              .update({ token: t, generatedAt: Date.now() });
+          });
+        } catch(e) {}
+      }, 55 * 60 * 1000);
     }
-  })();ment.getElementById('lkBtn');
+  })();
+
+  // UI admin
+  var btn=document.getElementById('lkBtn');
   if(btn){btn.textContent='⏹ Arrêter LiveKit'; btn.style.background='#4CAF50'; btn.disabled=false;}
   var badge=document.getElementById('lkLiveBadge');
   if(badge) badge.style.display='block';
@@ -5071,7 +5071,7 @@ function lkStopBroadcast(){
   _lkLive=false;
   window._isStreaming = false;
   clearInterval(_lkDurTimer);
-  if (_lkTokenRenewalTimer) { clearInterval(_lkTokenRenewalTimer); _lkTokenRenewalTimer = null; }
+  if (_lkRenewalTimer) { clearInterval(_lkRenewalTimer); _lkRenewalTimer = null; }
   _lkApiKey = ''; _lkApiSecret = ''; _lkUrl = '';
 
   // Déconnecter la room LiveKit
