@@ -3570,7 +3570,12 @@ function getSettings(){ return load(SET_KEY,Object.assign({},DEFAULT_SETTINGS));
 var _currentCh=-1, _currentChData=null;
 var _settings=getSettings();
 
+var _renderChannelsTimer=null;
 function renderChannels(){
+  if(_renderChannelsTimer) return;
+  _renderChannelsTimer=setTimeout(function(){_renderChannelsTimer=null;_doRenderChannels();},80);
+}
+function _doRenderChannels(){
   var list=document.getElementById('channelsList');
   var cnt=document.getElementById('chCount');
   if(!list)return;
@@ -3657,9 +3662,6 @@ function playDirect(){
   _fbInit(function() {
     firebase.database().ref('faydha_direct').once('value', function(snap) {
       var d = snap.val();
-      console.log('=== playDirect Firebase ===', JSON.stringify(d));
-      showToast('DEBUG: ' + JSON.stringify(d), 8000);
-
       if (!d || !d.isLive || !d.url) {
         showToast('📡 Aucun direct en cours — isLive=' + (d?d.isLive:'null'));
         return;
@@ -3671,7 +3673,6 @@ function playDirect(){
       _currentCh = 99;
       _currentChData = {name:'App Direct', url:d.url, isLive:true};
 
-      console.log('=== mode ===', d.mode);
       if (d.mode === 'webrtc') { loadWebrtcViewer(d); return; }
       if (d.mode === 'livekit') { _playLiveKitViewer(d); return; }
 
@@ -3690,7 +3691,7 @@ async function _playLiveKitViewer(d) {
 
   wrap.innerHTML =
     '<div class="player-placeholder" style="background:linear-gradient(135deg,#030f06,#0a1f10)">' +
-      '<div style="width:50px;height:50px;border:3px solid rgba(212,175,55,.3);border-top-color:#D4AF37;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:.8rem"></div>' +
+      '<div style="width:50px;height:50px;border:3px solid rgba(212,175,55,.3);border-top-color:#D4AF37;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:.8rem;will-change:transform"></div>' +
       '<div style="font-family:\'Amiri\',serif;font-size:16px;color:#4CAF50">Connexion au live…</div>' +
       '<div style="font-size:12px;color:rgba(251,248,232,.4);margin-top:.3rem">LiveKit HD</div>' +
     '</div>';
@@ -3700,40 +3701,32 @@ async function _playLiveKitViewer(d) {
   updateFsTitle('🔴 App Direct — LiveKit', true);
 
   _fbInit(function() {
-    /* 1. Essayer token viewer public (app_config/livekit_viewer) */
+    /* Lire config viewer depuis Firebase */
     firebase.database().ref('app_config/livekit_viewer').once('value', function(snap) {
       var pub = snap.val();
-      if (pub && pub.url && pub.token) {
-        /* Token viewer disponible → connexion directe */
-        lkJoinAsViewer(pub.url, pub.token);
+
+      if (pub && pub.url && pub.apiKey && pub.apiSecret) {
+        /* Config disponible → générer token UNIQUE par spectateur (évite conflits) */
+        lkGenerateViewerToken(pub.apiKey, pub.apiSecret)
+          .then(function(token) {
+            if (token) {
+              lkJoinAsViewer(pub.url, token);
+            } else {
+              _showLiveError(wrap, 'Impossible de générer le token viewer');
+            }
+          })
+          .catch(function(e) { _showLiveError(wrap, e.message); });
         return;
       }
 
-      /* 2. Essayer de lire la config complète (admin ou si règles permettent) */
-      firebase.database().ref('streamer_config/livekit').once('value', function(snap2) {
-        var cfg = snap2.val();
-        if (cfg && cfg.url && (cfg.apiKey || cfg.token)) {
-          /* Générer token viewer */
-          var genToken = cfg.token
-            ? Promise.resolve(cfg.token)
-            : lkGenerateViewerToken(cfg.apiKey, cfg.apiSecret);
+      if (pub && pub.url && pub.token) {
+        /* Ancien format avec token fixe → générer un token unique si possible */
+        /* Sinon utiliser le token fixe en dernier recours */
+        _showLiveError(wrap, 'Live en cours — actualisez la page ou demandez au streamer de redémarrer le live');
+        return;
+      }
 
-          genToken.then(function(token) {
-            if (token) {
-              lkJoinAsViewer(cfg.url, token);
-            } else {
-              _showLiveError(wrap, 'Token introuvable');
-            }
-          }).catch(function(e) {
-            _showLiveError(wrap, e.message);
-          });
-        } else {
-          _showLiveError(wrap, 'Config non disponible — Redémarrez le live depuis Admin');
-        }
-      }, function(err) {
-        /* Accès refusé streamer_config → uniquement token public manquant */
-        _showLiveError(wrap, 'Token viewer non publié. L\'admin doit redémarrer le live.');
-      });
+      _showLiveError(wrap, 'Live non disponible — Le streamer n\'a pas encore démarré');
     });
   });
 }
@@ -4650,7 +4643,7 @@ async function lkGenerateViewerToken(apiKey, apiSecret) {
   function encodeJSON(obj){ return toB64url(new TextEncoder().encode(JSON.stringify(obj))); }
   var now=Math.floor(Date.now()/1000);
   var h=encodeJSON({alg:'HS256',typ:'JWT'});
-  var p=encodeJSON({iss:apiKey,sub:name,iat:now,nbf:now,exp:now+86400,
+  var p=encodeJSON({iss:apiKey,sub:name,iat:now,nbf:now,exp:now+21600,
     video:{room:'faydha-live',roomJoin:true,roomCreate:false,canPublish:false,canSubscribe:true,canPublishData:false,hidden:true,recorder:false}});
   var si=h+'.'+p;
   var key=await crypto.subtle.importKey('raw',new TextEncoder().encode(apiSecret),{name:'HMAC',hash:'SHA-256'},false,['sign']);
@@ -4807,22 +4800,15 @@ function lkOnConnected(){
   save(DIR_KEY,{isLive:true, url:urlVal, mode:'livekit', startedAt:Date.now()});
   fbSetLive(true,{isLive:true,url:urlVal,mode:'livekit',startedAt:Date.now()});
 
-  /* Générer et publier token viewer pour tous les spectateurs */
-  var tokenPromise = tokenVal
-    ? Promise.resolve(tokenVal)
-    : lkGenerateViewerToken(apiKey, apiSecret);
-
-  tokenPromise.then(function(viewerToken) {
-      if (viewerToken) {
-        _fbInit(function() {
-          firebase.database().ref('app_config/livekit_viewer').set({
-            url: urlVal,
-            token: viewerToken,
-            startedAt: Date.now()
-          });
-        });
-      }
+  /* Publier la config viewer dans Firebase — chaque spectateur génère son propre token */
+  _fbInit(function() {
+    firebase.database().ref('app_config/livekit_viewer').set({
+      url: urlVal,
+      apiKey: apiKey,
+      apiSecret: apiSecret,
+      startedAt: Date.now()
     });
+  });
 
   // UI admin
   var btn=document.getElementById('lkBtn');
@@ -4985,14 +4971,13 @@ function lkStopBroadcast(){
   if(note) note.textContent='Entrez l\'URL et le Token puis démarrez';
 
   save(DIR_KEY,{isLive:false, url:'', mode:'livekit'}); fbStopLive();
-  /* Supprimer token viewer + notifier spectateurs via Firebase */
+  /* Supprimer config viewer — spectateurs seront notifiés via faydha_direct */
   _fbInit(function() {
     firebase.database().ref('app_config/livekit_viewer').remove();
-    firebase.database().ref('faydha_direct').set({
-      isLive: false, url: '', mode: 'livekit',
-      updatedAt: firebase.database.ServerValue.TIMESTAMP
-    });
   });
+  /* Nettoyer les éléments audio/video viewers résiduels */
+  var oldAudio = document.getElementById('lkViewerAudio');
+  if (oldAudio) oldAudio.remove();
   renderChannels();
   stopPlayer();
   showToast('⏹ LiveKit — Direct arrêté');
@@ -5000,6 +4985,11 @@ function lkStopBroadcast(){
 
 /* ── Viewer côté spectateur (LiveKit) ── */
 async function lkJoinAsViewer(url, token){
+  /* Déconnecter l'ancienne room viewer si elle existe */
+  if (window._lkViewerRoom) {
+    try { window._lkViewerRoom.disconnect(); } catch(e) {}
+    window._lkViewerRoom = null;
+  }
   try {
     if(typeof LivekitClient === 'undefined'){
       await lkLoadSDK();
@@ -5040,19 +5030,46 @@ async function lkJoinAsViewer(url, token){
       }
 
       if (track.kind === LK.Track.Kind.Audio) {
+        /* Supprimer l'ancien audio si existe (évite cumul) */
+        var oldAudio = document.getElementById('lkViewerAudio');
+        if (oldAudio) oldAudio.remove();
         var audio = track.attach();
+        audio.id = 'lkViewerAudio';
         audio.autoplay = true;
         document.body.appendChild(audio);
       }
     });
 
     viewerRoom.on(LK.RoomEvent.Disconnected, function() {
-      showToast('📡 Déconnecté du live');
+      window._lkViewerRoom = null;
+      fbLeaveViewers();
       var wrap = document.getElementById('mainPlayer');
-      if (wrap) wrap.innerHTML =
-        '<div class="player-placeholder"><div class="pp-icon">📡</div>' +
-        '<div class="pp-txt">Live terminé</div>' +
-        '<div class="pp-sub">Le streamer a arrêté la diffusion</div></div>';
+      if (wrap && _currentCh === 99) {
+        wrap.innerHTML =
+          '<div class="player-placeholder">' +
+          '<div class="pp-icon">📺</div>' +
+          '<div class="pp-txt" style="color:var(--gold2)">Direct terminé</div>' +
+          '<div class="pp-sub">Le streamer a arrêté la diffusion — بَارَكَ اللهُ فِيكُمْ</div>' +
+          '<div style="margin-top:.8rem"><button onclick="location.reload()" ' +
+          'style="background:var(--g1);color:var(--gold2);border:none;border-radius:8px;' +
+          'padding:.4rem 1rem;cursor:pointer;font-size:13px">🔄 Actualiser</button></div>' +
+          '</div>';
+        showControls(false);
+        _currentCh = -1; _currentChData = null;
+      }
+      showToast('📺 Le direct est terminé — جَزَاكَ اللهُ خَيْرًا');
+    });
+
+    /* Détecter si le streamer quitte la room */
+    viewerRoom.on(LK.RoomEvent.ParticipantDisconnected, function(participant) {
+      /* Si plus aucun participant publisher → le streamer est parti */
+      var hasPublisher = false;
+      viewerRoom.remoteParticipants.forEach(function(p) {
+        if (p.trackPublications.size > 0) hasPublisher = true;
+      });
+      if (!hasPublisher) {
+        showToast('📡 Le streamer a quitté la room…');
+      }
     });
 
     await viewerRoom.connect(url, token);
@@ -6988,7 +7005,7 @@ document.addEventListener('DOMContentLoaded', function() {
         _authResolved = true;
         clearTimeout(_fbTimeout);
         var loading = document.getElementById('authLoading');
-        if (loading) { loading.style.opacity='0'; setTimeout(function(){ loading.style.display='none'; }, 500); }
+        if (loading) { loading.style.opacity='0'; setTimeout(function(){ if(loading.parentNode) loading.parentNode.removeChild(loading); }, 600); }
       }
 
       if (user) {
@@ -7059,8 +7076,13 @@ function _fbSyncUser(user) {
       }
     } else {
       if (_wasLive === true) {
-        /* Live terminé */
+        /* Live terminé → déconnecter proprement la room viewer */
+        if (window._lkViewerRoom) {
+          try { window._lkViewerRoom.disconnect(); } catch(e) {}
+          window._lkViewerRoom = null;
+        }
         if (_fbChatEnabled) fbStopChat();
+        fbLeaveViewers();
         var wrap = document.getElementById('mainPlayer');
         if (wrap && _currentCh === 99) {
           wrap.innerHTML =
@@ -7071,6 +7093,7 @@ function _fbSyncUser(user) {
               '<div style="margin-top:.5rem;font-size:12px;color:rgba(255,255,255,.3)">بَارَكَ اللهُ فِيكُمْ</div>' +
             '</div>';
           showControls(false);
+          _currentCh = -1; _currentChData = null;
         }
         showToast('📺 Le direct est terminé');
       }
@@ -7429,6 +7452,39 @@ function switchPratiqueTab(tab) {
   }
 }
 
+
+/* ════════════════════════════════════════════════════════════
+   RÈGLES FIREBASE RTDB REQUISES — À configurer sur console.firebase.google.com
+   Realtime Database → Règles → Coller ce JSON :
+
+{
+  "rules": {
+    "users": {
+      "$uid": { ".read": "$uid === auth.uid", ".write": "$uid === auth.uid" }
+    },
+    "faydha_direct": {
+      ".read": true,
+      ".write": "auth != null && auth.token.email === 'ms2imedina@gmail.com'"
+    },
+    "app_config": {
+      ".read": true,
+      ".write": "auth != null && auth.token.email === 'ms2imedina@gmail.com'"
+    },
+    "streamer_config": {
+      ".read": "auth != null && auth.token.email === 'ms2imedina@gmail.com'",
+      ".write": "auth != null && auth.token.email === 'ms2imedina@gmail.com'"
+    },
+    "live_viewers": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "chat": {
+      ".read": true,
+      ".write": "auth != null"
+    }
+  }
+}
+════════════════════════════════════════════════════════════ */
 </script>
 
 </body>
