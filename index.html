@@ -3723,29 +3723,20 @@ async function _playLiveKitViewer(d) {
       var pub = snap.val();
 
       if (pub && pub.url) {
-        /* Priorité 1 : générer un token FRAIS côté spectateur si apiKey+apiSecret disponibles
-           (évite l'erreur "invalid token" due à l'expiration du token pré-généré) */
+        /* Priorité 1 : token pré-généré par le streamer (le plus fiable) */
+        if (pub.token) {
+          lkJoinAsViewer(pub.url, pub.token);
+          return;
+        }
+        /* Priorité 2 : générer token côté spectateur si apiKey+apiSecret disponibles */
         if (pub.apiKey && pub.apiSecret) {
           var _room = pub.room || 'faydha-live';
           lkGenerateViewerToken(pub.apiKey, pub.apiSecret, _room)
             .then(function(vt) {
               if (vt) lkJoinAsViewer(pub.url, vt);
-              else {
-                /* Fallback : utiliser le token pré-généré si la génération échoue */
-                if (pub.token) lkJoinAsViewer(pub.url, pub.token);
-                else _showLiveError(wrap, 'Token non générable — réessayez');
-              }
+              else _showLiveError(wrap, 'Token non générable — réessayez');
             })
-            .catch(function(e) {
-              /* Fallback : utiliser le token pré-généré en cas d'erreur */
-              if (pub.token) lkJoinAsViewer(pub.url, pub.token);
-              else _showLiveError(wrap, e.message);
-            });
-          return;
-        }
-        /* Priorité 2 : token pré-généré par le streamer (peut être expiré) */
-        if (pub.token) {
-          lkJoinAsViewer(pub.url, pub.token);
+            .catch(function(e) { _showLiveError(wrap, e.message); });
           return;
         }
         _showLiveError(wrap, 'Configuration live incomplète — le streamer doit redémarrer le live');
@@ -4525,6 +4516,7 @@ var _lkRoom       = null;
 var _lkStream     = null;
 var _lkLive       = false;
 var _lkStreamerToken = ''; /* Token streamer actif — pour générer tokens viewer */
+var _lkTokenRenewalTimer = null; /* Timer renouvellement token viewer (toutes les heures) */
 var _lkFacing     = 'user';
 var _lkMicOn      = true;
 var _lkDurTimer   = null;
@@ -4658,7 +4650,7 @@ async function lkGenerateViewerToken(apiKey, apiSecret, roomName) {
   function encodeJSON(obj){ return toB64url(new TextEncoder().encode(JSON.stringify(obj))); }
   var now=Math.floor(Date.now()/1000);
   var h=encodeJSON({alg:'HS256',typ:'JWT'});
-  var p=encodeJSON({iss:apiKey,sub:name,iat:now,nbf:now,exp:now+43200,
+  var p=encodeJSON({iss:apiKey,sub:name,iat:now,nbf:now,exp:now+86400,
     video:{room:(roomName||'faydha-live'),roomJoin:true,roomCreate:false,canPublish:false,canSubscribe:true,canPublishData:false,hidden:true,recorder:false}});
   var si=h+'.'+p;
   var key=await crypto.subtle.importKey('raw',new TextEncoder().encode(apiSecret),{name:'HMAC',hash:'SHA-256'},false,['sign']);
@@ -4957,6 +4949,23 @@ function lkOnConnected(){
     _fbInit(function() {
       firebase.database().ref('app_config/livekit_viewer').set(viewerData);
     });
+
+    /* ── Renouvellement automatique du token viewer toutes les heures ── */
+    if (_lkTokenRenewalTimer) clearInterval(_lkTokenRenewalTimer);
+    if (_vApiKey && _vApiSecret) {
+      _lkTokenRenewalTimer = setInterval(async function() {
+        if (!_lkLive) { clearInterval(_lkTokenRenewalTimer); return; }
+        try {
+          var freshToken = await lkGenerateViewerToken(_vApiKey, _vApiSecret, _streamRoomName);
+          _fbInit(function() {
+            firebase.database().ref('app_config/livekit_viewer').update({
+              token: freshToken,
+              tokenRefreshedAt: Date.now()
+            });
+          });
+        } catch(e) { console.warn('[LK] Token renewal failed:', e); }
+      }, 55 * 60 * 1000); /* toutes les 55 minutes */
+    }
   })();
 
   // UI admin
@@ -5080,6 +5089,7 @@ function lkStopBroadcast(){
   _lkLive=false;
   window._isStreaming = false;
   clearInterval(_lkDurTimer);
+  if (_lkTokenRenewalTimer) { clearInterval(_lkTokenRenewalTimer); _lkTokenRenewalTimer = null; }
 
   // Déconnecter la room LiveKit
   if(_lkRoom){
