@@ -3104,8 +3104,8 @@ body{
               <input class="dp-field" id="lkApiKey" type="text" placeholder="APIxxxxxxxxxxxxxxxxxx (LiveKit Dashboard → Keys)" style="margin-bottom:.35rem;font-size:13px">
               <div style="font-size:12px;color:rgba(251,248,232,.45);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem">API Secret LiveKit</div>
               <input class="dp-field" id="lkApiSecret" type="password" placeholder="Secret LiveKit..." style="margin-bottom:.35rem;font-size:13px">
-              <div style="font-size:12px;color:rgba(251,248,232,.45);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.2rem">Token JWT <span style="color:rgba(212,175,55,.4);font-size:12px">(optionnel — auto-g&#233;n&#233;r&#233;)</span></div>
-              <input class="dp-field" id="lkToken" type="text" placeholder="eyJhbGciOiJIUzI1NiJ9&#8230; (optionnel)" style="margin-bottom:.4rem;font-size:12px">
+              <!-- Token JWT caché — généré automatiquement -->
+              <input id="lkToken" type="hidden" value="">
             </div>
 
             <!-- Caméra preview pour LiveKit -->
@@ -4344,9 +4344,10 @@ function lkLoadConfig(){
 }
 
 function lkSaveConfig(url, apiKey, apiSecret, token){
-  var cfg={url:url||'', apiKey:apiKey||'', apiSecret:apiSecret||'', token:token||''};
+  /* Ne jamais sauvegarder le token — généré automatiquement à chaque démarrage */
+  var cfg={url:url||'', apiKey:apiKey||'', apiSecret:apiSecret||'', token:''};
   try{ localStorage.setItem(LK_KEY, JSON.stringify(cfg)); }catch(e){}
-  fbSaveLkConfig(url, apiKey, apiSecret, token); /* Sync Firebase → tous les appareils */
+  fbSaveLkConfig(url, apiKey, apiSecret, ''); /* Sync Firebase sans token */
 }
 
 async function lkToggleCam(){
@@ -4548,7 +4549,7 @@ async function goLiveLK(){
       if(!apiKey && c.apiKey)    { apiKey=c.apiKey;    if(keyInp) keyInp.value=apiKey; }
       if(!apiSecret && c.apiSecret){ apiSecret=c.apiSecret; if(secInp) secInp.value=apiSecret; }
       if(!url && c.url)          { url=c.url;          if(urlInp) urlInp.value=url; }
-      if(!manToken && c.token)   { manToken=c.token;   if(tokInp) tokInp.value=manToken; }
+      /* Token jamais rechargé depuis cache */
     }catch(e){}
   }
 
@@ -4582,12 +4583,9 @@ async function goLiveLK(){
 
   /* Générer token JWT automatiquement (valide 24h) */
   var token;
-  if(manToken && manToken.startsWith('eyJ')){
-    token = manToken;
-  } else {
-    try { token = await lkGenerateToken(apiKey, apiSecret); }
-    catch(e){ showToast('⚠️ Erreur token: '+e.message); return; }
-  }
+  /* Toujours générer le token automatiquement — jamais utiliser token manuel */
+  try { token = await lkGenerateToken(apiKey, apiSecret); }
+  catch(e){ showToast('⚠️ Erreur token: '+e.message); return; }
 
   /* Activer caméra si nécessaire */
   if(!_lkStream){
@@ -4596,7 +4594,7 @@ async function goLiveLK(){
     if(!_lkStream){ showToast('⚠️ Impossible d\'accéder à la caméra'); return; }
   }
 
-  lkSaveConfig(url, apiKey, apiSecret, manToken);
+  lkSaveConfig(url, apiKey, apiSecret, ''); /* token auto-généré, pas sauvegardé */
   _lkStreamerToken = token;
   _lkApiKey=apiKey;
   _lkApiSecret=apiSecret;
