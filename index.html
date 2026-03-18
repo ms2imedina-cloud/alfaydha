@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<link rel="canonical" href="https://ms2imedina-cloud.github.io/alfaydha/">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Baye Niass World — Médina Baye</title>
 <meta name="theme-color" content="#0F7B3F">
@@ -9,11 +10,17 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Baye Niass World">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="Baye Niass World — L'application mondiale des Taalibé Baye. Médina Baye.">
+<meta property="og:title" content="Baye Niass World — Médina Baye">
+<meta property="og:description" content="L'application mondiale des Taalibé Baye">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ms2imedina-cloud.github.io/alfaydha/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 <link rel="dns-prefetch" href="https://faydha-app-default-rtdb.firebaseio.com">
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="dns-prefetch" href="https://www.gstatic.com">
 <!-- Firebase config -->
 <script>
@@ -673,13 +680,7 @@ body{
 /* Gate */
 
 
-
-
-
-
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-
-
+25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 
 
 /* Admin Tabs */
@@ -898,8 +899,6 @@ body{
 .pwd-change-row{padding:.7rem 1.4rem}
 
 /* Admin FAB */
-
-
 
 
 /* TOAST */
@@ -4110,20 +4109,7 @@ async function sha256(msg){
   return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0')}).join('');
 }
 
-function openAdmin(){
-  if(!_adminIn) {
-    /* Vérifier si connecté en tant qu'admin Google */
-    var u = firebase.auth().currentUser;
-    if (u && u.email === ADMIN_EMAIL) {
-      _adminIn = true;
-    } else {
-      showToast('💬 Tapez 1900 dans Ask Baye pour accéder à l\'admin');
-      return;
-    }
-  }
-  document.getElementById('adminOverlay').classList.add('open');
-  showAdminContent();
-}function closeAdmin(){
+function closeAdmin(){
   document.getElementById('adminOverlay').classList.remove('open');
   var ac=document.getElementById('adminContent');
   if(ac) ac.classList.remove('open');
@@ -6336,26 +6322,25 @@ function _fbSetStatus(connected, msg){
 }
 
 function _fbInit(cb){
-  if(window._fbReady && typeof firebase !== 'undefined' && firebase.apps.length){
+  /* Firebase chargé statiquement — vérification directe */
+  if(typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length){
     if(!_fbInited){ _fbInited=true; _fbDb=firebase.database(); _fbSetStatus(true,'Firebase connecté ✅'); }
     if(cb)cb();
     return;
   }
-  /* Attendre que Firebase soit prêt — polling avec backoff */
-  var tries=0, delay=150;
-  function _check(){
+  /* Fallback polling 200ms max 20 essais (4s) */
+  var tries=0;
+  var _t=setInterval(function(){
     tries++;
-    if(window._fbReady && typeof firebase !== 'undefined' && firebase.apps.length){
+    if(typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length){
+      clearInterval(_t);
       if(!_fbInited){ _fbInited=true; _fbDb=firebase.database(); _fbSetStatus(true,'Firebase connecté ✅'); }
       if(cb)cb();
-    } else if(tries > 40){
+    } else if(tries>=20){
+      clearInterval(_t);
       _fbSetStatus(false,'Firebase non disponible — vérifiez votre connexion');
-    } else {
-      delay = Math.min(delay * 1.2, 1000); /* backoff progressif */
-      setTimeout(_check, delay);
     }
-  }
-  setTimeout(_check, delay);
+  },200);
 }
 
 function _zbGenCode(){
@@ -6584,8 +6569,6 @@ switchZikrTab=function(tab){
     });
   }
 };
-
-
 
 
 /* ════════════════════════════════════════════════════════════
