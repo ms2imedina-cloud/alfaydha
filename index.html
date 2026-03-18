@@ -3016,6 +3016,7 @@ body{
         <button class="adm-tab active" id="atab-direct" onclick="switchAdmTab('direct')">🔴 Direct</button>
         <button class="adm-tab" id="atab-prog" onclick="switchAdmTab('prog')">📅 Programme</button>
         <button class="adm-tab" id="atab-stats" onclick="switchAdmTab('stats')">📊 Stats</button>
+        <button class="adm-tab" id="atab-streamers" onclick="switchAdmTab('streamers')">👥 Streamers</button>
         <button class="adm-tab" id="atab-params" onclick="switchAdmTab('params')">⚙ Params</button>
         <button class="adm-tab" id="atab-notif" onclick="switchAdmTab('notif')">🔔 Notifs</button>
       </div>
@@ -3137,6 +3138,30 @@ body{
               <div class="dp-step"><span class="dp-step-n" style="background:rgba(76,175,80,.3)">✓</span><span class="dp-step-t" style="color:rgba(251,248,232,.5)">100 viewers exclusifs · Gratuit · Sans YouTube</span></div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- ── ONGLET STREAMERS ── -->
+      <div style="display:none" id="adm-streamers">
+        <div class="sec-title" style="display:flex;align-items:center;justify-content:space-between">
+          <span>👥 Gestion des Streamers</span>
+          <button onclick="loadStreamers()" style="font-size:11px;background:rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.3);color:var(--gold2);border-radius:6px;padding:3px 8px;cursor:pointer">🔄 Actualiser</button>
+        </div>
+
+        <!-- Ajouter un streamer par email -->
+        <div style="background:rgba(212,175,55,.07);border:1px solid rgba(212,175,55,.2);border-radius:12px;padding:.8rem;margin-bottom:.8rem">
+          <div style="font-size:12px;color:var(--gold2);font-weight:600;margin-bottom:.5rem">➕ Autoriser un streamer</div>
+          <input class="f-input" id="streamerEmailInput" type="email" placeholder="Email Google du streamer…" style="margin-bottom:.35rem">
+          <input class="f-input" id="streamerNameInput" type="text" placeholder="Nom du streamer (optionnel)" style="margin-bottom:.4rem">
+          <div style="display:flex;gap:.4rem">
+            <button onclick="addStreamer()" class="add-btn" style="flex:1">✅ Autoriser LiveKit + YouTube</button>
+          </div>
+        </div>
+
+        <!-- Liste des streamers -->
+        <div style="font-size:11px;color:rgba(251,248,232,.4);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem">Streamers autorisés</div>
+        <div id="streamersList" style="display:flex;flex-direction:column;gap:.4rem">
+          <div style="text-align:center;padding:1rem;color:var(--text3);font-size:13px;font-style:italic">Chargement…</div>
         </div>
       </div>
 
@@ -3383,16 +3408,30 @@ function _onGoogleUser(user) {
   if (isAdmin) {
     /* Activer session admin automatiquement */
     _adminIn = true;
-    /* Afficher le bouton FAB admin */
     var fab = document.getElementById('adminFab');
     if (fab) fab.classList.add('show');
     setTimeout(function(){
       showToast('👑 Bienvenue Admin — Accès streamer activé ✅');
-      /* Charger config admin depuis Firebase */
       _fbInit(function(){ lkLoadConfig && lkLoadConfig(); });
     }, 700);
   } else {
-    setTimeout(function(){ showToast('✅ Bienvenue ' + (user.displayName || '') + ' 📿'); }, 600);
+    /* Vérifier si l'utilisateur est un streamer autorisé */
+    checkStreamerAccess(user, function(isStreamer) {
+      if (isStreamer) {
+        _adminIn = true; /* Accès streamer : peut faire des lives */
+        window._isStreamer = true;
+        var fab = document.getElementById('adminFab');
+        if (fab) fab.classList.add('show');
+        /* Mettre à jour label */
+        var el = document.getElementById('ummaProfileLabel');
+        if (el) el.textContent = '📡 Streamer · ' + (user.displayName || user.email);
+        var nameEl = document.getElementById('userAvatarName');
+        if (nameEl) nameEl.innerHTML = '<span style="background:var(--g2);color:#fff;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;margin-right:5px">📡 STREAMER</span>' + (user.displayName||'');
+        setTimeout(function(){ showToast('📡 Bienvenue Streamer — Accès live activé ✅'); }, 700);
+      } else {
+        setTimeout(function(){ showToast('✅ Bienvenue ' + (user.displayName || '') + ' 📿'); }, 600);
+      }
+    });
   }
 }
 
@@ -4122,6 +4161,115 @@ function adminLogout(){
 /* ════════════════════════════════════════
    ADMIN — TABS
 ════════════════════════════════════════ */
+/* ════════════════════════════════════
+   GESTION DES STREAMERS
+════════════════════════════════════ */
+
+function loadStreamers() {
+  var list = document.getElementById('streamersList');
+  if (!list) return;
+  list.innerHTML = '<div style="text-align:center;padding:.8rem;color:var(--text3);font-size:13px">⏳ Chargement…</div>';
+
+  _fbInit(function() {
+    firebase.database().ref('authorized_streamers').once('value', function(snap) {
+      var data = snap.val();
+      if (!data || Object.keys(data).length === 0) {
+        list.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--text3);font-size:13px;font-style:italic">Aucun streamer autorisé</div>';
+        return;
+      }
+      var html = '';
+      Object.keys(data).forEach(function(uid) {
+        var s = data[uid];
+        var active = s.active !== false;
+        html +=
+          '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(212,175,55,' + (active?'.25':'.1') + ');border-radius:10px;padding:.65rem .8rem;display:flex;align-items:center;gap:.6rem">' +
+            '<div style="width:34px;height:34px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;border:1.5px solid rgba(212,175,55,.3)">' +
+              (s.photo ? '<img src="'+s.photo+'" style="width:34px;height:34px;border-radius:50%;object-fit:cover">' : '👤') +
+            '</div>' +
+            '<div style="flex:1;min-width:0">' +
+              '<div style="font-size:13px;font-weight:600;color:' + (active?'var(--gold2)':'rgba(251,248,232,.35)') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (s.name||s.email||uid) + '</div>' +
+              '<div style="font-size:11px;color:rgba(251,248,232,.35);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (s.email||'') + '</div>' +
+              '<div style="font-size:10px;margin-top:2px;color:' + (active?'#4CAF50':'var(--red)') + '">' + (active?'🟢 Actif — peut streamer':'🔴 Désactivé') + '</div>' +
+            '</div>' +
+            '<div style="display:flex;flex-direction:column;gap:.3rem;flex-shrink:0">' +
+              (active
+                ? '<button data-uid="'+uid+'" data-act="0" onclick="streamerToggle(this)" style="font-size:11px;background:rgba(192,57,43,.2);border:1px solid rgba(192,57,43,.4);color:#e74c3c;border-radius:6px;padding:3px 8px;cursor:pointer">⏸ Désactiver</button>'
+                : '<button data-uid="'+uid+'" data-act="1" onclick="streamerToggle(this)" style="font-size:11px;background:rgba(76,175,80,.15);border:1px solid rgba(76,175,80,.3);color:#4CAF50;border-radius:6px;padding:3px 8px;cursor:pointer">▶ Activer</button>'
+              ) +
+              '<button data-uid="'+uid+'" onclick="streamerRemove(this)" style="font-size:11px;background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.25);color:rgba(231,76,60,.7);border-radius:6px;padding:3px 8px;cursor:pointer">🗑 Suppr.</button>' +
+            '</div>' +
+          '</div>';
+      });
+      list.innerHTML = html;
+    });
+  });
+}
+
+function addStreamer() {
+  var email = (document.getElementById('streamerEmailInput')||{}).value.trim().toLowerCase();
+  var name  = (document.getElementById('streamerNameInput')||{}).value.trim();
+  if (!email || !email.includes('@')) { showToast('⚠️ Entrez un email valide'); return; }
+
+  /* Générer un uid basé sur l'email */
+  var uid = email.replace(/[.#$[\]]/g, '_');
+
+  _fbInit(function() {
+    firebase.database().ref('authorized_streamers/' + uid).set({
+      email:     email,
+      name:      name || email.split('@')[0],
+      active:    true,
+      addedBy:   ADMIN_EMAIL,
+      addedAt:   Date.now()
+    }, function(err) {
+      if (err) { showToast('❌ Erreur: ' + err.message); return; }
+      showToast('✅ Streamer autorisé : ' + email);
+      var ei = document.getElementById('streamerEmailInput'); if(ei) ei.value='';
+      var ni = document.getElementById('streamerNameInput');  if(ni) ni.value='';
+      loadStreamers();
+    });
+  });
+}
+
+function toggleStreamer(uid, active) {
+  _fbInit(function() {
+    firebase.database().ref('authorized_streamers/' + uid + '/active').set(active, function(err) {
+      if (err) { showToast('❌ Erreur'); return; }
+      showToast(active ? '✅ Streamer activé' : '⏸ Streamer désactivé');
+      loadStreamers();
+    });
+  });
+}
+
+function removeStreamer(uid) {
+  if (!confirm('Supprimer ce streamer ?')) return;
+  _fbInit(function() {
+    firebase.database().ref('authorized_streamers/' + uid).remove(function(err) {
+      if (err) { showToast('❌ Erreur'); return; }
+      showToast('🗑 Streamer supprimé');
+      loadStreamers();
+    });
+  });
+}
+
+/* Vérifier si l'utilisateur connecté est un streamer autorisé */
+function streamerToggle(btn){
+  toggleStreamer(btn.getAttribute('data-uid'), btn.getAttribute('data-act')==='1');
+}
+function streamerRemove(btn){
+  removeStreamer(btn.getAttribute('data-uid'));
+}
+
+function checkStreamerAccess(user, callback) {
+  if (!user || !user.email) { callback(false); return; }
+  var uid = user.email.replace(/[.#$[\]]/g, '_');
+  _fbInit(function() {
+    firebase.database().ref('authorized_streamers/' + uid).once('value', function(snap) {
+      var d = snap.val();
+      callback(d && d.active === true);
+    });
+  });
+}
+
 function switchAdmTab(id){
   // Masquer tous les panels
   ['chaines','direct','prog','stats','params'].forEach(function(n){
@@ -7323,6 +7471,10 @@ function switchPratiqueTab(tab) {
     },
     "streamer_config": {
       ".read": "auth != null && auth.token.email === 'ms2imedina@gmail.com'",
+      ".write": "auth != null && auth.token.email === 'ms2imedina@gmail.com'"
+    },
+    "authorized_streamers": {
+      ".read": "auth != null",
       ".write": "auth != null && auth.token.email === 'ms2imedina@gmail.com'"
     },
     "live_viewers": {
