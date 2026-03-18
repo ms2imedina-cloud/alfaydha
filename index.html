@@ -3075,6 +3075,10 @@ body{
 
           <!-- YouTube -->
           <div id="pnYT">
+            <div style="font-size:11px;color:rgba(212,175,55,.6);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.25rem">🎙 Titre du live</div>
+            <input class="dp-field" id="ytLiveTitle" type="text" placeholder="Ex: Grand Gamou 2026 — Médina Baye" style="margin-bottom:.3rem;font-size:13px">
+            <div style="font-size:11px;color:rgba(212,175,55,.6);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.25rem">📝 Sous-titre</div>
+            <input class="dp-field" id="ytLiveDesc" type="text" placeholder="Ex: Célébration mondiale · Zawiya centrale" style="margin-bottom:.35rem;font-size:13px">
             <div class="dp-row">
               <input class="dp-field" id="ytUrl" type="url" placeholder="https://youtube.com/live/XXXX">
               <button class="dp-btn" id="ytBtn" onclick="goLiveYT()">🔴 Go Live</button>
@@ -3108,23 +3112,38 @@ body{
                 <div id="lkDot" style="width:8px;height:8px;border-radius:50%;background:#4CAF50;animation:ldPulse 1.4s infinite;flex-shrink:0"></div>
                 <span id="lkStatusTxt">Connecté à LiveKit Cloud</span>
               </div>
-              <div style="display:flex;gap:.8rem;margin-top:.4rem;font-size:12px;color:rgba(251,248,232,.5)">
-                <span>👁 <span id="lkViewers">0</span> viewers</span>
-                <span>📡 <span id="lkQuality">HD</span></span>
+              <div style="display:flex;gap:.6rem;margin-top:.4rem;font-size:11px;color:rgba(251,248,232,.5);flex-wrap:wrap">
+                <span>👁 <span id="lkViewers">0</span></span>
+                <span>📺 <span id="lkQuality">1080p</span></span>
                 <span>⏱ <span id="lkDuration">0:00</span></span>
+                <span>📡 <span id="lkBitrate">—</span> kbps</span>
+                <span>🎞 <span id="lkFps">30</span> fps</span>
               </div>
             </div>
 
             <!-- Credentials -->
             <div id="lkCredsBlock">
-              <div style="font-size:12px;color:rgba(251,248,232,.45);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem">URL LiveKit Cloud</div>
-              <input class="dp-field" id="lkUrl" type="url" placeholder="wss://aas-00hwqfg3.livekit.cloud" style="margin-bottom:.35rem">
-              <div style="font-size:12px;color:rgba(251,248,232,.45);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem">API Key LiveKit</div>
-              <input class="dp-field" id="lkApiKey" type="text" placeholder="APIxxxxxxxxxxxxxxxxxx (LiveKit Dashboard → Keys)" style="margin-bottom:.35rem;font-size:13px">
-              <div style="font-size:12px;color:rgba(251,248,232,.45);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem">API Secret LiveKit</div>
-              <input class="dp-field" id="lkApiSecret" type="password" placeholder="Secret LiveKit..." style="margin-bottom:.35rem;font-size:13px">
-              <div style="font-size:12px;color:rgba(251,248,232,.45);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.2rem">Token JWT <span style="color:rgba(212,175,55,.4);font-size:12px">(optionnel — auto-g&#233;n&#233;r&#233;)</span></div>
-              <input class="dp-field" id="lkToken" type="text" placeholder="eyJhbGciOiJIUzI1NiJ9&#8230; (optionnel)" style="margin-bottom:.4rem;font-size:12px">
+              <!-- Titre & sous-titre du live -->
+              <div style="font-size:11px;color:rgba(212,175,55,.6);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.25rem">🎙 Titre du live</div>
+              <input class="dp-field" id="lkLiveTitle" type="text" placeholder="Ex: Hadra du vendredi — Médina Baye" style="margin-bottom:.3rem;font-size:13px">
+              <div style="font-size:11px;color:rgba(212,175,55,.6);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.25rem">📝 Sous-titre / Description</div>
+              <input class="dp-field" id="lkLiveDesc" type="text" placeholder="Ex: Récitation collective · Zawiya mondiale" style="margin-bottom:.45rem;font-size:13px">
+              <!-- Résolution vidéo -->
+              <div style="font-size:11px;color:rgba(212,175,55,.6);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.25rem">📺 Résolution</div>
+              <div style="display:flex;gap:.3rem;margin-bottom:.45rem">
+                <button type="button" onclick="lkSetRes('1080p')" id="lkr1080" style="flex:1;padding:.28rem;font-size:11px;border-radius:6px;border:1px solid var(--gold);background:rgba(212,175,55,.25);color:var(--gold2);cursor:pointer;font-weight:700">1080p ✓</button>
+                <button type="button" onclick="lkSetRes('720p')"  id="lkr720"  style="flex:1;padding:.28rem;font-size:11px;border-radius:6px;border:1px solid rgba(212,175,55,.3);background:rgba(212,175,55,.08);color:var(--gold2);cursor:pointer">720p</button>
+                <button type="button" onclick="lkSetRes('480p')"  id="lkr480"  style="flex:1;padding:.28rem;font-size:11px;border-radius:6px;border:1px solid rgba(212,175,55,.3);background:rgba(212,175,55,.08);color:var(--gold2);cursor:pointer">480p</button>
+                <button type="button" onclick="lkSetRes('360p')"  id="lkr360"  style="flex:1;padding:.28rem;font-size:11px;border-radius:6px;border:1px solid rgba(212,175,55,.3);background:rgba(212,175,55,.08);color:var(--gold2);cursor:pointer">360p</button>
+              </div>
+              <div style="font-size:11px;color:rgba(212,175,55,.6);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.25rem">🔗 URL LiveKit Cloud</div>
+              <input class="dp-field" id="lkUrl" type="url" placeholder="wss://aas-00hwqfg3.livekit.cloud" style="margin-bottom:.3rem">
+              <div style="font-size:11px;color:rgba(212,175,55,.6);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.25rem">🔑 API Key</div>
+              <input class="dp-field" id="lkApiKey" type="text" placeholder="APIxxxxxxxxxxxxxxxxxx" style="margin-bottom:.3rem;font-size:13px">
+              <div style="font-size:11px;color:rgba(212,175,55,.6);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.25rem">🔐 API Secret</div>
+              <input class="dp-field" id="lkApiSecret" type="password" placeholder="Secret LiveKit..." style="margin-bottom:.3rem;font-size:13px">
+              <div style="font-size:11px;color:rgba(212,175,55,.6);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.2rem">🎟 Token JWT <span style="color:rgba(212,175,55,.4);font-size:11px">(optionnel)</span></div>
+              <input class="dp-field" id="lkToken" type="text" placeholder="eyJ… (optionnel — auto-généré)" style="margin-bottom:.4rem;font-size:12px">
             </div>
 
             <!-- Caméra preview pour LiveKit -->
@@ -3137,9 +3156,18 @@ body{
 
             <!-- Contrôles caméra LiveKit -->
             <div class="cam-ctrl-row" id="lkCamCtrl" style="display:none">
-              <button class="cam-btn" id="lkCamBtn" onclick="lkToggleCam()">📷 Caméra</button>
+              <button class="cam-btn" id="lkCamBtn" onclick="lkToggleCam()">📷 Cam</button>
               <button class="cam-btn" id="lkMicBtn" onclick="lkToggleMic()">🎤 Micro</button>
               <button class="cam-btn" onclick="lkFlipCam()">🔄</button>
+              <button class="cam-btn" id="lkNoiseBtn" onclick="lkToggleNoise()" title="Réduction de bruit">🔇</button>
+            </div>
+            <!-- VU-mètre audio LiveKit -->
+            <div id="lkAudioMeter" style="display:none;margin:.3rem 0;align-items:center;gap:.4rem">
+              <span style="font-size:11px;color:rgba(251,248,232,.4)">🔊</span>
+              <div style="flex:1;height:4px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden">
+                <div id="lkAudioBar" style="height:100%;width:0%;background:linear-gradient(90deg,#4CAF50,#FFC107,#f44336);border-radius:2px;transition:width .08s"></div>
+              </div>
+              <span id="lkAudioLabel" style="font-size:11px;color:rgba(251,248,232,.35);min-width:28px">—</span>
             </div>
 
             <button class="dp-btn" id="lkBtn" onclick="goLiveLK()" style="width:100%;padding:.52rem;font-size:14px;margin-bottom:.35rem">🔴 Démarrer LiveKit</button>
@@ -3808,6 +3836,14 @@ function _addLogoOverlay(container) {
   wrap.appendChild(ovl);
 }
 
+/* Charger hls.js si besoin */
+function _loadHlsJs(cb){
+  if(typeof Hls!=='undefined'){cb();return;}
+  var s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/hls.js@1.4.12/dist/hls.min.js';
+  s.onload=cb; document.head.appendChild(s);
+}
+
 function loadInPlayer(url,name,isLive){
   var wrap=document.getElementById('mainPlayer');
   if(!wrap)return;
@@ -3834,7 +3870,8 @@ function loadInPlayer(url,name,isLive){
   var statsBar=document.getElementById('liveStats');
   if(statsBar&&_settings.viewers){
     statsBar.style.display='flex';
-    document.getElementById('statsChName').textContent=name||'';
+    var _dn = getDirect();
+    document.getElementById('statsChName').textContent=(_dn&&_dn.title)?_dn.title:(name||'');
     startViewerCount();
   }
   showToast('▶ '+name);
@@ -4322,7 +4359,9 @@ function goLiveYT(){
     }
     _ytLive=true;
     window._isStreaming = true;
-    var data={isLive:true,url:url,mode:'youtube',startedAt:Date.now()};
+    var _ytTitle=(document.getElementById('ytLiveTitle')||{}).value||'Baye Niass World — YouTube Live';
+    var _ytDesc=(document.getElementById('ytLiveDesc')||{}).value||'';
+    var data={isLive:true,url:url,mode:'youtube',startedAt:Date.now(),title:_ytTitle,desc:_ytDesc};
     save(DIR_KEY,data); fbSetLive(true,data);
     // Feedback immédiat sur le bouton
     var btn=document.getElementById('ytBtn');
@@ -4401,22 +4440,24 @@ async function lkToggleCam(){
     showToast('📷 Caméra désactivée');
   } else {
     try {
+      var _res = (typeof _lkResMap!=='undefined'&&_lkRes)?_lkResMap[_lkRes]:null;
+      var _w = _res?_res.width:1920, _h = _res?_res.height:1080, _fr = _res?_res.frameRate:30;
       _lkStream = await navigator.mediaDevices.getUserMedia({
         video:{
-          facingMode:_lkFacing,
-          width:{ideal:1920,min:1280},
-          height:{ideal:1080,min:720},
-          frameRate:{ideal:30,min:24},
-          aspectRatio:{ideal:16/9}
+          facingMode: _lkFacing,
+          width:       { ideal:_w, min:Math.floor(_w*0.5) },
+          height:      { ideal:_h, min:Math.floor(_h*0.5) },
+          frameRate:   { ideal:_fr, min:12 },
+          aspectRatio: { ideal:16/9 }
         },
         audio:{
-          echoCancellation:true,
-          noiseSuppression:true,
-          autoGainControl:false,
-          sampleRate:48000,
-          sampleSize:24,
-          channelCount:2,
-          latency:0
+          echoCancellation: true,
+          noiseSuppression: (typeof _lkNoiseEnabled!=='undefined')?_lkNoiseEnabled:true,
+          autoGainControl:  false,
+          sampleRate:   48000,
+          sampleSize:   24,
+          channelCount: 2,
+          latency:      0
         }
       });
       var vid=document.getElementById('lkLocalVid');
@@ -4426,13 +4467,21 @@ async function lkToggleCam(){
       var btn=document.getElementById('lkCamBtn');
       if(btn){btn.textContent='✅ Caméra'; btn.classList.add('on');}
       var note=document.getElementById('lkNote');
-      if(note) note.textContent='Caméra prête — appuyez sur Démarrer LiveKit';
-      showToast('📷 Caméra activée');
+      if(note) note.textContent='Caméra '+_lkRes+' prête — appuyez sur Démarrer LiveKit';
+      /* Démarrer VU-mètre */
+      lkStartVuMetre(_lkStream);
+      /* Afficher les contrôles */
+      var ctrl=document.getElementById('lkCamCtrl'); if(ctrl) ctrl.style.display='flex';
+      var prev=document.getElementById('lkCamPreview'); if(prev) prev.style.display='block';
+      showToast('📷 Caméra '+_lkRes+' · '+_lkResMap[_lkRes].frameRate+'fps activée');
     } catch(e) {
       showToast('⚠️ '+(e.name==='NotAllowedError'?'Permission caméra refusée':'Caméra indisponible'));
     }
   }
 }
+
+var _lkNoiseEnabled = true;
+var _lkAudioCtx = null, _lkAudioAnalyser = null, _lkAudioRaf = null;
 
 function lkToggleMic(){
   if(!_lkStream){showToast('⚠️ Activez la caméra d\'abord');return;}
@@ -4441,6 +4490,68 @@ function lkToggleMic(){
   var btn=document.getElementById('lkMicBtn');
   if(btn){btn.textContent=_lkMicOn?'🎤 Micro':'🔇 Muet'; btn.classList.toggle('on',_lkMicOn);}
   showToast(_lkMicOn?'🎤 Micro activé':'🔇 Micro coupé');
+}
+
+function lkToggleNoise(){
+  _lkNoiseEnabled=!_lkNoiseEnabled;
+  var btn=document.getElementById('lkNoiseBtn');
+  if(btn){btn.textContent=_lkNoiseEnabled?'🔇':'🔊'; btn.classList.toggle('on',_lkNoiseEnabled);}
+  showToast(_lkNoiseEnabled?'🔇 Réduction bruit ON':'🔊 Réduction bruit OFF');
+}
+
+function lkStartVuMetre(stream){
+  var meter=document.getElementById('lkAudioMeter');
+  if(meter) meter.style.display='flex';
+  try{
+    _lkAudioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    var src=_lkAudioCtx.createMediaStreamSource(stream);
+    _lkAudioAnalyser=_lkAudioCtx.createAnalyser();
+    _lkAudioAnalyser.fftSize=256;
+    src.connect(_lkAudioAnalyser);
+    var data=new Uint8Array(_lkAudioAnalyser.frequencyBinCount);
+    var bar=document.getElementById('lkAudioBar');
+    var lbl=document.getElementById('lkAudioLabel');
+    function _frame(){
+      if(!_lkAudioAnalyser){return;}
+      _lkAudioAnalyser.getByteFrequencyData(data);
+      var sum=0; for(var k=0;k<data.length;k++) sum+=data[k];
+      var pct=Math.min(100,(sum/data.length)*2);
+      if(bar) bar.style.width=pct+'%';
+      if(lbl) lbl.textContent=Math.round(sum/data.length)+' dB';
+      _lkAudioRaf=requestAnimationFrame(_frame);
+    }
+    _frame();
+  }catch(e){}
+}
+
+function lkStopVuMetre(){
+  if(_lkAudioRaf){cancelAnimationFrame(_lkAudioRaf);_lkAudioRaf=null;}
+  if(_lkAudioCtx){try{_lkAudioCtx.close();}catch(e){}_lkAudioCtx=null;}
+  _lkAudioAnalyser=null;
+  var meter=document.getElementById('lkAudioMeter');
+  if(meter) meter.style.display='none';
+}
+
+/* Stats live : bitrate + fps en temps réel */
+var _lkStatsTimer=null;
+async function lkStartStats(){
+  if(!_lkRoom) return;
+  _lkStatsTimer=setInterval(async function(){
+    if(!_lkRoom||!_lkLive){clearInterval(_lkStatsTimer);return;}
+    try{
+      var stats=await _lkRoom.localParticipant.getTrackStats();
+      if(!stats) return;
+      var vStats=stats.find(function(s){return s.type==='outbound-rtp'&&s.kind==='video';});
+      if(vStats){
+        var kbps=Math.round((vStats.bytesSent||0)*8/1000);
+        var fps=Math.round(vStats.framesPerSecond||30);
+        var brEl=document.getElementById('lkBitrate');
+        var fpsEl=document.getElementById('lkFps');
+        if(brEl) brEl.textContent=kbps;
+        if(fpsEl) fpsEl.textContent=fps;
+      }
+    }catch(e){}
+  }, 2000);
 }
 
 async function lkFlipCam(){
@@ -4673,22 +4784,30 @@ async function lkConnect(url, token){
 
   _lkRoom = new LK.Room({
     adaptiveStream: true,
-    dynacast: true,
+    dynacast:       true,
+    stopLocalTrackOnUnpublish: true,
+    reconnectPolicy: { maxRetries: 5, retryDelayMs: 1000 },
     videoCaptureDefaults: {
-      resolution: LK.VideoPresets.h1080.resolution || LK.VideoPresets.h720.resolution
+      resolution: { width:1920, height:1080, frameRate:30, aspectRatio:16/9 }
     },
     videoCodec: 'h264',
     audioCaptureDefaults: {
-      autoGainControl: false,
+      autoGainControl:  false,
       echoCancellation: true,
       noiseSuppression: true,
-      sampleRate: 48000,
-      sampleSize: 24,
-      channelCount: 2
+      sampleRate:   48000,
+      sampleSize:   24,
+      channelCount: 2,
+      latency:      0
     },
     publishDefaults: {
-      audioPreset: { maxBitrate: 320000 },
-      videoSimulcastLayers: [LK.VideoPresets.h180, LK.VideoPresets.h360, LK.VideoPresets.h720]
+      audioPreset:  { maxBitrate: 320000 },
+      videoEncoding: { maxBitrate: 5000000, maxFramerate: 30 },
+      videoSimulcastLayers: [
+        { width:320,  height:180,  encoding:{ maxBitrate:150000,  maxFramerate:15 } },
+        { width:640,  height:360,  encoding:{ maxBitrate:500000,  maxFramerate:24 } },
+        { width:1280, height:720,  encoding:{ maxBitrate:1500000, maxFramerate:30 } }
+      ]
     }
   });
 
@@ -4716,8 +4835,10 @@ async function lkConnect(url, token){
     if(videoTrack){
       var lkVideoTrack = new LK.LocalVideoTrack(videoTrack);
       await _lkRoom.localParticipant.publishTrack(lkVideoTrack, {
-        source: LK.Track.Source.Camera,
-        simulcast: true
+        source:   LK.Track.Source.Camera,
+        simulcast: true,
+        videoEncoding: { maxBitrate: 5000000, maxFramerate: 30 },
+        videoCodec: 'h264'
       });
     }
     if(audioTrack){
@@ -4733,6 +4854,8 @@ async function lkConnect(url, token){
 function lkOnConnected(){
   _lkLive = true;
   window._isStreaming = true;
+  /* Démarrer stats bitrate/fps */
+  setTimeout(lkStartStats, 3000);
 
   var urlVal    = (document.getElementById('lkUrl')||{}).value||'';
   var apiKey    = (document.getElementById('lkApiKey')||{}).value||'';
@@ -4750,8 +4873,10 @@ function lkOnConnected(){
     }catch(e){}
   }
 
-  save(DIR_KEY,{isLive:true, url:urlVal, mode:'livekit', startedAt:Date.now()});
-  fbSetLive(true,{isLive:true,url:urlVal,mode:'livekit',startedAt:Date.now()});
+  var _lkTitle=(document.getElementById('lkLiveTitle')||{}).value||'Baye Niass World — Direct';
+  var _lkDesc=(document.getElementById('lkLiveDesc')||{}).value||'';
+  save(DIR_KEY,{isLive:true,url:urlVal,mode:'livekit',startedAt:Date.now(),title:_lkTitle,desc:_lkDesc,res:_lkRes});
+  fbSetLive(true,{isLive:true,url:urlVal,mode:'livekit',startedAt:Date.now(),title:_lkTitle,desc:_lkDesc,res:_lkRes});
 
   /* Extraire roomName depuis le token streamer (variable globale) */
   var _streamRoomName = 'faydha-live';
@@ -4922,6 +5047,8 @@ function lkStopBroadcast(){
   _lkLive=false;
   window._isStreaming = false;
   clearInterval(_lkDurTimer);
+  if(typeof _lkStatsTimer!=='undefined'&&_lkStatsTimer){clearInterval(_lkStatsTimer);_lkStatsTimer=null;}
+  if(typeof lkStopVuMetre==='function') lkStopVuMetre();
 
   // Déconnecter la room LiveKit
   if(_lkRoom){
