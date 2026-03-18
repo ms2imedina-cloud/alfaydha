@@ -38,42 +38,20 @@ window._fbConfig={
   appId:"1:312192806539:web:6b04f18611d0c7dbc4ee8e"
 };
 window._fbReady=false;
-window._fbInitQueue=[];
-/* _fbInit placée ici pour les appels avant chargement Firebase */
-window._fbInit=function(cb){ if(cb) window._fbInitQueue.push(cb); };
 </script>
-<!-- Firebase SDKs — async pour ne pas bloquer le rendu -->
-<script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js" onload="window._fbOnLoad&&window._fbOnLoad()"></script>
+<!-- Firebase SDKs — chargés en parallèle (auth rapide nécessaire) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script>
-window._fbOnLoad=function(){
+(function(){
   try{
-    if(!firebase.apps.length) firebase.initializeApp(window._fbConfig);
-    window._fbReady=true;
-    /* Remplacer _fbInit et vider la file d'attente */
-    window._fbInit=function(cb){ if(cb) cb(); };
-    (window._fbInitQueue||[]).forEach(function(cb){ try{cb();}catch(e){} });
-    window._fbInitQueue=[];
-    /* Écouter l'état auth dès que Firebase est prêt */
-    firebase.auth().onAuthStateChanged(function(user){
-      if(user){
-        if(typeof _onGoogleUser==='function') _onGoogleUser(user);
-      } else {
-        /* Pas connecté Google — afficher la page d'accueil si besoin */
-        try{
-          var pending=sessionStorage.getItem('gauth_pending');
-          if(pending){
-            sessionStorage.removeItem('gauth_pending');
-            firebase.auth().getRedirectResult().then(function(r){
-              if(r&&r.user&&typeof _onGoogleUser==='function') _onGoogleUser(r.user);
-            });
-          }
-        }catch(e){}
-      }
-    });
+    if(typeof firebase!=='undefined'){
+      if(!firebase.apps.length) firebase.initializeApp(window._fbConfig);
+      window._fbReady=true;
+    }
   }catch(e){ console.error('[Firebase]',e); }
-};
+})();
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>/* ════════════════════════════════════════════════════════════
