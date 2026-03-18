@@ -3342,42 +3342,63 @@ function _isSafari() {
 
 function signInWithGoogle() {
   var btn = document.querySelector('.wlc-google-btn');
-  if (btn) { btn.disabled = true; btn.innerHTML = '<span>⏳</span> Connexion en cours…'; }
 
-  /* Attendre que Firebase soit prêt avant de lancer l'auth */
-  _fbInit(function() {
-  var provider = new firebase.auth.GoogleAuthProvider();
-  provider.setCustomParameters({ prompt: 'select_account' });
+  function _resetBtn() {
+    if (btn) { btn.disabled = false; btn.innerHTML = _googleBtnHTML(); }
+  }
 
-  /* iOS Safari → doit utiliser redirect (popup bloqué systématiquement) */
-  if (_isIOS() || _isSafari()) {
-    /* Sauvegarder état dans sessionStorage avant redirect */
-    try { sessionStorage.setItem('gauth_pending', '1'); } catch(e) {}
-    firebase.auth().signInWithRedirect(provider).catch(function(err) {
-      if (btn) { btn.disabled = false; btn.innerHTML = _googleBtnHTML(); }
-      showToast('⚠️ Erreur : ' + err.message);
-    });
+  function _doAuth() {
+    if (btn) { btn.disabled = true; btn.innerHTML = '<span>⏳</span> Connexion…'; }
+    var provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+
+    if (_isIOS() || _isSafari()) {
+      try { sessionStorage.setItem('gauth_pending', '1'); } catch(e) {}
+      firebase.auth().signInWithRedirect(provider).catch(function(err) {
+        _resetBtn();
+        showToast('⚠️ Erreur : ' + err.message);
+      });
+      return;
+    }
+
+    firebase.auth().signInWithPopup(provider)
+      .then(function(result) {
+        firebase.database().ref('users/' + result.user.uid).set({
+          name: result.user.displayName, email: result.user.email,
+          photo: result.user.photoURL, lastLogin: Date.now(), uid: result.user.uid
+        });
+      })
+      .catch(function(err) {
+        _resetBtn();
+        if (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment') {
+          showToast('⚠️ Popup bloqué — redirection…');
+          setTimeout(function() { firebase.auth().signInWithRedirect(provider); }, 800);
+        } else if (err.code !== 'auth/popup-closed-by-user') {
+          showToast('⚠️ Erreur : ' + err.message);
+        }
+      });
+  }
+
+  /* Si Firebase déjà prêt → lancer directement */
+  if (window._fbReady && typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
+    _doAuth();
     return;
   }
 
-  /* Android / Chrome / autres → popup */
-  firebase.auth().signInWithPopup(provider)
-    .then(function(result) {
-      firebase.database().ref('users/' + result.user.uid).set({
-        name: result.user.displayName, email: result.user.email,
-        photo: result.user.photoURL, lastLogin: Date.now(), uid: result.user.uid
-      });
-    })
-    .catch(function(err) {
-      if (btn) { btn.disabled = false; btn.innerHTML = _googleBtnHTML(); }
-      if (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment') {
-        showToast('⚠️ Popup bloqué — redirection…');
-        setTimeout(function() { firebase.auth().signInWithRedirect(provider); }, 800);
-      } else if (err.code !== 'auth/popup-closed-by-user') {
-        showToast('⚠️ Erreur : ' + err.message);
-      }
-    });
-  }); /* fin _fbInit */
+  /* Sinon attendre max 6s avec indicateur visuel */
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span>⏳</span> Chargement…'; }
+  var _waited = 0;
+  var _waitTimer = setInterval(function() {
+    _waited += 200;
+    if (window._fbReady && typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
+      clearInterval(_waitTimer);
+      _doAuth();
+    } else if (_waited >= 6000) {
+      clearInterval(_waitTimer);
+      _resetBtn();
+      showToast('⚠️ Connexion impossible — vérifiez votre réseau et réessayez');
+    }
+  }, 200);
 }
 
 function _googleBtnHTML() {
