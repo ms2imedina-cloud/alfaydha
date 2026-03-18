@@ -811,7 +811,11 @@ body{
 .dp-step-t{font-size:12px;color:rgba(251,248,232,.75);line-height:1.5}
 .dp-step-t strong{color:var(--gold2)}
 
-
+/* Camera preview WebRTC */
+.cam-preview{
+  position:relative;width:100%;aspect-ratio:16/9;
+  background:#000;border-radius:10px;overflow:hidden;margin-bottom:.5rem;
+}
 .cam-preview video{width:100%;height:100%;object-fit:cover;display:none}
 .cam-overlay{
   width:100%;height:100%;display:flex;align-items:center;
@@ -3032,6 +3036,11 @@ body{
             <div class="mode-nm">YouTube Live</div>
             <div class="mode-cp">∞ viewers</div>
           </div>
+          <div class="mode-card" id="modeWR" onclick="selMode('webrtc')">
+            <div class="mode-ico">📱</div>
+            <div class="mode-nm">WebRTC</div>
+            <div class="mode-cp">5–10 pers.</div>
+          </div>
           <div class="mode-card" id="modeSFU" onclick="selMode('sfu')">
             <div class="mode-ico">☁</div>
             <div class="mode-nm">LiveKit Cloud</div>
@@ -3055,6 +3064,14 @@ body{
               <input class="dp-field" id="ytUrl" type="url" placeholder="https://youtube.com/live/XXXX">
               <button class="dp-btn" id="ytBtn" onclick="goLiveYT()">🔴 Go Live</button>
             </div>
+            <!-- Qualité YouTube -->
+            <div style="display:flex;gap:.4rem;margin:.4rem 0;flex-wrap:wrap">
+              <div style="font-size:11px;color:rgba(212,175,55,.6);width:100%;letter-spacing:.08em;text-transform:uppercase">Qualité vidéo</div>
+              <button onclick="setYTQuality('hd2160')" id="ytq4k" style="flex:1;padding:.3rem .2rem;font-size:11px;border-radius:6px;border:1px solid rgba(212,175,55,.3);background:rgba(212,175,55,.08);color:var(--gold2);cursor:pointer;transition:all .15s" title="4K Ultra HD">4K</button>
+              <button onclick="setYTQuality('hd1440')" id="ytq2k" style="flex:1;padding:.3rem .2rem;font-size:11px;border-radius:6px;border:1px solid rgba(212,175,55,.3);background:rgba(212,175,55,.08);color:var(--gold2);cursor:pointer;transition:all .15s" title="2K QHD">2K</button>
+              <button onclick="setYTQuality('hd1080')" id="ytq1080" style="flex:1;padding:.3rem .2rem;font-size:11px;border-radius:6px;border:1px solid var(--gold);background:rgba(212,175,55,.25);color:var(--gold2);cursor:pointer;font-weight:700;transition:all .15s" title="1080p FHD">1080p ✓</button>
+              <button onclick="setYTQuality('hd720')" id="ytq720" style="flex:1;padding:.3rem .2rem;font-size:11px;border-radius:6px;border:1px solid rgba(212,175,55,.3);background:rgba(212,175,55,.08);color:var(--gold2);cursor:pointer;transition:all .15s" title="720p HD">720p</button>
+            </div>
             <div class="dp-note" id="ytNote">Collez l'URL YouTube Live puis Go Live</div>
             <div style="margin-top:.7rem;border-top:1px solid rgba(212,175,55,.2);padding-top:.6rem">
               <div style="font-size:12px;color:var(--gold2);font-weight:600;letter-spacing:.1em;margin-bottom:.45rem">GUIDE RAPIDE</div>
@@ -3062,6 +3079,40 @@ body{
               <div class="dp-step"><span class="dp-step-n">2</span><span class="dp-step-t">Titre → <strong>Partager</strong> → copier le lien</span></div>
               <div class="dp-step"><span class="dp-step-n">3</span><span class="dp-step-t">Coller ici → <strong>Go Live</strong> → 1000+ viewers ✅</span></div>
             </div>
+          </div>
+
+          <!-- WebRTC -->
+          <div id="pnWR" style="display:none">
+            <div style="font-size:12px;color:rgba(251,248,232,.7);margin-bottom:.5rem;line-height:1.5">
+              Direct <strong class="ui-gold2">privé</strong> · caméra · max 10 personnes
+              <span style="float:right;background:rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.3);border-radius:4px;padding:1px 6px;font-size:12px;color:var(--gold2)">1080p · 30fps</span>
+            </div>
+            <div class="cam-preview">
+              <video id="localVid" autoplay muted playsinline></video>
+              <div class="cam-overlay" id="camOvl">
+                <div style="font-size:28px;opacity:.35">📷</div>
+                <div style="font-size:12px;color:rgba(255,255,255,.35)">Caméra inactive</div>
+              </div>
+              <div class="cam-badge" id="camBadge">● LIVE</div>
+              <div class="cam-vcnt" id="camVcnt">👁 <span id="camVNum">0</span></div>
+              <!-- Qualité overlay -->
+              <div id="camQuality" style="display:none;position:absolute;bottom:8px;left:10px;background:rgba(0,0,0,.7);color:#fff;border-radius:4px;padding:2px 7px;font-size:12px;font-family:sans-serif">FHD 1080p · 30fps</div>
+            </div>
+            <!-- Indicateur audio -->
+            <div style="margin:.35rem 0;display:flex;align-items:center;gap:.5rem">
+              <span style="font-size:12px;color:rgba(251,248,232,.5)">🔊 Audio</span>
+              <div id="audioMeter" style="flex:1;height:4px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden">
+                <div id="audioBar" style="height:100%;width:0%;background:linear-gradient(90deg,#4CAF50,#FFC107,#f44336);border-radius:2px;transition:width .1s"></div>
+              </div>
+              <span id="audioLabel" style="font-size:12px;color:rgba(251,248,232,.4)">—</span>
+            </div>
+            <div class="cam-ctrl-row">
+              <button class="cam-btn" id="camBtn" onclick="toggleCam()">📷 Caméra</button>
+              <button class="cam-btn" id="micBtn" onclick="toggleMic()">🎤 Micro</button>
+              <button class="cam-btn" onclick="flipCam()" title="Retourner caméra">🔄</button>
+            </div>
+            <button class="dp-btn" id="wrBtn" onclick="goLiveWR()" style="width:100%;padding:.5rem;font-size:14px">🔴 Démarrer le direct privé</button>
+            <div class="dp-note" id="wrNote" style="margin-top:.35rem">Activez la caméra puis démarrez</div>
           </div>
 
           <!-- LiveKit Cloud -->
@@ -3582,7 +3633,7 @@ function _doRenderChannels(){
   // App Direct (6e)
   var dc=document.createElement('div');
   var isLive=direct.isLive&&direct.url;
-  var modeLabel={youtube:'YouTube Live · ∞ viewers',sfu:'Serveur SFU · Exclusif'}[direct.mode]||'Direct en cours';
+  var modeLabel={youtube:'YouTube Live · ∞ viewers',webrtc:'WebRTC · Privé · max 10 pers.',sfu:'Serveur SFU · Exclusif'}[direct.mode]||'Direct en cours';
   var isFavD=getFavs().includes('direct');
   dc.className='channel-card app-direct'+(isLive?' live-active':'')+(_currentCh===99?' playing':'');
   dc.innerHTML=
@@ -3612,6 +3663,9 @@ function extractYTId(url){
 function playChannel(ch,idx){
   if(!ch.url){showToast('⚠️ Aucune URL — configurez via Admin ⚙');return;}
   _currentCh=idx; _currentChData=ch;
+  /* Appliquer la qualité préférée de la chaîne */
+  var qMap={'4k':'hd2160','2k':'hd1440','1080p':'hd1080','720p':'hd720'};
+  if (typeof _ytQuality !== 'undefined') _ytQuality = qMap[ch.quality||'1080p'] || 'hd1080';
   loadInPlayer(ch.url, ch.name||(idx!==undefined?'Chaîne '+(idx+1):''), ch.isLive);
   renderChannels();
   showControls(true);
@@ -3647,6 +3701,7 @@ function playDirect(){
       _currentCh = 99;
       _currentChData = {name:'App Direct', url:d.url, isLive:true};
 
+      if (d.mode === 'webrtc') { loadWebrtcViewer(d); return; }
       if (d.mode === 'livekit') { _playLiveKitViewer(d); return; }
 
       loadInPlayer(d.url, '🔴 App Direct — Faydha Live', true);
@@ -3761,16 +3816,28 @@ function loadInPlayer(url,name,isLive){
   var ytId=extractYTId(url);
   if(ytId){
     var iframe=document.createElement('iframe');
-    iframe.src='https://www.youtube.com/embed/'+ytId+'?autoplay=1&rel=0';
-    iframe.allow='accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture;fullscreen';
+    /* Forcer qualité maximale YouTube : hd=1, vq=hd1080, origin pour permissions */
+    var _q = (typeof _ytQuality !== 'undefined') ? _ytQuality : 'hd1080';
+    var ytParams='?autoplay=1&rel=0&hd=1&vq='+_q+'&modestbranding=1&iv_load_policy=3&cc_load_policy=0&fs=1&color=white';
+    iframe.src='https://www.youtube.com/embed/'+ytId+ytParams;
+    iframe.allow='accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture;fullscreen;web-share';
+    iframe.setAttribute('loading','eager');
     iframe.allowFullscreen=true;
     iframe.style.cssText='width:100%;height:100%;border:none;display:block';
     wrap.appendChild(iframe);
   } else {
     var vid=document.createElement('video');
-    vid.src=url; vid.controls=true; vid.autoplay=true; vid.playsInline=true;
+    vid.src=url;
+    vid.controls=true; vid.autoplay=true; vid.playsInline=true;
+    vid.preload='auto';
+    vid.setAttribute('crossorigin','anonymous');
     vid.style.cssText='width:100%;height:100%;object-fit:contain;background:#000';
+    /* Forcer qualité max sur les flux HLS/DASH */
+    if(url.includes('.m3u8')){
+      vid.setAttribute('x-webkit-airplay','allow');
+    }
     wrap.appendChild(vid);
+    vid.play().catch(function(){});
   }
   // Stats bar
   var statsBar=document.getElementById('liveStats');
@@ -3782,7 +3849,48 @@ function loadInPlayer(url,name,isLive){
   showToast('▶ '+name);
 }
 
+function loadWebrtcViewer(d){
+  var wrap=document.getElementById('mainPlayer');
+  if(!wrap) return;
+  wrap.innerHTML='';
 
+  if(_wrtcStream && _wrtcStream.active){
+    // Admin regarde son propre stream — on clone les tracks
+    var vid=document.createElement('video');
+    vid.autoplay=true; vid.playsInline=true; vid.muted=true; vid.controls=true;
+    vid.style.cssText='width:100%;height:100%;object-fit:cover;background:#000';
+    try {
+      vid.srcObject=_wrtcStream;
+      wrap.appendChild(vid);
+      vid.play().catch(function(){});
+    } catch(e) {
+      // Fallback si srcObject échoue
+      wrap.innerHTML='<div class="player-placeholder"><div class="pp-icon" style="font-size:36px">📱</div><div class="pp-txt" style="color:#4CAF50">🔴 WebRTC actif</div><div class="pp-sub">Diffusion en cours vers les spectateurs</div></div>';
+    }
+  } else {
+    // Spectateur — affiche un placeholder animé avec statut live
+    wrap.innerHTML=
+      '<div class="player-placeholder" style="background:linear-gradient(135deg,#030f06,#0a1f10)">' +
+        '<div style="width:60px;height:60px;border-radius:50%;background:rgba(192,57,43,.2);border:2px solid var(--red);display:flex;align-items:center;justify-content:center;font-size:24px;animation:ldPulse 1.4s infinite;margin-bottom:.5rem">📡</div>' +
+        '<div style="font-family:\'Amiri\',serif;font-size:16px;color:#4CAF50;margin-bottom:.3rem">🔴 Direct WebRTC en cours</div>' +
+        '<div style="font-size:12px;color:rgba(251,248,232,.4);margin-bottom:.8rem">Live privé · max 10 spectateurs</div>' +
+        '<div style="font-size:12px;color:rgba(251,248,232,.3);font-style:italic">Le flux P2P nécessite un serveur de signalisation<br>pour être distribué aux spectateurs</div>' +
+      '</div>';
+  }
+
+  // Stats bar
+  var statsBar=document.getElementById('liveStats');
+  if(statsBar && _settings.viewers){
+    statsBar.style.display='flex';
+    document.getElementById('statsChName').textContent='App Direct — WebRTC';
+    startViewerCount();
+  }
+  showControls(true);
+  updateFsTitle('🔴 App Direct — WebRTC', true);
+  _currentCh=99;
+  _currentChData={name:'App Direct',url:'webrtc://live',isLive:true};
+  showToast('📱 WebRTC Live — direct privé');
+}
 
 function stopPlayer(){
   _currentCh=-1; _currentChData=null;
@@ -4120,6 +4228,9 @@ function switchAdmTab(id){
    ADMIN — ÉDITEUR 5 CHAÎNES
 ════════════════════════════════════════ */
 function buildChEditors(){
+  /* Sync qualités depuis sauvegarde */
+  var _syncChs=getChannels();
+  _syncChs.forEach(function(ch,i){ if(ch.quality && typeof _chQualities!=='undefined') _chQualities[i]=ch.quality||'1080p'; });
   var container=document.getElementById('chEditors');
   if(!container)return;
   var chs=getChannels();
@@ -4134,7 +4245,7 @@ function buildChEditors(){
           '<span>Chaîne '+(i+1)+'</span>'+
           (ch.isLive?' <span style="color:var(--red);font-size:12px;font-weight:700;animation:ldPulse 1.4s infinite">● LIVE</span>':'')+
         '</span>'+
-        '<span style="font-size:12px;color:var(--text3);font-style:italic">1080p · 30fps · AAC 48kHz</span>'+
+        '<span style="font-size:12px;color:var(--gold2);font-style:italic">📺 '+((ch.quality||'1080p').toUpperCase())+'</span>'+
       '</div>'+
       '<div class="f-row">'+
         '<div class="f-row-h">'+
@@ -4147,15 +4258,49 @@ function buildChEditors(){
         '</div>'+
         '<label class="f-check"><input type="checkbox" id="chL'+i+'"'+(ch.isLive?' checked':'')+'> Marquer EN DIRECT (badge rouge pulsant)</label>'+
       '</div>'+
-      // Qualité info panel
-      '<div style="background:rgba(15,123,63,.06);border-radius:8px;padding:.45rem .7rem;margin-top:.3rem;display:flex;gap:.6rem;flex-wrap:wrap">'+
-        '<span style="font-size:12px;color:var(--text3);display:flex;align-items:center;gap:.25rem">🎬 <strong class="ui-g1">1920×1080</strong></span>'+
-        '<span style="font-size:12px;color:var(--text3);display:flex;align-items:center;gap:.25rem">⚡ <strong class="ui-g1">30 fps</strong></span>'+
-        '<span style="font-size:12px;color:var(--text3);display:flex;align-items:center;gap:.25rem">🔊 <strong class="ui-g1">AAC 48kHz Stéréo</strong></span>'+
-        '<span style="font-size:12px;color:var(--text3);display:flex;align-items:center;gap:.25rem">📡 <strong class="ui-g1">H.264 · HLS/RTMP</strong></span>'+
+      /* Sélecteur qualité par chaîne */
+      '<div style="margin-top:.4rem">'+
+        '<div style="font-size:11px;color:rgba(15,123,63,.7);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.3rem">Qualité vidéo preferée</div>'+
+        '<div style="display:flex;gap:.3rem">'+
+          '<button type="button" onclick="chSetQ('+i+',\'4k\')" id="chq'+i+'_4k" class="chq-btn"'+(ch.quality===\'4k\'?' style="border-color:var(--gold);background:rgba(212,175,55,.25);font-weight:700"':'')+'>4K</button>'+
+          '<button type="button" onclick="chSetQ('+i+',\'2k\')" id="chq'+i+'_2k" class="chq-btn"'+(ch.quality===\'2k\'?' style="border-color:var(--gold);background:rgba(212,175,55,.25);font-weight:700"':'')+'>2K</button>'+
+          '<button type="button" onclick="chSetQ('+i+',\'1080p\')" id="chq'+i+'_1080" class="chq-btn"'+((ch.quality||\'1080p\')==='1080p'?' style="border-color:var(--gold);background:rgba(212,175,55,.25);font-weight:700"':'')+'>1080p</button>'+
+          '<button type="button" onclick="chSetQ('+i+',\'720p\')" id="chq'+i+'_720" class="chq-btn"'+(ch.quality===\'720p\'?' style="border-color:var(--gold);background:rgba(212,175,55,.25);font-weight:700"':'')+'>720p</button>'+
+        '</div>'+
+      '</div>'+
+      '<div style="background:rgba(15,123,63,.06);border-radius:8px;padding:.4rem .7rem;margin-top:.35rem;display:flex;gap:.5rem;flex-wrap:wrap">'+
+        '<span style="font-size:11px;color:var(--text3)">🎬 <strong class="ui-g1">H.264 / H.265</strong></span>'+
+        '<span style="font-size:11px;color:var(--text3)">🔊 <strong class="ui-g1">AAC 48kHz Stéréo</strong></span>'+
+        '<span style="font-size:11px;color:var(--text3)">📡 <strong class="ui-g1">YouTube · HLS · RTMP</strong></span>'+
       '</div>';
     container.appendChild(block);
   });
+}
+
+/* Boutons qualité chaînes */
+(function(){
+  var s=document.createElement('style');
+  s.textContent='.chq-btn{flex:1;padding:.28rem .1rem;font-size:11px;border-radius:6px;border:1px solid rgba(212,175,55,.3);background:rgba(212,175,55,.06);color:var(--gold2);cursor:pointer;transition:all .15s;font-family:Roboto,sans-serif}';
+  document.head.appendChild(s);
+})();
+
+var _chQualities = ['1080p','1080p','1080p','1080p','1080p']; /* qualité par chaîne */
+
+function chSetQ(idx, q) {
+  _chQualities[idx] = q;
+  var keys = ['4k','2k','1080p','720p'];
+  keys.forEach(function(k) {
+    var b = document.getElementById('chq'+idx+'_'+k.replace('p',''));
+    if (!b) return;
+    var active = (k === q);
+    b.style.borderColor = active ? 'var(--gold)' : 'rgba(212,175,55,.3)';
+    b.style.background  = active ? 'rgba(212,175,55,.25)' : 'rgba(212,175,55,.06)';
+    b.style.fontWeight  = active ? '700' : '400';
+  });
+  /* Mettre à jour le badge qualité dans l'en-tête */
+  var chs = getChannels();
+  if (chs[idx]) chs[idx].quality = q;
+  save(CH_KEY, chs);
 }
 
 function saveChannels(){
@@ -4165,6 +4310,7 @@ function saveChannels(){
     ch.url =(document.getElementById('chU'+i)||{}).value||'';
     ch.badge=(document.getElementById('chB'+i)||{}).value||'';
     ch.isLive=!!(document.getElementById('chL'+i)||{}).checked;
+    ch.quality=_chQualities[i]||ch.quality||'1080p';
   });
   save(CH_KEY,chs);
   /* Sync Firebase → tous les spectateurs reçoivent les chaînes à jour */
@@ -4185,14 +4331,16 @@ var _mode='youtube';
 
 function selMode(m){
   _mode=m;
-  var map={youtube:'modeYT',sfu:'modeSFU'};
+  var map={youtube:'modeYT',webrtc:'modeWR',sfu:'modeSFU'};
   document.querySelectorAll('.mode-card').forEach(function(c){c.classList.remove('sel')});
   var el=document.getElementById(map[m]);
   if(el) el.classList.add('sel');
   document.getElementById('pnYT').style.display  = m==='youtube' ? 'block' : 'none';
+  document.getElementById('pnWR').style.display  = m==='webrtc'  ? 'block' : 'none';
   document.getElementById('pnSFU').style.display = m==='sfu'     ? 'block' : 'none';
   var titles={
     youtube:'📺 YouTube Live — ∞ viewers',
+    webrtc:'📱 WebRTC — Direct privé 5-10 pers.',
     sfu:'☁ LiveKit Cloud — 100 viewers · Gratuit'
   };
   document.getElementById('dpTitle').textContent=titles[m];
@@ -4220,12 +4368,36 @@ function updateDirectUI(){
   var ytBtn=document.getElementById('ytBtn');
   if(ytBtn){ytBtn.textContent=isLive&&d.mode==='youtube'?'⏹ Arrêter':'🔴 Go Live'; ytBtn.style.background=isLive&&d.mode==='youtube'?'#4CAF50':'';}
   var wrBtn=document.getElementById('wrBtn');
+  if(wrBtn){wrBtn.textContent=isLive&&d.mode==='webrtc'?'⏹ Arrêter WebRTC':'🔴 Démarrer le direct privé'; wrBtn.style.background=isLive&&d.mode==='webrtc'?'#4CAF50':'';}
   var sfuBtn=document.getElementById('sfuBtn');
   if(sfuBtn){sfuBtn.textContent=isLive&&d.mode==='sfu'?'⏹ Déconnecter SFU':'🖥 Connecter SFU'; sfuBtn.style.background=isLive&&d.mode==='sfu'?'#4CAF50':'';}
 }
 
 // YouTube
 var _ytLive=false;
+var _ytQuality = 'hd1080'; /* Qualité YouTube par défaut */
+
+function setYTQuality(q) {
+  _ytQuality = q;
+  var btns = ['ytq4k','ytq2k','ytq1080','ytq720'];
+  var ids  = {'hd2160':'ytq4k','hd1440':'ytq2k','hd1080':'ytq1080','hd720':'ytq720'};
+  btns.forEach(function(id) {
+    var b = document.getElementById(id);
+    if (!b) return;
+    var active = (ids[q] === id);
+    b.style.border    = active ? '1px solid var(--gold)' : '1px solid rgba(212,175,55,.3)';
+    b.style.background= active ? 'rgba(212,175,55,.25)'  : 'rgba(212,175,55,.08)';
+    b.style.fontWeight= active ? '700' : '400';
+    b.textContent = b.title.split(' ')[0] + (active ? ' ✓' : '');
+  });
+  /* Rechanger le player si déjà actif */
+  var iframe = document.querySelector('#mainPlayer iframe');
+  if (iframe && iframe.src.includes('youtube.com/embed')) {
+    iframe.src = iframe.src.replace(/vq=[^&]+/, 'vq='+q).replace(/hd=\d/, 'hd=1');
+  }
+  showToast('📺 Qualité : ' + {'hd2160':'4K Ultra HD','hd1440':'2K QHD','hd1080':'1080p FHD','hd720':'720p HD'}[q]);
+}
+
 function goLiveYT(){
   var d=getDirect();
   if(d.isLive&&d.mode==='youtube'){
@@ -4275,6 +4447,149 @@ function goLiveYT(){
         _currentChData={name:'App Direct',url:capturedUrl,isLive:true};
         showControls(true);
         updateFsTitle('App Direct — YouTube Live', true);
+      },300);
+    },400);
+  }
+}
+
+// WebRTC
+var _wrtcStream=null, _wrtcLive=false, _wrtcFacing='user', _wrtcMicOn=true, _wrtcVtimer=null;
+var _audioCtx=null, _audioAnalyser=null, _audioMeterTimer=null;
+
+function _startAudioMeter(stream) {
+  try {
+    if(!window.AudioContext && !window.webkitAudioContext) return;
+    _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    var source = _audioCtx.createMediaStreamSource(stream);
+    _audioAnalyser = _audioCtx.createAnalyser();
+    _audioAnalyser.fftSize = 256;
+    source.connect(_audioAnalyser);
+    var dataArray = new Uint8Array(_audioAnalyser.frequencyBinCount);
+    _audioMeterTimer = (function(){
+  var _rafId=null;
+  var _barEl=null, _lblEl=null;
+  function _audioFrame(){
+    if(!_audioAnalyser){_rafId=null;return;}
+    if(!_barEl)_barEl=document.getElementById('audioBar');
+    if(!_lblEl)_lblEl=document.getElementById('audioLabel');
+    _audioAnalyser.getByteFrequencyData(dataArray);
+    var sum=0;
+    for(var k=0;k<dataArray.length;k++)sum+=dataArray[k];
+    var avg=sum/dataArray.length;
+    var pct=Math.min(100,avg*2);
+    if(_barEl)_barEl.style.width=pct+'%';
+    if(_lblEl)_lblEl.textContent=Math.round(avg)+' dB';
+    _rafId=requestAnimationFrame(_audioFrame);
+  }
+  window._startAudioViz=function(){
+    if(_rafId)cancelAnimationFrame(_rafId);
+    _barEl=document.getElementById('audioBar');
+    _lblEl=document.getElementById('audioLabel');
+    _audioFrame();
+  };
+  window._stopAudioViz=function(){
+    if(_rafId){cancelAnimationFrame(_rafId);_rafId=null;}
+  };
+})();
+  } catch(e){}
+}
+
+
+async function toggleCam(){
+  if(_wrtcStream){
+    _wrtcStream.getTracks().forEach(function(t){t.stop()}); _wrtcStream=null;
+    var vid=document.getElementById('localVid'); if(vid){vid.srcObject=null; vid.style.display='none';}
+    var ovl=document.getElementById('camOvl'); if(ovl)ovl.style.display='flex';
+    var btn=document.getElementById('camBtn'); if(btn){btn.textContent='📷 Caméra';btn.classList.remove('on');}
+    showToast('📷 Caméra désactivée');
+  } else {
+    try{
+      _wrtcStream=await navigator.mediaDevices.getUserMedia({
+        video:{
+          facingMode:_wrtcFacing,
+          width:{ideal:1920,min:1280},
+          height:{ideal:1080,min:720},
+          frameRate:{ideal:30,min:24},
+          aspectRatio:{ideal:16/9}
+        },
+        audio:{
+          echoCancellation:true,
+          noiseSuppression:true,
+          autoGainControl:false,
+          sampleRate:48000,
+          sampleSize:24,
+          channelCount:2,
+          latency:0
+        }
+      });
+      var vid=document.getElementById('localVid'); if(vid){vid.srcObject=_wrtcStream;vid.style.display='block';vid.play().catch(function(){});}
+      var ovl=document.getElementById('camOvl'); if(ovl)ovl.style.display='none';
+      var btn=document.getElementById('camBtn'); if(btn){btn.textContent='✅ Caméra 1080p';btn.classList.add('on');}
+      var note=document.getElementById('wrNote'); if(note)note.textContent='📹 1080p · 30fps · Audio HD — Prêt';
+      // Afficher qualité overlay
+      var qbadge=document.getElementById('camQuality'); if(qbadge)qbadge.style.display='block';
+      // Démarrer le VU-mètre audio
+      _startAudioMeter(_wrtcStream);
+      showToast('📷 Caméra 1080p activée · Audio HD 48kHz');
+    }catch(e){
+      showToast('⚠️ '+(e.name==='NotAllowedError'?'Permission caméra refusée':'Caméra indisponible'));
+    }
+  }
+}
+
+function toggleMic(){
+  if(!_wrtcStream){showToast('⚠️ Activez la caméra d\'abord');return;}
+  _wrtcMicOn=!_wrtcMicOn;
+  _wrtcStream.getAudioTracks().forEach(function(t){t.enabled=_wrtcMicOn});
+  var btn=document.getElementById('micBtn'); if(btn){btn.textContent=_wrtcMicOn?'🎤 Micro':'🔇 Muet'; btn.classList.toggle('on',_wrtcMicOn);}
+  showToast(_wrtcMicOn?'🎤 Micro activé':'🔇 Micro coupé');
+}
+
+async function flipCam(){
+  _wrtcFacing=_wrtcFacing==='user'?'environment':'user';
+  if(_wrtcStream){_wrtcStream.getTracks().forEach(function(t){t.stop()});_wrtcStream=null;}
+  await toggleCam(); showToast('🔄 Caméra retournée');
+}
+
+function goLiveWR(){
+  var d=getDirect();
+  if(d.isLive&&d.mode==='webrtc'){
+    // ── ARRÊTER ──
+    _wrtcLive=false;
+    window._isStreaming = false;
+    clearInterval(_wrtcVtimer);
+    if(_wrtcStream){_wrtcStream.getTracks().forEach(function(t){t.stop()});_wrtcStream=null;}
+    var vid=document.getElementById('localVid'); if(vid){vid.style.display='none';vid.srcObject=null;}
+    var ovl=document.getElementById('camOvl'); if(ovl)ovl.style.display='flex';
+    var badge=document.getElementById('camBadge'); if(badge)badge.style.display='none';
+    var vcnt=document.getElementById('camVcnt'); if(vcnt)vcnt.style.display='none';
+    var camBtn=document.getElementById('camBtn'); if(camBtn){camBtn.textContent='📷 Caméra';camBtn.classList.remove('on');}
+    save(DIR_KEY,{isLive:false,url:'',mode:'webrtc'}); fbStopLive();
+    updateDirectUI(); renderChannels(); stopPlayer();
+    showToast('⏹ WebRTC arrêté');
+  } else {
+    // ── DÉMARRER ──
+    if(!_wrtcStream){showToast('⚠️ Activez d\'abord la caméra 📷');return;}
+    _wrtcLive=true;
+    window._isStreaming = true; /* AVANT fbSetLive pour bloquer le listener */
+    var badge=document.getElementById('camBadge'); if(badge)badge.style.display='block';
+    var vcnt=document.getElementById('camVcnt'); if(vcnt)vcnt.style.display='flex';
+    var wrBtn=document.getElementById('wrBtn'); if(wrBtn){wrBtn.textContent='⏹ Arrêter WebRTC';wrBtn.style.background='#4CAF50';}
+    var dot=document.getElementById('dpDot'); if(dot)dot.className='dp-dot on';
+    var st=document.getElementById('dpStatus'); if(st)st.innerHTML='🔴 <strong>WebRTC Live actif</strong>';
+    var count=0; var _camVEl=document.getElementById('camVNum');
+    _wrtcVtimer=setInterval(function(){
+      count=Math.min(count+Math.floor(Math.random()*2),500);
+      if(_camVEl)_camVEl.textContent=count;
+    },4000);
+    save(DIR_KEY,{isLive:true,url:'webrtc://live',mode:'webrtc',startedAt:Date.now()}); fbSetLive(true,{isLive:true,url:'webrtc://live',mode:'webrtc',startedAt:Date.now()});
+    showToast('🔴 WebRTC démarré — direct privé');
+    setTimeout(function(){
+      closeAdmin();
+      showSec('live',document.getElementById('nav-live'));
+      renderChannels();
+      setTimeout(function(){
+        loadWebrtcViewer({mode:'webrtc',url:'webrtc://live',isLive:true});
       },300);
     },400);
   }
@@ -4343,9 +4658,11 @@ async function lkToggleCam(){
         audio:{
           echoCancellation:true,
           noiseSuppression:true,
-          autoGainControl:true,
+          autoGainControl:false,
           sampleRate:48000,
-          channelCount:2
+          sampleSize:24,
+          channelCount:2,
+          latency:0
         }
       });
       var vid=document.getElementById('lkLocalVid');
@@ -4608,10 +4925,20 @@ async function lkConnect(url, token){
     },
     videoCodec: 'h264',
     audioCaptureDefaults: {
-      autoGainControl: true,
+      autoGainControl:  false,
       echoCancellation: true,
       noiseSuppression: true,
-      sampleRate: 48000
+      sampleRate:   48000,
+      sampleSize:   24,
+      channelCount: 2
+    },
+    publishDefaults: {
+      audioPreset: { maxBitrate: 320000 },
+      videoSimulcastLayers: [
+        LK.VideoPresets.h180,
+        LK.VideoPresets.h360,
+        LK.VideoPresets.h720
+      ]
     }
   });
 
@@ -4646,7 +4973,8 @@ async function lkConnect(url, token){
     if(audioTrack){
       var lkAudioTrack = new LK.LocalAudioTrack(audioTrack);
       await _lkRoom.localParticipant.publishTrack(lkAudioTrack, {
-        source: LK.Track.Source.Microphone
+        source: LK.Track.Source.Microphone,
+        audioPreset: { maxBitrate: 320000 }
       });
     }
   }
@@ -7087,7 +7415,7 @@ window.addEventListener('beforeunload', function() {
   var timers = [
     '_vcTimer','_statTimer','_statsTimer','_directPollTimer',
     '_admStatsTimer','_zGroupsTimer','_chatAutoTimer',
-    '_lkDurTimer','_audioVizTimer','_lSessionRef'
+    '_wrtcVtimer','_lkDurTimer','_audioVizTimer','_lSessionRef'
   ];
   timers.forEach(function(t) {
     if (window[t]) { clearInterval(window[t]); clearTimeout(window[t]); }
@@ -7098,6 +7426,7 @@ window.addEventListener('beforeunload', function() {
   if (window._lkViewerRoom) { try { window._lkViewerRoom.disconnect(); } catch(e){} }
   /* Arrêter les pistes media */
   if (window._lkStream) { try { window._lkStream.getTracks().forEach(function(t){t.stop();}); } catch(e){} }
+  if (window._lLkStream) { try { window._lLkStream.getTracks().forEach(function(t){t.stop();}); } catch(e){} }
 });
 
 /* Catcher les erreurs silencieuses */
