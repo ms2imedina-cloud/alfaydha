@@ -3736,9 +3736,8 @@ async function _playLiveKitViewer(d) {
       }
 
       if (pub && pub.url && pub.token) {
-        /* Ancien format avec token fixe → générer un token unique si possible */
-        /* Sinon utiliser le token fixe en dernier recours */
-        _showLiveError(wrap, 'Live en cours — actualisez la page ou demandez au streamer de redémarrer le live');
+        /* Token fixe disponible → l'utiliser directement */
+        lkJoinAsViewer(pub.url, pub.token);
         return;
       }
 
@@ -4786,22 +4785,37 @@ function lkOnConnected(){
   _lkLive = true;
   window._isStreaming = true;
 
-  var urlVal = (document.getElementById('lkUrl')||{}).value||'';
-  var apiKey = (document.getElementById('lkApiKey')||{}).value||'';
+  var urlVal    = (document.getElementById('lkUrl')||{}).value||'';
+  var apiKey    = (document.getElementById('lkApiKey')||{}).value||'';
   var apiSecret = (document.getElementById('lkApiSecret')||{}).value||'';
-  var tokenVal = (document.getElementById('lkToken')||{}).value||'';
+  var tokenVal  = (document.getElementById('lkToken')||{}).value||'';
+
+  /* Fallback localStorage si champs vides */
+  if(!apiKey || !apiSecret){
+    try{
+      var _lkc = JSON.parse(localStorage.getItem(LK_KEY)||'{}');
+      if(!apiKey    && _lkc.apiKey)    apiKey    = _lkc.apiKey;
+      if(!apiSecret && _lkc.apiSecret) apiSecret = _lkc.apiSecret;
+      if(!urlVal    && _lkc.url)       urlVal    = _lkc.url;
+      if(!tokenVal  && _lkc.token)     tokenVal  = _lkc.token;
+    }catch(e){}
+  }
 
   save(DIR_KEY,{isLive:true, url:urlVal, mode:'livekit', startedAt:Date.now()});
   fbSetLive(true,{isLive:true,url:urlVal,mode:'livekit',startedAt:Date.now()});
 
-  /* Publier la config viewer dans Firebase — chaque spectateur génère son propre token */
+  /* Publier config viewer dans Firebase */
   _fbInit(function() {
-    firebase.database().ref('app_config/livekit_viewer').set({
-      url: urlVal,
-      apiKey: apiKey,
-      apiSecret: apiSecret,
-      startedAt: Date.now()
-    });
+    var viewerData = { url: urlVal, startedAt: Date.now() };
+    if (apiKey && apiSecret) {
+      /* Cas idéal : spectateurs génèrent leur propre token unique */
+      viewerData.apiKey    = apiKey;
+      viewerData.apiSecret = apiSecret;
+    } else if (tokenVal) {
+      /* Fallback : token pré-généré partagé */
+      viewerData.token = tokenVal;
+    }
+    firebase.database().ref('app_config/livekit_viewer').set(viewerData);
   });
 
   // UI admin
