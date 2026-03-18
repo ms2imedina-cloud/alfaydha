@@ -15,46 +15,31 @@
 <link rel="dns-prefetch" href="https://faydha-app-default-rtdb.firebaseio.com">
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 <link rel="dns-prefetch" href="https://www.gstatic.com">
-<!-- Firebase SDKs — chargement dynamique sécurisé -->
+<!-- Firebase config -->
+<script>
+window._fbConfig={
+  apiKey:"AIzaSyDKEVkWM5c2HD5YamSEmYQO1dpeDA4NzKE",
+  authDomain:"faydha-app.firebaseapp.com",
+  databaseURL:"https://faydha-app-default-rtdb.firebaseio.com",
+  projectId:"faydha-app",
+  storageBucket:"faydha-app.firebasestorage.app",
+  messagingSenderId:"312192806539",
+  appId:"1:312192806539:web:6b04f18611d0c7dbc4ee8e"
+};
+window._fbReady=false;
+</script>
+<!-- Firebase SDKs — chargés en parallèle pour rapidité maximale -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script>
 (function(){
-  var cfg={
-    apiKey:"AIzaSyDKEVkWM5c2HD5YamSEmYQO1dpeDA4NzKE",
-    authDomain:"faydha-app.firebaseapp.com",
-    databaseURL:"https://faydha-app-default-rtdb.firebaseio.com",
-    projectId:"faydha-app",
-    storageBucket:"faydha-app.firebasestorage.app",
-    messagingSenderId:"312192806539",
-    appId:"1:312192806539:web:6b04f18611d0c7dbc4ee8e"
-  };
-  window._fbConfig = cfg;
-  window._fbReady  = false;
-
-  function loadScript(src, cb){
-    var s=document.createElement('script');
-    s.src=src; s.async=false;
-    s.onload=cb;
-    s.onerror=function(){ console.error('[Firebase] Échec chargement: '+src); cb(); };
-    document.head.appendChild(s);
-  }
-
-  var BASE='https://www.gstatic.com/firebasejs/9.23.0/';
-  loadScript(BASE+'firebase-app-compat.js', function(){
-    loadScript(BASE+'firebase-database-compat.js', function(){
-      loadScript(BASE+'firebase-auth-compat.js', function(){
-        try{
-          if(typeof firebase !== 'undefined'){
-            if(!firebase.apps.length) firebase.initializeApp(window._fbConfig);
-            window._fbReady = true;
-          } else {
-            console.error('[Firebase] Objet firebase introuvable après chargement');
-          }
-        }catch(e){
-          console.error('[Firebase] Erreur init:',e);
-        }
-      });
-    });
-  });
+  try{
+    if(typeof firebase!=='undefined'){
+      if(!firebase.apps.length) firebase.initializeApp(window._fbConfig);
+      window._fbReady=true;
+    }
+  }catch(e){ console.error('[Firebase]',e); }
 })();
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -3342,63 +3327,59 @@ function _isSafari() {
 
 function signInWithGoogle() {
   var btn = document.querySelector('.wlc-google-btn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span>⏳</span> Connexion…'; }
 
   function _resetBtn() {
     if (btn) { btn.disabled = false; btn.innerHTML = _googleBtnHTML(); }
   }
 
-  function _doAuth() {
-    if (btn) { btn.disabled = true; btn.innerHTML = '<span>⏳</span> Connexion…'; }
-    var provider = new firebase.auth.GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: 'select_account' });
+  function _launch() {
+    try {
+      var provider = new firebase.auth.GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: 'select_account' });
 
-    if (_isIOS() || _isSafari()) {
-      try { sessionStorage.setItem('gauth_pending', '1'); } catch(e) {}
-      firebase.auth().signInWithRedirect(provider).catch(function(err) {
-        _resetBtn();
-        showToast('⚠️ Erreur : ' + err.message);
-      });
-      return;
-    }
-
-    firebase.auth().signInWithPopup(provider)
-      .then(function(result) {
-        firebase.database().ref('users/' + result.user.uid).set({
-          name: result.user.displayName, email: result.user.email,
-          photo: result.user.photoURL, lastLogin: Date.now(), uid: result.user.uid
+      if (_isIOS() || _isSafari()) {
+        try { sessionStorage.setItem('gauth_pending', '1'); } catch(e) {}
+        firebase.auth().signInWithRedirect(provider).catch(function(err) {
+          _resetBtn(); showToast('⚠️ ' + err.message);
         });
-      })
-      .catch(function(err) {
-        _resetBtn();
-        if (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment') {
-          showToast('⚠️ Popup bloqué — redirection…');
-          setTimeout(function() { firebase.auth().signInWithRedirect(provider); }, 800);
-        } else if (err.code !== 'auth/popup-closed-by-user') {
-          showToast('⚠️ Erreur : ' + err.message);
-        }
-      });
-  }
+        return;
+      }
 
-  /* Si Firebase déjà prêt → lancer directement */
-  if (window._fbReady && typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
-    _doAuth();
-    return;
-  }
-
-  /* Sinon attendre max 6s avec indicateur visuel */
-  if (btn) { btn.disabled = true; btn.innerHTML = '<span>⏳</span> Chargement…'; }
-  var _waited = 0;
-  var _waitTimer = setInterval(function() {
-    _waited += 200;
-    if (window._fbReady && typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
-      clearInterval(_waitTimer);
-      _doAuth();
-    } else if (_waited >= 6000) {
-      clearInterval(_waitTimer);
+      firebase.auth().signInWithPopup(provider)
+        .then(function(result) {
+          firebase.database().ref('users/' + result.user.uid).set({
+            name: result.user.displayName, email: result.user.email,
+            photo: result.user.photoURL, lastLogin: Date.now(), uid: result.user.uid
+          });
+        })
+        .catch(function(err) {
+          _resetBtn();
+          if (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment') {
+            setTimeout(function() { firebase.auth().signInWithRedirect(provider); }, 500);
+          } else if (err.code !== 'auth/popup-closed-by-user') {
+            showToast('⚠️ ' + err.message);
+          }
+        });
+    } catch(e) {
       _resetBtn();
-      showToast('⚠️ Connexion impossible — vérifiez votre réseau et réessayez');
+      showToast('⚠️ Firebase non disponible — réessayez dans un instant');
     }
-  }, 200);
+  }
+
+  /* Attendre Firebase max 10s */
+  var _t = 0;
+  (function _wait(){
+    if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
+      _launch();
+    } else if (_t < 10000) {
+      _t += 300;
+      setTimeout(_wait, 300);
+    } else {
+      _resetBtn();
+      showToast('⚠️ Service indisponible — vérifiez votre connexion');
+    }
+  })();
 }
 
 function _googleBtnHTML() {
