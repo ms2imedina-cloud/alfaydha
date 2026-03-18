@@ -2914,7 +2914,7 @@ body{
   <div class="fs-player" id="fsPlayer"></div>
   <button class="fs-close" onclick="closeFullscreen()">✕</button>
   <!-- Logo Baye Niass World sur fullscreen -->
-  <div id="fsLogo" style="display:none;position:absolute;top:12px;right:60px;z-index:3200;pointer-events:none">
+  <div id="fsLogo" style="display:none;position:fixed;top:14px;right:64px;z-index:9999;pointer-events:none">
     <img id="fsLogoImg" src="" alt="Baye Niass World" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2.5px solid rgba(212,175,55,.9);box-shadow:0 3px 16px rgba(0,0,0,.8)">
   </div>
   <div class="fs-controls" id="fsControls">
@@ -7158,6 +7158,9 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('[data-logo]').forEach(function(el) {
     el.src = _LOGO_SRC;
   });
+  /* Pré-charger le logo fullscreen */
+  var fli = document.getElementById('fsLogoImg');
+  if (fli) fli.src = _LOGO_SRC;
 });
 
 
