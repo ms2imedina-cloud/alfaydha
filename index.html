@@ -4514,6 +4514,7 @@ function goLiveWR(){
 var _lkRoom       = null;
 var _lkStream     = null;
 var _lkLive       = false;
+var _lkStreamerToken = ''; /* Token streamer actif — pour générer tokens viewer */
 var _lkFacing     = 'user';
 var _lkMicOn      = true;
 var _lkDurTimer   = null;
@@ -4709,6 +4710,7 @@ async function goLiveLK(){
   }
 
   lkSaveConfig(url, apiKey, apiSecret, manToken);
+  _lkStreamerToken = token; /* Sauvegarder pour génération token viewer */
 
   var btn=document.getElementById('lkBtn');
   if(btn){btn.textContent='⏳ Connexion…';btn.style.background='rgba(212,175,55,.5)';btn.disabled=true;}
@@ -4815,31 +4817,47 @@ function lkOnConnected(){
   save(DIR_KEY,{isLive:true, url:urlVal, mode:'livekit', startedAt:Date.now()});
   fbSetLive(true,{isLive:true,url:urlVal,mode:'livekit',startedAt:Date.now()});
 
-  /* Extraire roomName depuis le token streamer */
+  /* Extraire roomName depuis le token streamer (variable globale) */
   var _streamRoomName = 'faydha-live';
   try {
-    var _tkToCheck = tokenVal || '';
+    var _tkToCheck = _lkStreamerToken || tokenVal || apiKey || '';
     if (_tkToCheck && _tkToCheck.startsWith('eyJ')) {
       _streamRoomName = lkExtractRoomName(_tkToCheck);
     }
   } catch(e) {}
 
-  /* Générer et publier token viewer directement — méthode la plus fiable */
+  /* Générer et publier token viewer — côté streamer, credentials certains */
   (async function(){
-    var viewerData = { url: urlVal, room: _streamRoomName, startedAt: Date.now() };
+    /* Récupérer credentials depuis tous les fallbacks disponibles */
+    var _vApiKey    = apiKey;
+    var _vApiSecret = apiSecret;
+    var _vUrl       = urlVal;
+    if (!_vApiKey || !_vApiSecret) {
+      try {
+        var _lkSaved = JSON.parse(localStorage.getItem(LK_KEY)||'{}');
+        if (!_vApiKey    && _lkSaved.apiKey)    _vApiKey    = _lkSaved.apiKey;
+        if (!_vApiSecret && _lkSaved.apiSecret) _vApiSecret = _lkSaved.apiSecret;
+        if (!_vUrl       && _lkSaved.url)       _vUrl       = _lkSaved.url;
+      } catch(e) {}
+    }
+
+    var viewerData = { url: _vUrl, room: _streamRoomName, startedAt: Date.now() };
+
     try {
-      if (apiKey && apiSecret) {
-        /* Générer token viewer côté streamer → plus fiable que côté spectateur */
-        var vToken = await lkGenerateViewerToken(apiKey, apiSecret, _streamRoomName);
+      if (_vApiKey && _vApiSecret) {
+        /* Générer token viewer valide côté streamer */
+        var vToken = await lkGenerateViewerToken(_vApiKey, _vApiSecret, _streamRoomName);
         viewerData.token     = vToken;
-        viewerData.apiKey    = apiKey;
-        viewerData.apiSecret = apiSecret;
+        viewerData.apiKey    = _vApiKey;
+        viewerData.apiSecret = _vApiSecret;
+        viewerData.room      = _streamRoomName;
       } else if (tokenVal) {
         viewerData.token = tokenVal;
       }
     } catch(e) {
       if (tokenVal) viewerData.token = tokenVal;
     }
+
     _fbInit(function() {
       firebase.database().ref('app_config/livekit_viewer').set(viewerData);
     });
