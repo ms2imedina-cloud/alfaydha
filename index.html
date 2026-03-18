@@ -3233,6 +3233,16 @@ body{
           <button class="add-btn" onclick="changePwd()" style="width:100%">🔐 Mettre à jour</button>
           <div class="gate-err" id="pwdErr" style="text-align:left;margin-top:.3rem"></div>
         </div>
+        <div class="sec-title" style="margin-top:.5rem">🤖 Clé API Ask Baye</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:.5rem;line-height:1.5">
+          Cette clé est partagée avec tous les utilisateurs de l'app automatiquement.
+        </div>
+        <div style="display:flex;gap:.4rem;margin-bottom:.3rem">
+          <input class="f-input" id="adminAbKey" type="password" placeholder="sk-ant-api03-…"
+            style="flex:1;font-family:monospace;font-size:12px">
+          <button onclick="adminSaveAbKey()" class="add-btn" style="white-space:nowrap">💾 Sauvegarder</button>
+        </div>
+        <div id="adminAbKeyStatus" style="font-size:12px;color:rgba(251,248,232,.4);font-style:italic;margin-bottom:.8rem"></div>
         <button class="logout-btn" onclick="adminLogout()">⇠ Déconnexion</button>
       </div>
 
@@ -4155,6 +4165,23 @@ function showAdminContent(){
   });
 }
 
+function adminSaveAbKey() {
+  var inp = document.getElementById('adminAbKey');
+  var key = inp ? inp.value.trim() : '';
+  var st  = document.getElementById('adminAbKeyStatus');
+  if (!key || !key.startsWith('sk-ant')) {
+    if (st) st.textContent = '⚠️ Clé invalide — doit commencer par sk-ant…';
+    return;
+  }
+  localStorage.setItem(AB_KEY_STORE, key);
+  _fbInit(function() {
+    firebase.database().ref('app_config/ab_key').set({key: key, updatedAt: Date.now()});
+    firebase.database().ref('streamer_config/ab_key').set({key: key, updatedAt: Date.now()});
+  });
+  if (st) { st.textContent = '✅ Clé sauvegardée — tous les utilisateurs peuvent utiliser Ask Baye'; st.style.color = '#A8F0C0'; }
+  showToast('✅ Clé API Anthropic sauvegardée');
+}
+
 function adminLogout(){
   _adminIn=false;
   closeAdmin();
@@ -4288,6 +4315,24 @@ function switchAdmTab(id){
   // Mettre à jour les stats si l'onglet stats est sélectionné
   if(id === 'stats') updateStats();
   if(id === 'streamers') loadStreamers();
+  if(id === 'params') {
+    /* Charger la clé Anthropic actuelle */
+    var _abInp = document.getElementById('adminAbKey');
+    var _abSt  = document.getElementById('adminAbKeyStatus');
+    var _abK   = localStorage.getItem(AB_KEY_STORE) || '';
+    if (_abInp && _abK) { _abInp.value = _abK; }
+    _fbInit(function() {
+      firebase.database().ref('app_config/ab_key').once('value', function(snap) {
+        var d = snap.val();
+        if (d && d.key) {
+          if (_abInp && !_abInp.value) _abInp.value = d.key;
+          if (_abSt) { _abSt.textContent = '✅ Clé active — Ask Baye fonctionne pour tous'; _abSt.style.color = '#A8F0C0'; }
+        } else {
+          if (_abSt) { _abSt.textContent = 'Aucune clé configurée'; }
+        }
+      });
+    });
+  }
 }
 
 /* ════════════════════════════════════════
