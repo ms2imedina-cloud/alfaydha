@@ -7008,28 +7008,12 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function _updateGoogleBtn() {
+    /* Le bouton est toujours cliquable — _fbInit dans signInWithGoogle gère l'attente */
     var btn = document.querySelector('.wlc-google-btn');
     if (!btn) return;
-    if (window._fbReady) {
-      btn.disabled = false;
-      btn.style.opacity = '1';
-      btn.title = '';
-    } else {
-      btn.disabled = true;
-      btn.style.opacity = '0.6';
-      btn.title = 'Connexion en cours de préparation…';
-      btn.innerHTML = '<span style="font-size:13px">⏳</span> Connexion en cours…';
-      /* Réessayer toutes les 300ms jusqu'à ce que Firebase soit prêt */
-      var _btnTimer = setInterval(function() {
-        if (window._fbReady) {
-          clearInterval(_btnTimer);
-          btn.disabled = false;
-          btn.style.opacity = '1';
-          btn.title = '';
-          btn.innerHTML = _googleBtnHTML();
-        }
-      }, 300);
-    }
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    if (typeof _googleBtnHTML === 'function') btn.innerHTML = _googleBtnHTML();
   }
   var _fbTimeout = setTimeout(function() {
     if (!_authResolved) {
