@@ -4272,7 +4272,7 @@ function checkStreamerAccess(user, callback) {
 
 function switchAdmTab(id){
   // Masquer tous les panels
-  ['chaines','direct','prog','stats','params'].forEach(function(n){
+  ['chaines','direct','prog','stats','streamers','params','notif'].forEach(function(n){
     var p = document.getElementById('adm-'+n);
     if(p) p.style.display = 'none';
     var b = document.getElementById('atab-'+n);
@@ -4285,6 +4285,7 @@ function switchAdmTab(id){
   if(tab) tab.classList.add('active');
   // Mettre à jour les stats si l'onglet stats est sélectionné
   if(id === 'stats') updateStats();
+  if(id === 'streamers') loadStreamers();
 }
 
 /* ════════════════════════════════════════
@@ -6659,60 +6660,63 @@ switchZikrTab=function(tab){
 
 
 /* ════════════════════════════════════════════════════════════
-   FIREBASE RTDB — RÈGLES DE SÉCURITÉ
-   À copier dans: Firebase Console → Realtime Database → Règles
-   ════════════════════════════════════════════════════════════
-   {
+   RÈGLES FIREBASE RTDB — À coller dans:
+   Firebase Console → Realtime Database → Règles
+
+{
   "rules": {
-    / * ── État du direct ── * /
     "faydha_direct": {
       ".read": true,
-      ".write": "auth != null || root.child('streamer_config/admin_uid').val() == auth.uid"
+      ".write": "auth != null && (auth.token.email == 'ms2imedina@gmail.com' || root.child('authorized_streamers').child(auth.token.email.replace('.','_').replace('#','_').replace('$','_').replace('[','_').replace(']','_')).child('active').val() == true)"
     },
-    / * ── Chat en direct ── * /
-    "live_chat": {
-      ".read": true,
-      ".write": true,
-      "$msg": {
-        ".validate": "newData.hasChildren(['name','text','time']) && newData.child('text').isString() && newData.child('text').val().length <= 200"
-      }
-    },
-    / * ── Viewers actifs ── * /
-    "live_viewers": {
-      ".read": true,
-      "$deviceId": {
-        ".write": "!auth || auth.uid == $deviceId || data.val() == null"
-      }
-    },
-    / * ── Config streamer (clés API etc.) ── * /
-    "streamer_config": {
-      ".read": true,
-      ".write": false,
-      "ab_key": { ".write": true },
-      "livekit": { ".write": true }
-    },
-    / * ── Appareils streamer ── * /
-    "streamer_devices": {
-      ".read": true,
-      ".write": true
-    },
-    / * ── Config app (chaînes + programme) ── * /
     "app_config": {
       ".read": true,
-      ".write": true
+      ".write": "auth != null && auth.token.email == 'ms2imedina@gmail.com'",
+      "livekit_viewer": {
+        ".read": true,
+        ".write": "auth != null && (auth.token.email == 'ms2imedina@gmail.com' || root.child('authorized_streamers').child(auth.token.email.replace('.','_').replace('#','_').replace('$','_').replace('[','_').replace(']','_')).child('active').val() == true)"
+      }
+    },
+    "live_chat": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$msg": {
+        ".validate": "newData.hasChildren(['name','text','time']) && newData.child('text').val().length <= 200"
+      }
+    },
+    "live_viewers": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "streamer_config": {
+      ".read": "auth != null && auth.token.email == 'ms2imedina@gmail.com'",
+      ".write": "auth != null && auth.token.email == 'ms2imedina@gmail.com'"
+    },
+    "authorized_streamers": {
+      ".read": "auth != null",
+      ".write": "auth != null && auth.token.email == 'ms2imedina@gmail.com'"
+    },
+    "streamer_devices": {
+      ".read": "auth != null",
+      ".write": "auth != null"
     },
     "app_notifications": {
-      ".read": true,
-      "current": { ".write": true },
-      "history": { ".write": true }
+      ".read": "auth != null",
+      ".write": "auth != null && auth.token.email == 'ms2imedina@gmail.com'"
     },
-    / * ── Zikr groupes ── * /
     "zikr_groups": {
-      ".read": true,
-      ".write": true,
-      "$groupId": {
-        ".validate": "newData.hasChildren(['name','active'])"
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "users": {
+      ".read": "auth != null && auth.token.email == 'ms2imedina@gmail.com'",
+      "$uid": {
+        ".write": "auth != null && auth.uid == $uid"
       }
+    },
+    "live_status": {
+      ".read": "auth != null",
+      ".write": "auth != null && auth.token.email == 'ms2imedina@gmail.com'"
     }
   }
 }
@@ -7452,42 +7456,7 @@ function switchPratiqueTab(tab) {
 }
 
 
-/* ════════════════════════════════════════════════════════════
-   RÈGLES FIREBASE RTDB REQUISES — À configurer sur console.firebase.google.com
-   Realtime Database → Règles → Coller ce JSON :
 
-{
-  "rules": {
-    "users": {
-      "$uid": { ".read": "$uid === auth.uid", ".write": "$uid === auth.uid" }
-    },
-    "faydha_direct": {
-      ".read": true,
-      ".write": "auth != null && auth.token.email === 'ms2imedina@gmail.com'"
-    },
-    "app_config": {
-      ".read": true,
-      ".write": "auth != null && auth.token.email === 'ms2imedina@gmail.com'"
-    },
-    "streamer_config": {
-      ".read": "auth != null && auth.token.email === 'ms2imedina@gmail.com'",
-      ".write": "auth != null && auth.token.email === 'ms2imedina@gmail.com'"
-    },
-    "authorized_streamers": {
-      ".read": "auth != null",
-      ".write": "auth != null && auth.token.email === 'ms2imedina@gmail.com'"
-    },
-    "live_viewers": {
-      ".read": "auth != null",
-      ".write": "auth != null"
-    },
-    "chat": {
-      ".read": true,
-      ".write": "auth != null"
-    }
-  }
-}
-════════════════════════════════════════════════════════════ */
 </script>
 
 </body>
