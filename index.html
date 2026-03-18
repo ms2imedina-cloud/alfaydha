@@ -8469,28 +8469,37 @@ async function _playLiveKitViewerGranted(d){
 
 /* Patch _playLiveKitViewer pour vérifier l'accès avant connexion */
 (function(){
-  var _orig = window._playLiveKitViewer || _playLiveKitViewer;
-  window._playLiveKitViewer = function(d){
-    _fbInit(function(){
-      firebase.database().ref('live_access').orderByChild('active').equalTo(true).limitToFirst(1).once('value',function(snap){
-        var data = snap.val();
-        if(!data){ _orig(d); return; }
-        var streamerUid = Object.keys(data)[0];
-        lkCheckViewerAccess(streamerUid,function(allowed,reason){
-          if(allowed){
-            if(reason==='email'){
+  function _applyLkPatch() {
+    var _orig = typeof _playLiveKitViewer === 'function' ? _playLiveKitViewer : null;
+    if (!_orig) return; /* Pas encore définie — réessayer */
+    window._playLiveKitViewer = function(d){
+      _fbInit(function(){
+        firebase.database().ref('live_access').orderByChild('active').equalTo(true).limitToFirst(1).once('value',function(snap){
+          var data = snap.val();
+          if(!data){ _orig(d); return; }
+          var streamerUid = Object.keys(data)[0];
+          lkCheckViewerAccess(streamerUid,function(allowed,reason){
+            if(allowed){
+              if(reason==='email'){
+                var user=(firebase.auth&&firebase.auth())?firebase.auth().currentUser:null;
+                if(user){ firebase.database().ref('live_viewers/email_'+_lkpUid(user.email||''+Date.now())).set({name:user.displayName||user.email||'Viewer',email:user.email||'',joinedAt:Date.now(),via:'email'}); }
+              }
+              _orig(d);
+            } else {
               var user=(firebase.auth&&firebase.auth())?firebase.auth().currentUser:null;
-              if(user){ firebase.database().ref('live_viewers/email_'+_lkpUid(user.email||''+Date.now())).set({name:user.displayName||user.email||'Viewer',email:user.email||'',joinedAt:Date.now(),via:'email'}); }
+              lkShowAccessScreen(streamerUid,user?(user.email||''):'');
             }
-            _orig(d);
-          } else {
-            var user=(firebase.auth&&firebase.auth())?firebase.auth().currentUser:null;
-            lkShowAccessScreen(streamerUid,user?(user.email||''):'');
-          }
+          });
         });
       });
-    });
-  };
+    };
+  }
+  /* Appliquer après chargement complet pour être sûr que _playLiveKitViewer existe */
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded', _applyLkPatch);
+  } else {
+    setTimeout(_applyLkPatch, 0);
+  }
 })();
 
 </script>
