@@ -3129,9 +3129,9 @@ body{
             <!-- Credentials -->
             <div id="lkCredsBlock">
               <div style="font-size:12px;color:rgba(251,248,232,.45);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem">URL LiveKit Cloud</div>
-              <input class="dp-field" id="lkUrl" type="url" placeholder="wss://votre-projet.livekit.cloud" style="margin-bottom:.35rem">
+              <input class="dp-field" id="lkUrl" type="url" placeholder="wss://aas-00hwqfg3.livekit.cloud" style="margin-bottom:.35rem">
               <div style="font-size:12px;color:rgba(251,248,232,.45);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem">API Key LiveKit</div>
-              <input class="dp-field" id="lkApiKey" type="text" placeholder="APIxxxxxxxxxxxxxxxx" style="margin-bottom:.35rem;font-size:13px">
+              <input class="dp-field" id="lkApiKey" type="text" placeholder="APIxxxxxxxxxxxxxxxxxx (LiveKit Dashboard → Keys)" style="margin-bottom:.35rem;font-size:13px">
               <div style="font-size:12px;color:rgba(251,248,232,.45);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem">API Secret LiveKit</div>
               <input class="dp-field" id="lkApiSecret" type="password" placeholder="Secret LiveKit..." style="margin-bottom:.35rem;font-size:13px">
               <div style="font-size:12px;color:rgba(251,248,232,.45);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.2rem">Token JWT <span style="color:rgba(212,175,55,.4);font-size:12px">(optionnel — auto-g&#233;n&#233;r&#233;)</span></div>
@@ -3154,6 +3154,7 @@ body{
             </div>
 
             <button class="dp-btn" id="lkBtn" onclick="goLiveLK()" style="width:100%;padding:.52rem;font-size:14px;margin-bottom:.35rem">🔴 Démarrer LiveKit</button>
+<button onclick="lkTestCredentials()" style="width:100%;padding:.4rem;font-size:12px;margin-bottom:.35rem;background:rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.3);color:var(--gold2);border-radius:8px;cursor:pointer">🔑 Tester les credentials LiveKit</button>
             <div class="dp-note" id="lkNote">Entrez l'URL et le Token puis démarrez</div>
 
             <!-- Guide LiveKit -->
@@ -4656,6 +4657,74 @@ async function lkGenerateViewerToken(apiKey, apiSecret, roomName) {
   return si+'.'+toB64url(sig);
 }
 
+async function lkTestCredentials(){
+  var url    = (document.getElementById('lkUrl')||{}).value||'';
+  var apiKey = (document.getElementById('lkApiKey')||{}).value||'';
+  var secret = (document.getElementById('lkApiSecret')||{}).value||'';
+
+  /* Fallback localStorage */
+  if(!apiKey||!secret){
+    try{
+      var c=JSON.parse(localStorage.getItem(LK_KEY)||'{}');
+      if(!apiKey && c.apiKey) apiKey=c.apiKey;
+      if(!secret && c.apiSecret) secret=c.apiSecret;
+      if(!url && c.url) url=c.url;
+    }catch(e){}
+  }
+
+  if(!url||!apiKey||!secret){
+    showToast('⚠️ Remplissez URL + API Key + API Secret');
+    return;
+  }
+
+  showToast('🔑 Test en cours...');
+
+  try {
+    /* Générer un token test */
+    var testToken = await lkGenerateToken(apiKey, secret, 'test-room', 'test-user');
+
+    /* Décoder pour vérifier */
+    var parts = testToken.split('.');
+    var payload = JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
+
+    /* Tester la connexion WebSocket */
+    if(typeof LivekitClient==='undefined') await lkLoadSDK();
+    var LK = window.LivekitClient;
+    var testRoom = new LK.Room();
+
+    var connectUrl = url.startsWith('wss://') ? url : 'wss://'+url.replace(/^https?:\/\//, '');
+
+    showToast('⏳ Connexion test à ' + connectUrl + '...');
+
+    var connectTimeout = setTimeout(function(){
+      try{ testRoom.disconnect(); }catch(e){}
+      showToast('⚠️ Timeout — vérifiez l\'URL: ' + connectUrl);
+    }, 8000);
+
+    testRoom.connect(connectUrl, testToken)
+      .then(function(){
+        clearTimeout(connectTimeout);
+        testRoom.disconnect();
+        showToast('✅ Credentials valides ! API Key: ' + apiKey.substring(0,8) + '...');
+      })
+      .catch(function(e){
+        clearTimeout(connectTimeout);
+        var msg = e.message || String(e);
+        if(msg.includes('invalid api key') || msg.includes('API key')) {
+          showToast('❌ API Key invalide — vérifiez dans LiveKit Dashboard → Keys');
+        } else if(msg.includes('api secret') || msg.includes('signature')) {
+          showToast('❌ API Secret invalide — vérifiez dans LiveKit Dashboard → Keys');
+        } else if(msg.includes('not found') || msg.includes('connect')) {
+          showToast('❌ URL invalide: ' + connectUrl);
+        } else {
+          showToast('❌ Erreur: ' + msg.substring(0,60));
+        }
+      });
+  } catch(e) {
+    showToast('❌ Erreur génération token: ' + e.message);
+  }
+}
+
 async function goLiveLK(){
   var d=getDirect();
   if(_lkLive || (d.isLive && d.mode==='livekit')){
@@ -4683,11 +4752,29 @@ async function goLiveLK(){
     }catch(e){}
   }
 
-  if(!url)    { showToast('⚠️ Entrez l\'URL LiveKit (wss://...)'); if(urlInp) urlInp.focus(); return; }
-  if(!apiKey) { showToast('⚠️ Entrez l\'API Key LiveKit'); if(keyInp) keyInp.focus(); return; }
+  /* Corriger l'URL automatiquement */
+  if(url && !url.startsWith('wss://') && !url.startsWith('ws://')) {
+    url = 'wss://' + url.replace(/^https?:\/\//, '');
+    if(urlInp) urlInp.value = url;
+  }
+  /* Supprimer espaces */
+  apiKey    = apiKey.trim();
+  apiSecret = apiSecret.trim();
+  url       = url.trim();
+
+  if(!url)      { showToast('⚠️ Entrez l\'URL LiveKit'); if(urlInp) urlInp.focus(); return; }
+  if(!apiKey)   { showToast('⚠️ Entrez l\'API Key LiveKit (commence par API...)'); if(keyInp) keyInp.focus(); return; }
   if(!apiSecret){ showToast('⚠️ Entrez l\'API Secret LiveKit'); if(secInp) secInp.focus(); return; }
+
+  /* Validation format LiveKit */
   if(url.indexOf('livekit.cloud')<0 && url.indexOf('wss://')<0){
-    showToast('⚠️ URL invalide — ex: wss://xxx.livekit.cloud'); return;
+    showToast('⚠️ URL invalide — ex: wss://aas-00hwqfg3.livekit.cloud'); return;
+  }
+  if(apiKey.length < 5){
+    showToast('⚠️ API Key trop courte — vérifiez dans LiveKit Dashboard → Keys'); if(keyInp) keyInp.focus(); return;
+  }
+  if(apiSecret.length < 10){
+    showToast('⚠️ API Secret trop court — vérifiez dans LiveKit Dashboard → Keys'); if(secInp) secInp.focus(); return;
   }
 
   /* Marquer immédiatement comme streamer AVANT tout appel Firebase */
