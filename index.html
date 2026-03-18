@@ -3344,6 +3344,8 @@ function signInWithGoogle() {
   var btn = document.querySelector('.wlc-google-btn');
   if (btn) { btn.disabled = true; btn.innerHTML = '<span>⏳</span> Connexion en cours…'; }
 
+  /* Attendre que Firebase soit prêt avant de lancer l'auth */
+  _fbInit(function() {
   var provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({ prompt: 'select_account' });
 
@@ -3375,6 +3377,7 @@ function signInWithGoogle() {
         showToast('⚠️ Erreur : ' + err.message);
       }
     });
+  }); /* fin _fbInit */
 }
 
 function _googleBtnHTML() {
@@ -6999,6 +7002,33 @@ document.addEventListener('DOMContentLoaded', function() {
     if (w) {
       w.classList.remove('hidden');
       setTimeout(function(){ w.style.opacity='1'; }, 30);
+    }
+    /* Indiquer état Firebase sur le bouton Google */
+    _updateGoogleBtn();
+  }
+
+  function _updateGoogleBtn() {
+    var btn = document.querySelector('.wlc-google-btn');
+    if (!btn) return;
+    if (window._fbReady) {
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      btn.title = '';
+    } else {
+      btn.disabled = true;
+      btn.style.opacity = '0.6';
+      btn.title = 'Connexion en cours de préparation…';
+      btn.innerHTML = '<span style="font-size:13px">⏳</span> Connexion en cours…';
+      /* Réessayer toutes les 300ms jusqu'à ce que Firebase soit prêt */
+      var _btnTimer = setInterval(function() {
+        if (window._fbReady) {
+          clearInterval(_btnTimer);
+          btn.disabled = false;
+          btn.style.opacity = '1';
+          btn.title = '';
+          btn.innerHTML = _googleBtnHTML();
+        }
+      }, 300);
     }
   }
   var _fbTimeout = setTimeout(function() {
