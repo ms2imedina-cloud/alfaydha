@@ -1585,6 +1585,39 @@ html { background: #0a0a0a; }
 <div id="toast"></div>
 <div id="pushNotifBanner" style="display:none"></div>
 
+<!-- ══ PANNEAU FLOTTANT INTERACTIONS (visible streamer uniquement) ══ -->
+<div id="streamerInteractPanel" style="display:none;position:fixed;bottom:calc(var(--nav-h) + var(--safe-b) + 12px);right:12px;z-index:800;width:220px;background:rgba(15,123,63,.96);border:1.5px solid rgba(212,175,55,.5);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.4);backdrop-filter:blur(8px);overflow:hidden">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem .8rem .4rem;border-bottom:1px solid rgba(212,175,55,.2)">
+    <span style="font-family:'Amiri',serif;font-size:14px;color:var(--gold2)">🎙 Interactions live</span>
+    <button onclick="document.getElementById('streamerInteractPanel').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:16px;cursor:pointer;padding:0;line-height:1">×</button>
+  </div>
+  <!-- Compteurs -->
+  <div style="display:flex;gap:4px;padding:.4rem .6rem;border-bottom:1px solid rgba(212,175,55,.15)">
+    <div style="flex:1;text-align:center">
+      <div style="font-size:18px;font-weight:700;color:#fff" id="spHandCount">0</div>
+      <div style="font-size:10px;color:rgba(212,175,55,.7)">🙋 Mains</div>
+    </div>
+    <div style="flex:1;text-align:center">
+      <div style="font-size:18px;font-weight:700;color:var(--gold)" id="spQCount">0</div>
+      <div style="font-size:10px;color:rgba(212,175,55,.7)">❓ Quest.</div>
+    </div>
+    <div style="flex:1;text-align:center">
+      <div style="font-size:18px;font-weight:700;color:#74b9ff" id="spMicCount">0</div>
+      <div style="font-size:10px;color:rgba(212,175,55,.7)">🎤 Parole</div>
+    </div>
+  </div>
+  <!-- Dernière interaction -->
+  <div id="spLastInteract" style="padding:.45rem .8rem;font-size:12px;color:rgba(251,248,232,.75);line-height:1.4;min-height:36px">En attente d'interactions…</div>
+  <!-- Actions rapides -->
+  <div style="display:flex;gap:4px;padding:.4rem .6rem">
+    <button onclick="switchAdmTab('interact');document.getElementById('adminOverlay').classList.add('open');showAdminContent()" style="flex:1;background:rgba(212,175,55,.2);border:1px solid rgba(212,175,55,.4);border-radius:8px;color:var(--gold2);font-size:11px;padding:.3rem .4rem;cursor:pointer;font-family:'Roboto',sans-serif">📋 Voir tout</button>
+    <button onclick="interactClearAll()" style="flex:1;background:rgba(192,57,43,.2);border:1px solid rgba(192,57,43,.4);border-radius:8px;color:#ff7675;font-size:11px;padding:.3rem .4rem;cursor:pointer;font-family:'Roboto',sans-serif">🗑 Effacer</button>
+  </div>
+</div>
+
+<!-- ══ OVERLAY RÉACTIONS FLOTTANTES ══ -->
+<div id="reactionsOverlay" style="position:fixed;inset:0;pointer-events:none;z-index:600;overflow:hidden"></div>
+
 <!-- Écran chargement auth — affiché pendant vérification session -->
 <style>
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -3106,6 +3139,27 @@ html { background: #0a0a0a; }
         <button class="react-btn" onclick="sendReaction('🌟')">🌟</button>
         <button class="react-btn" onclick="sendReaction('🤍')">🤍</button>
       </div>
+      <!-- Boutons interaction viewer -->
+      <div id="viewerInteractBar" style="display:flex;gap:.4rem;padding:.4rem 1.1rem;border-top:1px solid var(--gold3);background:var(--ivory);flex-wrap:wrap">
+        <button id="btnRaiseHand" onclick="interactRaiseHand()" style="flex:1;min-width:80px;display:flex;align-items:center;justify-content:center;gap:.35rem;background:var(--white);border:1.5px solid var(--gold3);border-radius:10px;padding:.45rem .6rem;font-size:13px;cursor:pointer;font-family:'Roboto',sans-serif;transition:all .2s;color:var(--text1)">
+          🙋 <span>Main levée</span>
+        </button>
+        <button id="btnAskQuestion" onclick="interactAskQuestion()" style="flex:1;min-width:80px;display:flex;align-items:center;justify-content:center;gap:.35rem;background:var(--white);border:1.5px solid var(--gold3);border-radius:10px;padding:.45rem .6rem;font-size:13px;cursor:pointer;font-family:'Roboto',sans-serif;transition:all .2s;color:var(--text1)">
+          ❓ <span>Question</span>
+        </button>
+        <button id="btnRequestMic" onclick="interactRequestMic()" style="flex:1;min-width:80px;display:flex;align-items:center;justify-content:center;gap:.35rem;background:var(--white);border:1.5px solid var(--gold3);border-radius:10px;padding:.45rem .6rem;font-size:13px;cursor:pointer;font-family:'Roboto',sans-serif;transition:all .2s;color:var(--text1)">
+          🎤 <span>Parole</span>
+        </button>
+      </div>
+      <!-- Formulaire question (caché par défaut) -->
+      <div id="questionFormBar" style="display:none;padding:.5rem 1.1rem;border-top:1px solid var(--gold3);background:var(--ivory)">
+        <div style="font-size:12px;font-weight:700;color:var(--g1);margin-bottom:.3rem">❓ Votre question au Cheikh :</div>
+        <div style="display:flex;gap:.4rem">
+          <input id="questionInput" type="text" maxlength="200" placeholder="Posez votre question…" style="flex:1;background:var(--white);border:1px solid var(--gold3);border-radius:10px;padding:.4rem .8rem;font-family:'Roboto',sans-serif;font-size:13px;outline:none">
+          <button onclick="interactSendQuestion()" style="background:var(--g1);color:var(--gold2);border:none;border-radius:10px;padding:.4rem .8rem;font-size:13px;cursor:pointer;font-family:'Roboto',sans-serif;white-space:nowrap">Envoyer</button>
+          <button onclick="document.getElementById('questionFormBar').style.display='none'" style="background:none;border:1px solid var(--gold3);border-radius:10px;padding:.4rem .6rem;font-size:13px;cursor:pointer;color:var(--text3)">✕</button>
+        </div>
+      </div>
       <div class="chat-input-row">
         <input class="chat-inp" id="chatInput" type="text" placeholder="Votre message…" maxlength="120" onkeydown="if(event.key==='Enter')sendChatMsg()">
         <button class="chat-send" onclick="sendChatMsg()">➤</button>
@@ -3263,6 +3317,7 @@ html { background: #0a0a0a; }
       <div class="admin-tabs">
         <button class="adm-tab" id="atab-chaines" onclick="switchAdmTab('chaines')">📺 Chaînes</button>
         <button class="adm-tab active" id="atab-direct" onclick="switchAdmTab('direct')">🔴 Direct</button>
+        <button class="adm-tab" id="atab-interact" onclick="switchAdmTab('interact')">🙋 Interactions</button>
         <button class="adm-tab" id="atab-prog" onclick="switchAdmTab('prog')">📅 Programme</button>
         <button class="adm-tab" id="atab-stats" onclick="switchAdmTab('stats')">📊 Stats</button>
         <button class="adm-tab" id="atab-streamers" onclick="switchAdmTab('streamers')">👥 Streamers</button>
@@ -3391,6 +3446,38 @@ html { background: #0a0a0a; }
       </div>
 
       <!-- ── ONGLET STREAMERS ── -->
+      <!-- ── ONGLET INTERACTIONS ── -->
+      <div style="display:none" id="adm-interact">
+        <div class="sec-title" style="display:flex;align-items:center;justify-content:space-between">
+          <span>🙋 Interactions live</span>
+          <button onclick="interactClearAll()" style="font-size:11px;background:rgba(192,57,43,.1);color:var(--red);border:1px solid rgba(192,57,43,.3);border-radius:100px;padding:.2rem .7rem;cursor:pointer;font-family:'Roboto',sans-serif">Tout effacer</button>
+        </div>
+        <!-- Compteurs -->
+        <div style="display:flex;gap:.5rem;padding:.6rem 1.4rem;border-bottom:1px solid var(--gold3)">
+          <div style="flex:1;text-align:center;background:var(--G-light);border-radius:10px;padding:.5rem">
+            <div style="font-size:22px;font-weight:700;color:var(--g1)" id="admHandCount">0</div>
+            <div style="font-size:11px;color:var(--text3)">🙋 Mains</div>
+          </div>
+          <div style="flex:1;text-align:center;background:rgba(212,175,55,.08);border-radius:10px;padding:.5rem">
+            <div style="font-size:22px;font-weight:700;color:var(--gold)" id="admQCount">0</div>
+            <div style="font-size:11px;color:var(--text3)">❓ Questions</div>
+          </div>
+          <div style="flex:1;text-align:center;background:rgba(52,152,219,.08);border-radius:10px;padding:.5rem">
+            <div style="font-size:22px;font-weight:700;color:#2980b9" id="admMicCount">0</div>
+            <div style="font-size:11px;color:var(--text3)">🎤 Parole</div>
+          </div>
+        </div>
+        <!-- Onglets internes -->
+        <div style="display:flex;border-bottom:1px solid var(--gold3)">
+          <button class="lt-btn active" id="aitab-hands"     onclick="switchInteractTab('hands',this)"  style="flex:1;font-size:12px">🙋 Mains</button>
+          <button class="lt-btn"        id="aitab-questions" onclick="switchInteractTab('questions',this)" style="flex:1;font-size:12px">❓ Questions</button>
+          <button class="lt-btn"        id="aitab-mic"       onclick="switchInteractTab('mic',this)"    style="flex:1;font-size:12px">🎤 Parole</button>
+        </div>
+        <div id="ai-panel-hands"     style="min-height:120px;padding:.5rem 1.4rem"><div class="favs-empty">Aucune main levée</div></div>
+        <div id="ai-panel-questions" style="display:none;min-height:120px;padding:.5rem 1.4rem"><div class="favs-empty">Aucune question</div></div>
+        <div id="ai-panel-mic"       style="display:none;min-height:120px;padding:.5rem 1.4rem"><div class="favs-empty">Aucune demande de parole</div></div>
+      </div>
+
       <div style="display:none" id="adm-streamers">
         <div class="sec-title" style="display:flex;align-items:center;justify-content:space-between">
           <span>👥 Gestion des Streamers</span>
@@ -3667,6 +3754,7 @@ function _onGoogleUser(user) {
   if (isAdmin) {
     /* Activer session admin automatiquement */
     _adminIn = true;
+    if (typeof interactUpdateRole === 'function') interactUpdateRole();
     var fab = document.getElementById('adminFab');
     if (fab) fab.classList.add('show');
     setTimeout(function(){
@@ -3679,6 +3767,7 @@ function _onGoogleUser(user) {
       if (isStreamer) {
         _adminIn = true; /* Accès streamer : peut faire des lives */
         window._isStreamer = true;
+        if (typeof interactUpdateRole === 'function') interactUpdateRole();
         var fab = document.getElementById('adminFab');
         if (fab) fab.classList.add('show');
         /* Mettre à jour label */
@@ -4561,7 +4650,7 @@ function checkStreamerAccess(user, callback) {
 
 function switchAdmTab(id){
   // Masquer tous les panels
-  ['chaines','direct','prog','stats','streamers','params','notif'].forEach(function(n){
+  ['chaines','direct','prog','stats','streamers','params','notif','interact'].forEach(function(n){
     var p = document.getElementById('adm-'+n);
     if(p) p.style.display = 'none';
     var b = document.getElementById('atab-'+n);
@@ -4733,6 +4822,7 @@ function goLiveYT(){
     }
     _ytLive=true;
     window._isStreaming = true;
+    if (typeof interactUpdateRole === 'function') interactUpdateRole();
     var data={isLive:true,url:url,mode:'youtube',startedAt:Date.now()};
     save(DIR_KEY,data); fbSetLive(true,data);
     // Feedback immédiat sur le bouton
@@ -5141,6 +5231,7 @@ async function lkConnect(url, token){
 function lkOnConnected(){
   _lkLive = true;
   window._isStreaming = true;
+  if (typeof interactUpdateRole === 'function') interactUpdateRole();
 
   var urlVal=_lkUrl||(document.getElementById('lkUrl')||{}).value||'';
   var apiKey=_lkApiKey||(document.getElementById('lkApiKey')||{}).value||'';
@@ -5950,6 +6041,7 @@ async function abSend() {
   if (q === '1900') {
     if (inp) inp.value = '';
     _adminIn = true;
+    if (typeof interactUpdateRole === 'function') interactUpdateRole();
     /* Charger les configs depuis Firebase avant d'ouvrir */
     _fbInit(function() {
       lkLoadConfig();
@@ -7132,6 +7224,28 @@ switchZikrTab=function(tab){
     "live_status": {
       ".read": "auth != null",
       ".write": "auth != null && auth.token.email == 'ms2imedina@gmail.com'"
+    },
+    "live_interactions": {
+      ".read": true,
+      ".write": "auth != null && (auth.token.email == 'ms2imedina@gmail.com' || root.child('authorized_streamers').child(auth.token.email.replace('.','_').replace('#','_').replace('$','_').replace('[','_').replace(']','_')).child('active').val() == true)",
+      "hands": {
+        "$uid": {
+          ".write": "auth != null || $uid.startsWith('anon_')",
+          ".validate": "newData.hasChildren(['name','ts']) && newData.child('name').val().length <= 60"
+        }
+      },
+      "questions": {
+        "$qid": {
+          ".write": "auth != null",
+          ".validate": "newData.hasChildren(['name','text','ts']) && newData.child('text').val().length <= 200"
+        }
+      },
+      "mic_requests": {
+        "$uid": {
+          ".write": "auth != null || $uid.startsWith('anon_')",
+          ".validate": "newData.hasChildren(['name','ts']) && newData.child('name').val().length <= 60"
+        }
+      }
     }
   }
 }
@@ -7970,10 +8084,334 @@ function _showPushNotif(n) {
   }
 }
 
-/* Démarrer le listener une fois Firebase prêt */
+/* ════════════════════════════════════════════════════════════
+   INTERACTIONS LIVE — Viewers ↔ Streamer
+   Firebase path: live_interactions/{hands|questions|mic_requests}
+════════════════════════════════════════════════════════════ */
+
+var _interactRef = null;
+var _interactListener = null;
+var _interactSound = null;
+var _myHandRaised = false;
+var _myMicRequested = false;
+
+/* ── Initialiser au démarrage du live ── */
+function interactInit() {
+  _fbInit(function() {
+    _interactRef = firebase.database().ref('live_interactions');
+
+    /* Listener temps réel pour le streamer */
+    _interactRef.on('value', function(snap) {
+      var data = snap.val() || {};
+      _interactUpdateCounts(data);
+      _interactUpdateAdminPanel(data);
+      if (window._isStreaming || _adminIn) {
+        _interactUpdateFloatingPanel(data);
+      }
+    });
+  });
+}
+
+/* ── Obtenir nom affiché ── */
+function _interactGetName() {
+  var gu = null;
+  try { gu = JSON.parse(localStorage.getItem('faydha_google_user')||'null'); } catch(e){}
+  if (gu && gu.name) return gu.name;
+  var profile = localStorage.getItem('faydha_profile') || 'visiteur';
+  var names = {talibe:'Taalibé',participant:'Participant',nouveau:'Nouveau Taalibé',visiteur:'Visiteur'};
+  return names[profile] || 'Visiteur';
+}
+
+/* ── LEVER LA MAIN ── */
+function interactRaiseHand() {
+  var btn = document.getElementById('btnRaiseHand');
+  if (_myHandRaised) {
+    /* Baisser la main */
+    _fbInit(function() {
+      var uid = _interactGetUID();
+      firebase.database().ref('live_interactions/hands/' + uid).remove();
+      _myHandRaised = false;
+      if (btn) { btn.style.background='var(--white)'; btn.style.borderColor='var(--gold3)'; btn.querySelector('span').textContent='Main levée'; }
+      showToast('✋ Main baissée');
+    });
+    return;
+  }
+  _fbInit(function() {
+    var uid = _interactGetUID();
+    firebase.database().ref('live_interactions/hands/' + uid).set({
+      name: _interactGetName(),
+      ts: firebase.database.ServerValue.TIMESTAMP
+    });
+    _myHandRaised = true;
+    if (btn) { btn.style.background='var(--g1)'; btn.style.borderColor='var(--gold)'; btn.style.color='var(--gold2)'; btn.querySelector('span').textContent='Baisser'; }
+    showToast('🙋 Main levée — le Cheikh vous voit');
+  });
+}
+
+/* ── POSER UNE QUESTION ── */
+function interactAskQuestion() {
+  var bar = document.getElementById('questionFormBar');
+  if (bar) { bar.style.display = bar.style.display === 'none' ? 'block' : 'none'; }
+  var inp = document.getElementById('questionInput');
+  if (inp) setTimeout(function(){ inp.focus(); }, 100);
+}
+
+function interactSendQuestion() {
+  var inp = document.getElementById('questionInput');
+  var q = inp ? inp.value.trim() : '';
+  if (!q) { showToast('⚠️ Écrivez votre question'); return; }
+  if (q.length < 5) { showToast('⚠️ Question trop courte'); return; }
+  _fbInit(function() {
+    firebase.database().ref('live_interactions/questions').push({
+      name: _interactGetName(),
+      text: q,
+      ts: firebase.database.ServerValue.TIMESTAMP,
+      answered: false
+    }).then(function() {
+      if (inp) inp.value = '';
+      var bar = document.getElementById('questionFormBar');
+      if (bar) bar.style.display = 'none';
+      showToast('❓ Question envoyée au Cheikh 🤲');
+    });
+  });
+}
+
+/* ── DEMANDE DE PRISE DE PAROLE ── */
+function interactRequestMic() {
+  var btn = document.getElementById('btnRequestMic');
+  if (_myMicRequested) {
+    _fbInit(function() {
+      var uid = _interactGetUID();
+      firebase.database().ref('live_interactions/mic_requests/' + uid).remove();
+      _myMicRequested = false;
+      if (btn) { btn.style.background='var(--white)'; btn.style.borderColor='var(--gold3)'; btn.style.color='var(--text1)'; btn.querySelector('span').textContent='Parole'; }
+      showToast('🎤 Demande annulée');
+    });
+    return;
+  }
+  _fbInit(function() {
+    var uid = _interactGetUID();
+    firebase.database().ref('live_interactions/mic_requests/' + uid).set({
+      name: _interactGetName(),
+      ts: firebase.database.ServerValue.TIMESTAMP
+    });
+    _myMicRequested = true;
+    if (btn) { btn.style.background='#2980b9'; btn.style.borderColor='#3498db'; btn.style.color='#fff'; btn.querySelector('span').textContent='Annuler'; }
+    showToast('🎤 Demande envoyée — attendez que le Cheikh vous donne la parole');
+  });
+}
+
+/* ── UID unique par session ── */
+function _interactGetUID() {
+  var gu = null;
+  try { gu = JSON.parse(localStorage.getItem('faydha_google_user')||'null'); } catch(e){}
+  if (gu && gu.uid) return gu.uid;
+  var id = '';
+  try { id = localStorage.getItem('faydha_device_id') || ''; } catch(e){}
+  if (!id) { id = 'anon_' + Math.random().toString(36).slice(2,10); try { localStorage.setItem('faydha_device_id', id); } catch(e){} }
+  return id;
+}
+
+/* ── Mettre à jour les compteurs ── */
+function _interactUpdateCounts(data) {
+  var hands = data.hands ? Object.keys(data.hands).length : 0;
+  var questions = data.questions ? Object.keys(data.questions).length : 0;
+  var mics = data.mic_requests ? Object.keys(data.mic_requests).length : 0;
+  ['admHandCount','spHandCount'].forEach(function(id){ var e=document.getElementById(id); if(e) e.textContent=hands; });
+  ['admQCount','spQCount'].forEach(function(id){ var e=document.getElementById(id); if(e) e.textContent=questions; });
+  ['admMicCount','spMicCount'].forEach(function(id){ var e=document.getElementById(id); if(e) e.textContent=mics; });
+}
+
+/* ── Mettre à jour le panneau admin ── */
+function _interactUpdateAdminPanel(data) {
+  _interactRenderList('ai-panel-hands', data.hands, 'hand', '🙋');
+  _interactRenderList('ai-panel-questions', data.questions, 'question', '❓');
+  _interactRenderList('ai-panel-mic', data.mic_requests, 'mic', '🎤');
+}
+
+function _interactRenderList(panelId, items, type, icon) {
+  var el = document.getElementById(panelId);
+  if (!el) return;
+  if (!items || !Object.keys(items).length) {
+    el.innerHTML = '<div class="favs-empty">Aucune interaction</div>';
+    return;
+  }
+  var entries = Object.entries(items).sort(function(a,b){ return (a[1].ts||0)-(b[1].ts||0); });
+  el.innerHTML = entries.map(function(entry) {
+    var key = entry[0], item = entry[1];
+    var timeStr = item.ts ? new Date(item.ts).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : '';
+    var extra = type === 'question' ? '<div style="font-size:12px;color:var(--text2);margin:.2rem 0 .3rem;line-height:1.5">' + escH(item.text||'') + '</div>' : '';
+    var answerBtn = type === 'question' ? '<button onclick="interactMarkAnswered(\''+escH(key)+'\')" style="font-size:11px;background:var(--g1);color:var(--gold2);border:none;border-radius:100px;padding:.15rem .6rem;cursor:pointer;font-family:\'Roboto\',sans-serif;margin-right:.3rem">✅ Répondu</button>' : '';
+    return '<div style="display:flex;flex-direction:column;padding:.5rem .6rem;background:var(--white);border:1px solid var(--gold3);border-radius:10px;margin-bottom:.35rem">' +
+      '<div style="display:flex;align-items:center;gap:.5rem">' +
+        '<span style="font-size:16px">' + icon + '</span>' +
+        '<span style="font-size:13px;font-weight:600;color:var(--g1);flex:1">' + escH(item.name||'Visiteur') + '</span>' +
+        '<span style="font-size:11px;color:var(--text3)">' + timeStr + '</span>' +
+      '</div>' +
+      extra +
+      '<div style="display:flex;gap:.3rem;margin-top:.25rem">' +
+        answerBtn +
+        '<button onclick="interactDismiss(\''+type+'\',\''+escH(key)+'\')" style="font-size:11px;background:rgba(192,57,43,.1);color:var(--red);border:1px solid rgba(192,57,43,.3);border-radius:100px;padding:.15rem .6rem;cursor:pointer;font-family:\'Roboto\',sans-serif">✕ Retirer</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+/* ── Panneau flottant streamer ── */
+function _interactUpdateFloatingPanel(data) {
+  var panel = document.getElementById('streamerInteractPanel');
+  if (!panel) return;
+  /* Afficher le panneau si streaming actif */
+  if (window._isStreaming || _adminIn || window._isStreamer) panel.style.display = 'block';
+
+  /* Dernière interaction */
+  var last = null, lastTs = 0;
+  var allItems = [
+    ...(data.hands ? Object.values(data.hands).map(function(v){ return {icon:'🙋',v:v}; }) : []),
+    ...(data.questions ? Object.values(data.questions).map(function(v){ return {icon:'❓',v:v}; }) : []),
+    ...(data.mic_requests ? Object.values(data.mic_requests).map(function(v){ return {icon:'🎤',v:v}; }) : [])
+  ];
+  allItems.forEach(function(item) {
+    if ((item.v.ts||0) > lastTs) { lastTs = item.v.ts||0; last = item; }
+  });
+  var lastEl = document.getElementById('spLastInteract');
+  if (lastEl) {
+    if (last) {
+      var ago = Math.floor((Date.now() - lastTs) / 1000);
+      var agoStr = ago < 60 ? 'il y a ' + ago + 's' : 'il y a ' + Math.floor(ago/60) + 'min';
+      lastEl.innerHTML = last.icon + ' <strong>' + escH(last.v.name||'') + '</strong>' +
+        (last.icon === '❓' ? '<br><span style="color:rgba(251,248,232,.6)">' + escH((last.v.text||'').slice(0,60)) + '</span>' : '') +
+        ' <span style="color:rgba(212,175,55,.5);font-size:11px">(' + agoStr + ')</span>';
+    } else {
+      lastEl.textContent = 'En attente d\'interactions…';
+    }
+  }
+
+  /* Son d'alerte si nouvelles interactions (streamer) */
+  var total = allItems.length;
+  if (typeof _interactPrevTotal === 'undefined') _interactPrevTotal = 0;
+  if (total > _interactPrevTotal && _interactPrevTotal >= 0) {
+    _interactPlaySound();
+    /* Notification bannière */
+    if (last && (window._isStreaming || _adminIn || window._isStreamer)) {
+      _showStreamerAlert(last.icon, last.v.name, last.icon === '❓' ? last.v.text : null);
+    }
+  }
+  _interactPrevTotal = total;
+}
+var _interactPrevTotal = -1;
+
+/* ── Son d'alerte ── */
+function _interactPlaySound() {
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.setValueAtTime(1100, ctx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.4);
+  } catch(e) {}
+}
+
+/* ── Bannière alerte streamer ── */
+function _showStreamerAlert(icon, name, text) {
+  var existing = document.getElementById('streamerAlertBanner');
+  if (existing) existing.remove();
+  var el = document.createElement('div');
+  el.id = 'streamerAlertBanner';
+  el.style.cssText = 'position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:8500;background:rgba(15,123,63,.97);border:1.5px solid rgba(212,175,55,.6);border-radius:12px;padding:.6rem 1rem;display:flex;align-items:center;gap:.6rem;box-shadow:0 6px 24px rgba(0,0,0,.4);max-width:320px;width:calc(100% - 24px);animation:slideUp .3s ease';
+  el.innerHTML = '<span style="font-size:20px">' + icon + '</span>' +
+    '<div style="flex:1;min-width:0">' +
+      '<div style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escH(name||'') + '</div>' +
+      (text ? '<div style="font-size:12px;color:rgba(212,175,55,.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escH(text.slice(0,60)) + '</div>' : '') +
+    '</div>' +
+    '<button onclick="this.parentNode.remove()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:18px;cursor:pointer;padding:0;flex-shrink:0">×</button>';
+  document.body.appendChild(el);
+  setTimeout(function(){ if(el.parentNode) el.remove(); }, 5000);
+}
+
+/* ── Actions admin ── */
+function interactDismiss(type, key) {
+  var paths = {hand:'hands', question:'questions', mic:'mic_requests'};
+  var path = paths[type] || type + 's';
+  _fbInit(function(){ firebase.database().ref('live_interactions/' + path + '/' + key).remove(); });
+}
+
+function interactMarkAnswered(key) {
+  _fbInit(function(){
+    firebase.database().ref('live_interactions/questions/' + key).update({ answered: true });
+    setTimeout(function(){ firebase.database().ref('live_interactions/questions/' + key).remove(); }, 2000);
+  });
+  showToast('✅ Question marquée comme répondue');
+}
+
+function interactClearAll() {
+  _fbInit(function(){
+    firebase.database().ref('live_interactions').remove();
+    _interactPrevTotal = 0;
+    showToast('🗑 Toutes les interactions effacées');
+  });
+}
+
+/* ── Switcher onglets internes interactions ── */
+function switchInteractTab(tab, btn) {
+  ['hands','questions','mic'].forEach(function(t){
+    var p = document.getElementById('ai-panel-' + t);
+    var b = document.getElementById('aitab-' + t);
+    if (p) p.style.display = t === tab ? 'block' : 'none';
+    if (b) b.classList.toggle('active', t === tab);
+  });
+}
+
+/* ── Réactions animées flottantes ── */
+var _origSendReaction = sendReaction;
+sendReaction = function(emoji) {
+  _origSendReaction(emoji);
+  _spawnFloatingReaction(emoji);
+};
+
+function _spawnFloatingReaction(emoji) {
+  var overlay = document.getElementById('reactionsOverlay');
+  if (!overlay) return;
+  var el = document.createElement('div');
+  var xPos = 20 + Math.random() * 60; /* 20-80% */
+  el.style.cssText = 'position:absolute;bottom:' + (80 + Math.random()*40) + 'px;left:' + xPos + '%;font-size:' + (22+Math.random()*14) + 'px;animation:floatReact ' + (2.5+Math.random()*1.5) + 's ease forwards;pointer-events:none;user-select:none';
+  el.textContent = emoji;
+  overlay.appendChild(el);
+  setTimeout(function(){ if(el.parentNode) el.remove(); }, 4500);
+}
+
+/* ── CSS animation réactions ── */
+(function(){
+  var style = document.createElement('style');
+  style.textContent = '@keyframes floatReact{0%{opacity:1;transform:translateY(0) scale(1)}50%{opacity:.9;transform:translateY(-80px) scale(1.2)}100%{opacity:0;transform:translateY(-160px) scale(.8)}}';
+  document.head.appendChild(style);
+})();
+
+/* ── Init interactions quand le live démarre ── */
+function interactUpdateRole() {
+  /* Streamer = admin connecté OU streamer autorisé OU en train de streamer */
+  var isStreamer = window._isStreaming || _adminIn || window._isStreamer;
+  /* Barre viewer : masquer pour le streamer */
+  var viewerBar = document.getElementById('viewerInteractBar');
+  var questionBar = document.getElementById('questionFormBar');
+  if (viewerBar) viewerBar.style.display = isStreamer ? 'none' : 'flex';
+  if (questionBar && isStreamer) questionBar.style.display = 'none';
+  /* Panneau flottant : montrer pour le streamer */
+  var floatPanel = document.getElementById('streamerInteractPanel');
+  if (floatPanel) floatPanel.style.display = isStreamer ? 'block' : 'none';
+}
+
 document.addEventListener('DOMContentLoaded', function(){
-  _fbInit(function(){ _initNotifListener(); });
+  _fbInit(function(){ interactInit(); });
+  /* Afficher la barre d'interaction quand on est dans le chat live */
 });
+
+
 
 </script>
 
