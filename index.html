@@ -1621,17 +1621,12 @@ html { background: #0a0a0a; }
 /* authLoading géré uniquement par JS — pas d'animation CSS qui bloque */
 #authLoading{transition:opacity .4s ease;}
 </style>
-<div id="authLoading" style="position:fixed;inset:0;z-index:9000;background:#0F7B3F;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;transition:opacity .5s ease">
-  <img alt="Cheikh Ibrahim Niass" data-logo="1" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" style="border-radius:8px;width:72px;height:72px;">
-  <div style="font-family:'Amiri',serif;font-size:28px;color:#fff">Baye Niass World</div>
-  <div style="width:40px;height:40px;border:3px solid rgba(212,175,55,.3);border-top-color:#D4AF37;border-radius:50%;animation:spin .8s linear infinite"></div>
-  <div style="font-size:13px;color:rgba(255,255,255,.5);font-style:italic">Vérification de la session…</div>
-</div>
+<div id="authLoading" style="display:none"></div>
 
 <!-- ═══════════════════════════════════════
      PAGE D'ACCUEIL — CONNEXION GOOGLE
 ═══════════════════════════════════════ -->
-<div id="welcome" class="hidden" style="opacity:0;transition:opacity .4s ease">
+<div id="welcome" style="opacity:1;transition:opacity .4s ease">
   <div class="wlc-pattern"></div>
 
   <!-- HAUT : logo + titre -->
@@ -3775,6 +3770,9 @@ function _hideSplash(){
   s._hiding=true;
   s.style.cssText+='opacity:0!important;visibility:hidden!important;pointer-events:none!important;transition:opacity .25s ease!important;';
   setTimeout(function(){ if(s&&s.parentNode) s.parentNode.removeChild(s); }, 300);
+  /* Assurer que authLoading est visible si Firebase pas encore prêt */
+  var al=document.getElementById('authLoading');
+  if(al) al.style.display='flex';
 }
 
 /* ── Entrée dans l'app selon le profil choisi ── */
@@ -3976,18 +3974,38 @@ function signOutGoogle() {
 /* Auth géré dans le DOMContentLoaded principal ci-dessus */
 // Splash désactivé — disparaît immédiatement au chargement
 document.addEventListener('DOMContentLoaded', function(){
-  /* Splash se cache quand Firebase est prêt OU max 2.5s
-     Cela évite le flash : splash → login → app pour utilisateurs connectés */
   var _splashHidden = false;
+
   function _doHideSplash(){
     if(_splashHidden) return;
     _splashHidden = true;
     _hideSplash();
+    /* Forcer authLoading à disparaître si Firebase trop lent */
+    setTimeout(function(){
+      var al = document.getElementById('authLoading');
+      if(al){
+        al.style.opacity = '0';
+        al.style.pointerEvents = 'none';
+        setTimeout(function(){ if(al.parentNode) al.parentNode.removeChild(al); _showWelcomeForced(); }, 400);
+      }
+    }, 800);
   }
+
+  function _showWelcomeForced(){
+    /* Afficher welcome si l'utilisateur n'est pas encore connecté */
+    var w = document.getElementById('welcome');
+    if(w && w.classList.contains('hidden')){
+      w.classList.remove('hidden');
+      setTimeout(function(){ w.style.opacity='1'; }, 30);
+    }
+  }
+
   var _splashPoll = setInterval(function(){
     if(window._fbReady){ clearInterval(_splashPoll); _doHideSplash(); }
   }, 80);
-  setTimeout(function(){ clearInterval(_splashPoll); _doHideSplash(); }, 2500);
+
+  /* Max 2s puis on force */
+  setTimeout(function(){ clearInterval(_splashPoll); _doHideSplash(); }, 2000);
 });
 
 /* L'accès est contrôlé par Firebase Auth — voir onAuthStateChanged */
@@ -7012,9 +7030,8 @@ var EL_VOICE_ID_AB = 'h0TwoFQf7NYsiJYrhYf8'; /* voix baye niass — ASK BAYE */
 var EL_MODEL       = 'eleven_multilingual_v2';
 
 async function abSpeak(text, btnEl) {
-  var player = document.getElementById('ab-audio-player');
-
   /* Créer le player audio si absent */
+  var player = document.getElementById('ab-audio-player');
   if (!player) {
     player = document.createElement('audio');
     player.id = 'ab-audio-player';
@@ -7022,26 +7039,38 @@ async function abSpeak(text, btnEl) {
     document.body.appendChild(player);
   }
 
-  /* Si déjà en lecture → arrêter */
+  /* Si déjà en lecture → arrêter proprement */
   if (_abSpeaking) {
     player.pause();
-    player.currentTime = 0;
+    player.src = '';
+    player.load();
     _abSpeaking = false;
     document.querySelectorAll('.ab-tts-btn').forEach(function(b){ b.textContent = '🔊'; b.classList.remove('speaking'); });
     return;
   }
 
-  /* Nettoyer le texte — garder l'arabe pour ElevenLabs multilingue */
+  /* Nettoyer le texte */
   var clean = text
     .replace(/\*\*([^*]+)\*\*/g, '$1')
     .replace(/\*([^*]+)\*/g, '$1')
     .replace(/^#{1,3} /gm, '')
     .replace(/[🌍☽📿🌹🙏📖🕌✨💫🌟💎🔮🌙]/g, '')
-    .replace(/\n{2,}/g, '. ')
-    .replace(/\n/g, ' ')
+    .replace(/
+{2,}/g, '. ')
+    .replace(/
+/g, ' ')
+    .replace(/[^ -￿]/g, '') /* supprimer emojis non standards */
     .trim();
 
+  /* Limiter à 2500 caractères max (limite ElevenLabs) */
+  if (clean.length > 2500) clean = clean.substring(0, 2500);
+
   if (!clean) return;
+
+  /* Réinitialiser le player avant nouvelle lecture */
+  player.pause();
+  player.src = '';
+  player.load();
 
   /* Bouton → chargement */
   if (btnEl) { btnEl.textContent = '⏳'; btnEl.classList.add('speaking'); }
@@ -7060,23 +7089,28 @@ async function abSpeak(text, btnEl) {
           stability: 0.85,
           similarity_boost: 0.90,
           style: 0.2,
-          use_speaker_boost: true,
-
+          use_speaker_boost: true
         }
       })
     });
 
-    if (!resp.ok) throw new Error('ElevenLabs ' + resp.status);
+    if (!resp.ok) {
+      var errText = await resp.text();
+      throw new Error('ElevenLabs ' + resp.status + ' : ' + errText.substring(0, 100));
+    }
 
     var blob = await resp.blob();
     var url  = URL.createObjectURL(blob);
 
-    player.src = url;
-    player.playbackRate = 1.0; /* ralentir Ask Baye */
-    _abSpeaking = true;
+    /* Réinitialiser encore une fois avant de charger le nouveau blob */
+    player.pause();
+    player.src = '';
+    player.load();
 
-    /* Bouton → arrêter */
-    if (btnEl) { btnEl.textContent = '⏹'; }
+    await new Promise(function(resolve) { setTimeout(resolve, 80); });
+
+    player.src = url;
+    player.playbackRate = 0.85;
 
     player.onended = function() {
       _abSpeaking = false;
@@ -7090,6 +7124,8 @@ async function abSpeak(text, btnEl) {
     };
 
     await player.play();
+    _abSpeaking = true;
+    if (btnEl) { btnEl.textContent = '⏹'; }
 
   } catch(e) {
     console.error('[abSpeak ElevenLabs]', e);
@@ -7814,7 +7850,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!_authResolved) {
       _showWelcome();
     }
-  }, 5000);
+  }, 2500);
 
   /* Firebase Auth + Sync */
   _fbInit(function() {
