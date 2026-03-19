@@ -273,41 +273,42 @@ body{
 /* ══ WIDGET PRIÈRE PAGE UMMA — Cartes lisibles ══ */
 .wlc-pray-card{
   display:flex;align-items:center;gap:.85rem;
-  background:var(--white);border:1.5px solid var(--gold3);
-  border-radius:14px;padding:.65rem .9rem;
+  background:var(--white);border:1.5px solid #e0ddd5;
+  border-radius:14px;padding:.7rem .9rem;
   transition:all .2s;position:relative;overflow:hidden;
 }
 .wlc-pray-card.next{
-  background:linear-gradient(135deg,rgba(15,123,63,.06),rgba(212,175,55,.04));
+  background:linear-gradient(135deg,rgba(15,123,63,.07),rgba(212,175,55,.05));
   border-color:var(--gold);
-  box-shadow:0 3px 14px rgba(212,175,55,.12);
+  box-shadow:0 3px 14px rgba(212,175,55,.15);
 }
-.wlc-pray-card.past{ opacity:.42; }
+.wlc-pray-card.past{ opacity:.55; }
 .wlc-pray-card::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;width:3.5px;
-  background:var(--gold3);border-radius:3px 0 0 3px;
+  content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:#ccc;border-radius:3px 0 0 3px;
 }
 .wlc-pray-card.next::before{ background:var(--gold); }
-.wlc-pray-card.past::before{ background:var(--text3); }
+.wlc-pray-card.past::before{ background:#bbb; }
 .wlc-pray-icon2{ font-size:22px;width:30px;text-align:center;flex-shrink:0; }
 .wlc-pray-body{ flex:1;min-width:0; }
-.wlc-pray-name2{ font-family:'Amiri',serif;font-size:17px;color:var(--g1);line-height:1; }
+.wlc-pray-name2{ font-family:'Amiri',serif;font-size:18px;color:#1a1a1a;line-height:1;font-weight:600; }
 .wlc-pray-card.next .wlc-pray-name2{ color:var(--g1);font-weight:700; }
-.wlc-pray-card.past .wlc-pray-name2{ color:var(--text3); }
-.wlc-pray-fr{ font-size:11px;color:var(--text3);margin-top:2px; }
+.wlc-pray-card.past .wlc-pray-name2{ color:#555; }
+.wlc-pray-fr{ font-size:12px;color:#555;margin-top:2px;font-weight:500; }
+.wlc-pray-card.past .wlc-pray-fr{ color:#888; }
 .wlc-pray-time2{
-  font-size:24px;font-weight:700;color:var(--text2);
-  font-variant-numeric:tabular-nums;flex-shrink:0;
+  font-size:26px;font-weight:700;color:#1a1a1a;
+  font-variant-numeric:tabular-nums;flex-shrink:0;letter-spacing:.01em;
 }
 .wlc-pray-card.next .wlc-pray-time2{ color:var(--g1); }
-.wlc-pray-card.past .wlc-pray-time2{ color:var(--text3); }
+.wlc-pray-card.past .wlc-pray-time2{ color:#777; }
 .wlc-next-badge{
   font-size:9px;background:var(--g1);color:#fff;
   border-radius:100px;padding:2px 7px;font-weight:700;
   letter-spacing:.06em;margin-left:.5rem;vertical-align:middle;
 }
 .wlc-adhan-btn{
-  background:none;border:1.5px solid rgba(212,175,55,.35);
+  background:none;border:1.5px solid rgba(212,175,55,.5);
   border-radius:100px;color:var(--gold);
   font-size:14px;padding:.3rem .6rem;cursor:pointer;
   transition:all .2s;flex-shrink:0;line-height:1;
