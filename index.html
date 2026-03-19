@@ -7054,12 +7054,9 @@ async function abSpeak(text, btnEl) {
     .replace(/\*\*([^*]+)\*\*/g, '$1')
     .replace(/\*([^*]+)\*/g, '$1')
     .replace(/^#{1,3} /gm, '')
-    .replace(/[🌍☽📿🌹🙏📖🕌✨💫🌟💎🔮🌙]/g, '')
-    .replace(/
-{2,}/g, '. ')
-    .replace(/
-/g, ' ')
-    .replace(/[^ -￿]/g, '') /* supprimer emojis non standards */
+    .replace(/[\u{1F300}-\u{1FFFF}]/gu, '')
+    .replace(/[\n]{2,}/g, '. ')
+    .replace(/[\n]/g, ' ')
     .trim();
 
   /* Limiter à 2500 caractères max (limite ElevenLabs) */
@@ -8897,11 +8894,15 @@ function switchInteractTab(tab, btn) {
 }
 
 /* ── Réactions animées flottantes ── */
-var _origSendReaction = sendReaction;
-sendReaction = function(emoji) {
-  _origSendReaction(emoji);
-  _spawnFloatingReaction(emoji);
-};
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof sendReaction === 'function') {
+    var _origSendReaction = sendReaction;
+    sendReaction = function(emoji) {
+      _origSendReaction(emoji);
+      _spawnFloatingReaction(emoji);
+    };
+  }
+});
 
 function _spawnFloatingReaction(emoji) {
   var overlay = document.getElementById('reactionsOverlay');
