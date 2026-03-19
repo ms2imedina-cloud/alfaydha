@@ -5637,36 +5637,75 @@ async function lkJoinAsViewer(url, token){
       if (!wrap) return;
 
       if (track.kind === LK.Track.Kind.Video) {
-        wrap.innerHTML = '';
-        var vid = document.createElement('video');
-        vid.autoplay = true; vid.playsInline = true; vid.controls = true;
-        vid.style.cssText = 'width:100%;height:100%;object-fit:contain;background:#000';
-        track.attach(vid);
-        wrap.appendChild(vid);
-        /* Tenter lecture auto */
-        vid.play().catch(function() {
-          /* Sur mobile, afficher bouton play si autoplay bloqué */
-          var playBtn = document.createElement('div');
-          playBtn.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);cursor:pointer;z-index:5';
-          playBtn.innerHTML = '<div style="width:60px;height:60px;background:rgba(255,255,255,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px">▶</div>';
-          playBtn.onclick = function() { vid.play(); playBtn.remove(); };
-          wrap.style.position = 'relative';
-          wrap.appendChild(playBtn);
-        });
-        showControls(true);
-        updateFsTitle('🔴 App Direct — LiveKit', true);
-        showToast('🔴 Live connecté — Bonne écoute !');
-        _addLogoOverlay(wrap);
+        /* Vérifier si c'est la vidéo du streamer ou d'un viewer */
+        /* Un viewer qui parle publie Source.Camera — le streamer publie aussi Camera */
+        /* On distingue : si on a déjà une vidéo principale ET ce n'est pas le 1er publisher → PiP */
+        var existingVideo = wrap.querySelector('video');
+        if (existingVideo) {
+          /* Vidéo déjà affichée → c'est un viewer qui parle → afficher en PiP */
+          var pip = document.getElementById('viewerPip');
+          if (!pip) {
+            pip = document.createElement('div');
+            pip.id = 'viewerPip';
+            pip.style.cssText = 'position:absolute;bottom:10px;right:10px;width:120px;height:90px;border-radius:8px;overflow:hidden;border:2px solid rgba(212,175,55,.9);background:#000;z-index:10';
+            var pipVid = document.createElement('video');
+            pipVid.id = 'viewerPipVideo';
+            pipVid.autoplay = true; pipVid.playsInline = true;
+            pipVid.style.cssText = 'width:100%;height:100%;object-fit:cover;transform:scaleX(-1)';
+            var pipName = document.createElement('div');
+            pipName.id = 'viewerPipName';
+            pipName.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.65);color:#fff;font-size:10px;padding:2px 5px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
+            pip.appendChild(pipVid);
+            pip.appendChild(pipName);
+            wrap.style.position = 'relative';
+            wrap.appendChild(pip);
+          }
+          var pipVideo = document.getElementById('viewerPipVideo');
+          var pipNameEl = document.getElementById('viewerPipName');
+          if (pipVideo) { track.attach(pipVideo); pip.dataset.identity = participant.identity; }
+          if (pipNameEl) pipNameEl.textContent = participant.name || participant.identity;
+          pip.style.display = 'block';
+        } else {
+          /* Pas encore de vidéo → c'est le streamer → afficher en plein écran */
+          wrap.innerHTML = '';
+          var vid = document.createElement('video');
+          vid.autoplay = true; vid.playsInline = true; vid.controls = true;
+          vid.style.cssText = 'width:100%;height:100%;object-fit:contain;background:#000';
+          track.attach(vid);
+          wrap.appendChild(vid);
+          vid.play().catch(function() {
+            var playBtn = document.createElement('div');
+            playBtn.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);cursor:pointer;z-index:5';
+            playBtn.innerHTML = '<div style="width:60px;height:60px;background:rgba(255,255,255,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px">▶</div>';
+            playBtn.onclick = function() { vid.play(); playBtn.remove(); };
+            wrap.style.position = 'relative';
+            wrap.appendChild(playBtn);
+          });
+          showControls(true);
+          updateFsTitle('🔴 App Direct — LiveKit', true);
+          showToast('🔴 Live connecté — Bonne écoute !');
+          _addLogoOverlay(wrap);
+        }
       }
 
       if (track.kind === LK.Track.Kind.Audio) {
-        /* Supprimer l'ancien audio si existe (évite cumul) */
+        /* Ignorer l'audio des viewers (leur micro) — on entend via leur track directement */
+        /* Uniquement attacher l'audio du streamer principal */
         var oldAudio = document.getElementById('lkViewerAudio');
         if (oldAudio) oldAudio.remove();
         var audio = track.attach();
         audio.id = 'lkViewerAudio';
         audio.autoplay = true;
         document.body.appendChild(audio);
+      }
+    });
+
+    viewerRoom.on(LK.RoomEvent.TrackUnsubscribed, function(track, pub, participant) {
+      if (track.kind === LK.Track.Kind.Video) {
+        var pip = document.getElementById('viewerPip');
+        if (pip && pip.dataset.identity === participant.identity) {
+          pip.style.display = 'none';
+        }
       }
     });
 
