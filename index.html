@@ -3372,6 +3372,12 @@ html { background: #0a0a0a; }
   <div class="ab-input-meta">
     <span id="abEngLabel">&#x1F54C; Baye IA</span>
     <button class="ab-lang-btn" id="abLangBtn" onclick="abToggleLang()" title="Langue vocale">🇫🇷 FR</button>
+    <!-- Contrôle vitesse voix -->
+    <div style="display:flex;align-items:center;gap:3px;background:var(--white);border:1px solid var(--gold3);border-radius:100px;padding:2px 6px">
+      <button onclick="abSpeedDown()" style="background:none;border:none;cursor:pointer;font-size:13px;color:var(--g1);padding:0 2px;line-height:1" title="Ralentir">🐢</button>
+      <span id="abSpeedLabel" style="font-size:11px;color:var(--g1);font-weight:700;min-width:28px;text-align:center">×1.0</span>
+      <button onclick="abSpeedUp()" style="background:none;border:none;cursor:pointer;font-size:13px;color:var(--g1);padding:0 2px;line-height:1" title="Accélérer">🐇</button>
+    </div>
     <button class="ab-key-btn" onclick="abToggleConfig()" title="Clé API Ask Baye" id="abKeyBtn">&#x1F511;</button>
     <button class="ab-clr-btn" onclick="abClear()">&#x2715; Vider</button>
   </div>
@@ -7029,6 +7035,37 @@ var EL_API_KEY     = 'sk_293238401490b607ef8d79573e96652f63146612e918753b';
 var EL_VOICE_ID_AB = 'h0TwoFQf7NYsiJYrhYf8'; /* voix baye niass — ASK BAYE */
 var EL_MODEL       = 'eleven_multilingual_v2';
 
+
+/* ── Contrôle vitesse voix Ask Baye ── */
+var _abPlaybackRate = 0.85;
+var _abSpeedSteps   = [0.5, 0.65, 0.75, 0.85, 1.0, 1.15, 1.25, 1.5];
+
+function abSpeedUp() {
+  var idx = _abSpeedSteps.indexOf(_abPlaybackRate);
+  if (idx < _abSpeedSteps.length - 1) {
+    _abPlaybackRate = _abSpeedSteps[idx + 1];
+    _abUpdateSpeedLabel();
+  }
+}
+
+function abSpeedDown() {
+  var idx = _abSpeedSteps.indexOf(_abPlaybackRate);
+  if (idx > 0) {
+    _abPlaybackRate = _abSpeedSteps[idx - 1];
+    _abUpdateSpeedLabel();
+  }
+}
+
+function _abUpdateSpeedLabel() {
+  var el = document.getElementById('abSpeedLabel');
+  var spd = _abPlaybackRate.toFixed(2).replace('.00','').replace(/0+$/,'');
+  if (el) el.textContent = '×' + spd;
+  /* Appliquer au player en cours si actif */
+  var player = document.getElementById('ab-audio-player');
+  if (player && !player.paused) player.playbackRate = _abPlaybackRate;
+  showToast('🎙️ Vitesse voix : ×' + _abPlaybackRate);
+}
+
 async function abSpeak(text, btnEl) {
   /* Créer le player audio si absent */
   var player = document.getElementById('ab-audio-player');
@@ -7107,7 +7144,7 @@ async function abSpeak(text, btnEl) {
     await new Promise(function(resolve) { setTimeout(resolve, 80); });
 
     player.src = url;
-    player.playbackRate = 0.85;
+    player.playbackRate = _abPlaybackRate;
 
     player.onended = function() {
       _abSpeaking = false;
