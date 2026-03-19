@@ -7072,7 +7072,7 @@ async function abSpeak(text, btnEl) {
     var url  = URL.createObjectURL(blob);
 
     player.src = url;
-    player.playbackRate = 0.85; /* ralentir Ask Baye */
+    player.playbackRate = 1.0; /* ralentir Ask Baye */
     _abSpeaking = true;
 
     /* Bouton → arrêter */
@@ -8365,7 +8365,32 @@ function calNext()   { hijriNext(); }
 function calToday()  { _calGregYear=new Date().getFullYear(); _calGregMonth=new Date().getMonth(); hijriRender(); }
 function calDayClick(g,h,hm){ hijriDayClick(hm+'-'+h); }
 
-/* switchPratiqueTab géré plus bas */
+/* ── switchPratiqueTab — bascule entre Wird / Zikr / Calendrier ── */
+function switchPratiqueTab(tab) {
+  /* Onglets */
+  ['wird','zikr','cal'].forEach(function(t) {
+    var btn = document.getElementById('pratique-tab-' + t);
+    if (btn) btn.classList.toggle('active', t === tab);
+  });
+  /* Panels */
+  ['wird','zikr','cal'].forEach(function(t) {
+    var pan = document.getElementById('pratique-panel-' + t);
+    if (pan) pan.classList.toggle('active', t === tab);
+  });
+  /* Init calendrier si besoin */
+  if (tab === 'cal') {
+    setTimeout(function() {
+      if (typeof calRender === 'function') calRender();
+      if (typeof prayerInit === 'function') prayerInit();
+    }, 100);
+  }
+  /* Init zikr groupe si besoin */
+  if (tab === 'zikr') {
+    setTimeout(function() {
+      if (typeof zikrGroupInit === 'function') zikrGroupInit();
+    }, 100);
+  }
+}
 
 /* ════════════════════════════════════════
    NOTIFICATIONS ADMIN — fonctions manquantes
@@ -9353,7 +9378,7 @@ async function _prayerReverseGeocode(lat, lng) {
   } catch(e) {}
 }
 
-/* Hook sur switchPratiqueTab pour init au bon moment */
+/* Hook sur switchPratiqueTab pour init calendrier */
 (function(){
   var orig = window.switchPratiqueTab;
   window.switchPratiqueTab = function(tab) {
