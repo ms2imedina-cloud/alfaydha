@@ -5636,13 +5636,34 @@ async function lkJoinAsViewer(url, token){
       var wrap = document.getElementById('mainPlayer');
       if (!wrap) return;
 
+      /* Identifier si c'est le streamer ou un viewer par le nom du participant */
+      var identity = participant.identity || participant.name || '';
+      var isStreamer = !identity.startsWith('viewer-');
+
       if (track.kind === LK.Track.Kind.Video) {
-        /* Vérifier si c'est la vidéo du streamer ou d'un viewer */
-        /* Un viewer qui parle publie Source.Camera — le streamer publie aussi Camera */
-        /* On distingue : si on a déjà une vidéo principale ET ce n'est pas le 1er publisher → PiP */
-        var existingVideo = wrap.querySelector('video');
-        if (existingVideo) {
-          /* Vidéo déjà affichée → c'est un viewer qui parle → afficher en PiP */
+        if (isStreamer) {
+          /* Vidéo du streamer → plein écran */
+          wrap.innerHTML = '';
+          wrap.style.position = 'relative';
+          var vid = document.createElement('video');
+          vid.autoplay = true; vid.playsInline = true; vid.controls = true;
+          vid.style.cssText = 'width:100%;height:100%;object-fit:contain;background:#000';
+          track.attach(vid);
+          wrap.appendChild(vid);
+          vid.play().catch(function() {
+            var playBtn = document.createElement('div');
+            playBtn.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);cursor:pointer;z-index:5';
+            playBtn.innerHTML = '<div style="width:60px;height:60px;background:rgba(255,255,255,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px">▶</div>';
+            playBtn.onclick = function() { vid.play(); playBtn.remove(); };
+            wrap.appendChild(playBtn);
+          });
+          showControls(true);
+          updateFsTitle('🔴 App Direct — LiveKit', true);
+          showToast('🔴 Live connecté — Bonne écoute !');
+          _addLogoOverlay(wrap);
+        } else {
+          /* Vidéo d'un viewer qui parle → PiP en bas à droite */
+          wrap.style.position = 'relative';
           var pip = document.getElementById('viewerPip');
           if (!pip) {
             pip = document.createElement('div');
@@ -5657,55 +5678,47 @@ async function lkJoinAsViewer(url, token){
             pipName.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.65);color:#fff;font-size:10px;padding:2px 5px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
             pip.appendChild(pipVid);
             pip.appendChild(pipName);
-            wrap.style.position = 'relative';
             wrap.appendChild(pip);
           }
           var pipVideo = document.getElementById('viewerPipVideo');
           var pipNameEl = document.getElementById('viewerPipName');
-          if (pipVideo) { track.attach(pipVideo); pip.dataset.identity = participant.identity; }
-          if (pipNameEl) pipNameEl.textContent = participant.name || participant.identity;
+          if (pipVideo) track.attach(pipVideo);
+          if (pipNameEl) pipNameEl.textContent = identity;
+          pip.dataset.identity = identity;
           pip.style.display = 'block';
-        } else {
-          /* Pas encore de vidéo → c'est le streamer → afficher en plein écran */
-          wrap.innerHTML = '';
-          var vid = document.createElement('video');
-          vid.autoplay = true; vid.playsInline = true; vid.controls = true;
-          vid.style.cssText = 'width:100%;height:100%;object-fit:contain;background:#000';
-          track.attach(vid);
-          wrap.appendChild(vid);
-          vid.play().catch(function() {
-            var playBtn = document.createElement('div');
-            playBtn.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);cursor:pointer;z-index:5';
-            playBtn.innerHTML = '<div style="width:60px;height:60px;background:rgba(255,255,255,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px">▶</div>';
-            playBtn.onclick = function() { vid.play(); playBtn.remove(); };
-            wrap.style.position = 'relative';
-            wrap.appendChild(playBtn);
-          });
-          showControls(true);
-          updateFsTitle('🔴 App Direct — LiveKit', true);
-          showToast('🔴 Live connecté — Bonne écoute !');
-          _addLogoOverlay(wrap);
         }
       }
 
       if (track.kind === LK.Track.Kind.Audio) {
-        /* Ignorer l'audio des viewers (leur micro) — on entend via leur track directement */
-        /* Uniquement attacher l'audio du streamer principal */
-        var oldAudio = document.getElementById('lkViewerAudio');
-        if (oldAudio) oldAudio.remove();
-        var audio = track.attach();
-        audio.id = 'lkViewerAudio';
-        audio.autoplay = true;
-        document.body.appendChild(audio);
+        if (isStreamer) {
+          /* Audio du streamer → élément audio principal */
+          var oldAudio = document.getElementById('lkViewerAudio');
+          if (oldAudio) oldAudio.remove();
+          var audio = track.attach();
+          audio.id = 'lkViewerAudio';
+          audio.autoplay = true;
+          document.body.appendChild(audio);
+        } else {
+          /* Audio d'un viewer qui parle → élément séparé */
+          var oldVAudio = document.getElementById('lkViewerSpeakerAudio_' + identity);
+          if (oldVAudio) oldVAudio.remove();
+          var vAudio = track.attach();
+          vAudio.id = 'lkViewerSpeakerAudio_' + identity;
+          vAudio.autoplay = true;
+          document.body.appendChild(vAudio);
+        }
       }
     });
 
     viewerRoom.on(LK.RoomEvent.TrackUnsubscribed, function(track, pub, participant) {
+      var identity = participant.identity || participant.name || '';
       if (track.kind === LK.Track.Kind.Video) {
         var pip = document.getElementById('viewerPip');
-        if (pip && pip.dataset.identity === participant.identity) {
-          pip.style.display = 'none';
-        }
+        if (pip && pip.dataset.identity === identity) pip.style.display = 'none';
+      }
+      if (track.kind === LK.Track.Kind.Audio) {
+        var va = document.getElementById('lkViewerSpeakerAudio_' + identity);
+        if (va) va.remove();
       }
     });
 
