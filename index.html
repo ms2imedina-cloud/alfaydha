@@ -5304,8 +5304,47 @@ async function lkConnect(url, token){
   _lkRoom.on(LK.RoomEvent.ParticipantConnected, function(){
     lkUpdateViewerCount();
   });
-  _lkRoom.on(LK.RoomEvent.ParticipantDisconnected, function(){
+  _lkRoom.on(LK.RoomEvent.ParticipantDisconnected, function(participant){
     lkUpdateViewerCount();
+    var oldAudio = document.getElementById('lkStreamerHear_' + participant.identity);
+    if (oldAudio) oldAudio.remove();
+    var pip = document.getElementById('viewerCamPip');
+    if (pip && pip.dataset.identity === participant.identity) pip.style.display = 'none';
+  });
+  /* Écouter audio + voir vidéo des viewers autorisés */
+  _lkRoom.on(LK.RoomEvent.TrackSubscribed, function(track, publication, participant) {
+    if (track.kind === LK.Track.Kind.Audio) {
+      var old = document.getElementById('lkStreamerHear_' + participant.identity);
+      if (old) old.remove();
+      var audioEl = track.attach();
+      audioEl.id = 'lkStreamerHear_' + participant.identity;
+      audioEl.autoplay = true; audioEl.volume = 1.0;
+      document.body.appendChild(audioEl);
+      showToast('🎤 ' + (participant.name || participant.identity) + ' parle');
+      if (typeof _showStreamerAlert === 'function')
+        _showStreamerAlert('🎤', participant.name || participant.identity, 'parle maintenant');
+    }
+    if (track.kind === LK.Track.Kind.Video) {
+      var pip  = document.getElementById('viewerCamPip');
+      var vid  = document.getElementById('viewerCamVideo');
+      var namEl = document.getElementById('viewerCamName');
+      if (pip && vid) {
+        track.attach(vid);
+        if (namEl) namEl.textContent = participant.name || participant.identity;
+        pip.style.display = 'block';
+        pip.dataset.identity = participant.identity;
+      }
+    }
+  });
+  _lkRoom.on(LK.RoomEvent.TrackUnsubscribed, function(track, publication, participant) {
+    if (track.kind === LK.Track.Kind.Audio) {
+      var audioEl = document.getElementById('lkStreamerHear_' + participant.identity);
+      if (audioEl) { track.detach(audioEl); audioEl.remove(); }
+    }
+    if (track.kind === LK.Track.Kind.Video) {
+      var pip = document.getElementById('viewerCamPip');
+      if (pip && pip.dataset.identity === participant.identity) pip.style.display = 'none';
+    }
   });
 
   // Connexion
@@ -5625,6 +5664,23 @@ async function lkJoinAsViewer(url, token){
 
     viewerRoom.on(LK.RoomEvent.Disconnected, function() {
       window._lkViewerRoom = null;
+      /* Reset état micro */
+      _myMicActive = false; _myMicPending = false; _myMicStopping = false;
+      if (_lkViewerMicTrack) { try { _lkViewerMicTrack.stop(); } catch(e){} _lkViewerMicTrack = null; }
+      if (_lkViewerCamTrack) { try { _lkViewerCamTrack.stop(); } catch(e){} _lkViewerCamTrack = null; }
+      _micUpdateMyStatusUI('idle');
+      /* Nettoyer Firebase */
+      try {
+        var uid = _lkGetUID();
+        firebase.database().ref('lk_mic/active').once('value', function(snap){
+          if (snap.val() && snap.val().uid === uid) firebase.database().ref('lk_mic/active').remove();
+        });
+        firebase.database().ref('lk_mic/requests/' + uid).remove();
+      } catch(e){}
+      /* Permettre réinit des listeners à la prochaine connexion */
+      _lkInteractInited = false;
+      if (_micRef) { try { _micRef.off(); } catch(e){} _micRef = null; }
+      if (_qaRef)  { try { _qaRef.off();  } catch(e){} _qaRef  = null; }
       fbLeaveViewers();
       var wrap = document.getElementById('mainPlayer');
       if (wrap && _currentCh === 99) {
@@ -5657,6 +5713,12 @@ async function lkJoinAsViewer(url, token){
 
     await viewerRoom.connect(url, token);
     showToast('📡 Connexion LiveKit…');
+    /* Nettoyage automatique Firebase si connexion perdue brutalement */
+    try {
+      var _vuid = _lkGetUID();
+      firebase.database().ref('lk_mic/requests/' + _vuid).onDisconnect().remove();
+      firebase.database().ref('lk_mic/active').onDisconnect().remove();
+    } catch(e){}
     /* Démarrer Q&A + Micro interactif */
     _lkInteractStart();
 
@@ -8631,9 +8693,11 @@ document.addEventListener('DOMContentLoaded', function(){
 
 var _qaRef = null;
 var _micRef = null;
-var _myMicPending = false;
-var _myMicActive  = false;
+var _myMicPending  = false;
+var _myMicActive   = false;
+var _myMicStopping = false;
 var _lkViewerMicTrack = null;
+var _lkViewerCamTrack = null;
 
 function lkInteractInit() {
   _fbInit(function() {
@@ -8721,47 +8785,92 @@ function lkRequestMic() {
     });
     return;
   }
+  /* Envoyer la demande — micro s'active UNIQUEMENT après acceptation du Cheikh */
   _fbInit(function(){
     firebase.database().ref('lk_mic/requests/' + _lkGetUID()).set({
       name: _lkGetDisplayName(), ts: firebase.database.ServerValue.TIMESTAMP, status: 'pending'
     }).then(function(){
       _myMicPending = true; _micUpdateMyStatusUI('pending');
-      showToast('🙋 Demande envoyée — attendez l\'acceptation');
+      showToast('🙋 Demande envoyée — attendez l\'acceptation du Cheikh');
     }).catch(function(e){ showToast('⚠️ ' + (e.message||'Erreur')); });
   });
 }
 
 function lkStopMyMic() {
+  if (_myMicStopping) return;
+  _myMicStopping = true;
+  _myMicActive = false; _myMicPending = false;
+  _micUpdateMyStatusUI('idle');
+  /* Arrêter les tracks locales */
   if (_lkViewerMicTrack) { try { _lkViewerMicTrack.stop(); } catch(e){} _lkViewerMicTrack = null; }
+  if (_lkViewerCamTrack) { try { _lkViewerCamTrack.stop(); } catch(e){} _lkViewerCamTrack = null; }
+  /* Dépublier de LiveKit */
   if (window._lkViewerRoom) {
-    try { window._lkViewerRoom.localParticipant.audioTrackPublications.forEach(function(pub){
-      window._lkViewerRoom.localParticipant.unpublishTrack(pub.track);
-    }); } catch(e){}
+    try {
+      window._lkViewerRoom.localParticipant.audioTrackPublications.forEach(function(pub){
+        if (pub.track) window._lkViewerRoom.localParticipant.unpublishTrack(pub.track);
+      });
+      window._lkViewerRoom.localParticipant.videoTrackPublications.forEach(function(pub){
+        if (pub.track) window._lkViewerRoom.localParticipant.unpublishTrack(pub.track);
+      });
+    } catch(e){}
   }
+  /* Nettoyer Firebase — libérer le verrou après confirmation */
   _fbInit(function(){
     var uid = _lkGetUID();
     firebase.database().ref('lk_mic/requests/' + uid).remove();
     firebase.database().ref('lk_mic/active').once('value', function(snap){
-      if (snap.val() && snap.val().uid === uid) firebase.database().ref('lk_mic/active').remove();
+      if (snap.val() && snap.val().uid === uid) {
+        firebase.database().ref('lk_mic/active').remove().then(function(){
+          setTimeout(function(){ _myMicStopping = false; }, 1500);
+        }).catch(function(){ _myMicStopping = false; });
+      } else {
+        setTimeout(function(){ _myMicStopping = false; }, 1500);
+      }
     });
   });
-  _myMicActive = false; _myMicPending = false;
-  _micUpdateMyStatusUI('idle'); showToast('🎤 Micro désactivé');
+  showToast('🎤 Micro désactivé');
 }
 
 async function lkActivateMyMic() {
-  if (!window._lkViewerRoom) { showToast('⚠️ Reconnectez-vous au live d\'abord'); return; }
+  if (_myMicStopping) return;
+  if (!window._lkViewerRoom) {
+    showToast('⚠️ Pas connecté au live — reconnectez-vous');
+    _myMicActive = false; _myMicPending = false; _micUpdateMyStatusUI('idle');
+    return;
+  }
   try {
     var LK = window.LivekitClient;
-    var stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    /* Demander micro + caméra ensemble */
+    var stream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode:'user', width:{ideal:640}, height:{ideal:480} } });
+    } catch(camErr) {
+      /* Caméra refusée ou indisponible → audio seul */
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    }
+    if (_myMicStopping) { stream.getTracks().forEach(function(t){t.stop()}); return; }
+    /* Publier audio */
     _lkViewerMicTrack = stream.getAudioTracks()[0];
-    var lkAudio = new LK.LocalAudioTrack(_lkViewerMicTrack);
-    await window._lkViewerRoom.localParticipant.publishTrack(lkAudio, { source: LK.Track.Source.Microphone });
+    if (_lkViewerMicTrack) {
+      var lkAudio = new LK.LocalAudioTrack(_lkViewerMicTrack);
+      await window._lkViewerRoom.localParticipant.publishTrack(lkAudio, { source: LK.Track.Source.Microphone });
+    }
+    /* Publier vidéo si disponible — seul le streamer la recevra */
+    _lkViewerCamTrack = stream.getVideoTracks()[0] || null;
+    if (_lkViewerCamTrack) {
+      var lkVideo = new LK.LocalVideoTrack(_lkViewerCamTrack);
+      await window._lkViewerRoom.localParticipant.publishTrack(lkVideo, { source: LK.Track.Source.Camera });
+    }
     _myMicActive = true; _myMicPending = false;
     _micUpdateMyStatusUI('active');
-    showToast('🎤 Votre micro est ACTIF — parlez maintenant');
+    showToast('🎤 Le Cheikh vous donne la parole — parlez !');
   } catch(e) {
-    showToast('⚠️ Micro : ' + (e.message||e));
+    _myMicActive = false; _micUpdateMyStatusUI('idle');
+    var msg = (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError')
+      ? 'Autorisez le micro dans les réglages du navigateur'
+      : (e.message || e);
+    showToast('⚠️ Micro : ' + msg);
   }
 }
 
@@ -8775,9 +8884,11 @@ function _micUpdateMyStatusUI(state) {
 }
 
 function _micCheckMyStatus(data) {
+  if (_myMicStopping) return;
   var uid = _lkGetUID();
   var active = data.active;
-  if (active && active.uid === uid && !_myMicActive) {
+  /* Activer SEULEMENT si l'utilisateur a fait une demande explicite */
+  if (active && active.uid === uid && !_myMicActive && _myMicPending) {
     showToast('✅ Le Cheikh vous donne la parole !');
     lkActivateMyMic();
   }
