@@ -270,34 +270,59 @@ body{
 .zvbar.active{background:var(--gold) !important}
 @keyframes zvPulse{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.4)}}
 
-/* ══ WIDGET PRIÈRE PAGE UMMA ══ */
-#wlc-prayer-list::-webkit-scrollbar{display:none}
-.wlc-pray-pill{
-  flex-shrink:0;
-  display:flex;flex-direction:column;align-items:center;
-  gap:3px;padding:.55rem .7rem;border-radius:14px;
-  background:rgba(255,255,255,.08);
-  border:1.5px solid rgba(212,175,55,.2);
-  min-width:66px;transition:all .2s;cursor:default;
+/* ══ WIDGET PRIÈRE PAGE UMMA — Cartes lisibles ══ */
+.wlc-pray-card{
+  display:flex;align-items:center;gap:.85rem;
+  background:var(--white);border:1.5px solid var(--gold3);
+  border-radius:14px;padding:.6rem .9rem;
+  transition:all .2s;position:relative;overflow:hidden;
 }
-.wlc-pray-pill.next{
-  background:linear-gradient(135deg,rgba(212,175,55,.28),rgba(212,175,55,.10));
+.wlc-pray-card.next{
+  background:linear-gradient(135deg,rgba(15,123,63,.06),rgba(212,175,55,.05));
   border-color:var(--gold);
-  box-shadow:0 0 20px rgba(212,175,55,.22);
+  box-shadow:0 3px 14px rgba(212,175,55,.15);
 }
-.wlc-pray-pill.past{
-  opacity:.35;
+.wlc-pray-card.past{
+  opacity:.45;
 }
-.wlc-pray-icon{font-size:16px;line-height:1}
-.wlc-pray-name{font-family:'Amiri',serif;font-size:12px;color:rgba(251,248,232,.75);text-align:center;line-height:1.2}
-.wlc-pray-time{font-size:14px;font-weight:700;color:rgba(251,248,232,.9);font-variant-numeric:tabular-nums}
-.wlc-pray-pill.next .wlc-pray-name{color:var(--gold2)}
-.wlc-pray-pill.next .wlc-pray-time{color:var(--gold)}
+.wlc-pray-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3.5px;
+  background:var(--gold3);border-radius:3px 0 0 3px;
+}
+.wlc-pray-card.next::before{ background:var(--gold); }
+.wlc-pray-card.past::before{ background:var(--text3); }
+.wlc-pray-icon2{ font-size:22px;width:32px;text-align:center;flex-shrink:0; }
+.wlc-pray-body{ flex:1;min-width:0; }
+.wlc-pray-name2{
+  font-family:'Amiri',serif;font-size:17px;color:var(--g1);line-height:1;
+}
+.wlc-pray-card.next .wlc-pray-name2{ color:var(--g1);font-weight:700; }
+.wlc-pray-card.past .wlc-pray-name2{ color:var(--text3); }
+.wlc-pray-fr{
+  font-size:11px;color:var(--text3);margin-top:2px;letter-spacing:.02em;
+}
+.wlc-pray-time2{
+  font-size:24px;font-weight:700;color:var(--text2);
+  font-variant-numeric:tabular-nums;letter-spacing:.02em;flex-shrink:0;
+}
+.wlc-pray-card.next .wlc-pray-time2{ color:var(--g1); }
+.wlc-pray-card.past .wlc-pray-time2{ color:var(--text3); }
 .wlc-next-badge{
-  font-size:9px;background:var(--gold);color:#000;
-  border-radius:100px;padding:1px 5px;font-weight:700;
-  letter-spacing:.04em;margin-top:1px;
+  font-size:9px;background:var(--g1);color:#fff;
+  border-radius:100px;padding:2px 7px;font-weight:700;
+  letter-spacing:.06em;margin-left:.4rem;vertical-align:middle;
 }
+.wlc-adhan-btn{
+  background:none;border:1.5px solid rgba(212,175,55,.4);
+  border-radius:100px;color:var(--gold);
+  font-size:13px;padding:.28rem .65rem;cursor:pointer;
+  transition:all .2s;flex-shrink:0;line-height:1;
+  font-family:'Roboto',sans-serif;
+}
+.wlc-adhan-btn:hover{ background:var(--gold);color:#000;border-color:var(--gold); }
+.wlc-adhan-btn.playing{ background:var(--g1);border-color:var(--g1);color:var(--gold2);animation:wlcPulse 1.6s ease-in-out infinite; }
+.wlc-pray-card.next .wlc-adhan-btn{ border-color:var(--g1);color:var(--g1); }
+@keyframes wlcPulse{0%,100%{box-shadow:0 0 0 0 rgba(15,123,63,.4)}50%{box-shadow:0 0 0 6px rgba(15,123,63,0)}}
 
 
 #wird-progress-bar{
@@ -1723,31 +1748,41 @@ html { background: #0a0a0a; }
 <!-- SECTION UMMA -->
 <section id="sec-umma" class="sec active">
 
-  <!-- ══ HERO PRIÈRE — remplace le panneau logo ══ -->
-  <div style="background:linear-gradient(160deg,var(--g1) 0%,var(--g2) 55%,#084d24 100%);padding:1.1rem 1.2rem 1rem;position:relative;overflow:hidden;flex-shrink:0">
-    <div style="position:absolute;inset:0;opacity:.05;background-image:radial-gradient(circle,var(--gold) 1px,transparent 1px);background-size:22px 22px;pointer-events:none"></div>
+  <!-- ══ WIDGET HEURES DE PRIÈRE ══ -->
 
-    <!-- Ligne titre + localisation -->
-    <div style="display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1;margin-bottom:.7rem">
-      <div style="display:flex;align-items:center;gap:.55rem">
-        <span style="font-size:22px">🕌</span>
+  <!-- En-tête hero -->
+  <div style="background:linear-gradient(160deg,var(--g1) 0%,var(--g2) 55%,#084d24 100%);padding:1rem 1.2rem .85rem;position:relative;overflow:hidden;flex-shrink:0">
+    <div style="position:absolute;inset:0;opacity:.05;background-image:radial-gradient(circle,var(--gold) 1px,transparent 1px);background-size:22px 22px;pointer-events:none"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1">
+      <div style="display:flex;align-items:center;gap:.6rem">
+        <span style="font-size:26px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.3))">🕌</span>
         <div>
-          <div style="font-family:'Amiri',serif;font-size:18px;color:var(--gold2);line-height:1">مَوَاقِيتُ الصَّلَاة</div>
-          <div style="font-size:11px;color:rgba(251,248,232,.5);font-style:italic;margin-top:2px" id="wlc-prayer-loc">📍 Détection GPS…</div>
+          <div style="font-family:'Amiri',serif;font-size:20px;color:var(--gold2);line-height:1;letter-spacing:.02em">مَوَاقِيتُ الصَّلَاة</div>
+          <div style="font-size:11px;color:rgba(251,248,232,.55);margin-top:3px" id="wlc-prayer-loc">📍 Détection GPS…</div>
         </div>
       </div>
-      <!-- Compte à rebours prochaine prière -->
       <div style="text-align:right">
-        <div style="font-size:10px;color:rgba(212,175,55,.6);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px">Prochaine · <span id="wlc-next-name" style="font-family:'Amiri',serif;font-size:12px;color:var(--gold2)">—</span></div>
-        <div style="font-size:20px;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums;letter-spacing:.04em;line-height:1" id="wlc-next-cd">--:--:--</div>
+        <div style="font-size:10px;color:rgba(212,175,55,.65);text-transform:uppercase;letter-spacing:.1em;margin-bottom:1px">Prochaine</div>
+        <div style="font-family:'Amiri',serif;font-size:15px;color:var(--gold2);line-height:1.1" id="wlc-next-name">—</div>
+        <div style="font-size:22px;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums;letter-spacing:.05em;line-height:1.1;text-shadow:0 0 18px rgba(212,175,55,.4)" id="wlc-next-cd">--:--:--</div>
       </div>
     </div>
-
-    <!-- Pilules des prières -->
-    <div id="wlc-prayer-list" style="display:flex;gap:.45rem;overflow-x:auto;scrollbar-width:none;position:relative;z-index:1;padding-bottom:2px">
-      <div style="color:rgba(251,248,232,.3);font-size:12px;font-style:italic">Chargement…</div>
-    </div>
   </div>
+
+  <!-- Grille des 5 prières -->
+  <div id="wlc-prayer-list" style="background:var(--ivory);padding:.75rem 1rem;display:flex;flex-direction:column;gap:.45rem;flex-shrink:0">
+    <div style="color:var(--text3);font-size:13px;font-style:italic;text-align:center;padding:.5rem">Chargement des horaires…</div>
+  </div>
+
+  <!-- Lecteur adhan -->
+  <div id="wlc-adhan-player" style="display:none;background:var(--g1);padding:.6rem 1rem;flex-direction:row;align-items:center;gap:.8rem;flex-shrink:0;border-top:1.5px solid rgba(212,175,55,.3)">
+    <div style="flex:1">
+      <div style="font-size:10px;color:rgba(212,175,55,.7);text-transform:uppercase;letter-spacing:.1em">Appel à la prière</div>
+      <div style="font-family:'Amiri',serif;font-size:16px;color:var(--gold2)" id="wlc-adhan-label">—</div>
+    </div>
+    <button id="wlc-adhan-stop" onclick="wlcStopAdhan()" style="background:rgba(192,57,43,.8);border:none;border-radius:100px;color:#fff;font-size:12px;font-weight:700;padding:.35rem .9rem;cursor:pointer;font-family:'Roboto',sans-serif;flex-shrink:0">✕ Arrêter</button>
+  </div>
+  <audio id="wlc-adhan-audio" preload="none"></audio>
 
   <!-- PROFIL ACTUEL -->
   <div id="ummaProfileBlock" style="padding:.8rem 1.2rem;background:var(--gold4);border-bottom:1px solid var(--gold3);display:flex;align-items:center;justify-content:space-between">
@@ -9524,22 +9559,72 @@ async function _prayerReverseGeocode(lat, lng) {
 }
 
 /* ════════════════════════════════════════
-   WIDGET PRIÈRE — PAGE D'ACCUEIL
-   Initialisé dès le chargement, rafraîchi si besoin
+   WIDGET PRIÈRE UMMA — Cartes lisibles + Adhan audio
 ════════════════════════════════════════ */
 (function(){
-  var _wlcPrayData = null;
-  var _wlcCdTimer  = null;
+  var _wlcPrayData   = null;
+  var _wlcCdTimer    = null;
   var _wlcNextPrayer = null;
+  var _wlcCurrentAdhanKey = null;
+
+  /* Adhan de Baba Diallo — muezzin de Médina Baye */
+  var ADHAN_URLS = {
+    Fajr:    'baba_diallo.mp3',
+    Dhuhr:   'baba_diallo.mp3',
+    Asr:     'baba_diallo.mp3',
+    Maghrib: 'baba_diallo.mp3',
+    Isha:    'baba_diallo.mp3'
+  };
+  var ADHAN_FALLBACK = 'baba_diallo.mp3';
 
   var WLC_PRAYERS = [
-    {k:'Fajr',    ar:'الفجر',    fr:'Fajr',    icon:'🌅'},
-    {k:'Dhuhr',   ar:'الظهر',    fr:'Dhuhr',   icon:'🌤'},
-    {k:'Asr',     ar:'العصر',    fr:'Asr',     icon:'🌇'},
-    {k:'Maghrib', ar:'المغرب',   fr:'Maghrib', icon:'🌆'},
-    {k:'Isha',    ar:'العشاء',   fr:'Isha',    icon:'🌙'}
+    {k:'Fajr',    ar:'الفجر',    fr:'Fajr — الفجر',    icon:'🌅'},
+    {k:'Dhuhr',   ar:'الظهر',    fr:'Dhuhr — الظهر',   icon:'🌤'},
+    {k:'Asr',     ar:'العصر',    fr:'Asr — العصر',     icon:'🌇'},
+    {k:'Maghrib', ar:'المغرب',   fr:'Maghrib — المغرب', icon:'🌆'},
+    {k:'Isha',    ar:'العشاء',   fr:'Isha — العشاء',    icon:'🌙'}
   ];
 
+  /* ── Adhan ── */
+  window.wlcPlayAdhan = function(key, ar, btnEl) {
+    var audio = document.getElementById('wlc-adhan-audio');
+    var player = document.getElementById('wlc-adhan-player');
+    var label  = document.getElementById('wlc-adhan-label');
+    if(!audio) return;
+
+    /* Si déjà en lecture pour ce bouton → arrêter */
+    if(_wlcCurrentAdhanKey === key && !audio.paused){
+      wlcStopAdhan(); return;
+    }
+
+    /* Réinitialiser tous les boutons adhan */
+    document.querySelectorAll('.wlc-adhan-btn').forEach(function(b){ b.classList.remove('playing'); b.textContent='🔊'; });
+
+    _wlcCurrentAdhanKey = key;
+    audio.src = ADHAN_URLS[key] || ADHAN_FALLBACK;
+    audio.load();
+    audio.play().catch(function(err){
+      console.warn('[Adhan]', err);
+      showToast('⚠️ Appuyez d'abord sur l'écran pour autoriser l'audio');
+    });
+
+    if(btnEl){ btnEl.classList.add('playing'); btnEl.textContent='⏸'; }
+    if(label) label.innerHTML = ar + ' &nbsp;·&nbsp; <span style="font-size:11px;opacity:.75;font-family:'Roboto',sans-serif">Baba Diallo — مؤذن المدينة بايّ</span>';
+    if(player){ player.style.display='flex'; }
+
+    audio.onended = function(){ wlcStopAdhan(); };
+  };
+
+  window.wlcStopAdhan = function() {
+    var audio  = document.getElementById('wlc-adhan-audio');
+    var player = document.getElementById('wlc-adhan-player');
+    if(audio){ audio.pause(); audio.currentTime=0; }
+    if(player){ player.style.display='none'; }
+    document.querySelectorAll('.wlc-adhan-btn').forEach(function(b){ b.classList.remove('playing'); b.textContent='🔊'; });
+    _wlcCurrentAdhanKey = null;
+  };
+
+  /* ── Fetch API Aladhan ── */
   function _wlcFetch(lat, lng, isFallback) {
     var today = new Date();
     var dd = String(today.getDate()).padStart(2,'0');
@@ -9552,32 +9637,35 @@ async function _prayerReverseGeocode(lat, lng) {
       _wlcRender(lat, lng, isFallback);
     }).catch(function(){
       var list = document.getElementById('wlc-prayer-list');
-      if(list) list.innerHTML = '<div style="color:rgba(251,248,232,.3);font-size:12px;font-style:italic;padding:.3rem">Indisponible</div>';
+      if(list) list.innerHTML = '<div style="color:var(--text3);font-size:13px;text-align:center;padding:1rem">Impossible de charger les horaires</div>';
     });
   }
 
+  /* ── Rendu en cartes lisibles ── */
   function _wlcRender(lat, lng, isFallback) {
     if(!_wlcPrayData) return;
     var timings = _wlcPrayData.timings;
-    var locEl = document.getElementById('wlc-prayer-loc');
-    if(locEl) {
-      if(isFallback) {
+    var locEl   = document.getElementById('wlc-prayer-loc');
+
+    if(locEl){
+      if(isFallback){
         locEl.textContent = '📍 Médina Baye, Kaolack';
       } else {
-        locEl.textContent = '📍 Détection GPS…';
+        locEl.textContent = '📍 Position GPS…';
         fetch('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lng+'&format=json&accept-language=fr')
           .then(function(r){return r.json();})
           .then(function(d){
-            var city = (d.address||{}).city || d.address.town || d.address.village || '';
+            var city = (d.address||{}).city || (d.address||{}).town || (d.address||{}).village || '';
             var country = (d.address||{}).country || '';
-            if(locEl) locEl.textContent = '📍 '+(city+(country?', '+country:'') || (lat.toFixed(2)+', '+lng.toFixed(2)));
-          }).catch(function(){ if(locEl) locEl.textContent = '📍 Position GPS'; });
+            if(locEl) locEl.textContent = '📍 '+(city ? city+(country?', '+country:'') : lat.toFixed(2)+', '+lng.toFixed(2));
+          }).catch(function(){ if(locEl) locEl.textContent = '📍 GPS détecté'; });
       }
     }
 
-    var now = new Date();
+    var now     = new Date();
     var nowMins = now.getHours()*60 + now.getMinutes();
     var nextMins = Infinity, nextPrayer = null;
+    var firstNext = true; /* flag pour ne marquer qu'une seule prière comme "next" */
 
     var list = document.getElementById('wlc-prayer-list');
     if(!list) return;
@@ -9590,16 +9678,26 @@ async function _prayerReverseGeocode(lat, lng) {
       var total = h*60+m;
       var isPast = total < nowMins;
       var isNext = false;
-      if(!isPast && total < nextMins){ nextMins = total; nextPrayer = {key:p.k, ar:p.ar, h:h, m:m, total:total}; isNext = true; }
+      if(!isPast && total < nextMins && firstNext){
+        nextMins = total;
+        nextPrayer = {key:p.k, ar:p.ar, h:h, m:m, total:total};
+        isNext = true;
+        firstNext = false;
+      }
 
-      var pill = document.createElement('div');
-      pill.className = 'wlc-pray-pill' + (isNext?' next':isPast?' past':'');
-      pill.innerHTML =
-        '<span class="wlc-pray-icon">'+p.icon+'</span>'+
-        '<span class="wlc-pray-name">'+p.ar+'</span>'+
-        '<span class="wlc-pray-time">'+String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+'</span>'+
-        (isNext?'<span class="wlc-next-badge">NEXT</span>':'');
-      list.appendChild(pill);
+      var timeStr = String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+      var card = document.createElement('div');
+      card.className = 'wlc-pray-card' + (isNext?' next':isPast?' past':'');
+      card.innerHTML =
+        '<span class="wlc-pray-icon2">'+p.icon+'</span>'+
+        '<div class="wlc-pray-body">'+
+          '<div class="wlc-pray-name2">'+p.ar+
+            (isNext?'<span class="wlc-next-badge">NEXT</span>':'')+'</div>'+
+          '<div class="wlc-pray-fr">'+p.fr.split(' — ')[0]+'</div>'+
+        '</div>'+
+        '<span class="wlc-pray-time2">'+timeStr+'</span>'+
+        '<button class="wlc-adhan-btn" onclick="wlcPlayAdhan(''+p.k+'',''+p.ar+'',this)" title="Écouter l'adhan">🔊</button>';
+      list.appendChild(card);
     });
 
     if(!nextPrayer){
@@ -9614,23 +9712,25 @@ async function _prayerReverseGeocode(lat, lng) {
     _wlcStartCountdown(nextPrayer);
   }
 
+  /* ── Compte à rebours ── */
   function _wlcStartCountdown(prayer) {
     clearInterval(_wlcCdTimer);
     _wlcCdTimer = setInterval(function(){
-      var now   = new Date();
-      var tgt   = new Date();
+      var now = new Date();
+      var tgt = new Date();
       tgt.setHours(prayer.h, prayer.m, 0, 0);
       if(prayer.tomorrow || tgt <= now) tgt.setDate(tgt.getDate()+1);
-      var diff  = Math.max(0, Math.floor((tgt - now)/1000));
-      var hh    = Math.floor(diff/3600);
-      var mm2   = Math.floor((diff%3600)/60);
-      var ss    = diff%60;
-      var el    = document.getElementById('wlc-next-cd');
+      var diff = Math.max(0, Math.floor((tgt-now)/1000));
+      var hh   = Math.floor(diff/3600);
+      var mm2  = Math.floor((diff%3600)/60);
+      var ss   = diff%60;
+      var el   = document.getElementById('wlc-next-cd');
       if(el) el.textContent = String(hh).padStart(2,'0')+':'+String(mm2).padStart(2,'0')+':'+String(ss).padStart(2,'0');
       if(diff === 0){ clearInterval(_wlcCdTimer); setTimeout(_wlcInit, 65000); }
     }, 1000);
   }
 
+  /* ── Init GPS ── */
   function _wlcInit() {
     if(!navigator.geolocation){ _wlcFetch(14.1520, -16.0765, true); return; }
     navigator.geolocation.getCurrentPosition(
@@ -9640,7 +9740,6 @@ async function _prayerReverseGeocode(lat, lng) {
     );
   }
 
-  /* Lancer dès que le DOM est prêt */
   if(document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', _wlcInit);
   } else {
