@@ -7174,20 +7174,28 @@ function abStopMic() {
 }
 
 /* Synthèse vocale (TTS) — lire une réponse */
-function abSpeak(text, btnEl) {
-  if (!window.speechSynthesis) { showToast('⚠️ Synthèse vocale non supportée'); return; }
+async function abSpeak(text, btnEl) {
+  var player = document.getElementById('ab-audio-player');
 
-  // Si déjà en train de parler → arrêter
+  /* Créer le player audio si absent */
+  if (!player) {
+    player = document.createElement('audio');
+    player.id = 'ab-audio-player';
+    player.style.display = 'none';
+    document.body.appendChild(player);
+  }
+
+  /* Si déjà en lecture → arrêter */
   if (_abSpeaking) {
-    window.speechSynthesis.cancel();
+    player.pause();
+    player.currentTime = 0;
     _abSpeaking = false;
     document.querySelectorAll('.ab-tts-btn').forEach(function(b){ b.textContent = '🔊'; b.classList.remove('speaking'); });
     return;
   }
 
-  // Nettoyer le texte
+  /* Nettoyer le texte — garder l'arabe pour ElevenLabs multilingue */
   var clean = text
-    .replace(/[\u0600-\u06FF\u0750-\u077F]+/g, '')
     .replace(/\*\*([^*]+)\*\*/g, '$1')
     .replace(/\*([^*]+)\*/g, '$1')
     .replace(/^#{1,3} /gm, '')
@@ -7196,60 +7204,61 @@ function abSpeak(text, btnEl) {
     .replace(/\n/g, ' ')
     .trim();
 
-  var utter = new SpeechSynthesisUtterance(clean);
-  utter.lang = 'fr-FR';
-  utter.rate = 0.88;
-  utter.pitch = 0.7; // Voix grave par défaut
+  if (!clean) return;
 
-  // Chercher une voix masculine française
-  var voices = window.speechSynthesis.getVoices();
-  var maleKeywords = ['thomas','nicolas','male','homme','guy','man','pierre','henri','olivier','felix','felix'];
-  var femaleKeywords = ['amelie','audrey','marie','female','femme','woman','girl','julie','lea','alice','celeste'];
+  /* Bouton → chargement */
+  if (btnEl) { btnEl.textContent = '⏳'; btnEl.classList.add('speaking'); }
 
-  var frVoices = voices.filter(function(v){ return v.lang.startsWith('fr'); });
-
-  // Chercher une voix homme explicitement
-  var maleVoice = frVoices.find(function(v){
-    var name = v.name.toLowerCase();
-    return maleKeywords.some(function(k){ return name.indexOf(k) >= 0; });
-  });
-
-  // Exclure les voix féminines si pas de voix homme trouvée
-  if (!maleVoice) {
-    maleVoice = frVoices.find(function(v){
-      var name = v.name.toLowerCase();
-      return !femaleKeywords.some(function(k){ return name.indexOf(k) >= 0; });
+  try {
+    var resp = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + EL_VOICE_ID + '/stream', {
+      method: 'POST',
+      headers: {
+        'xi-api-key': EL_API_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        text: clean,
+        model_id: EL_MODEL,
+        voice_settings: {
+          stability: 0.85,
+          similarity_boost: 0.90,
+          style: 0.2,
+          use_speaker_boost: true,
+          speed: 0.70
+        }
+      })
     });
-  }
 
-  // Dernier fallback : première voix française disponible
-  if (!maleVoice && frVoices.length > 0) maleVoice = frVoices[0];
+    if (!resp.ok) throw new Error('ElevenLabs ' + resp.status);
 
-  if (maleVoice) {
-    utter.voice = maleVoice;
-    // Forcer pitch bas même avec voix sélectionnée
-    utter.pitch = 0.7;
-  }
+    var blob = await resp.blob();
+    var url  = URL.createObjectURL(blob);
 
-  utter.onstart = function() {
+    player.src = url;
     _abSpeaking = true;
-    if (btnEl) { btnEl.textContent = '⏹'; btnEl.classList.add('speaking'); }
-  };
-  utter.onend = utter.onerror = function() {
+
+    /* Bouton → arrêter */
+    if (btnEl) { btnEl.textContent = '⏹'; }
+
+    player.onended = function() {
+      _abSpeaking = false;
+      document.querySelectorAll('.ab-tts-btn').forEach(function(b){ b.textContent = '🔊'; b.classList.remove('speaking'); });
+      URL.revokeObjectURL(url);
+    };
+    player.onerror = function() {
+      _abSpeaking = false;
+      document.querySelectorAll('.ab-tts-btn').forEach(function(b){ b.textContent = '🔊'; b.classList.remove('speaking'); });
+      showToast('⚠️ Erreur lecture audio');
+    };
+
+    await player.play();
+
+  } catch(e) {
+    console.error('[abSpeak ElevenLabs]', e);
+    showToast('⚠️ Erreur voix : ' + (e.message || e));
     _abSpeaking = false;
     document.querySelectorAll('.ab-tts-btn').forEach(function(b){ b.textContent = '🔊'; b.classList.remove('speaking'); });
-  };
-
-  // Fix Chrome : les voix peuvent ne pas être chargées immédiatement
-  if (voices.length === 0) {
-    window.speechSynthesis.onvoiceschanged = function() {
-      window.speechSynthesis.onvoiceschanged = null;
-      abSpeak(text, btnEl);
-    };
-    return;
   }
-
-  window.speechSynthesis.speak(utter);
 }
 
 /* ════════════════════════════════════════
