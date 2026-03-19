@@ -3003,6 +3003,57 @@ html { background: #0a0a0a; }
   ══════════════════════════════════════════ -->
   <div class="pratique-panel" id="pratique-panel-cal">
     
+
+<!-- ═══ HORAIRES DE PRIÈRE GPS ═══ -->
+<div id="prayer-times-block" style="background:var(--ivory);padding:.8rem 1rem 1rem">
+
+  <!-- Header localisation -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem">
+    <div>
+      <div style="font-family:'Amiri',serif;font-size:16px;color:var(--g1)">🕌 مَوَاقِيتُ الصَّلَاة</div>
+      <div id="prayer-location" style="font-size:11px;color:var(--text3);margin-top:.1rem">📍 Détection en cours...</div>
+    </div>
+    <button onclick="prayerRefresh()" id="prayer-refresh-btn"
+      style="background:none;border:1px solid var(--gold3);border-radius:100px;padding:.3rem .7rem;font-size:11px;color:var(--g1);cursor:pointer;font-family:'Roboto',sans-serif">
+      🔄 Actualiser
+    </button>
+  </div>
+
+  <!-- Prochaine prière — mise en avant -->
+  <div id="prayer-next-card" style="background:linear-gradient(135deg,var(--g1),var(--g2));border-radius:14px;padding:.9rem 1.1rem;margin-bottom:.8rem;display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <div style="font-size:11px;color:var(--gold2);text-transform:uppercase;letter-spacing:.08em">Prochaine prière</div>
+      <div id="prayer-next-name" style="font-family:'Amiri',serif;font-size:22px;color:#fff;font-weight:700;margin:.1rem 0">—</div>
+      <div id="prayer-next-time" style="font-size:18px;color:var(--gold2);font-weight:700">—:—</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:11px;color:rgba(255,255,255,.6)">Dans</div>
+      <div id="prayer-next-countdown" style="font-size:24px;color:#fff;font-weight:300">—:—:—</div>
+    </div>
+  </div>
+
+  <!-- Liste des 5 prières -->
+  <div id="prayer-list" style="display:flex;flex-direction:column;gap:.4rem">
+    <div style="text-align:center;padding:1rem;color:var(--text3);font-size:13px;font-style:italic">
+      Activez la localisation pour voir les horaires 📍
+    </div>
+  </div>
+
+  <!-- Méthode de calcul -->
+  <div style="margin-top:.6rem;display:flex;align-items:center;gap:.5rem">
+    <span style="font-size:11px;color:var(--text3)">Méthode :</span>
+    <select id="prayer-method" onchange="prayerRefresh()" style="font-size:11px;color:var(--text2);border:1px solid var(--gold3);border-radius:6px;padding:.15rem .4rem;background:var(--white);font-family:'Roboto',sans-serif">
+      <option value="2">ISNA (Amérique du Nord)</option>
+      <option value="1">Université islamique de Karachi</option>
+      <option value="3" selected>MWL — Muslim World League</option>
+      <option value="4">Oumm al-Qura (Mecque)</option>
+      <option value="5">Égypte</option>
+      <option value="7">Téhéran</option>
+    </select>
+  </div>
+
+</div>
+
     <!-- ═══ CALENDRIER HÉGIRIEN ═══ -->
     <div class="cal-header">
       <div style="position:absolute;inset:0;opacity:.04;background-image:radial-gradient(circle,var(--gold) 1px,transparent 1px);background-size:20px 20px;pointer-events:none"></div>
@@ -9099,6 +9150,148 @@ function _lkInteractStart(){
 
 
 
+
+
+/* ════════════════════════════════════════
+   HORAIRES DE PRIÈRE — GPS + Aladhan API
+════════════════════════════════════════ */
+
+var _prayerData      = null;
+var _prayerCountdown = null;
+var _prayerLat       = null;
+var _prayerLng       = null;
+var _prayerInited    = false;
+
+var PRAYER_NAMES = {
+  Fajr:    { fr: 'Fajr — الفجر',    icon: '🌅', ar: 'الفجر'    },
+  Sunrise: { fr: 'Lever du soleil',  icon: '☀️', ar: 'الشروق'   },
+  Dhuhr:   { fr: 'Dhuhr — الظهر',   icon: '🌤', ar: 'الظهر'    },
+  Asr:     { fr: 'Asr — العصر',     icon: '🌇', ar: 'العصر'    },
+  Maghrib: { fr: 'Maghrib — المغرب', icon: '🌆', ar: 'المغرب'   },
+  Isha:    { fr: 'Isha — العشاء',    icon: '🌙', ar: 'العشاء'   }
+};
+
+var PRAYER_ORDER = ['Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'];
+
+function prayerInit() {
+  if (_prayerInited) return;
+  _prayerInited = true;
+  prayerRefresh();
+}
+
+function prayerRefresh() {
+  var locEl = document.getElementById('prayer-location');
+  if (locEl) locEl.textContent = '\u{1F4CD} Détection de votre position...';
+  if (!navigator.geolocation) { _prayerFetch(14.1520, -16.0765, true); return; }
+  navigator.geolocation.getCurrentPosition(
+    function(pos) { _prayerLat = pos.coords.latitude; _prayerLng = pos.coords.longitude; _prayerFetch(_prayerLat, _prayerLng); },
+    function() { _prayerFetch(14.1520, -16.0765, true); },
+    { timeout: 8000, enableHighAccuracy: false }
+  );
+}
+
+async function _prayerFetch(lat, lng, isFallback) {
+  var method = (document.getElementById('prayer-method') || {}).value || '3';
+  var btn = document.getElementById('prayer-refresh-btn');
+  if (btn) { btn.textContent = '...'; btn.disabled = true; }
+  try {
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2,'0');
+    var mm = String(today.getMonth()+1).padStart(2,'0');
+    var yyyy = today.getFullYear();
+    var url = 'https://api.aladhan.com/v1/timings/'+dd+'-'+mm+'-'+yyyy+'?latitude='+lat+'&longitude='+lng+'&method='+method;
+    var resp = await fetch(url);
+    var json = await resp.json();
+    if (json.code !== 200) throw new Error('API error');
+    _prayerData = json.data;
+    _prayerRender(lat, lng, isFallback);
+  } catch(e) {
+    var list = document.getElementById('prayer-list');
+    if (list) list.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--red);font-size:13px">Impossible de charger les horaires</div>';
+  }
+  if (btn) { btn.textContent = 'Actualiser'; btn.disabled = false; }
+}
+
+function _prayerRender(lat, lng, isFallback) {
+  if (!_prayerData) return;
+  var timings = _prayerData.timings;
+  var meta    = _prayerData.meta;
+  var locEl   = document.getElementById('prayer-location');
+  if (locEl) {
+    locEl.textContent = isFallback ? 'Medina Baye, Kaolack (defaut)' : (meta.timezone || (lat.toFixed(2)+', '+lng.toFixed(2)));
+    if (!isFallback) _prayerReverseGeocode(lat, lng);
+  }
+  var now     = new Date();
+  var nowMins = now.getHours()*60 + now.getMinutes();
+  var nextPrayer = null;
+  var nextMins   = Infinity;
+  var listEl = document.getElementById('prayer-list');
+  if (!listEl) return;
+  var html = '';
+  PRAYER_ORDER.forEach(function(key) {
+    var raw = timings[key]; if (!raw) return;
+    var parts = raw.split(':');
+    var h = parseInt(parts[0]), m = parseInt(parts[1]);
+    var totalMins = h*60+m;
+    var isPast = totalMins < nowMins;
+    var isNext = false;
+    if (!isPast && totalMins < nextMins && key !== 'Sunrise') { nextMins = totalMins; nextPrayer = {key:key,h:h,m:m,totalMins:totalMins}; isNext = true; }
+    var info = PRAYER_NAMES[key];
+    var timeStr = String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+    html += '<div style="display:flex;align-items:center;gap:.7rem;padding:.55rem .8rem;border-radius:12px;margin-bottom:.3rem;'+(isNext?'background:rgba(15,123,63,.08);border:1.5px solid var(--g1)':isPast?'background:var(--white);opacity:.5;border:1px solid var(--gold3)':'background:var(--white);border:1px solid var(--gold3)')+'">'
+      +'<span style="font-size:20px;width:28px;text-align:center">'+info.icon+'</span>'
+      +'<div style="flex:1"><div style="font-size:14px;font-weight:'+(isNext?'700':'500')+';color:'+(isNext?'var(--g1)':'var(--text1)')+'">'+info.fr+'</div></div>'
+      +'<div style="font-size:18px;font-weight:700;color:'+(isNext?'var(--g1)':isPast?'var(--text3)':'var(--text2)')+'">'+timeStr+'</div>'
+      +(isNext?'<span style="font-size:10px;background:var(--g1);color:#fff;border-radius:100px;padding:.1rem .5rem;font-weight:700;margin-left:.3rem">NEXT</span>':'')
+      +'</div>';
+  });
+  listEl.innerHTML = html;
+  if (!nextPrayer) {
+    var fp = (timings['Fajr']||'05:00').split(':');
+    nextPrayer = {key:'Fajr',h:parseInt(fp[0]),m:parseInt(fp[1]),tomorrow:true};
+  }
+  var nm = document.getElementById('prayer-next-name');
+  var nt = document.getElementById('prayer-next-time');
+  if (nm) nm.textContent = PRAYER_NAMES[nextPrayer.key].ar;
+  if (nt) nt.textContent = String(nextPrayer.h).padStart(2,'0')+':'+String(nextPrayer.m).padStart(2,'0');
+  _prayerStartCountdown(nextPrayer);
+}
+
+function _prayerStartCountdown(prayer) {
+  clearInterval(_prayerCountdown);
+  _prayerCountdown = setInterval(function() {
+    var now = new Date();
+    var target = new Date();
+    target.setHours(prayer.h, prayer.m, 0, 0);
+    if (prayer.tomorrow || target <= now) target.setDate(target.getDate()+1);
+    var diff = Math.max(0, Math.floor((target-now)/1000));
+    var hh = Math.floor(diff/3600), mm2 = Math.floor((diff%3600)/60), ss = diff%60;
+    var el = document.getElementById('prayer-next-countdown');
+    if (el) el.textContent = String(hh).padStart(2,'0')+':'+String(mm2).padStart(2,'0')+':'+String(ss).padStart(2,'0');
+    if (diff === 300) showToast('Priere dans 5 min : '+PRAYER_NAMES[prayer.key].ar);
+    if (diff === 0) { showToast('Temps de la priere : '+PRAYER_NAMES[prayer.key].ar); clearInterval(_prayerCountdown); setTimeout(prayerRefresh,60000); }
+  }, 1000);
+}
+
+async function _prayerReverseGeocode(lat, lng) {
+  try {
+    var resp = await fetch('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lng+'&format=json&accept-language=fr');
+    var data = await resp.json();
+    var city = (data.address||{}).city || data.address.town || data.address.village || '';
+    var country = (data.address||{}).country || '';
+    var locEl = document.getElementById('prayer-location');
+    if (locEl && city) locEl.textContent = city+(country?', '+country:'');
+  } catch(e) {}
+}
+
+/* Hook sur switchPratiqueTab pour init au bon moment */
+(function(){
+  var orig = window.switchPratiqueTab;
+  window.switchPratiqueTab = function(tab) {
+    if (typeof orig === 'function') orig(tab);
+    if (tab === 'cal') setTimeout(prayerInit, 200);
+  };
+})();
 
 </script>
 
