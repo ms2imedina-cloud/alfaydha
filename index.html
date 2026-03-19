@@ -3733,7 +3733,7 @@ function _hideSplash(){
 
 /* ── Entrée dans l'app selon le profil choisi ── */
 function enterApp(profile) {
-  try{ localStorage.setItem('faydha_profile', profile); }catch(e){}\
+  try{ localStorage.setItem('faydha_profile', profile); }catch(e){}
   var w = document.getElementById('welcome');
   if(w){ w.style.transition='opacity .5s ease'; w.style.opacity='0'; setTimeout(function(){ w.classList.add('hidden'); w.style.opacity=''; }, 500); }
   _updateProfileLabel();
