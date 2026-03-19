@@ -9605,11 +9605,11 @@ async function _prayerReverseGeocode(lat, lng) {
     audio.load();
     audio.play().catch(function(err){
       console.warn('[Adhan]', err);
-      showToast('⚠️ Appuyez d'abord sur l'écran pour autoriser l'audio');
+      showToast('⚠️ Appuyez sur l\'écran pour autoriser l\'audio');
     });
 
     if(btnEl){ btnEl.classList.add('playing'); btnEl.textContent='⏸'; }
-    if(label) label.innerHTML = ar + ' &nbsp;·&nbsp; <span style="font-size:11px;opacity:.75;font-family:'Roboto',sans-serif">Baba Diallo — مؤذن المدينة بايّ</span>';
+    if(label) label.innerHTML = ar + ' &nbsp;&middot;&nbsp; <span style="font-size:11px;opacity:.75;font-family:Roboto,sans-serif">Baba Diallo &#x2014; &#x645;&#x624;&#x630;&#x646; &#x627;&#x644;&#x645;&#x62F;&#x64A;&#x646;&#x629; &#x628;&#x627;&#x64A;&#x651;</span>';
     if(player){ player.style.display='flex'; }
 
     audio.onended = function(){ wlcStopAdhan(); };
@@ -9688,15 +9688,45 @@ async function _prayerReverseGeocode(lat, lng) {
       var timeStr = String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
       var card = document.createElement('div');
       card.className = 'wlc-pray-card' + (isNext?' next':isPast?' past':'');
-      card.innerHTML =
-        '<span class="wlc-pray-icon2">'+p.icon+'</span>'+
-        '<div class="wlc-pray-body">'+
-          '<div class="wlc-pray-name2">'+p.ar+
-            (isNext?'<span class="wlc-next-badge">NEXT</span>':'')+'</div>'+
-          '<div class="wlc-pray-fr">'+p.fr.split(' — ')[0]+'</div>'+
-        '</div>'+
-        '<span class="wlc-pray-time2">'+timeStr+'</span>'+
-        '<button class="wlc-adhan-btn" onclick="wlcPlayAdhan(''+p.k+'',''+p.ar+'',this)" title="Écouter l'adhan">🔊</button>';
+
+      /* Construire la carte sans onclick inline pour éviter les conflits de quotes */
+      var cardInner = document.createElement('span');
+      cardInner.className = 'wlc-pray-icon2';
+      cardInner.textContent = p.icon;
+      card.appendChild(cardInner);
+
+      var cardBody = document.createElement('div');
+      cardBody.className = 'wlc-pray-body';
+      var nameDiv = document.createElement('div');
+      nameDiv.className = 'wlc-pray-name2';
+      nameDiv.textContent = p.ar;
+      if(isNext){
+        var badge = document.createElement('span');
+        badge.className = 'wlc-next-badge';
+        badge.textContent = 'NEXT';
+        nameDiv.appendChild(badge);
+      }
+      var frDiv = document.createElement('div');
+      frDiv.className = 'wlc-pray-fr';
+      frDiv.textContent = p.fr.split(' — ')[0];
+      cardBody.appendChild(nameDiv);
+      cardBody.appendChild(frDiv);
+      card.appendChild(cardBody);
+
+      var timeSpan = document.createElement('span');
+      timeSpan.className = 'wlc-pray-time2';
+      timeSpan.textContent = timeStr;
+      card.appendChild(timeSpan);
+
+      var adhanBtn = document.createElement('button');
+      adhanBtn.className = 'wlc-adhan-btn';
+      adhanBtn.title = 'Écouter l\'adhan';
+      adhanBtn.textContent = '🔊';
+      (function(pKey, pAr, btn){ 
+        btn.addEventListener('click', function(){ wlcPlayAdhan(pKey, pAr, btn); });
+      })(p.k, p.ar, adhanBtn);
+      card.appendChild(adhanBtn);
+
       list.appendChild(card);
     });
 
