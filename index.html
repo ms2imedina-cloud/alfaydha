@@ -5304,29 +5304,23 @@ async function lkConnect(url, token){
   });
   _lkRoom.on(LK.RoomEvent.ParticipantDisconnected, function(participant){
     lkUpdateViewerCount();
-    /* Nettoyer l'audio du viewer qui s'est déconnecté */
     var old = document.getElementById('lkStreamerHear_' + participant.identity);
     if (old) old.remove();
   });
-
   /* ── Écouter l'audio des viewers autorisés ── */
   _lkRoom.on(LK.RoomEvent.TrackSubscribed, function(track, publication, participant) {
     if (track.kind !== LK.Track.Kind.Audio) return;
-    /* Supprimer ancien élément audio si existe */
     var old = document.getElementById('lkStreamerHear_' + participant.identity);
     if (old) old.remove();
-    /* Attacher la track audio et la lire */
     var audioEl = track.attach();
     audioEl.id = 'lkStreamerHear_' + participant.identity;
     audioEl.autoplay = true;
     audioEl.volume = 1.0;
     document.body.appendChild(audioEl);
     showToast('🎤 ' + (participant.name || participant.identity) + ' parle');
-    if (typeof _showStreamerAlert === 'function') {
+    if (typeof _showStreamerAlert === 'function')
       _showStreamerAlert('🎤', participant.name || participant.identity, 'parle maintenant');
-    }
   });
-
   _lkRoom.on(LK.RoomEvent.TrackUnsubscribed, function(track, publication, participant) {
     if (track.kind !== LK.Track.Kind.Audio) return;
     var audioEl = document.getElementById('lkStreamerHear_' + participant.identity);
@@ -5650,6 +5644,27 @@ async function lkJoinAsViewer(url, token){
 
     viewerRoom.on(LK.RoomEvent.Disconnected, function() {
       window._lkViewerRoom = null;
+      /* ── Nettoyer l'état micro à la déconnexion ── */
+      _myMicActive = false;
+      _myMicPending = false;
+      _myMicStopping = false;
+      if (_lkViewerMicTrack) { try { _lkViewerMicTrack.stop(); } catch(e){} _lkViewerMicTrack = null; }
+      /* Supprimer lk_mic/active si c'est nous qui parlons */
+      try {
+        var uid = _lkGetUID();
+        firebase.database().ref('lk_mic/active').once('value', function(snap){
+          if (snap.val() && snap.val().uid === uid) {
+            firebase.database().ref('lk_mic/active').remove();
+          }
+        });
+        firebase.database().ref('lk_mic/requests/' + uid).remove();
+      } catch(e){}
+      /* Remettre l'UI en idle */
+      _micUpdateMyStatusUI('idle');
+      /* Permettre la réinit des listeners à la prochaine connexion */
+      _lkInteractInited = false;
+      if (_micRef) { try { _micRef.off(); } catch(e){} _micRef = null; }
+      if (_qaRef)  { try { _qaRef.off();  } catch(e){} _qaRef  = null; }
       fbLeaveViewers();
       var wrap = document.getElementById('mainPlayer');
       if (wrap && _currentCh === 99) {
@@ -5682,6 +5697,12 @@ async function lkJoinAsViewer(url, token){
 
     await viewerRoom.connect(url, token);
     showToast('📡 Connexion LiveKit…');
+    /* Enregistrer nettoyage automatique Firebase si connexion perdue */
+    try {
+      var _vuid = _lkGetUID();
+      firebase.database().ref('lk_mic/requests/' + _vuid).onDisconnect().remove();
+      firebase.database().ref('lk_mic/active').onDisconnect().remove();
+    } catch(e){}
     /* Démarrer Q&A + Micro interactif */
     _lkInteractStart();
 
@@ -8257,7 +8278,6 @@ function interactInit() {
       _interactRenderList('ai-panel-questions', data.questions, 'question', '❓');
       if (window._isStreaming || _adminIn) _interactUpdateFloatingPanel(data);
     });
-
     /* Listener lk_mic → panneau PAROLE en temps réel */
     firebase.database().ref('lk_mic').on('value', function(snap) {
       var lkData = snap.val() || {};
@@ -8782,7 +8802,8 @@ function _micCheckMyStatus(data) {
   if (_myMicStopping) return;
   var uid = _lkGetUID();
   var active = data.active;
-  if (active && active.uid === uid && !_myMicActive) {
+  /* N'activer le micro QUE si l'utilisateur a fait une demande explicite (_myMicPending) */
+  if (active && active.uid === uid && !_myMicActive && _myMicPending) {
     showToast('✅ Le Cheikh vous donne la parole !');
     lkActivateMyMic();
   }
