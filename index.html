@@ -6741,7 +6741,7 @@ function switchWirdTab(tab) {
 
 /* ── Configuration ElevenLabs ── */
 var EL_API_KEY   = 'sk_293238401490b607ef8d79573e96652f63146612e918753b';
-var EL_VOICE_ID  = 'h0TwoFQf7NYsiJYrhYf8'; /* voix baye niass */
+var EL_VOICE_ID  = '4uRbt5vIFTFXxkOg9X58'; /* voix baye niass faydha */
 var EL_MODEL     = 'eleven_multilingual_v2';
 
 /* ── Textes à lire pour chaque wird ── */
@@ -6771,9 +6771,12 @@ async function elSpeak(key, btn) {
     return;
   }
 
-  /* Arrêter tout audio en cours */
+  /* Arrêter tout audio en cours (ElevenLabs + speechSynthesis) */
   if (player) { player.pause(); player.currentTime = 0; }
   if (_elCurrentBtn) _elResetBtn(_elCurrentBtn);
+  try { if (window.speechSynthesis) { window.speechSynthesis.cancel(); } } catch(e) {}
+  if (typeof _stopChromeFix === 'function') _stopChromeFix();
+  _wirdSpeaking = false;
 
   if (_elLoading) return;
 
@@ -6800,7 +6803,7 @@ async function elSpeak(key, btn) {
       body: JSON.stringify({
         text: text,
         model_id: EL_MODEL,
-        voice_settings: { stability: 0.75, similarity_boost: 0.85, style: 0.3, use_speaker_boost: true }
+        voice_settings: { stability: 0.85, similarity_boost: 0.90, style: 0.2, use_speaker_boost: true, speed: 0.65 }
       })
     });
 
@@ -6968,6 +6971,13 @@ function _speakList(items, onDone) {
 /* ── wirdSpeak : arabe natif → traduction française ── */
 function wirdSpeak(key) {
   if (!window.speechSynthesis) { showToast('⚠️ Synthèse vocale non supportée'); return; }
+  /* Stopper ElevenLabs si en cours */
+  try {
+    var _elP = document.getElementById('el-audio-player');
+    if (_elP && !_elP.paused) { _elP.pause(); _elP.currentTime = 0; }
+    if (typeof _elResetBtn === 'function' && _elCurrentBtn) _elResetBtn(_elCurrentBtn);
+    _elCurrentKey = null; _elCurrentBtn = null;
+  } catch(e) {}
   var btn = document.getElementById('tts-' + key);
 
   if (_wirdSpeaking) {
@@ -7025,6 +7035,13 @@ function wirdSpeak(key) {
 /* ── wirdSpeakAll : tout le wird complet en arabe + français ── */
 function wirdSpeakAll() {
   if (!window.speechSynthesis) { showToast('⚠️ Synthèse vocale non supportée'); return; }
+  /* Stopper ElevenLabs si en cours */
+  try {
+    var _elP2 = document.getElementById('el-audio-player');
+    if (_elP2 && !_elP2.paused) { _elP2.pause(); _elP2.currentTime = 0; }
+    if (typeof _elResetBtn === 'function' && _elCurrentBtn) _elResetBtn(_elCurrentBtn);
+    _elCurrentKey = null; _elCurrentBtn = null;
+  } catch(e) {}
 
   if (_wirdSpeaking) {
     window.speechSynthesis.cancel();
