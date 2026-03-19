@@ -3862,6 +3862,25 @@ function _isSafari() {
   return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 }
 
+/* ── Garde-fou : si retour de redirect sans connexion, réactiver le bouton ── */
+(function(){
+  document.addEventListener('DOMContentLoaded', function(){
+    /* Si on revient d'un redirect Google Auth et Firebase ne répond pas dans 6s */
+    var pending = false;
+    try { pending = !!sessionStorage.getItem('gauth_pending'); } catch(e) {}
+    if (pending) {
+      setTimeout(function(){
+        try { sessionStorage.removeItem('gauth_pending'); } catch(e) {}
+        var btn = document.querySelector('.wlc-google-btn');
+        if (btn && btn.disabled) {
+          btn.disabled = false;
+          btn.innerHTML = _googleBtnHTML();
+        }
+      }, 6000);
+    }
+  });
+})();
+
 function signInWithGoogle() {
   var btn = document.querySelector('.wlc-google-btn');
   if (btn) { btn.disabled = true; btn.innerHTML = '<span>⏳</span> Connexion…'; }
@@ -3875,6 +3894,10 @@ function signInWithGoogle() {
       provider.setCustomParameters({ prompt: 'select_account' });
       if (_isIOS() || _isSafari()) {
         try { sessionStorage.setItem('gauth_pending', '1'); } catch(e) {}
+        /* Réactiver le bouton après 2s pour éviter qu'il reste bloqué si la redirect tarde */
+        setTimeout(function(){
+          if(btn && btn.disabled){ btn.disabled=false; btn.innerHTML='<span>↩</span> Appuyez à nouveau…'; }
+        }, 2000);
         firebase.auth().signInWithRedirect(provider).catch(function(err){ _resetBtn(); showToast('⚠️ ' + err.message); });
         return;
       }
