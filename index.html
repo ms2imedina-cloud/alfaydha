@@ -8558,6 +8558,7 @@ var _micRef = null;
 var _myMicPending = false;
 var _myMicActive  = false;
 var _lkViewerMicTrack = null;
+var _micPreauthTrack  = null;   /* track pré-autorisée lors du clic "Demander" */
 
 function lkInteractInit() {
   _fbInit(function() {
@@ -8638,6 +8639,8 @@ document.addEventListener('DOMContentLoaded', function(){
 function lkRequestMic() {
   if (_myMicActive) { lkStopMyMic(); return; }
   if (_myMicPending) {
+    /* Annulation : libérer la track pré-autorisée */
+    if (_micPreauthTrack) { try { _micPreauthTrack.stop(); } catch(e){} _micPreauthTrack = null; }
     _fbInit(function(){
       firebase.database().ref('lk_mic/requests/' + _lkGetUID()).remove();
       _myMicPending = false; _micUpdateMyStatusUI('idle');
@@ -8645,17 +8648,32 @@ function lkRequestMic() {
     });
     return;
   }
-  _fbInit(function(){
-    firebase.database().ref('lk_mic/requests/' + _lkGetUID()).set({
-      name: _lkGetDisplayName(), ts: firebase.database.ServerValue.TIMESTAMP, status: 'pending'
-    }).then(function(){
-      _myMicPending = true; _micUpdateMyStatusUI('pending');
-      showToast('🙋 Demande envoyée — attendez l\'acceptation');
-    }).catch(function(e){ showToast('⚠️ ' + (e.message||'Erreur')); });
-  });
+  /* ── Pré-autoriser le micro ICI, dans le geste utilisateur direct ── */
+  navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+    .then(function(stream) {
+      _micPreauthTrack = stream.getAudioTracks()[0];
+      /* Mettre en silence : on ne diffuse pas encore */
+      _micPreauthTrack.enabled = false;
+      /* Envoyer la demande Firebase */
+      _fbInit(function(){
+        firebase.database().ref('lk_mic/requests/' + _lkGetUID()).set({
+          name: _lkGetDisplayName(), ts: firebase.database.ServerValue.TIMESTAMP, status: 'pending'
+        }).then(function(){
+          _myMicPending = true; _micUpdateMyStatusUI('pending');
+          showToast('🙋 Demande envoyée — attendez l\'acceptation');
+        }).catch(function(e){ showToast('⚠️ ' + (e.message||'Erreur')); });
+      });
+    })
+    .catch(function(e) {
+      var msg = (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError')
+        ? 'Permission micro refusée. Autorisez le micro dans les réglages du navigateur.'
+        : (e.message || 'Erreur micro');
+      showToast('⚠️ ' + msg);
+    });
 }
 
 function lkStopMyMic() {
+  if (_micPreauthTrack) { try { _micPreauthTrack.stop(); } catch(e){} _micPreauthTrack = null; }
   if (_lkViewerMicTrack) { try { _lkViewerMicTrack.stop(); } catch(e){} _lkViewerMicTrack = null; }
   if (window._lkViewerRoom) {
     try { window._lkViewerRoom.localParticipant.audioTrackPublications.forEach(function(pub){
@@ -8677,8 +8695,18 @@ async function lkActivateMyMic() {
   if (!window._lkViewerRoom) { showToast('⚠️ Reconnectez-vous au live d\'abord'); return; }
   try {
     var LK = window.LivekitClient;
-    var stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    _lkViewerMicTrack = stream.getAudioTracks()[0];
+    var rawTrack;
+    if (_micPreauthTrack && _micPreauthTrack.readyState !== 'ended') {
+      /* Réutiliser la track déjà autorisée lors du clic "Demander" */
+      rawTrack = _micPreauthTrack;
+      _micPreauthTrack = null;
+    } else {
+      /* Fallback : nouvelle demande (peut échouer sur Android si hors geste) */
+      var stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+      rawTrack = stream.getAudioTracks()[0];
+    }
+    rawTrack.enabled = true;
+    _lkViewerMicTrack = rawTrack;
     var lkAudio = new LK.LocalAudioTrack(_lkViewerMicTrack);
     await window._lkViewerRoom.localParticipant.publishTrack(lkAudio, { source: LK.Track.Source.Microphone });
     _myMicActive = true; _myMicPending = false;
