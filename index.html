@@ -5019,17 +5019,19 @@ async function lkToggleCam(){
       _lkStream = await navigator.mediaDevices.getUserMedia({
         video:{
           facingMode:_lkFacing,
-          width:{ideal:1920,min:1280},
-          height:{ideal:1080,min:720},
-          frameRate:{ideal:30,min:24},
-          aspectRatio:{ideal:16/9}
+          width:{ideal:1920, min:1280},
+          height:{ideal:1080, min:720},
+          frameRate:{ideal:30, min:24},
+          aspectRatio:{ideal:16/9},
+          resizeMode: 'none'   /* pas de redimensionnement logiciel */
         },
         audio:{
-          echoCancellation:true,
-          noiseSuppression:true,
-          autoGainControl:true,
-          sampleRate:48000,
-          channelCount:2
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl:  false,  /* pas de compression → voix naturelle */
+          sampleRate:       48000,
+          channelCount:     2,
+          sampleSize:       16
         }
       });
       var vid=document.getElementById('lkLocalVid');
@@ -5286,17 +5288,35 @@ async function lkConnect(url, token){
 
   _lkRoom = new LK.Room({
     adaptiveStream: true,
-    dynacast:       true,
+    dynacast: true,
+    /* ── Vidéo streamer : qualité maximale ── */
     videoCaptureDefaults: {
-      resolution: LK.VideoPresets.h1080.resolution || LK.VideoPresets.h720.resolution
+      resolution: { width:1920, height:1080, frameRate:30 }
     },
-    videoCodec: 'h264',
+    videoPublishDefaults: {
+      codec: 'vp9',          /* VP9 : meilleure qualité/débit que H264 */
+      scalabilityMode: 'L3T3', /* 3 couches spatiales, 3 temporelles */
+      videoSimulcastLayers: [
+        LK.VideoPresets.h1080,
+        LK.VideoPresets.h540,
+        LK.VideoPresets.h216
+      ]
+    },
+    /* ── Audio streamer : qualité studio ── */
     audioCaptureDefaults: {
-      autoGainControl: true,
+      autoGainControl:  false,  /* désactivé → pas de compression artificielle */
       echoCancellation: true,
       noiseSuppression: true,
-      sampleRate: 48000
-    }
+      sampleRate:       48000,
+      channelCount:     2,      /* stéréo */
+      latency:          0       /* latence minimale */
+    },
+    audioPublishDefaults: {
+      audioBitrate: 128000,    /* 128 kbps — qualité AAC haute fidélité */
+      dtx: false               /* pas de suppression silences → flux continu */
+    },
+    stopLocalTrackOnUnpublish: true,
+    disconnectOnPageLeave:     true
   });
 
   // Événements room
@@ -5382,13 +5402,19 @@ async function lkConnect(url, token){
       var lkVideoTrack = new LK.LocalVideoTrack(videoTrack);
       await _lkRoom.localParticipant.publishTrack(lkVideoTrack, {
         source: LK.Track.Source.Camera,
-        simulcast: true
+        simulcast: true,
+        videoEncoding: {
+          maxBitrate:  4_000_000,  /* 4 Mbps max — qualité broadcast */
+          maxFramerate: 30,
+          priority: 'high'
+        }
       });
     }
     if(audioTrack){
       var lkAudioTrack = new LK.LocalAudioTrack(audioTrack);
       await _lkRoom.localParticipant.publishTrack(lkAudioTrack, {
-        source: LK.Track.Source.Microphone
+        source: LK.Track.Source.Microphone,
+        audioPreset: { maxBitrate: 128000 }
       });
     }
   }
@@ -5643,7 +5669,18 @@ async function lkJoinAsViewer(url, token){
     var viewerRoom = new LK.Room({
       adaptiveStream: true,
       dynacast: true,
-      videoCaptureDefaults: { resolution: LK.VideoPresets.h720.resolution }
+      videoCaptureDefaults: { resolution: { width:1280, height:720, frameRate:30 } },
+      audioCaptureDefaults: {
+        autoGainControl:  false,
+        echoCancellation: true,
+        noiseSuppression: true,
+        sampleRate:       48000,
+        channelCount:     2
+      },
+      audioOutput: {
+        deviceId: 'default'
+      },
+      stopLocalTrackOnUnpublish: true
     });
     window._lkViewerRoom = viewerRoom;
 
@@ -5664,6 +5701,9 @@ async function lkJoinAsViewer(url, token){
           var vid = document.createElement('video');
           vid.autoplay = true; vid.playsInline = true; vid.controls = true;
           vid.style.cssText = 'width:100%;height:100%;object-fit:contain;background:#000';
+          /* Qualité maximale — désactiver la compression du navigateur */
+          vid.setAttribute('playsinline', '');
+          vid.setAttribute('webkit-playsinline', '');
           track.attach(vid);
           wrap.appendChild(vid);
           vid.play().catch(function() {
@@ -8920,23 +8960,56 @@ async function lkActivateMyMic() {
     /* Demander micro + caméra ensemble */
     var stream;
     try {
-      stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode:'user', width:{ideal:640}, height:{ideal:480} } });
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl:  false,  /* voix naturelle sans compression */
+          sampleRate:       48000,
+          channelCount:     1,
+          sampleSize:       16
+        },
+        video: {
+          facingMode: 'user',
+          width:  { ideal: 1280, min: 640 },
+          height: { ideal: 720,  min: 480 },
+          frameRate: { ideal: 30, min: 15 }
+        }
+      });
     } catch(camErr) {
       /* Caméra refusée ou indisponible → audio seul */
-      stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl:  false,
+          sampleRate:       48000,
+          channelCount:     1
+        },
+        video: false
+      });
     }
     if (_myMicStopping) { stream.getTracks().forEach(function(t){t.stop()}); return; }
-    /* Publier audio */
     _lkViewerMicTrack = stream.getAudioTracks()[0];
     if (_lkViewerMicTrack) {
       var lkAudio = new LK.LocalAudioTrack(_lkViewerMicTrack);
-      await window._lkViewerRoom.localParticipant.publishTrack(lkAudio, { source: LK.Track.Source.Microphone });
+      await window._lkViewerRoom.localParticipant.publishTrack(lkAudio, {
+        source: LK.Track.Source.Microphone,
+        audioPreset: { maxBitrate: 96000 }  /* 96 kbps — bien au-dessus de WhatsApp (12 kbps) */
+      });
     }
     /* Publier vidéo si disponible — seul le streamer la recevra */
     _lkViewerCamTrack = stream.getVideoTracks()[0] || null;
     if (_lkViewerCamTrack) {
       var lkVideo = new LK.LocalVideoTrack(_lkViewerCamTrack);
-      await window._lkViewerRoom.localParticipant.publishTrack(lkVideo, { source: LK.Track.Source.Camera });
+      await window._lkViewerRoom.localParticipant.publishTrack(lkVideo, {
+        source: LK.Track.Source.Camera,
+        videoEncoding: {
+          maxBitrate:   1_500_000,  /* 1.5 Mbps — HD fluide */
+          maxFramerate: 30,
+          priority: 'high'
+        }
+      });
       showToast('📷 Caméra envoyée au Cheikh');
     }
     _myMicActive = true; _myMicPending = false;
