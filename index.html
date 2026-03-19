@@ -3002,24 +3002,16 @@ html { background: #0a0a0a; }
        PANEL CALENDRIER HÉGIRIEN
   ══════════════════════════════════════════ -->
   <div class="pratique-panel" id="pratique-panel-cal">
-    
 
 <!-- ═══ HORAIRES DE PRIÈRE GPS ═══ -->
 <div id="prayer-times-block" style="background:var(--ivory);padding:.8rem 1rem 1rem">
-
-  <!-- Header localisation -->
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem">
     <div>
       <div style="font-family:'Amiri',serif;font-size:16px;color:var(--g1)">🕌 مَوَاقِيتُ الصَّلَاة</div>
       <div id="prayer-location" style="font-size:11px;color:var(--text3);margin-top:.1rem">📍 Détection en cours...</div>
     </div>
-    <button onclick="prayerRefresh()" id="prayer-refresh-btn"
-      style="background:none;border:1px solid var(--gold3);border-radius:100px;padding:.3rem .7rem;font-size:11px;color:var(--g1);cursor:pointer;font-family:'Roboto',sans-serif">
-      🔄 Actualiser
-    </button>
+    <button onclick="prayerRefresh()" id="prayer-refresh-btn" style="background:none;border:1px solid var(--gold3);border-radius:100px;padding:.3rem .7rem;font-size:11px;color:var(--g1);cursor:pointer;font-family:'Roboto',sans-serif">🔄 Actualiser</button>
   </div>
-
-  <!-- Prochaine prière — mise en avant -->
   <div id="prayer-next-card" style="background:linear-gradient(135deg,var(--g1),var(--g2));border-radius:14px;padding:.9rem 1.1rem;margin-bottom:.8rem;display:flex;align-items:center;justify-content:space-between">
     <div>
       <div style="font-size:11px;color:var(--gold2);text-transform:uppercase;letter-spacing:.08em">Prochaine prière</div>
@@ -3031,68 +3023,69 @@ html { background: #0a0a0a; }
       <div id="prayer-next-countdown" style="font-size:24px;color:#fff;font-weight:300">—:—:—</div>
     </div>
   </div>
-
-  <!-- Liste des 5 prières -->
   <div id="prayer-list" style="display:flex;flex-direction:column;gap:.4rem">
-    <div style="text-align:center;padding:1rem;color:var(--text3);font-size:13px;font-style:italic">
-      Activez la localisation pour voir les horaires 📍
-    </div>
+    <div style="text-align:center;padding:1rem;color:var(--text3);font-size:13px;font-style:italic">Activez la localisation 📍</div>
   </div>
-
-  <!-- Méthode de calcul -->
   <div style="margin-top:.6rem;display:flex;align-items:center;gap:.5rem">
     <span style="font-size:11px;color:var(--text3)">Méthode :</span>
     <select id="prayer-method" onchange="prayerRefresh()" style="font-size:11px;color:var(--text2);border:1px solid var(--gold3);border-radius:6px;padding:.15rem .4rem;background:var(--white);font-family:'Roboto',sans-serif">
-      <option value="2">ISNA (Amérique du Nord)</option>
-      <option value="1">Université islamique de Karachi</option>
-      <option value="3" selected>MWL — Muslim World League</option>
-      <option value="4">Oumm al-Qura (Mecque)</option>
+      <option value="2">ISNA</option>
+      <option value="1">Karachi</option>
+      <option value="3" selected>MWL</option>
+      <option value="4">Oumm al-Qura</option>
       <option value="5">Égypte</option>
-      <option value="7">Téhéran</option>
     </select>
   </div>
+</div>
+
+<!-- ═══ CALENDRIER HIJRI INTELLIGENT ═══ -->
+<div style="background:var(--ivory);padding:.8rem 1rem 1.2rem">
+
+  <!-- Header date hijri aujourd'hui -->
+  <div style="background:linear-gradient(160deg,var(--g1),var(--g2));border-radius:16px;padding:1.2rem;text-align:center;margin-bottom:.8rem;position:relative;overflow:hidden">
+    <div style="position:absolute;inset:0;opacity:.06;background-image:radial-gradient(circle,var(--gold) 1px,transparent 1px);background-size:18px 18px;pointer-events:none"></div>
+    <div style="font-family:'Amiri',serif;font-size:13px;color:var(--gold2);margin-bottom:.2rem;position:relative">التَّقْوِيمُ الهِجْرِيّ</div>
+    <div id="hijri-day-num" style="font-family:'Amiri',serif;font-size:52px;color:#fff;line-height:1;position:relative">—</div>
+    <div id="hijri-month-ar" style="font-family:'Amiri',serif;font-size:20px;color:var(--gold2);position:relative">—</div>
+    <div id="hijri-year" style="font-size:13px;color:rgba(255,255,255,.7);margin-top:.2rem;position:relative">— هـ</div>
+    <div id="hijri-greg" style="font-size:12px;color:rgba(255,255,255,.5);margin-top:.3rem;position:relative"></div>
+  </div>
+
+  <!-- Navigation mois -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem">
+    <button onclick="hijriPrev()" style="width:36px;height:36px;border-radius:50%;background:var(--white);border:1px solid var(--gold3);font-size:18px;cursor:pointer;color:var(--g1)">‹</button>
+    <div id="hijri-nav-title" style="text-align:center">
+      <div style="font-family:'Amiri',serif;font-size:16px;color:var(--g1)">—</div>
+      <div style="font-size:11px;color:var(--text3)">—</div>
+    </div>
+    <button onclick="hijriNext()" style="width:36px;height:36px;border-radius:50%;background:var(--white);border:1px solid var(--gold3);font-size:18px;cursor:pointer;color:var(--g1)">›</button>
+  </div>
+
+  <!-- Jours de la semaine -->
+  <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px">
+    <div style="text-align:center;font-size:11px;color:var(--text3);font-weight:700;padding:.2rem">L</div>
+    <div style="text-align:center;font-size:11px;color:var(--text3);font-weight:700;padding:.2rem">M</div>
+    <div style="text-align:center;font-size:11px;color:var(--text3);font-weight:700;padding:.2rem">M</div>
+    <div style="text-align:center;font-size:11px;color:var(--text3);font-weight:700;padding:.2rem">J</div>
+    <div style="text-align:center;font-size:11px;color:var(--gold);font-weight:700;padding:.2rem">V</div>
+    <div style="text-align:center;font-size:11px;color:var(--text3);font-weight:700;padding:.2rem">S</div>
+    <div style="text-align:center;font-size:11px;color:var(--text3);font-weight:700;padding:.2rem">D</div>
+  </div>
+  <div id="hijri-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:.8rem"></div>
+
+  <!-- Événements du mois -->
+  <div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem">📅 Événements du mois</div>
+  <div id="hijri-events-list" style="display:flex;flex-direction:column;gap:.4rem"></div>
 
 </div>
 
-    <!-- ═══ CALENDRIER HÉGIRIEN ═══ -->
-    <div class="cal-header">
-      <div style="position:absolute;inset:0;opacity:.04;background-image:radial-gradient(circle,var(--gold) 1px,transparent 1px);background-size:20px 20px;pointer-events:none"></div>
-      <div style="font-family:'Amiri',serif;font-size:14px;color:var(--gold2);margin-bottom:.3rem;position:relative;z-index:1">التَّقْوِيمُ الهِجْرِيّ</div>
-      <div class="cal-date-big" id="calDayNum">—</div>
-      <div class="cal-month-ar" id="calMonthAr">—</div>
-      <div class="cal-month-fr" id="calMonthFr">—</div>
-      <div class="cal-hijri-full" id="calHijriFull">— هـ</div>
-      <span id="calYearHijri" style="display:none"></span>
-      <div class="cal-greg" id="calGreg">—</div>
-    </div>
+<!-- ═══ PROCHAINS JOURS IMPORTANTS ═══ -->
+<div style="padding:.8rem 1rem 1.2rem;background:var(--white)">
+  <div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.6rem">🌙 Prochains jours importants</div>
+  <div id="hijri-upcoming" style="display:flex;flex-direction:column;gap:.4rem"></div>
+</div>
 
-    <!-- Grille calendrier -->
-    <div class="cal-grid-wrap">
-      <div class="cal-nav-row">
-        <button class="cal-nav-btn" onclick="calPrev()">‹</button>
-        <div id="calNavTitle" class="cal-nav-title"></div>
-        <button class="cal-nav-btn" onclick="calNext()">›</button>
-      </div>
-      <div class="cal-weekdays">
-        <div class="cal-weekday">L</div><div class="cal-weekday">M</div>
-        <div class="cal-weekday">M</div><div class="cal-weekday">J</div>
-        <div class="cal-weekday">V</div>
-        <div class="cal-weekday" style="color:var(--gold)">S</div>
-        <div class="cal-weekday" style="color:var(--gold)">D</div>
-      </div>
-      <div class="cal-days" id="calDaysGrid"></div>
-      <div style="text-align:center;margin-top:.5rem">
-        <button onclick="calToday()" style="font-size:12px;color:var(--g1);background:var(--G-light);border:1px solid var(--gold3);border-radius:100px;padding:.2rem .8rem;cursor:pointer">Aujourd'hui</button>
-      </div>
-    </div>
-
-    <!-- Événements du mois -->
-    <div class="cal-events-section">
-      <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:.5rem">Événements islamiques</div>
-      <div id="calEventsList"></div>
-    </div>
-
-  </div>
+</div>
 
 </section>
 <!-- SECTION ENSEIGNEMENTS -->
@@ -8125,164 +8118,248 @@ window.addEventListener('error', function(e) {
 });
 
 
-/* ════════════════════════════════════════════════════════════
-   CALENDRIER HÉGIRIEN — Calcul JS précis
+/*    CALENDRIER HIJRI INTELLIGENT — Jours importants + Alertes
 ════════════════════════════════════════════════════════════ */
 
-/* Convertir une date grégorienne en date hijri */
+/* ── Convertir date grégorienne → hijri ── */
 function gregorianToHijri(date) {
-  var y = date.getFullYear(), m = date.getMonth()+1, d = date.getDate();
-  if ((y < 1) || (y == 0)) return null;
-  var jd = Math.trunc((1461 * (y + 4800 + Math.trunc((m - 14) / 12))) / 4) +
-            Math.trunc((367 * (m - 2 - 12 * Math.trunc((m - 14) / 12))) / 12) -
-            Math.trunc((3 * Math.trunc((y + 4900 + Math.trunc((m - 14) / 12)) / 100)) / 4) +
-            d - 32075;
-  var l = jd - 1948440 + 10632;
-  var n = Math.trunc((l - 1) / 10631);
-  l = l - 10631 * n + 354;
-  var j = Math.trunc((10985 - l) / 5316) * Math.trunc((50 * l) / 17719) +
-           Math.trunc(l / 5670) * Math.trunc((43 * l) / 15238);
-  l = l - Math.trunc((30 - j) / 15) * Math.trunc((17719 * j) / 50) -
-       Math.trunc(j / 16) * Math.trunc((15238 * j) / 43) + 29;
-  var hm = Math.trunc((24 * l) / 709);
-  var hd = l - Math.trunc((709 * hm) / 24);
-  var hy = 30 * n + j - 30;
-  return { year: hy, month: hm, day: hd };
+  var y=date.getFullYear(), m=date.getMonth()+1, d=date.getDate();
+  var jd=Math.trunc((1461*(y+4800+Math.trunc((m-14)/12)))/4)+
+         Math.trunc((367*(m-2-12*Math.trunc((m-14)/12)))/12)-
+         Math.trunc((3*Math.trunc((y+4900+Math.trunc((m-14)/12))/100))/4)+d-32075;
+  var l=jd-1948440+10632, n=Math.trunc((l-1)/10631);
+  l=l-10631*n+354;
+  var j=Math.trunc((10985-l)/5316)*Math.trunc((50*l)/17719)+Math.trunc(l/5670)*Math.trunc((43*l)/15238);
+  l=l-Math.trunc((30-j)/15)*Math.trunc((17719*j)/50)-Math.trunc(j/16)*Math.trunc((15238*j)/43)+29;
+  return { year:30*n+j-30, month:Math.trunc((24*l)/709), day:l-Math.trunc((709*Math.trunc((24*l)/709))/24) };
 }
 
-/* Noms des mois hijri */
-var HIJRI_MONTHS_AR = ['مُحَرَّم','صَفَر','رَبِيعُ الأَوَّل','رَبِيعُ الثَّانِي',
-  'جُمَادَى الأُولَى','جُمَادَى الآخِرَة','رَجَب','شَعْبَان',
-  'رَمَضَان','شَوَّال','ذُو القَعْدَة','ذُو الحِجَّة'];
-var HIJRI_MONTHS_FR = ['Mouharram','Safar','Rabî\'ul-Awwal','Rabî\'ul-Âkhir',
-  'Joumâdal-Ûlâ','Joumâdal-Âkhira','Rajab','Cha\'bân',
-  'Ramadan','Chawwâl','Dhul-Qa\'da','Dhul-Hijja'];
+/* ── Noms mois hijri ── */
+var HIJRI_MONTHS_AR = ['مُحَرَّم','صَفَر','رَبِيعُ الأَوَّل','رَبِيعُ الثَّانِي','جُمَادَى الأُولَى','جُمَادَى الآخِرَة','رَجَب','شَعْبَان','رَمَضَان','شَوَّال','ذُو القَعْدَة','ذُو الحِجَّة'];
+var HIJRI_MONTHS_FR = ['Mouharram','Safar','Rabîul-Awwal','Rabîul-Âkhir','Joumâdal-Ûlâ','Joumâdal-Âkhira','Rajab','Chaabân','Ramadan','Chawwâl','Dhul-Qada','Dhul-Hijja'];
 
-/* Événements islamiques/tijaniyya (mois hijri: jour) */
+/* ── Événements importants avec contenu spécial ── */
 var ISLAMIC_EVENTS = {
-  '1-1':  { ar: 'رَأْسُ السَّنَة', fr: 'Nouvel An Hégirien' },
-  '1-10': { ar: 'عَاشُورَاء', fr: 'Achoura' },
-  '3-12': { ar: 'المَوْلِدُ النَّبَوِيّ', fr: 'Mawlid An-Nabawi ﷺ' },
-  '7-27': { ar: 'لَيْلَةُ المِعْرَاج', fr: "Laylat Al-Mi'raj" },
-  '8-15': { ar: 'شَعْبَان 15', fr: "Mi-Cha'bân" },
-  '9-1':  { ar: 'بِدَايَةُ رَمَضَان', fr: 'Début Ramadan' },
-  '9-27': { ar: 'لَيْلَةُ القَدْر', fr: 'Laylat Al-Qadr' },
-  '10-1': { ar: 'عِيدُ الفِطْر', fr: 'Aïd Al-Fitr' },
-  '12-10':{ ar: 'عِيدُ الأَضْحَى', fr: 'Aïd Al-Adha' },
-  '12-8': { ar: 'يَوْمُ عَرَفَة', fr: "Jour d'Arafat" },
-  /* Tijaniyya */
-  '4-18': { ar: 'مَوْلِدُ شَيْخ التِّجَانِي', fr: 'Mawlid Cheikh Ahmad Tijani رضي الله عنه' },
-  '6-17': { ar: 'مَوْلِدُ إِبْرَاهِيم نِيَاس', fr: 'Mawlid Baye Niass رضي الله عنه' },
-  '11-15':{ ar: 'ذِكْرَى وَفَاة شَيْخ التِّجَانِي', fr: 'Wafat Cheikh Ahmad Tijani رضي الله عنه' },
+  '1-1':  { ar:'رَأْسُ السَّنَة', fr:'Nouvel An Hégirien', icon:'🌙', color:'#1a9650',
+            content:'La nouvelle année hijri commence. Moment de renouveler ses intentions spirituelles et de se rapprocher d'Allah. Baye Niass enseigne que chaque nouveau jour est une opportunité de Tawba et de Marifah.' },
+  '1-10': { ar:'عَاشُورَاء', fr:'Achoura', icon:'💧', color:'#2980b9',
+            content:'Le 10 Mouharram, jour béni où Allah sauva Moussa عليه السلام. Le Prophète ﷺ recommandait le jeûne ce jour. Occasion de gratitude et de jeûne spirituel.' },
+  '3-12': { ar:'المَوْلِدُ النَّبَوِيّ', fr:'Mawlid An-Nabawi ﷺ', icon:'🌹', color:'#d4af37',
+            content:'Naissance du Prophète Muhammad ﷺ, lumière de l'univers. Baye Niass رضي الله عنه accordait une importance immense au Mawlid. Récitez la Salat al-Fatiha en abondance ce jour béni.' },
+  '7-27': { ar:'لَيْلَةُ المِعْرَاج', fr:'Laylat Al-Miraj', icon:'✨', color:'#8e44ad',
+            content:'Nuit du voyage nocturne et de l'ascension du Prophète ﷺ aux cieux. Les 5 prières quotidiennes nous furent données cette nuit. Consacrez-la à la prière et au dhikr.' },
+  '8-15': { ar:'لَيْلَةُ النِّصْف مِن شَعْبَان', fr:'Laylat Al-Baraa', icon:'⭐', color:'#e67e22',
+            content:'La nuit du 15 Chaabân, Allah pardonne à Ses serviteurs repentants. Baye Niass recommandait de la consacrer à l'istighfar et à la récitation du Wird avec présence totale du cœur.' },
+  '9-1':  { ar:'بِدَايَةُ رَمَضَان', fr:'Début Ramadan', icon:'🌙', color:'#0f7b3f',
+            content:'Le mois béni du Coran et du jeûne. Intensifiez le Wird, la Wazifa et le dhikr. Baye Niass enseigne que Ramadan est la saison de la Marifah — profitez-en pleinement.' },
+  '9-27': { ar:'لَيْلَةُ القَدْر', fr:'Laylat Al-Qadr', icon:'🌟', color:'#d4af37',
+            content:'La Nuit du Destin, meilleure que mille mois. Le Coran dit : "Laylat al-qadr khayrun min alfi shahr". Restez éveillé en prière, dhikr et Salat al-Fatiha toute la nuit.' },
+  '10-1': { ar:'عِيدُ الفِطْر', fr:'Aïd Al-Fitr 🎊', icon:'🎊', color:'#27ae60',
+            content:'Fête de la rupture du jeûne. Jour de joie, de gratitude et de partage. Offrez la Zakat al-Fitr avant la prière de l'Aïd. Que Allah accepte vos jeûnes et vos prières.' },
+  '12-8': { ar:'يَوْمُ عَرَفَة', fr:'Jour d'Arafat', icon:'🏔', color:'#c0392b',
+            content:'Le meilleur jour de l'année selon le Prophète ﷺ. Jeûner ce jour efface les péchés de deux ans. Consacrez-le à la supplication et au dhikr intensif.' },
+  '12-10':{ ar:'عِيدُ الأَضْحَى', fr:'Aïd Al-Adha 🐑', icon:'🐑', color:'#27ae60',
+            content:'Fête du sacrifice en mémoire d'Ibrahim عليه السلام. Célébrons la soumission totale à Allah. Partagez avec les nécessiteux et renforcez les liens familiaux.' },
+  /* ══ Tijaniyya / Baye Niass ══ */
+  '4-18': { ar:'مَوْلِدُ شَيْخ التِّجَانِي', fr:'Mawlid Cheikh Ahmad Tijani رضي الله عنه', icon:'📿', color:'#d4af37',
+            content:'Naissance du fondateur de la Tijaniyya, Cheikh Ahmad Tijani رضي الله عنه. Il reçut le Wird directement du Prophète ﷺ en état de veille (yaqaza). Récitez la Salat al-Fatiha en son honneur.' },
+  '6-17': { ar:'مَوْلِدُ شَيْخ إِبْرَاهِيم نِيَاس', fr:'Mawlid Baye Niass رضي الله عنه', icon:'🌿', color:'#0f7b3f',
+            content:'Naissance de Cheikh Ibrahim Niass رضي الله عنه, porteur de la Faydha. Sa venue a ouvert la porte de la Marifah à des millions de croyants. Célébrez avec joie, dhikr et Salat al-Fatiha.' },
+  '11-15':{ ar:'ذِكْرَى وَفَاة شَيْخ التِّجَانِي', fr:'Wafat Cheikh Ahmad Tijani رضي الله عنه', icon:'🤲', color:'#888',
+            content:'Anniversaire du retour à Allah de Cheikh Ahmad Tijani رضي الله عنه. Récitez Al-Fatiha pour son âme et méditez sur ses enseignements. La voie continue à travers ses héritiers spirituels.' },
 };
 
-/* État calendrier */
+/* ── État calendrier ── */
 var _calGregYear  = new Date().getFullYear();
-var _calGregMonth = new Date().getMonth(); /* 0-indexed */
+var _calGregMonth = new Date().getMonth();
 
-function calRender() {
-  var today = new Date();
-  var todayHijri = gregorianToHijri(today);
-  
-  /* ── Header date d'aujourd'hui ── */
-  var h = gregorianToHijri(today);
+function calRender() { hijriRender(); } /* alias pour compatibilité */
+
+function hijriRender() {
+  var today     = new Date();
+  var todayH    = gregorianToHijri(today);
+
+  /* ── Header date aujourd'hui ── */
   var el;
-  if ((el=document.getElementById('calDayNum')))   el.textContent = h.day;
-  if ((el=document.getElementById('calMonthAr')))  el.textContent = HIJRI_MONTHS_AR[h.month-1] || '';
-  if ((el=document.getElementById('calMonthFr')))  el.textContent = HIJRI_MONTHS_FR[h.month-1] || '';
-  if ((el=document.getElementById('calYearHijri')))el.textContent = h.year;
-  if ((el=document.getElementById('calGreg')))     el.textContent = today.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  if ((el=document.getElementById('calHijriFull')))el.textContent = h.day + ' ' + (HIJRI_MONTHS_AR[h.month-1]||'') + ' ' + h.year + ' هـ';
-  
+  if ((el=document.getElementById('hijri-day-num')))  el.textContent = todayH.day;
+  if ((el=document.getElementById('hijri-month-ar'))) el.textContent = HIJRI_MONTHS_AR[todayH.month-1]||'';
+  if ((el=document.getElementById('hijri-year')))     el.textContent = todayH.year + ' هـ';
+  if ((el=document.getElementById('hijri-greg')))     el.textContent = today.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
   /* ── Navigation titre ── */
-  var navDate = new Date(_calGregYear, _calGregMonth, 1);
-  var firstDayHijri = gregorianToHijri(navDate);
-  if ((el=document.getElementById('calNavTitle'))) {
-    el.innerHTML = '<div class="ui-amiri-gold">' +
-      (HIJRI_MONTHS_AR[firstDayHijri.month-1]||'') + ' ' + firstDayHijri.year + ' هـ</div>' +
-      '<div class="cal-nav-sub">' +
+  var navDate  = new Date(_calGregYear, _calGregMonth, 1);
+  var navHijri = gregorianToHijri(navDate);
+  if ((el=document.getElementById('hijri-nav-title'))) {
+    el.innerHTML = '<div style="font-family:'Amiri',serif;font-size:16px;color:var(--g1)">' +
+      (HIJRI_MONTHS_AR[navHijri.month-1]||'') + ' ' + navHijri.year + ' هـ</div>' +
+      '<div style="font-size:11px;color:var(--text3)">' +
       navDate.toLocaleDateString('fr-FR',{month:'long',year:'numeric'}) + '</div>';
   }
-  
-  /* ── Grille des jours ── */
-  var daysEl = document.getElementById('calDaysGrid');
-  if (!daysEl) return;
-  
-  /* Jours du mois courant */
+
+  /* ── Grille ── */
+  var grid = document.getElementById('hijri-grid');
+  if (!grid) return;
+
   var firstDay = new Date(_calGregYear, _calGregMonth, 1);
   var lastDay  = new Date(_calGregYear, _calGregMonth+1, 0);
-  var startDow = (firstDay.getDay() + 6) % 7; /* Lundi=0 */
-  
+  var startDow = (firstDay.getDay()+6)%7;
   var html = '';
-  /* Jours du mois précédent */
+  var eventsThisMonth = [];
+
+  /* Jours précédent */
   var prevLast = new Date(_calGregYear, _calGregMonth, 0);
-  for (var i = startDow-1; i >= 0; i--) {
-    var d = prevLast.getDate() - i;
-    var dDate = new Date(_calGregYear, _calGregMonth-1, d);
-    var dH = gregorianToHijri(dDate);
-    html += '<div class="cal-day other-month">' +
-      '<span class="cd-greg">' + d + '</span>' +
-      '<span class="cd-hijri">' + (dH ? dH.day : '') + '</span></div>';
+  for (var i=startDow-1;i>=0;i--) {
+    var d=prevLast.getDate()-i;
+    var dH=gregorianToHijri(new Date(_calGregYear,_calGregMonth-1,d));
+    html+='<div style="text-align:center;padding:.2rem 0;opacity:.3">'
+      +'<div style="font-size:13px;color:var(--text2)">'+d+'</div>'
+      +'<div style="font-size:9px;color:var(--text3)">'+(dH?dH.day:'')+'</div></div>';
   }
-  /* Jours du mois courant */
-  var events_this_month = [];
-  for (var d = 1; d <= lastDay.getDate(); d++) {
-    var dDate = new Date(_calGregYear, _calGregMonth, d);
-    var dH = gregorianToHijri(dDate);
-    var isToday = (dDate.toDateString() === today.toDateString());
-    var eventKey = dH ? (dH.month + '-' + dH.day) : '';
-    var hasEvent = ISLAMIC_EVENTS[eventKey] !== undefined;
-    if (hasEvent && dH) {
-      events_this_month.push({ day: d, hijriDay: dH.day, key: eventKey, ev: ISLAMIC_EVENTS[eventKey] });
-    }
-    html += '<div class="cal-day' + (isToday ? ' today' : '') + (hasEvent ? ' has-event' : '') +
-      '" onclick="calDayClick(' + d + ',' + (dH?dH.day:0) + ',' + (dH?dH.month:0) + ')">' +
-      '<span class="cd-greg">' + d + '</span>' +
-      '<span class="cd-hijri">' + (dH ? dH.day : '') + '</span></div>';
+
+  /* Jours courants */
+  for (var d=1;d<=lastDay.getDate();d++) {
+    var dDate=new Date(_calGregYear,_calGregMonth,d);
+    var dH=gregorianToHijri(dDate);
+    var isToday=dDate.toDateString()===today.toDateString();
+    var isFriday=dDate.getDay()===5;
+    var evKey=dH?(dH.month+'-'+dH.day):'';
+    var hasEv=ISLAMIC_EVENTS[evKey]!==undefined;
+    if (hasEv && dH) eventsThisMonth.push({day:d,dH:dH,key:evKey,ev:ISLAMIC_EVENTS[evKey]});
+    html+='<div onclick="hijriDayClick(''+evKey+'')" style="text-align:center;padding:.25rem .1rem;border-radius:8px;cursor:'+(hasEv?'pointer':'default')+';'
+      +(isToday?'background:var(--g1);':hasEv?'background:rgba(212,175,55,.15);':isFriday?'background:rgba(15,123,63,.05);':'')
+      +'">'
+      +'<div style="font-size:13px;font-weight:'+(isToday||hasEv?'700':'400')+';color:'+(isToday?'#fff':isFriday?'var(--g1)':'var(--text1)')+'">'+d+'</div>'
+      +'<div style="font-size:9px;color:'+(isToday?'rgba(255,255,255,.7)':'var(--text3)')+';">'+(dH?dH.day:'')+'</div>'
+      +(hasEv?'<div style="width:5px;height:5px;border-radius:50%;background:'+(isToday?'#fff':ISLAMIC_EVENTS[evKey].color)+';margin:1px auto 0"></div>':'')
+      +'</div>';
   }
-  /* Compléter la grille */
-  var total = startDow + lastDay.getDate();
-  var rem = total % 7 === 0 ? 0 : 7 - (total % 7);
-  for (var i = 1; i <= rem; i++) {
-    var dDate = new Date(_calGregYear, _calGregMonth+1, i);
-    var dH = gregorianToHijri(dDate);
-    html += '<div class="cal-day other-month">' +
-      '<span class="cd-greg">' + i + '</span>' +
-      '<span class="cd-hijri">' + (dH ? dH.day : '') + '</span></div>';
+
+  /* Compléter */
+  var total=startDow+lastDay.getDate();
+  var rem=total%7===0?0:7-(total%7);
+  for (var i=1;i<=rem;i++) {
+    var dH=gregorianToHijri(new Date(_calGregYear,_calGregMonth+1,i));
+    html+='<div style="text-align:center;padding:.2rem 0;opacity:.3">'
+      +'<div style="font-size:13px;color:var(--text2)">'+i+'</div>'
+      +'<div style="font-size:9px;color:var(--text3)">'+(dH?dH.day:'')+'</div></div>';
   }
-  daysEl.innerHTML = html;
-  
+  grid.innerHTML = html;
+
   /* ── Événements du mois ── */
-  var evEl = document.getElementById('calEventsList');
-  if (evEl) {
-    if (!events_this_month.length) {
-      evEl.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--text3);font-size:13px;font-style:italic">Aucun événement ce mois</div>';
+  var evList = document.getElementById('hijri-events-list');
+  if (evList) {
+    if (!eventsThisMonth.length) {
+      evList.innerHTML = '<div style="text-align:center;padding:.8rem;color:var(--text3);font-size:13px;font-style:italic">Aucun événement ce mois</div>';
     } else {
-      evEl.innerHTML = events_this_month.map(function(e) {
-        return '<div class="cal-event-item">' +
-          '<span class="cal-event-dot" style="background:var(--gold)"></span>' +
-          '<span class="cal-event-date">' + e.day + '</span>' +
-          '<div style="flex:1">' +
-            '<div class="cal-event-name">' + e.ev.fr + '</div>' +
-            '<div class="cal-event-hijri">' + e.ev.ar + ' — ' + e.hijriDay + ' ' + (HIJRI_MONTHS_AR[(e.key.split('-')[0])-1]||'') + '</div>' +
-          '</div>' +
-        '</div>';
+      evList.innerHTML = eventsThisMonth.map(function(e) {
+        return '<div onclick="hijriDayClick(''+e.key+'')" style="display:flex;align-items:flex-start;gap:.7rem;background:var(--white);border-radius:12px;padding:.7rem .9rem;border-left:3px solid '+e.ev.color+';cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.06)">'
+          +'<span style="font-size:22px">'+e.ev.icon+'</span>'
+          +'<div style="flex:1">'
+            +'<div style="font-size:13px;font-weight:700;color:var(--text1)">'+e.ev.fr+'</div>'
+            +'<div style="font-family:'Amiri',serif;font-size:12px;color:var(--g1);margin:.1rem 0">'+e.ev.ar+'</div>'
+            +'<div style="font-size:11px;color:var(--text3)">'+e.day+' '+navDate.toLocaleDateString('fr-FR',{month:'long'})+' · '+e.dH.day+' '+(HIJRI_MONTHS_FR[e.dH.month-1]||'')+'</div>'
+          +'</div>'
+          +'<span style="font-size:16px;color:var(--text3)">›</span>'
+        +'</div>';
       }).join('');
     }
   }
+
+  /* ── Prochains jours importants (6 mois à venir) ── */
+  _hijriRenderUpcoming();
 }
 
-function calPrev() { _calGregMonth--; if(_calGregMonth<0){_calGregMonth=11;_calGregYear--;} calRender(); }
-function calNext() { _calGregMonth++; if(_calGregMonth>11){_calGregMonth=0;_calGregYear++;} calRender(); }
-function calToday(){ _calGregYear=new Date().getFullYear(); _calGregMonth=new Date().getMonth(); calRender(); }
-function calDayClick(gDay, hDay, hMonth) {
-  var ev = ISLAMIC_EVENTS[hMonth + '-' + hDay];
-  if (ev) showToast('📅 ' + ev.fr + ' — ' + ev.ar);
+/* ── Clic sur un jour avec événement ── */
+function hijriDayClick(evKey) {
+  var ev = ISLAMIC_EVENTS[evKey];
+  if (!ev) return;
+  /* Afficher modal/toast avec contenu spécial */
+  _hijriShowEventModal(ev);
 }
 
-/* ── Tab switcher ── */
-var _pratiqueTab = 'wird';
-function switchPratiqueTab(tab) {
+/* ── Modal événement ── */
+function _hijriShowEventModal(ev) {
+  var existing = document.getElementById('hijri-modal');
+  if (existing) existing.remove();
+
+  var modal = document.createElement('div');
+  modal.id = 'hijri-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;animation:fadeUp .2s ease';
+  modal.innerHTML =
+    '<div style="background:var(--white);border-radius:20px 20px 0 0;padding:1.5rem 1.2rem 2rem;width:100%;max-width:480px;max-height:80vh;overflow-y:auto">'
+      +'<div style="text-align:center;margin-bottom:1rem">'
+        +'<div style="font-size:48px;margin-bottom:.4rem">'+ev.icon+'</div>'
+        +'<div style="font-size:16px;font-weight:700;color:var(--text1)">'+ev.fr+'</div>'
+        +'<div style="font-family:'Amiri',serif;font-size:18px;color:var(--g1);margin-top:.3rem">'+ev.ar+'</div>'
+      +'</div>'
+      +'<div style="background:var(--ivory);border-radius:12px;padding:1rem;border-left:3px solid '+ev.color+';margin-bottom:1rem">'
+        +'<div style="font-size:14px;color:var(--text1);line-height:1.8">'+ev.content+'</div>'
+      +'</div>'
+      +'<button onclick="document.getElementById('hijri-modal').remove()" style="width:100%;padding:.8rem;background:var(--g1);color:var(--gold2);border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Roboto',sans-serif">Fermer</button>'
+    +'</div>';
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+  document.body.appendChild(modal);
+}
+
+/* ── Prochains jours importants ── */
+function _hijriRenderUpcoming() {
+  var el = document.getElementById('hijri-upcoming');
+  if (!el) return;
+
+  var today   = new Date();
+  var upcoming = [];
+
+  /* Chercher dans les 365 prochains jours */
+  for (var i=1; i<=365; i++) {
+    var d = new Date(today);
+    d.setDate(d.getDate()+i);
+    var h = gregorianToHijri(d);
+    if (!h) continue;
+    var key = h.month + '-' + h.day;
+    if (ISLAMIC_EVENTS[key]) {
+      upcoming.push({ date: d, hijri: h, key: key, ev: ISLAMIC_EVENTS[key], daysLeft: i });
+      if (upcoming.length >= 5) break;
+    }
+  }
+
+  if (!upcoming.length) { el.innerHTML=''; return; }
+
+  el.innerHTML = upcoming.map(function(u) {
+    var dLabel = u.daysLeft === 1 ? 'Demain' : 'Dans ' + u.daysLeft + ' jours';
+    return '<div onclick="_hijriShowEventModal(ISLAMIC_EVENTS[''+u.key+''])" style="display:flex;align-items:center;gap:.7rem;background:var(--ivory);border-radius:12px;padding:.65rem .9rem;cursor:pointer;border:1px solid var(--gold3)">'
+      +'<span style="font-size:24px">'+u.ev.icon+'</span>'
+      +'<div style="flex:1">'
+        +'<div style="font-size:13px;font-weight:600;color:var(--text1)">'+u.ev.fr+'</div>'
+        +'<div style="font-size:11px;color:var(--text3)">'+u.date.toLocaleDateString('fr-FR',{day:'numeric',month:'long'})+' · '+u.hijri.day+' '+(HIJRI_MONTHS_FR[u.hijri.month-1]||'')+'</div>'
+      +'</div>'
+      +'<div style="text-align:right;flex-shrink:0">'
+        +'<div style="font-size:11px;font-weight:700;color:'+u.ev.color+';background:rgba(0,0,0,.05);border-radius:100px;padding:.15rem .55rem">'+dLabel+'</div>'
+      +'</div>'
+    +'</div>';
+  }).join('');
+
+  /* Alerte si événement dans moins de 3 jours */
+  upcoming.forEach(function(u) {
+    if (u.daysLeft <= 3) {
+      var stored = 'hijri_alerted_'+u.key+'_'+new Date().getFullYear();
+      try {
+        if (!localStorage.getItem(stored)) {
+          setTimeout(function(){ showToast(u.ev.icon+' '+u.ev.fr+' dans '+u.daysLeft+' jour'+(u.daysLeft>1?'s':'')+' !'); }, 2000);
+          localStorage.setItem(stored, '1');
+        }
+      } catch(e) {}
+    }
+  });
+}
+
+function hijriPrev() { _calGregMonth--; if(_calGregMonth<0){_calGregMonth=11;_calGregYear--;} hijriRender(); }
+function hijriNext() { _calGregMonth++; if(_calGregMonth>11){_calGregMonth=0;_calGregYear++;} hijriRender(); }
+function calPrev()   { hijriPrev(); }
+function calNext()   { hijriNext(); }
+function calToday()  { _calGregYear=new Date().getFullYear(); _calGregMonth=new Date().getMonth(); hijriRender(); }
+function calDayClick(g,h,hm){ hijriDayClick(hm+'-'+h); }
+
+/* function switchPratiqueTab(tab) {
   _pratiqueTab = tab;
   ['wird','zikr','cal'].forEach(function(t) {
     var panel = document.getElementById('pratique-panel-' + t);
