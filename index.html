@@ -93,11 +93,6 @@ window._fbReady=false;
                → Live → Zikr → AI → Animations
 ════════════════════════════════════════════════════════════ */
 
-/* ══════════════════════════════════════════════════════════
-   TYPOGRAPHIE FLUTTER MATERIAL DESIGN 3
-   Police: Roboto — Taille base: 16px
-══════════════════════════════════════════════════════════ */
-
 
 /* Ajustements globaux */
 html { font-size: 16px; -webkit-text-size-adjust: 100%; }
@@ -113,8 +108,6 @@ p, div, span, li { line-height: 1.5; }
   --ivory:#F9F9F7;--white:#FFFFFF;
   --text1:#1A1A1A;--text2:#3A3A3A;--text3:#888888;
   --red:#C0392B;--green:#27AE60;
-  --G:#0F7B3F;--G2:#1A9650;--G-light:#E8F5EE;
-  --Au:#D4AF37;--Au2:#F0DC82;--Au3:#FBF8E8;
   --nav-h:64px;--safe-b:env(safe-area-inset-bottom,0px);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -4211,43 +4204,6 @@ function _showLiveError(wrap, msg) {
 }
 
 /* Générer token viewer LiveKit via API REST */
-async function _getLiveKitViewerToken(cfg) {
-  try {
-    /* Si token pré-généré dans la config → l'utiliser directement */
-    if (cfg.token) return cfg.token;
-
-    /* Sinon générer un token viewer via l'API LiveKit */
-    if (!cfg.apiKey || !cfg.apiSecret) return null;
-
-    /* Appel à l'API de génération de token LiveKit */
-    var identity = 'viewer_' + Date.now();
-    var roomName = 'faydha-live';
-
-    /* Token JWT simple pour viewer (subscribe only) */
-    var header = btoa(JSON.stringify({alg:'HS256',typ:'JWT'})).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
-    var now = Math.floor(Date.now()/1000);
-    var payload = btoa(JSON.stringify({
-      iss: cfg.apiKey,
-      sub: identity,
-      iat: now,
-      exp: now + 3600,
-      video: { roomJoin: true, room: roomName, canSubscribe: true, canPublish: false }
-    })).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
-
-    /* Signature HMAC-SHA256 */
-    var enc = new TextEncoder();
-    var keyData = enc.encode(cfg.apiSecret);
-    var msgData = enc.encode(header + '.' + payload);
-    var cryptoKey = await crypto.subtle.importKey('raw', keyData, {name:'HMAC',hash:'SHA-256'}, false, ['sign']);
-    var sig = await crypto.subtle.sign('HMAC', cryptoKey, msgData);
-    var sigB64 = btoa(String.fromCharCode(...new Uint8Array(sig))).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
-
-    return header + '.' + payload + '.' + sigB64;
-  } catch(e) {
-    console.error('Token error:', e);
-    return null;
-  }
-}
 
 function _addLogoOverlay(w){
   var wrap=w||document.getElementById('mainPlayer'); if(!wrap)return;
@@ -7700,36 +7656,6 @@ function _fbDeviceId() {
   return id;
 }
 
-function fbRegisterStreamer(onOk, onFull) {
-  _fbInit(function() {
-    var devId = _fbDeviceId();
-    var devicesRef = firebase.database().ref('streamer_devices');
-    devicesRef.once('value', function(snap) {
-      var devices = snap.val() || {};
-      var now = Date.now();
-      var TIMEOUT = 5 * 60 * 1000;
-      var active = {};
-      Object.keys(devices).forEach(function(id) {
-        var d = devices[id];
-        if (d && d.active && d.heartbeat && (now - d.heartbeat) < TIMEOUT && id !== devId) {
-          active[id] = d;
-        }
-      });
-      if (Object.keys(active).length >= MAX_STREAMER_DEVICES) {
-        if (onFull) onFull(Object.keys(active).length);
-        return;
-      }
-      _fbDeviceRef = devicesRef.child(devId);
-      _fbDeviceRef.set({active: true, heartbeat: now, ua: navigator.userAgent.substr(0,50), joinedAt: now});
-      _fbDeviceRef.onDisconnect().remove();
-      /* Heartbeat toutes les 60s */
-      _fbDeviceHeartbeat = setInterval(function() {
-        if (_fbDeviceRef) _fbDeviceRef.update({heartbeat: Date.now()});
-      }, 60000);
-      if (onOk) onOk();
-    });
-  });
-}
 
 
 /* ── 6. BANNIÈRE LIVE ── */
@@ -9149,7 +9075,6 @@ function micAdminAccept(uid,name){
   });
 }
 function micAdminReject(uid){_fbInit(function(){firebase.database().ref('lk_mic/requests/'+uid).remove();showToast('🔇 Refusé');});}
-function micAdminCutSpeaker(){_fbInit(function(){firebase.database().ref('lk_mic/active').remove();showToast('🔇 Micro coupé');});}
 
 /* ── Helpers ── */
 function _lkGetDisplayName(){
@@ -9176,6 +9101,7 @@ function _lkInteractStart(){
 
 
 </script>
+
 
 </body>
 </html>
