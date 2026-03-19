@@ -1740,6 +1740,15 @@ html { background: #0a0a0a; }
   <button id="userSignOutBtn" onclick="signOutGoogle()">Déconnexion</button>
 </div>
 
+<!-- PROFIL — affiché sous la barre utilisateur dans toutes les sections -->
+<div id="ummaProfileBlock" style="display:none;padding:.65rem 1.2rem;background:var(--gold4);border-bottom:1px solid var(--gold3);flex-shrink:0;position:sticky;top:44px;z-index:490;flex-direction:row;align-items:center;justify-content:space-between">
+  <div>
+    <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.1rem">Mon profil</div>
+    <div id="ummaProfileLabel" style="font-family:'Amiri',serif;font-size:15px;color:var(--g1)">—</div>
+  </div>
+  <button onclick="resetProfile()" style="background:var(--g1);color:var(--gold2);border:none;border-radius:100px;padding:.3rem .85rem;font-size:12px;cursor:pointer;font-family:'Roboto',sans-serif">Changer ↩</button>
+</div>
+
 <!-- SECTION UMMA -->
 <section id="sec-umma" class="sec active">
 
@@ -1822,14 +1831,18 @@ html { background: #0a0a0a; }
         </select>
       </div>
 
-      <!-- Choix adhan par prière -->
-      <div style="padding:.4rem 1.2rem .2rem;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em">Adhan par prière</div>
+      <!-- Activation par prière -->
+      <div style="padding:.4rem 1.2rem .2rem;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em">Activer par prière</div>
       <div id="wlc-per-prayer-settings" style="display:flex;flex-direction:column;gap:.35rem;padding:0 1.2rem .3rem"></div>
 
-      <!-- Info muezzins -->
-      <div style="margin:.5rem 1.2rem 1rem;background:linear-gradient(135deg,rgba(15,123,63,.06),rgba(212,175,55,.05));border:1.5px solid rgba(15,123,63,.15);border-radius:14px;padding:.75rem 1rem">
-        <div style="font-size:12px;font-weight:700;color:var(--g1);margin-bottom:.5rem">🎙️ Muezzins disponibles</div>
-        <div id="wlc-muezzin-info" style="display:flex;flex-direction:column;gap:.3rem"></div>
+      <!-- Info muezzin unique -->
+      <div style="margin:.5rem 1.2rem 1rem;background:linear-gradient(135deg,rgba(15,123,63,.06),rgba(212,175,55,.05));border:1.5px solid rgba(15,123,63,.15);border-radius:14px;padding:.75rem 1rem;display:flex;align-items:center;gap:.75rem">
+        <span style="font-size:28px">🎙️</span>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--g1)">Baba Diallo</div>
+          <div style="font-size:12px;color:var(--text3)">Muezzin officiel de Médina Baye</div>
+        </div>
+        <button onclick="wlcPreview('baba')" style="margin-left:auto;background:none;border:1.5px solid var(--gold3);border-radius:100px;padding:.3rem .7rem;font-size:13px;color:var(--g1);cursor:pointer">🔊 Écouter</button>
       </div>
 
       <!-- Bouton fermer -->
@@ -1839,14 +1852,6 @@ html { background: #0a0a0a; }
     </div>
   </div>
 
-  <!-- PROFIL ACTUEL -->
-  <div id="ummaProfileBlock" style="padding:.8rem 1.2rem;background:var(--gold4);border-bottom:1px solid var(--gold3);display:flex;align-items:center;justify-content:space-between">
-    <div>
-      <div style="font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem">Mon profil</div>
-      <div id="ummaProfileLabel" style="font-family:'Amiri',serif;font-size:16px;color:var(--g1)">—</div>
-    </div>
-    <button onclick="resetProfile()" style="background:var(--g1);color:var(--gold2);border:none;border-radius:100px;padding:.35rem .9rem;font-size:12px;cursor:pointer;font-family:'Roboto',sans-serif">Changer ↩</button>
-  </div>
 
   <!-- CONTENU UMMA -->
   <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:2rem 1.5rem;text-align:center;gap:1.2rem">
@@ -3136,40 +3141,6 @@ html { background: #0a0a0a; }
   ══════════════════════════════════════════ -->
   <div class="pratique-panel" id="pratique-panel-cal">
 
-<!-- ═══ HORAIRES DE PRIÈRE GPS ═══ -->
-<div id="prayer-times-block" style="background:var(--ivory);padding:.8rem 1rem 1rem">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem">
-    <div>
-      <div style="font-family:'Amiri',serif;font-size:16px;color:var(--g1)">🕌 مَوَاقِيتُ الصَّلَاة</div>
-      <div id="prayer-location" style="font-size:11px;color:var(--text3);margin-top:.1rem">📍 Détection en cours...</div>
-    </div>
-    <button onclick="prayerRefresh()" id="prayer-refresh-btn" style="background:none;border:1px solid var(--gold3);border-radius:100px;padding:.3rem .7rem;font-size:11px;color:var(--g1);cursor:pointer;font-family:'Roboto',sans-serif">🔄 Actualiser</button>
-  </div>
-  <div id="prayer-next-card" style="background:linear-gradient(135deg,var(--g1),var(--g2));border-radius:14px;padding:.9rem 1.1rem;margin-bottom:.8rem;display:flex;align-items:center;justify-content:space-between">
-    <div>
-      <div style="font-size:11px;color:var(--gold2);text-transform:uppercase;letter-spacing:.08em">Prochaine prière</div>
-      <div id="prayer-next-name" style="font-family:'Amiri',serif;font-size:22px;color:#fff;font-weight:700;margin:.1rem 0">—</div>
-      <div id="prayer-next-time" style="font-size:18px;color:var(--gold2);font-weight:700">—:—</div>
-    </div>
-    <div style="text-align:right">
-      <div style="font-size:11px;color:rgba(255,255,255,.6)">Dans</div>
-      <div id="prayer-next-countdown" style="font-size:24px;color:#fff;font-weight:300">—:—:—</div>
-    </div>
-  </div>
-  <div id="prayer-list" style="display:flex;flex-direction:column;gap:.4rem">
-    <div style="text-align:center;padding:1rem;color:var(--text3);font-size:13px;font-style:italic">Activez la localisation 📍</div>
-  </div>
-  <div style="margin-top:.6rem;display:flex;align-items:center;gap:.5rem">
-    <span style="font-size:11px;color:var(--text3)">Méthode :</span>
-    <select id="prayer-method" onchange="prayerRefresh()" style="font-size:11px;color:var(--text2);border:1px solid var(--gold3);border-radius:6px;padding:.15rem .4rem;background:var(--white);font-family:'Roboto',sans-serif">
-      <option value="2">ISNA</option>
-      <option value="1">Karachi</option>
-      <option value="3" selected>MWL</option>
-      <option value="4">Oumm al-Qura</option>
-      <option value="5">Égypte</option>
-    </select>
-  </div>
-</div>
 
 <!-- ═══ CALENDRIER HIJRI INTELLIGENT ═══ -->
 <div style="background:var(--ivory);padding:.8rem 1rem 1.2rem">
@@ -4104,7 +4075,10 @@ function _showUserBar(name, photo, isAdmin) {
       ? '<span style="background:var(--gold);color:#000;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;margin-right:5px">👑 ADMIN</span>' + escH(name || 'Admin')
       : escH(name || 'Connecté');
   }
-  /* Décaler les sections pour la barre */
+  /* Afficher le bloc profil sous la barre */
+  var pb = document.getElementById('ummaProfileBlock');
+  if (pb) pb.style.display = 'flex';
+  /* Décaler les sections pour la barre + profil */
   document.querySelectorAll('.sec').forEach(function(s){
     s.style.paddingTop = '44px';
   });
@@ -4126,9 +4100,11 @@ function signOutGoogle() {
     firebase.auth().signOut().then(function() {
       try{ localStorage.removeItem('faydha_profile'); }catch(e){}
       try{ localStorage.removeItem('faydha_google_user'); }catch(e){}
-      /* Cacher barre */
+      /* Cacher barre et profil */
       var bar = document.getElementById('userAvatarBar');
       if (bar) bar.classList.remove('show');
+      var pb = document.getElementById('ummaProfileBlock');
+      if (pb) pb.style.display = 'none';
       document.querySelectorAll('.sec').forEach(function(s){ s.style.paddingTop = ''; });
       /* Afficher welcome */
       var w = document.getElementById('welcome');
@@ -9625,35 +9601,7 @@ async function _prayerReverseGeocode(lat, lng) {
       id: 'baba',
       name: 'Baba Diallo',
       desc: 'Muezzin de Médina Baye',
-      url:  'baba_diallo.mp3', /* fichier local — priorité si disponible */
-      fallback: 'https://cdn.islamic.network/mp3/adhan/ar.alafasy/adhan.mp3'
-    },
-    {
-      id: 'afasy',
-      name: 'Mishary Alafasy',
-      desc: 'Koweït — Adhan classique',
-      url:  'https://cdn.islamic.network/mp3/adhan/ar.alafasy/adhan.mp3',
-      fallback: 'https://islamicstudies.info/audio/adhan.mp3'
-    },
-    {
-      id: 'makkah',
-      name: 'Adhan Al-Haram',
-      desc: 'La Mecque',
-      url:  'https://cdn.islamic.network/mp3/adhan/ar.shaatree/adhan.mp3',
-      fallback: 'https://cdn.islamic.network/mp3/adhan/ar.alafasy/adhan.mp3'
-    },
-    {
-      id: 'madinah',
-      name: 'Adhan Madinah',
-      desc: 'Médine — Masjid Nabawi',
-      url:  'https://cdn.islamic.network/mp3/adhan/ar.abdurrahmaansudais/adhan.mp3',
-      fallback: 'https://cdn.islamic.network/mp3/adhan/ar.alafasy/adhan.mp3'
-    },
-    {
-      id: 'egypt',
-      name: 'Adhan Égypte',
-      desc: 'Style Hussam Radi',
-      url:  'https://cdn.islamic.network/mp3/adhan/ar.husary/adhan.mp3',
+      url:  'baba_diallo.mp3',
       fallback: 'https://cdn.islamic.network/mp3/adhan/ar.alafasy/adhan.mp3'
     }
   ];
@@ -9737,7 +9685,7 @@ async function _prayerReverseGeocode(lat, lng) {
     var sel = document.getElementById('wlc-alert-before');
     if(sel) sel.value = String(_cfg.alertBefore);
 
-    /* Par prière */
+    /* Par prière — toggle ON/OFF uniquement */
     var container = document.getElementById('wlc-per-prayer-settings');
     if(container){
       container.innerHTML = '';
@@ -9746,11 +9694,12 @@ async function _prayerReverseGeocode(lat, lng) {
         var row = document.createElement('div');
         row.style.cssText = 'background:var(--white);border:1.5px solid var(--gold3);border-radius:14px;padding:.65rem .9rem;display:flex;align-items:center;gap:.75rem';
 
-        /* Icône + nom */
+        /* Icône */
         var iconSpan = document.createElement('span');
         iconSpan.style.cssText = 'font-size:20px;width:28px;text-align:center;flex-shrink:0';
         iconSpan.textContent = p.icon;
 
+        /* Nom */
         var nameDiv = document.createElement('div');
         nameDiv.style.cssText = 'flex:1;min-width:0';
         var nameAr = document.createElement('div');
@@ -9762,20 +9711,7 @@ async function _prayerReverseGeocode(lat, lng) {
         nameDiv.appendChild(nameAr);
         nameDiv.appendChild(nameFr);
 
-        /* Sélecteur muezzin */
-        var selM = document.createElement('select');
-        selM.style.cssText = 'background:var(--ivory);border:1.5px solid var(--gold3);border-radius:10px;padding:.25rem .5rem;font-size:12px;color:var(--text2);font-family:Roboto,sans-serif;max-width:130px';
-        MUEZZINS.forEach(function(m){
-          var opt = document.createElement('option');
-          opt.value = m.id;
-          opt.textContent = m.name;
-          if(m.id === pp.muezzin) opt.selected = true;
-          selM.appendChild(opt);
-        });
-        selM.dataset.prayer = p.k;
-        selM.onchange = function(){ wlcSaveSettings(); };
-
-        /* Toggle activé/désactivé par prière */
+        /* Toggle ON/OFF */
         var lbl = document.createElement('label');
         lbl.style.cssText = 'position:relative;display:inline-block;width:38px;height:20px;flex-shrink:0';
         var chkP = document.createElement('input');
@@ -9790,33 +9726,16 @@ async function _prayerReverseGeocode(lat, lng) {
         _applyToggleStyle(chkP, trackP, thumbP);
         chkP.onchange = function(){
           _applyToggleStyle(chkP, trackP, thumbP);
-          selM.disabled = !chkP.checked;
-          selM.style.opacity = chkP.checked ? '1' : '.35';
           wlcSaveSettings();
         };
-        if(!pp.enabled){ selM.disabled = true; selM.style.opacity = '.35'; }
         lbl.appendChild(chkP);
         lbl.appendChild(trackP);
         lbl.appendChild(thumbP);
 
         row.appendChild(iconSpan);
         row.appendChild(nameDiv);
-        row.appendChild(selM);
         row.appendChild(lbl);
         container.appendChild(row);
-      });
-    }
-
-    /* Info muezzins */
-    var infoDiv = document.getElementById('wlc-muezzin-info');
-    if(infoDiv){
-      infoDiv.innerHTML = '';
-      MUEZZINS.forEach(function(m){
-        var d = document.createElement('div');
-        d.style.cssText = 'display:flex;align-items:center;justify-content:space-between;font-size:12px;padding:.2rem 0;border-bottom:1px solid var(--gold3)';
-        d.innerHTML = '<div><span style="font-weight:600;color:var(--g1)">' + m.name + '</span><span style="color:var(--text3);margin-left:.4rem">' + m.desc + '</span></div>'
-          + '<button onclick="wlcPreview(\'' + m.id + '\')" style="background:none;border:1.5px solid var(--gold3);border-radius:100px;padding:.15rem .55rem;font-size:11px;color:var(--g1);cursor:pointer">\uD83D\uDD0A</button>';
-        infoDiv.appendChild(d);
       });
     }
 
@@ -9833,9 +9752,6 @@ async function _prayerReverseGeocode(lat, lng) {
   window.wlcSaveSettings = function(){
     _cfg.autoAdhan   = document.getElementById('wlc-toggle-auto').checked;
     _cfg.alertBefore = parseInt(document.getElementById('wlc-alert-before').value) || 0;
-    document.querySelectorAll('#wlc-per-prayer-settings select[data-prayer]').forEach(function(s){
-      _cfg.perPrayer[s.dataset.prayer].muezzin = s.value;
-    });
     document.querySelectorAll('#wlc-per-prayer-settings input[type=checkbox][data-prayer]').forEach(function(c){
       _cfg.perPrayer[c.dataset.prayer].enabled = c.checked;
     });
