@@ -1608,6 +1608,8 @@ html { background: #0a0a0a; }
   </div>
   <!-- Dernière interaction -->
   <div id="spLastInteract" style="padding:.45rem .8rem;font-size:12px;color:rgba(251,248,232,.75);line-height:1.4;min-height:36px">En attente d'interactions…</div>
+  <!-- Zone demandes de parole (visible seulement si demandes en attente) -->
+  <div id="spMicQueue" style="display:none;border-top:1px solid rgba(212,175,55,.2);padding:.4rem .6rem;max-height:160px;overflow-y:auto"></div>
   <!-- Actions rapides -->
   <div style="display:flex;gap:4px;padding:.4rem .6rem">
     <button onclick="switchAdmTab('interact');document.getElementById('adminOverlay').classList.add('open');showAdminContent()" style="flex:1;background:rgba(212,175,55,.2);border:1px solid rgba(212,175,55,.4);border-radius:8px;color:var(--gold2);font-size:11px;padding:.3rem .4rem;cursor:pointer;font-family:'Roboto',sans-serif">📋 Voir tout</button>
@@ -5302,29 +5304,8 @@ async function lkConnect(url, token){
   _lkRoom.on(LK.RoomEvent.ParticipantConnected, function(){
     lkUpdateViewerCount();
   });
-  _lkRoom.on(LK.RoomEvent.ParticipantDisconnected, function(participant){
+  _lkRoom.on(LK.RoomEvent.ParticipantDisconnected, function(){
     lkUpdateViewerCount();
-    var old = document.getElementById('lkStreamerHear_' + participant.identity);
-    if (old) old.remove();
-  });
-  /* ── Écouter l'audio des viewers autorisés ── */
-  _lkRoom.on(LK.RoomEvent.TrackSubscribed, function(track, publication, participant) {
-    if (track.kind !== LK.Track.Kind.Audio) return;
-    var old = document.getElementById('lkStreamerHear_' + participant.identity);
-    if (old) old.remove();
-    var audioEl = track.attach();
-    audioEl.id = 'lkStreamerHear_' + participant.identity;
-    audioEl.autoplay = true;
-    audioEl.volume = 1.0;
-    document.body.appendChild(audioEl);
-    showToast('🎤 ' + (participant.name || participant.identity) + ' parle');
-    if (typeof _showStreamerAlert === 'function')
-      _showStreamerAlert('🎤', participant.name || participant.identity, 'parle maintenant');
-  });
-  _lkRoom.on(LK.RoomEvent.TrackUnsubscribed, function(track, publication, participant) {
-    if (track.kind !== LK.Track.Kind.Audio) return;
-    var audioEl = document.getElementById('lkStreamerHear_' + participant.identity);
-    if (audioEl) { track.detach(audioEl); audioEl.remove(); }
   });
 
   // Connexion
@@ -5644,27 +5625,6 @@ async function lkJoinAsViewer(url, token){
 
     viewerRoom.on(LK.RoomEvent.Disconnected, function() {
       window._lkViewerRoom = null;
-      /* ── Nettoyer l'état micro à la déconnexion ── */
-      _myMicActive = false;
-      _myMicPending = false;
-      _myMicStopping = false;
-      if (_lkViewerMicTrack) { try { _lkViewerMicTrack.stop(); } catch(e){} _lkViewerMicTrack = null; }
-      /* Supprimer lk_mic/active si c'est nous qui parlons */
-      try {
-        var uid = _lkGetUID();
-        firebase.database().ref('lk_mic/active').once('value', function(snap){
-          if (snap.val() && snap.val().uid === uid) {
-            firebase.database().ref('lk_mic/active').remove();
-          }
-        });
-        firebase.database().ref('lk_mic/requests/' + uid).remove();
-      } catch(e){}
-      /* Remettre l'UI en idle */
-      _micUpdateMyStatusUI('idle');
-      /* Permettre la réinit des listeners à la prochaine connexion */
-      _lkInteractInited = false;
-      if (_micRef) { try { _micRef.off(); } catch(e){} _micRef = null; }
-      if (_qaRef)  { try { _qaRef.off();  } catch(e){} _qaRef  = null; }
       fbLeaveViewers();
       var wrap = document.getElementById('mainPlayer');
       if (wrap && _currentCh === 99) {
@@ -5697,12 +5657,6 @@ async function lkJoinAsViewer(url, token){
 
     await viewerRoom.connect(url, token);
     showToast('📡 Connexion LiveKit…');
-    /* Enregistrer nettoyage automatique Firebase si connexion perdue */
-    try {
-      var _vuid = _lkGetUID();
-      firebase.database().ref('lk_mic/requests/' + _vuid).onDisconnect().remove();
-      firebase.database().ref('lk_mic/active').onDisconnect().remove();
-    } catch(e){}
     /* Démarrer Q&A + Micro interactif */
     _lkInteractStart();
 
@@ -8274,11 +8228,10 @@ function interactInit() {
     _interactRef.on('value', function(snap) {
       var data = snap.val() || {};
       _interactUpdateCounts(data);
-      _interactRenderList('ai-panel-hands', data.hands, 'hand', '🙋');
-      _interactRenderList('ai-panel-questions', data.questions, 'question', '❓');
+      _interactUpdateAdminPanel(data);
       if (window._isStreaming || _adminIn) _interactUpdateFloatingPanel(data);
     });
-    /* Listener lk_mic → panneau PAROLE en temps réel */
+    /* Listener lk_mic → panneau PAROLE + boutons flottants */
     firebase.database().ref('lk_mic').on('value', function(snap) {
       var lkData = snap.val() || {};
       var requests = lkData.requests || {};
@@ -8288,6 +8241,7 @@ function interactInit() {
         var e = document.getElementById(id); if (e) e.textContent = count;
       });
       if (_adminIn || window._isStreamer) _micAdminRender(requests);
+      _spRenderMicQueue(requests, lkData.active || null);
     });
   });
 }
@@ -8499,6 +8453,49 @@ function _interactUpdateFloatingPanel(data) {
 }
 var _interactPrevTotal = -1;
 
+/* ── Zone Accepter/Refuser dans le panneau flottant streamer ── */
+function _spRenderMicQueue(requests, active) {
+  var zone = document.getElementById('spMicQueue');
+  if (!zone) return;
+  var entries = Object.entries(requests).sort(function(a,b){ return (a[1].ts||0)-(b[1].ts||0); });
+
+  /* Micro actif en cours */
+  var html = '';
+  if (active && active.name) {
+    html += '<div style="display:flex;align-items:center;gap:6px;padding:.3rem .4rem;background:rgba(192,57,43,.25);border-radius:8px;margin-bottom:.35rem">' +
+      '<span style="font-size:13px">🔴</span>' +
+      '<span style="flex:1;font-size:11px;font-weight:700;color:#ff7675;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escH(active.name) + ' parle</span>' +
+      '<button onclick="interactCutMic()" style="font-size:10px;background:rgba(192,57,43,.6);color:#fff;border:none;border-radius:6px;padding:.15rem .4rem;cursor:pointer;white-space:nowrap;font-family:\'Roboto\',sans-serif">🔇 Couper</button>' +
+    '</div>';
+  }
+
+  /* File d'attente */
+  if (entries.length) {
+    entries.forEach(function(e) {
+      var uid = e[0], item = e[1];
+      if (item.status === 'accepted') return;
+      html += '<div style="display:flex;align-items:center;gap:5px;padding:.25rem .3rem;background:rgba(255,255,255,.07);border-radius:8px;margin-bottom:.25rem">' +
+        '<span style="font-size:12px">🙋</span>' +
+        '<span style="flex:1;font-size:11px;color:rgba(251,248,232,.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escH(item.name||'Visiteur') + '</span>' +
+        '<button onclick="interactGrantMic(\'' + escH(uid) + '\',\'' + escH(item.name||'Visiteur') + '\')" style="font-size:10px;background:#27ae60;color:#fff;border:none;border-radius:6px;padding:.15rem .35rem;cursor:pointer;white-space:nowrap;font-family:\'Roboto\',sans-serif;margin-right:3px">✅</button>' +
+        '<button onclick="spRejectMic(\'' + escH(uid) + '\')" style="font-size:10px;background:rgba(192,57,43,.5);color:#fff;border:none;border-radius:6px;padding:.15rem .35rem;cursor:pointer;white-space:nowrap;font-family:\'Roboto\',sans-serif">✕</button>' +
+      '</div>';
+    });
+  }
+
+  if (html) {
+    zone.innerHTML = html;
+    zone.style.display = 'block';
+  } else {
+    zone.style.display = 'none';
+    zone.innerHTML = '';
+  }
+}
+
+function spRejectMic(uid) {
+  _fbInit(function(){ firebase.database().ref('lk_mic/requests/' + uid).remove(); showToast('🔇 Refusé'); });
+}
+
 /* ── Son d'alerte ── */
 function _interactPlaySound() {
   try {
@@ -8637,7 +8634,6 @@ var _micRef = null;
 var _myMicPending = false;
 var _myMicActive  = false;
 var _lkViewerMicTrack = null;
-var _myMicStopping = false;
 
 function lkInteractInit() {
   _fbInit(function() {
@@ -8725,67 +8721,47 @@ function lkRequestMic() {
     });
     return;
   }
-  /* Envoyer la demande — micro s'active UNIQUEMENT après acceptation du Cheikh */
   _fbInit(function(){
     firebase.database().ref('lk_mic/requests/' + _lkGetUID()).set({
       name: _lkGetDisplayName(), ts: firebase.database.ServerValue.TIMESTAMP, status: 'pending'
     }).then(function(){
       _myMicPending = true; _micUpdateMyStatusUI('pending');
-      showToast('🙋 Demande envoyée — attendez l\'acceptation du Cheikh');
+      showToast('🙋 Demande envoyée — attendez l\'acceptation');
     }).catch(function(e){ showToast('⚠️ ' + (e.message||'Erreur')); });
   });
 }
 
 function lkStopMyMic() {
-  if (_myMicStopping) return;
-  _myMicStopping = true;
-  _myMicActive = false; _myMicPending = false;
-  _micUpdateMyStatusUI('idle');
   if (_lkViewerMicTrack) { try { _lkViewerMicTrack.stop(); } catch(e){} _lkViewerMicTrack = null; }
   if (window._lkViewerRoom) {
     try { window._lkViewerRoom.localParticipant.audioTrackPublications.forEach(function(pub){
-      if (pub.track) window._lkViewerRoom.localParticipant.unpublishTrack(pub.track);
+      window._lkViewerRoom.localParticipant.unpublishTrack(pub.track);
     }); } catch(e){}
   }
   _fbInit(function(){
     var uid = _lkGetUID();
     firebase.database().ref('lk_mic/requests/' + uid).remove();
     firebase.database().ref('lk_mic/active').once('value', function(snap){
-      if (snap.val() && snap.val().uid === uid) {
-        firebase.database().ref('lk_mic/active').remove().then(function(){
-          setTimeout(function(){ _myMicStopping = false; }, 1500);
-        }).catch(function(){ _myMicStopping = false; });
-      } else {
-        setTimeout(function(){ _myMicStopping = false; }, 1500);
-      }
+      if (snap.val() && snap.val().uid === uid) firebase.database().ref('lk_mic/active').remove();
     });
   });
-  showToast('🎤 Micro désactivé');
+  _myMicActive = false; _myMicPending = false;
+  _micUpdateMyStatusUI('idle'); showToast('🎤 Micro désactivé');
 }
 
 async function lkActivateMyMic() {
-  if (_myMicStopping) return;
-  if (!window._lkViewerRoom) {
-    showToast('⚠️ Pas connecté au live — reconnectez-vous');
-    _myMicActive = false; _myMicPending = false; _micUpdateMyStatusUI('idle');
-    return;
-  }
+  if (!window._lkViewerRoom) { showToast('⚠️ Reconnectez-vous au live d\'abord'); return; }
   try {
     var LK = window.LivekitClient;
-    var stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-    if (_myMicStopping) { stream.getTracks().forEach(function(t){t.stop()}); return; }
+    var stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     _lkViewerMicTrack = stream.getAudioTracks()[0];
     var lkAudio = new LK.LocalAudioTrack(_lkViewerMicTrack);
     await window._lkViewerRoom.localParticipant.publishTrack(lkAudio, { source: LK.Track.Source.Microphone });
     _myMicActive = true; _myMicPending = false;
     _micUpdateMyStatusUI('active');
-    showToast('🎤 Le Cheikh vous donne la parole — parlez !');
+    showToast('🎤 Votre micro est ACTIF — parlez maintenant');
   } catch(e) {
-    _myMicActive = false; _micUpdateMyStatusUI('idle');
-    var msg = (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError')
-      ? 'Autorisez le micro dans les réglages du navigateur'
-      : (e.message || e);
-    showToast('⚠️ Micro : ' + msg);
+    showToast('⚠️ Micro : ' + (e.message||e));
   }
 }
 
@@ -8799,11 +8775,9 @@ function _micUpdateMyStatusUI(state) {
 }
 
 function _micCheckMyStatus(data) {
-  if (_myMicStopping) return;
   var uid = _lkGetUID();
   var active = data.active;
-  /* N'activer le micro QUE si l'utilisateur a fait une demande explicite (_myMicPending) */
-  if (active && active.uid === uid && !_myMicActive && _myMicPending) {
+  if (active && active.uid === uid && !_myMicActive) {
     showToast('✅ Le Cheikh vous donne la parole !');
     lkActivateMyMic();
   }
