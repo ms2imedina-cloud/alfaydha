@@ -273,50 +273,58 @@ body{
 /* ══ WIDGET PRIÈRE PAGE UMMA — Cartes lisibles ══ */
 .wlc-pray-card{
   display:flex;align-items:center;gap:.85rem;
-  background:var(--white);border:1.5px solid #e0ddd5;
-  border-radius:14px;padding:.7rem .9rem;
+  background:#ffffff;
+  border:1px solid #d4c98a;
+  border-radius:14px;padding:.72rem 1rem;
   transition:all .2s;position:relative;overflow:hidden;
+  box-shadow:0 1px 4px rgba(0,0,0,.06);
 }
 .wlc-pray-card.next{
-  background:linear-gradient(135deg,rgba(15,123,63,.07),rgba(212,175,55,.05));
+  background:linear-gradient(135deg,#e8f5ee,#fdf8e1);
   border-color:var(--gold);
-  box-shadow:0 3px 14px rgba(212,175,55,.15);
+  box-shadow:0 4px 16px rgba(212,175,55,.2);
 }
-.wlc-pray-card.past{ opacity:.55; }
+.wlc-pray-card.past{ opacity:.6; }
 .wlc-pray-card::before{
   content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
   background:#ccc;border-radius:3px 0 0 3px;
 }
 .wlc-pray-card.next::before{ background:var(--gold); }
 .wlc-pray-card.past::before{ background:#bbb; }
-.wlc-pray-icon2{ font-size:22px;width:30px;text-align:center;flex-shrink:0; }
+.wlc-pray-icon2{ font-size:24px;width:32px;text-align:center;flex-shrink:0; }
 .wlc-pray-body{ flex:1;min-width:0; }
-.wlc-pray-name2{ font-family:'Amiri',serif;font-size:18px;color:#1a1a1a;line-height:1;font-weight:600; }
-.wlc-pray-card.next .wlc-pray-name2{ color:var(--g1);font-weight:700; }
-.wlc-pray-card.past .wlc-pray-name2{ color:#555; }
-.wlc-pray-fr{ font-size:12px;color:#555;margin-top:2px;font-weight:500; }
-.wlc-pray-card.past .wlc-pray-fr{ color:#888; }
-.wlc-pray-time2{
-  font-size:26px;font-weight:700;color:#1a1a1a;
-  font-variant-numeric:tabular-nums;flex-shrink:0;letter-spacing:.01em;
+.wlc-pray-name2{
+  font-family:'Amiri',serif;font-size:19px;
+  color:#111111;line-height:1;font-weight:700;
 }
-.wlc-pray-card.next .wlc-pray-time2{ color:var(--g1); }
-.wlc-pray-card.past .wlc-pray-time2{ color:#777; }
+.wlc-pray-card.next .wlc-pray-name2{ color:#0a5c2e; }
+.wlc-pray-card.past .wlc-pray-name2{ color:#555555; }
+.wlc-pray-fr{
+  font-size:12px;color:#444444;margin-top:3px;
+  font-weight:600;letter-spacing:.03em;
+}
+.wlc-pray-card.past .wlc-pray-fr{ color:#888888; }
+.wlc-pray-time2{
+  font-size:28px;font-weight:800;color:#111111;
+  font-variant-numeric:tabular-nums;flex-shrink:0;letter-spacing:.02em;
+}
+.wlc-pray-card.next .wlc-pray-time2{ color:#0a5c2e; }
+.wlc-pray-card.past .wlc-pray-time2{ color:#777777; }
 .wlc-next-badge{
-  font-size:9px;background:var(--g1);color:#fff;
-  border-radius:100px;padding:2px 7px;font-weight:700;
+  font-size:9px;background:#0a5c2e;color:#fff;
+  border-radius:100px;padding:2px 8px;font-weight:700;
   letter-spacing:.06em;margin-left:.5rem;vertical-align:middle;
 }
 .wlc-adhan-btn{
-  background:none;border:1.5px solid rgba(212,175,55,.5);
-  border-radius:100px;color:var(--gold);
-  font-size:14px;padding:.3rem .6rem;cursor:pointer;
+  background:none;border:2px solid rgba(212,175,55,.6);
+  border-radius:100px;color:#b8860b;
+  font-size:15px;padding:.32rem .65rem;cursor:pointer;
   transition:all .2s;flex-shrink:0;line-height:1;
   font-family:'Roboto',sans-serif;
 }
 .wlc-adhan-btn:hover{ background:var(--gold);color:#000;border-color:var(--gold); }
 .wlc-adhan-btn.playing{ background:var(--g1);border-color:var(--g1);color:var(--gold2);animation:wlcPulse 1.4s ease-in-out infinite; }
-.wlc-pray-card.next .wlc-adhan-btn{ border-color:var(--g1);color:var(--g1); }
+.wlc-pray-card.next .wlc-adhan-btn{ border-color:#0a5c2e;color:#0a5c2e; }
 .wlc-adhan-btn.disabled-adhan{ opacity:.3;cursor:default; }
 @keyframes wlcPulse{0%,100%{box-shadow:0 0 0 0 rgba(15,123,63,.4)}50%{box-shadow:0 0 0 7px rgba(15,123,63,0)}}
 
@@ -1755,8 +1763,16 @@ html { background: #0a0a0a; }
 
   <!-- ══ WIDGET HEURES DE PRIÈRE PROFESSIONNEL ══ -->
 
-  <!-- En-tête hero vert -->
+  <!-- En-tête hero vert avec photo Baye Niass -->
   <div style="background:linear-gradient(160deg,var(--g1) 0%,var(--g2) 55%,#084d24 100%);padding:1rem 1.2rem .9rem;position:relative;overflow:hidden;flex-shrink:0">
+    <!-- Photo Baye Niass en fond décoratif -->
+    <div style="position:absolute;right:-18px;bottom:-18px;width:130px;height:130px;border-radius:50%;
+      background:url('data:image/webp;base64,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') center/cover no-repeat;
+      opacity:.18;pointer-events:none;filter:blur(0.5px);
+      mask-image:radial-gradient(circle,rgba(0,0,0,.9) 40%,transparent 75%);
+      -webkit-mask-image:radial-gradient(circle,rgba(0,0,0,.9) 40%,transparent 75%)">
+    </div>
+    <!-- Motif points doré -->
     <div style="position:absolute;inset:0;opacity:.05;background-image:radial-gradient(circle,var(--gold) 1px,transparent 1px);background-size:22px 22px;pointer-events:none"></div>
     <div style="display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1">
       <div style="display:flex;align-items:center;gap:.6rem">
