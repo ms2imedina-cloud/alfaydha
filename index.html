@@ -3103,6 +3103,8 @@ html { background: #0a0a0a; }
   <div class="live-tabs">
     <button class="lt-btn active" id="ltab-channels" onclick="switchLiveTab('channels',this)">📺 Chaînes</button>
     <button class="lt-btn" id="ltab-chat"     onclick="switchLiveTab('chat',this)">💬 Chat <span id="chatBadge" style="display:none;background:var(--red);color:#fff;border-radius:100px;font-size:11px;padding:1px 5px;font-family:sans-serif">0</span></button>
+    <button class="lt-btn" id="ltab-qa"       onclick="switchLiveTab('qa',this)">❓ Q&A <span id="qaBadge" style="display:none;background:var(--gold);color:#000;border-radius:100px;font-size:11px;padding:1px 5px;font-family:sans-serif;font-weight:700">0</span></button>
+    <button class="lt-btn" id="ltab-mic"      onclick="switchLiveTab('mic',this)">🎤 Micro</button>
     <button class="lt-btn" id="ltab-prog"     onclick="switchLiveTab('prog',this)">📅 Programme</button>
     <button class="lt-btn" id="ltab-favs"     onclick="switchLiveTab('favs',this)">⭐ Favoris</button>
   </div>
@@ -3170,6 +3172,69 @@ html { background: #0a0a0a; }
   <!-- PANEL PROGRAMME -->
   <div class="lt-panel" id="panel-prog">
     <div id="programmeList"></div>
+  </div>
+
+  <!-- PANEL Q&A -->
+  <div class="lt-panel" id="panel-qa">
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,var(--g1),var(--g2));padding:.8rem 1.1rem .7rem;flex-shrink:0">
+      <div style="font-family:'Amiri',serif;font-size:18px;color:#fff;margin-bottom:.15rem">❓ Questions au Cheikh</div>
+      <div style="font-size:12px;color:rgba(251,248,232,.65)">Posez votre question — le Cheikh y répondra en direct</div>
+    </div>
+    <!-- Liste questions -->
+    <div id="qaList" style="flex:1;overflow-y:auto;padding:.6rem 1.1rem;display:flex;flex-direction:column;gap:.6rem;min-height:180px">
+      <div style="text-align:center;padding:2rem 1rem;color:var(--text3);font-style:italic;font-size:13px">Aucune question pour l'instant — soyez le premier 🤲</div>
+    </div>
+    <!-- Formulaire -->
+    <div style="padding:.6rem 1.1rem;border-top:1px solid var(--gold3);background:var(--ivory);flex-shrink:0">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:.35rem">Votre question (200 caractères max)</div>
+      <div style="display:flex;gap:.4rem;align-items:flex-end">
+        <textarea id="qaInput" maxlength="200" rows="2" placeholder="Écrivez votre question ici…" style="flex:1;background:var(--white);border:1.5px solid var(--gold3);border-radius:10px;padding:.45rem .8rem;font-family:'Roboto',sans-serif;font-size:13px;outline:none;resize:none;color:var(--text1);line-height:1.5" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gold3)'"></textarea>
+        <button onclick="qaSendQuestion()" style="background:var(--g1);color:var(--gold2);border:none;border-radius:10px;padding:.55rem .9rem;font-size:20px;cursor:pointer;flex-shrink:0;transition:background .15s" onmouseover="this.style.background='var(--g2)'" onmouseout="this.style.background='var(--g1)'">➤</button>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:.3rem;text-align:right" id="qaCharCount">0/200</div>
+    </div>
+  </div>
+
+  <!-- PANEL MICRO -->
+  <div class="lt-panel" id="panel-mic">
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,#1a3a6e,#2980b9);padding:.8rem 1.1rem .7rem;flex-shrink:0">
+      <div style="font-family:'Amiri',serif;font-size:18px;color:#fff;margin-bottom:.15rem">🎤 Prise de parole</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.6)">Demandez à intervenir vocalement au micro</div>
+    </div>
+    <!-- Statut personnel -->
+    <div id="myMicStatus" style="margin:.7rem 1.1rem;padding:.7rem 1rem;background:var(--white);border:1.5px solid var(--gold3);border-radius:12px;display:flex;align-items:center;gap:.8rem">
+      <span style="font-size:28px">🎤</span>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:600;color:var(--g1)" id="myMicStatusText">Micro désactivé</div>
+        <div style="font-size:12px;color:var(--text3)" id="myMicStatusSub">Vous êtes en mode écoute</div>
+      </div>
+      <button id="btnMicRequest" onclick="lkRequestMic()" style="background:var(--g1);color:var(--gold2);border:none;border-radius:10px;padding:.5rem 1rem;font-size:13px;font-family:'Roboto',sans-serif;cursor:pointer;white-space:nowrap;transition:all .2s">
+        🙋 Demander
+      </button>
+    </div>
+    <!-- Instructions -->
+    <div style="margin:0 1.1rem;padding:.7rem 1rem;background:rgba(212,175,55,.08);border:1px solid var(--gold3);border-radius:10px;font-size:13px;color:var(--text2);line-height:1.7">
+      <strong style="color:var(--g1)">Comment ça fonctionne :</strong><br>
+      ① Cliquez <em>Demander</em> pour lever la main<br>
+      ② Le Cheikh voit votre demande et accepte ou refuse<br>
+      ③ Si accepté, votre micro s'active automatiquement<br>
+      ④ Parlez, puis cliquez <em>Terminer</em> pour rendre la parole
+    </div>
+    <!-- File d'attente -->
+    <div style="padding:.6rem 1.1rem .3rem">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:.4rem">File d'attente</div>
+      <div id="micQueueList" style="display:flex;flex-direction:column;gap:.35rem;min-height:60px">
+        <div style="text-align:center;padding:1rem;color:var(--text3);font-style:italic;font-size:12px">Aucune demande en attente</div>
+      </div>
+    </div>
+    <!-- Participant actif au micro -->
+    <div id="activeSpeakerBar" style="display:none;margin:.6rem 1.1rem;padding:.6rem 1rem;background:linear-gradient(135deg,var(--g1),var(--g2));border-radius:12px;display:none;align-items:center;gap:.7rem">
+      <span style="font-size:20px;animation:ldPulse 1.4s infinite">🔴</span>
+      <div style="flex:1;color:#fff;font-size:13px;font-weight:600" id="activeSpeakerName">—</div>
+      <span style="font-size:11px;color:var(--gold2)">parle</span>
+    </div>
   </div>
 
   <!-- PANEL FAVORIS -->
@@ -3318,6 +3383,7 @@ html { background: #0a0a0a; }
         <button class="adm-tab" id="atab-chaines" onclick="switchAdmTab('chaines')">📺 Chaînes</button>
         <button class="adm-tab active" id="atab-direct" onclick="switchAdmTab('direct')">🔴 Direct</button>
         <button class="adm-tab" id="atab-interact" onclick="switchAdmTab('interact')">🙋 Interactions</button>
+        <button class="adm-tab" id="atab-qa" onclick="switchAdmTab('qa')">❓ Q&A</button>
         <button class="adm-tab" id="atab-prog" onclick="switchAdmTab('prog')">📅 Programme</button>
         <button class="adm-tab" id="atab-stats" onclick="switchAdmTab('stats')">📊 Stats</button>
         <button class="adm-tab" id="atab-streamers" onclick="switchAdmTab('streamers')">👥 Streamers</button>
@@ -3476,6 +3542,30 @@ html { background: #0a0a0a; }
         <div id="ai-panel-hands"     style="min-height:120px;padding:.5rem 1.4rem"><div class="favs-empty">Aucune main levée</div></div>
         <div id="ai-panel-questions" style="display:none;min-height:120px;padding:.5rem 1.4rem"><div class="favs-empty">Aucune question</div></div>
         <div id="ai-panel-mic"       style="display:none;min-height:120px;padding:.5rem 1.4rem"><div class="favs-empty">Aucune demande de parole</div></div>
+      </div>
+
+      <!-- ── ONGLET Q&A ADMIN ── -->
+      <div style="display:none" id="adm-qa">
+        <div class="sec-title" style="display:flex;align-items:center;justify-content:space-between">
+          <span>❓ Questions en direct <span id="admQaCount" style="background:var(--gold);color:#000;border-radius:100px;font-size:12px;padding:1px 7px;margin-left:.4rem">0</span></span>
+          <button onclick="qaAdminClearAll()" style="font-size:11px;background:rgba(192,57,43,.1);color:var(--red);border:1px solid rgba(192,57,43,.3);border-radius:100px;padding:.2rem .7rem;cursor:pointer;font-family:'Roboto',sans-serif">Tout effacer</button>
+        </div>
+        <div id="admQaList" style="padding:.4rem 1.4rem;display:flex;flex-direction:column;gap:.4rem;min-height:80px">
+          <div style="text-align:center;padding:1.5rem;color:var(--text3);font-style:italic;font-size:13px">Aucune question reçue</div>
+        </div>
+
+        <div class="sec-title" style="display:flex;align-items:center;justify-content:space-between;margin-top:.5rem">
+          <span>🎤 Demandes micro <span id="admMicReqCount" style="background:#2980b9;color:#fff;border-radius:100px;font-size:12px;padding:1px 7px;margin-left:.4rem">0</span></span>
+        </div>
+        <div id="admMicReqList" style="padding:.4rem 1.4rem;display:flex;flex-direction:column;gap:.4rem;min-height:60px">
+          <div style="text-align:center;padding:1rem;color:var(--text3);font-style:italic;font-size:13px">Aucune demande de micro</div>
+        </div>
+
+        <div style="padding:.6rem 1.4rem;border-top:1px solid var(--gold3);margin-top:.5rem">
+          <div style="font-size:12px;color:var(--text3);font-style:italic">
+            🔇 Par défaut, tous les viewers sont muets. Acceptez une demande pour activer leur micro temporairement.
+          </div>
+        </div>
       </div>
 
       <div style="display:none" id="adm-streamers">
@@ -3643,7 +3733,7 @@ function _hideSplash(){
 
 /* ── Entrée dans l'app selon le profil choisi ── */
 function enterApp(profile) {
-  try{ localStorage.setItem('faydha_profile', profile); }catch(e){}
+  try{ localStorage.setItem('faydha_profile', profile); }catch(e){}\
   var w = document.getElementById('welcome');
   if(w){ w.style.transition='opacity .5s ease'; w.style.opacity='0'; setTimeout(function(){ w.classList.add('hidden'); w.style.opacity=''; }, 500); }
   _updateProfileLabel();
@@ -3654,6 +3744,14 @@ function enterApp(profile) {
     visiteur:    '☽ Bienvenue dans la Baye Niass World'
   };
   setTimeout(function(){ showToast(msgs[profile] || '☽ Bienvenue'); }, 600);
+  /* Connexion anonyme Firebase pour permettre les interactions live */
+  _fbInit(function(){
+    if (!firebase.auth().currentUser) {
+      firebase.auth().signInAnonymously().catch(function(e){
+        console.warn('[Auth anonyme]', e.message);
+      });
+    }
+  });
 }
 
 /* ═══════════════════════════════════════
@@ -4422,6 +4520,8 @@ function switchLiveTab(id,btn){
   if(id==='chat'){var b=document.getElementById('chatBadge');if(b){b.style.display='none';b.textContent='0';}}
   if(id==='favs')renderFavs();
   if(id==='prog')renderProgramme();
+  /* Initialiser Q&A et Micro au premier accès */
+  if(id==='qa'||id==='mic') _lkInteractStart();
 }
 
 /* ════════════════════════════════════════
@@ -4650,7 +4750,7 @@ function checkStreamerAccess(user, callback) {
 
 function switchAdmTab(id){
   // Masquer tous les panels
-  ['chaines','direct','prog','stats','streamers','params','notif','interact'].forEach(function(n){
+  ['chaines','direct','prog','stats','streamers','params','notif','interact','qa'].forEach(function(n){
     var p = document.getElementById('adm-'+n);
     if(p) p.style.display = 'none';
     var b = document.getElementById('atab-'+n);
@@ -4664,6 +4764,7 @@ function switchAdmTab(id){
   // Mettre à jour les stats si l'onglet stats est sélectionné
   if(id === 'stats') updateStats();
   if(id === 'streamers') loadStreamers();
+  if(id === 'qa') _lkInteractStart();
   if(id === 'params') {
     /* Charger la clé Anthropic actuelle */
     var _abInp = document.getElementById('adminAbKey');
@@ -4997,7 +5098,7 @@ async function lkGenerateViewerToken(apiKey, apiSecret, roomName) {
   var now=Math.floor(Date.now()/1000);
   var h=encodeJSON({alg:'HS256',typ:'JWT'});
   var p=encodeJSON({iss:apiKey,sub:name,iat:now,nbf:now,exp:now+86400,
-    video:{room:(roomName||'faydha-live'),roomJoin:true,roomCreate:false,canPublish:false,canSubscribe:true,canPublishData:false,hidden:true,recorder:false}});
+    video:{room:(roomName||'faydha-live'),roomJoin:true,roomCreate:false,canPublish:true,canSubscribe:true,canPublishData:true,hidden:false,recorder:false}});
   var si=h+'.'+p;
   var key=await crypto.subtle.importKey('raw',new TextEncoder().encode(apiSecret),{name:'HMAC',hash:'SHA-256'},false,['sign']);
   var sig=await crypto.subtle.sign('HMAC',key,new TextEncoder().encode(si));
@@ -5554,6 +5655,8 @@ async function lkJoinAsViewer(url, token){
 
     await viewerRoom.connect(url, token);
     showToast('📡 Connexion LiveKit…');
+    /* Démarrer Q&A + Micro interactif */
+    _lkInteractStart();
 
   } catch(e) {
     console.error('LiveKit viewer error:', e);
@@ -7225,6 +7328,25 @@ switchZikrTab=function(tab){
       ".read": "auth != null",
       ".write": "auth != null && auth.token.email == 'ms2imedina@gmail.com'"
     },
+    "lk_qa": {
+      ".read": true,
+      ".write": "auth != null",
+      "$qid": {
+        ".validate": "newData.hasChildren(['name','text','ts']) && newData.child('text').val().length <= 200"
+      }
+    },
+    "lk_mic": {
+      ".read": true,
+      "requests": {
+        "$uid": {
+          ".write": "auth != null",
+          ".validate": "newData.hasChildren(['name','ts'])"
+        }
+      },
+      "active": {
+        ".write": "auth != null && (auth.token.email == 'ms2imedina@gmail.com' || root.child('authorized_streamers').child(auth.token.email.replace('.','_').replace('#','_').replace('$','_').replace('[','_').replace(']','_')).child('active').val() == true)"
+      }
+    },
     "live_interactions": {
       ".read": true,
       ".write": "auth != null && (auth.token.email == 'ms2imedina@gmail.com' || root.child('authorized_streamers').child(auth.token.email.replace('.','_').replace('#','_').replace('$','_').replace('[','_').replace(']','_')).child('active').val() == true)",
@@ -7544,6 +7666,8 @@ document.addEventListener('DOMContentLoaded', function() {
       if (user) {
         if (_userConnected) return;
         _userConnected = true;
+        /* Ignorer les sessions anonymes (utilisateurs sans Google) */
+        if (user.isAnonymous) return;
         _onGoogleUser(user);
         _fbSyncUser(user);
       } else {
@@ -8141,10 +8265,13 @@ function interactRaiseHand() {
     firebase.database().ref('live_interactions/hands/' + uid).set({
       name: _interactGetName(),
       ts: firebase.database.ServerValue.TIMESTAMP
+    }).then(function(){
+      _myHandRaised = true;
+      if (btn) { btn.style.background='var(--g1)'; btn.style.borderColor='var(--gold)'; btn.style.color='var(--gold2)'; btn.querySelector('span').textContent='Baisser'; }
+      showToast('🙋 Main levée — le Cheikh vous voit');
+    }).catch(function(e){
+      showToast('⚠️ Erreur : ' + (e.message||'connexion requise'));
     });
-    _myHandRaised = true;
-    if (btn) { btn.style.background='var(--g1)'; btn.style.borderColor='var(--gold)'; btn.style.color='var(--gold2)'; btn.querySelector('span').textContent='Baisser'; }
-    showToast('🙋 Main levée — le Cheikh vous voit');
   });
 }
 
@@ -8194,18 +8321,28 @@ function interactRequestMic() {
     firebase.database().ref('live_interactions/mic_requests/' + uid).set({
       name: _interactGetName(),
       ts: firebase.database.ServerValue.TIMESTAMP
+    }).then(function(){
+      _myMicRequested = true;
+      if (btn) { btn.style.background='#2980b9'; btn.style.borderColor='#3498db'; btn.style.color='#fff'; btn.querySelector('span').textContent='Annuler'; }
+      showToast('🎤 Demande envoyée — attendez que le Cheikh vous donne la parole');
+    }).catch(function(e){
+      showToast('⚠️ Erreur : ' + (e.message||'connexion requise'));
     });
-    _myMicRequested = true;
-    if (btn) { btn.style.background='#2980b9'; btn.style.borderColor='#3498db'; btn.style.color='#fff'; btn.querySelector('span').textContent='Annuler'; }
-    showToast('🎤 Demande envoyée — attendez que le Cheikh vous donne la parole');
   });
 }
 
 /* ── UID unique par session ── */
 function _interactGetUID() {
+  /* 1. Utilisateur Google connecté */
   var gu = null;
   try { gu = JSON.parse(localStorage.getItem('faydha_google_user')||'null'); } catch(e){}
   if (gu && gu.uid) return gu.uid;
+  /* 2. Utilisateur anonyme Firebase (a un uid stable par session) */
+  try {
+    var fbUser = firebase.auth().currentUser;
+    if (fbUser && fbUser.uid) return fbUser.uid;
+  } catch(e) {}
+  /* 3. Fallback device ID */
   var id = '';
   try { id = localStorage.getItem('faydha_device_id') || ''; } catch(e){}
   if (!id) { id = 'anon_' + Math.random().toString(36).slice(2,10); try { localStorage.setItem('faydha_device_id', id); } catch(e){} }
@@ -8410,6 +8547,263 @@ document.addEventListener('DOMContentLoaded', function(){
   _fbInit(function(){ interactInit(); });
   /* Afficher la barre d'interaction quand on est dans le chat live */
 });
+
+/* ════════════════════════════════════════════════════════════
+   LIVEKIT INTERACTIVE — Q&A + Micro viewer
+   Firebase paths: lk_qa/{questions}, lk_mic/{requests}, lk_mic/active
+════════════════════════════════════════════════════════════ */
+
+var _qaRef = null;
+var _micRef = null;
+var _myMicPending = false;
+var _myMicActive  = false;
+var _lkViewerMicTrack = null;
+
+function lkInteractInit() {
+  _fbInit(function() {
+    _qaRef = firebase.database().ref('lk_qa');
+    _qaRef.on('value', function(snap) {
+      var data = snap.val() || {};
+      _qaRenderList(data);
+      _qaUpdateBadge(data);
+      if (_adminIn || window._isStreamer) _qaAdminRender(data);
+    });
+    _micRef = firebase.database().ref('lk_mic');
+    _micRef.on('value', function(snap) {
+      var data = snap.val() || {};
+      _micRenderQueue(data.requests || {});
+      _micUpdateActiveSpeaker(data.active || null);
+      if (_adminIn || window._isStreamer) _micAdminRender(data.requests || {});
+      _micCheckMyStatus(data);
+    });
+  });
+}
+
+/* ── Q&A Viewer ── */
+function qaSendQuestion() {
+  var inp = document.getElementById('qaInput');
+  var q = inp ? inp.value.trim() : '';
+  if (!q || q.length < 3) { showToast('⚠️ Écrivez votre question'); return; }
+  _fbInit(function() {
+    firebase.database().ref('lk_qa').push({
+      name: _lkGetDisplayName(), text: q,
+      ts: firebase.database.ServerValue.TIMESTAMP, answered: false
+    }).then(function(){
+      if (inp) inp.value = '';
+      var cc = document.getElementById('qaCharCount');
+      if (cc) cc.textContent = '0/200';
+      showToast('❓ Question envoyée 🤲');
+    }).catch(function(e){ showToast('⚠️ ' + (e.message||'Erreur')); });
+  });
+}
+
+function _qaRenderList(items) {
+  var el = document.getElementById('qaList');
+  if (!el) return;
+  var entries = Object.entries(items).sort(function(a,b){ return (a[1].ts||0)-(b[1].ts||0); });
+  if (!entries.length) {
+    el.innerHTML = '<div style="text-align:center;padding:2rem 1rem;color:var(--text3);font-style:italic;font-size:13px">Aucune question — soyez le premier 🤲</div>';
+    return;
+  }
+  el.innerHTML = entries.map(function(e) {
+    var item = e[1];
+    return '<div style="background:var(--white);border:1.5px solid ' + (item.answered?'var(--gold)':'var(--gold3)') + ';border-radius:12px;padding:.6rem .9rem;' + (item.answered?'opacity:.65':'') + '">' +
+      '<div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.2rem">' +
+        '<span style="font-size:12px;font-weight:700;color:var(--g1)">' + escH(item.name||'Visiteur') + '</span>' +
+        (item.answered ? '<span style="font-size:11px;background:var(--gold);color:#000;border-radius:100px;padding:1px 6px;font-weight:700">✅ Répondu</span>' : '') +
+      '</div>' +
+      '<div style="font-size:13px;color:var(--text1);line-height:1.5">' + escH(item.text||'') + '</div>' +
+    '</div>';
+  }).join('');
+  el.scrollTop = el.scrollHeight;
+}
+
+function _qaUpdateBadge(items) {
+  var n = Object.values(items).filter(function(v){ return !v.answered; }).length;
+  var badge = document.getElementById('qaBadge');
+  if (!badge) return;
+  badge.textContent = n; badge.style.display = n > 0 ? 'inline' : 'none';
+}
+
+/* Init compteur caractères */
+document.addEventListener('DOMContentLoaded', function(){
+  var inp = document.getElementById('qaInput');
+  if (inp) inp.addEventListener('input', function(){
+    var cc = document.getElementById('qaCharCount');
+    if (cc) cc.textContent = inp.value.length + '/200';
+  });
+});
+
+/* ── Micro Viewer ── */
+function lkRequestMic() {
+  if (_myMicActive) { lkStopMyMic(); return; }
+  if (_myMicPending) {
+    _fbInit(function(){
+      firebase.database().ref('lk_mic/requests/' + _lkGetUID()).remove();
+      _myMicPending = false; _micUpdateMyStatusUI('idle');
+      showToast('🎤 Demande annulée');
+    });
+    return;
+  }
+  _fbInit(function(){
+    firebase.database().ref('lk_mic/requests/' + _lkGetUID()).set({
+      name: _lkGetDisplayName(), ts: firebase.database.ServerValue.TIMESTAMP, status: 'pending'
+    }).then(function(){
+      _myMicPending = true; _micUpdateMyStatusUI('pending');
+      showToast('🙋 Demande envoyée — attendez l\'acceptation');
+    }).catch(function(e){ showToast('⚠️ ' + (e.message||'Erreur')); });
+  });
+}
+
+function lkStopMyMic() {
+  if (_lkViewerMicTrack) { try { _lkViewerMicTrack.stop(); } catch(e){} _lkViewerMicTrack = null; }
+  if (window._lkViewerRoom) {
+    try { window._lkViewerRoom.localParticipant.audioTrackPublications.forEach(function(pub){
+      window._lkViewerRoom.localParticipant.unpublishTrack(pub.track);
+    }); } catch(e){}
+  }
+  _fbInit(function(){
+    var uid = _lkGetUID();
+    firebase.database().ref('lk_mic/requests/' + uid).remove();
+    firebase.database().ref('lk_mic/active').once('value', function(snap){
+      if (snap.val() && snap.val().uid === uid) firebase.database().ref('lk_mic/active').remove();
+    });
+  });
+  _myMicActive = false; _myMicPending = false;
+  _micUpdateMyStatusUI('idle'); showToast('🎤 Micro désactivé');
+}
+
+async function lkActivateMyMic() {
+  if (!window._lkViewerRoom) { showToast('⚠️ Reconnectez-vous au live d\'abord'); return; }
+  try {
+    var LK = window.LivekitClient;
+    var stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    _lkViewerMicTrack = stream.getAudioTracks()[0];
+    var lkAudio = new LK.LocalAudioTrack(_lkViewerMicTrack);
+    await window._lkViewerRoom.localParticipant.publishTrack(lkAudio, { source: LK.Track.Source.Microphone });
+    _myMicActive = true; _myMicPending = false;
+    _micUpdateMyStatusUI('active');
+    showToast('🎤 Votre micro est ACTIF — parlez maintenant');
+  } catch(e) {
+    showToast('⚠️ Micro : ' + (e.message||e));
+  }
+}
+
+function _micUpdateMyStatusUI(state) {
+  var s = { idle:['Micro désactivé','En écoute','🙋 Demander','var(--g1)'],
+             pending:['En attente…','Le Cheikh verra votre demande','✕ Annuler','#e67e22'],
+             active:['🔴 MICRO ACTIF','Parlez — cliquez Terminer','⏹ Terminer','#c0392b'] }[state]||[];
+  var txt=document.getElementById('myMicStatusText'), sub=document.getElementById('myMicStatusSub'), btn=document.getElementById('btnMicRequest');
+  if (txt) txt.textContent=s[0]; if (sub) sub.textContent=s[1];
+  if (btn) { btn.textContent=s[2]; btn.style.background=s[3]; }
+}
+
+function _micCheckMyStatus(data) {
+  var uid = _lkGetUID();
+  var active = data.active;
+  if (active && active.uid === uid && !_myMicActive) {
+    showToast('✅ Le Cheikh vous donne la parole !');
+    lkActivateMyMic();
+  }
+  if (_myMicPending && data.requests && !data.requests[uid]) {
+    _myMicPending = false; _micUpdateMyStatusUI('idle');
+    showToast('🔇 Demande refusée');
+  }
+  if (_myMicActive && (!active || active.uid !== uid)) {
+    lkStopMyMic(); showToast('🔇 Votre micro a été coupé');
+  }
+}
+
+function _micRenderQueue(requests) {
+  var el = document.getElementById('micQueueList'); if (!el) return;
+  var uid = _lkGetUID();
+  var entries = Object.entries(requests).sort(function(a,b){ return (a[1].ts||0)-(b[1].ts||0); });
+  if (!entries.length) { el.innerHTML='<div style="text-align:center;padding:1rem;color:var(--text3);font-style:italic;font-size:12px">Aucune demande</div>'; return; }
+  el.innerHTML = entries.map(function(e){
+    var k=e[0], item=e[1], isMe=k===uid;
+    return '<div style="display:flex;align-items:center;gap:.5rem;padding:.35rem .6rem;background:'+(isMe?'rgba(15,123,63,.08)':'var(--white)')+';border:1px solid '+(isMe?'var(--g1)':'var(--gold3)')+';border-radius:8px">' +
+      '<span>🙋</span><span style="flex:1;font-size:13px;color:var(--text1)">'+escH(item.name||'Visiteur')+(isMe?' <em style="color:var(--g1)">(vous)</em>':'')+'</span></div>';
+  }).join('');
+}
+
+function _micUpdateActiveSpeaker(active) {
+  var bar=document.getElementById('activeSpeakerBar'), name=document.getElementById('activeSpeakerName');
+  if (!bar) return;
+  if (active&&active.name) { bar.style.display='flex'; if(name)name.textContent=active.name+' parle'; }
+  else bar.style.display='none';
+}
+
+/* ── Q&A + Micro Admin ── */
+function _qaAdminRender(items) {
+  var el=document.getElementById('admQaList'), cnt=document.getElementById('admQaCount');
+  if (!el) return;
+  var entries=Object.entries(items).sort(function(a,b){return(a[1].ts||0)-(b[1].ts||0);});
+  var n=entries.filter(function(e){return!e[1].answered;}).length;
+  if (cnt) cnt.textContent=n;
+  if (!entries.length) { el.innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--text3);font-style:italic;font-size:13px">Aucune question</div>'; return; }
+  el.innerHTML=entries.map(function(e){
+    var key=e[0], item=e[1];
+    return '<div style="background:var(--white);border:1.5px solid var(--gold3);border-radius:10px;padding:.5rem .8rem;'+(item.answered?'opacity:.5':'')+'">' +
+      '<div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.2rem">' +
+        '<span style="font-size:12px;font-weight:700;color:var(--g1)">'+escH(item.name||'Visiteur')+'</span><span style="flex:1"></span>' +
+        (item.answered?'<span style="font-size:11px;color:var(--gold);font-weight:700">✅ Répondu</span>' :
+          '<button onclick="qaAdminAnswer(\''+escH(key)+'\')" style="font-size:11px;background:var(--g1);color:var(--gold2);border:none;border-radius:100px;padding:.15rem .6rem;cursor:pointer;font-family:\'Roboto\',sans-serif;margin-right:.2rem">✅ Répondu</button>'+
+          '<button onclick="qaAdminDelete(\''+escH(key)+'\')" style="font-size:11px;background:rgba(192,57,43,.1);color:var(--red);border:1px solid rgba(192,57,43,.3);border-radius:100px;padding:.15rem .6rem;cursor:pointer;font-family:\'Roboto\',sans-serif">✕</button>') +
+      '</div><div style="font-size:13px;color:var(--text1);line-height:1.5">'+escH(item.text||'')+'</div></div>';
+  }).join('');
+}
+
+function qaAdminAnswer(key){_fbInit(function(){firebase.database().ref('lk_qa/'+key).update({answered:true});showToast('✅ Répondu');});}
+function qaAdminDelete(key){_fbInit(function(){firebase.database().ref('lk_qa/'+key).remove();});}
+function qaAdminClearAll(){_fbInit(function(){firebase.database().ref('lk_qa').remove();showToast('🗑 Questions effacées');});}
+
+function _micAdminRender(requests) {
+  var el=document.getElementById('admMicReqList'), cnt=document.getElementById('admMicReqCount');
+  if (!el) return;
+  var entries=Object.entries(requests).sort(function(a,b){return(a[1].ts||0)-(b[1].ts||0);});
+  if (cnt) cnt.textContent=entries.length;
+  if (!entries.length) { el.innerHTML='<div style="text-align:center;padding:1rem;color:var(--text3);font-style:italic;font-size:13px">Aucune demande</div>'; return; }
+  el.innerHTML=entries.map(function(e){
+    var uid=e[0], item=e[1];
+    return '<div style="display:flex;align-items:center;gap:.5rem;background:var(--white);border:1.5px solid #2980b9;border-radius:10px;padding:.5rem .8rem">' +
+      '<span>🙋</span><span style="flex:1;font-size:13px;font-weight:600;color:var(--text1)">'+escH(item.name||'Visiteur')+'</span>' +
+      '<button onclick="micAdminAccept(\''+escH(uid)+'\',\''+escH(item.name||'')+'\') " style="font-size:12px;background:#27ae60;color:#fff;border:none;border-radius:8px;padding:.3rem .7rem;cursor:pointer;font-family:\'Roboto\',sans-serif;margin-right:.3rem">✅ Accepter</button>' +
+      '<button onclick="micAdminReject(\''+escH(uid)+'\')" style="font-size:12px;background:rgba(192,57,43,.15);color:var(--red);border:1px solid rgba(192,57,43,.3);border-radius:8px;padding:.3rem .6rem;cursor:pointer;font-family:\'Roboto\',sans-serif">✕</button></div>';
+  }).join('');
+}
+
+function micAdminAccept(uid,name){
+  _fbInit(function(){
+    firebase.database().ref('lk_mic/active').set({uid:uid,name:name,ts:firebase.database.ServerValue.TIMESTAMP});
+    firebase.database().ref('lk_mic/requests/'+uid).update({status:'accepted'});
+    showToast('✅ '+name+' peut parler');
+    if(typeof _showStreamerAlert==='function')_showStreamerAlert('🎤',name+' a le micro',null);
+  });
+}
+function micAdminReject(uid){_fbInit(function(){firebase.database().ref('lk_mic/requests/'+uid).remove();showToast('🔇 Refusé');});}
+function micAdminCutSpeaker(){_fbInit(function(){firebase.database().ref('lk_mic/active').remove();showToast('🔇 Micro coupé');});}
+
+/* ── Helpers ── */
+function _lkGetDisplayName(){
+  try{var gu=JSON.parse(localStorage.getItem('faydha_google_user')||'null');if(gu&&gu.name)return gu.name;}catch(e){}
+  var p=localStorage.getItem('faydha_profile')||'visiteur';
+  return {talibe:'Taalibé',participant:'Participant',nouveau:'Nouveau',visiteur:'Visiteur'}[p]||'Visiteur';
+}
+function _lkGetUID(){
+  try{var u=firebase.auth().currentUser;if(u)return u.uid;}catch(e){}
+  var id='';try{id=localStorage.getItem('faydha_device_id')||'';}catch(e){}
+  if(!id){id='anon_'+Math.random().toString(36).slice(2,10);try{localStorage.setItem('faydha_device_id',id);}catch(e){}}
+  return id;
+}
+
+/* ── Démarrer quand le viewer rejoint LiveKit ── */
+var _lkInteractInited = false;
+function _lkInteractStart(){
+  if(_lkInteractInited)return; _lkInteractInited=true; lkInteractInit();
+}
+
+/* ── Mettre à jour switchLiveTab pour inclure qa et mic ── */
+
 
 
 
