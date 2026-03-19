@@ -6741,7 +6741,8 @@ function switchWirdTab(tab) {
 
 /* ── Configuration ElevenLabs ── */
 var EL_API_KEY   = 'sk_293238401490b607ef8d79573e96652f63146612e918753b';
-var EL_VOICE_ID  = '4uRbt5vIFTFXxkOg9X58'; /* voix baye niass faydha */
+var EL_VOICE_ID  = '4uRbt5vIFTFXxkOg9X58'; /* voix baye niass faydha — WIRD */
+var EL_VOICE_ID_AB = 'h0TwoFQf7NYsiJYrhYf8'; /* voix baye niass — ASK BAYE */
 var EL_MODEL     = 'eleven_multilingual_v2';
 
 /* ── Textes à lire pour chaque wird ── */
@@ -7210,7 +7211,7 @@ async function abSpeak(text, btnEl) {
   if (btnEl) { btnEl.textContent = '⏳'; btnEl.classList.add('speaking'); }
 
   try {
-    var resp = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + EL_VOICE_ID + '/stream', {
+    var resp = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + EL_VOICE_ID_AB + '/stream', {
       method: 'POST',
       headers: {
         'xi-api-key': EL_API_KEY,
