@@ -6804,7 +6804,8 @@ async function elSpeak(key, btn) {
       body: JSON.stringify({
         text: text,
         model_id: EL_MODEL,
-        voice_settings: { stability: 0.90, similarity_boost: 0.90, style: 0.15, use_speaker_boost: true, speed: 0.55 }
+        speed: 0.75,
+        voice_settings: { stability: 0.90, similarity_boost: 0.90, style: 0.10, use_speaker_boost: true }
       })
     });
 
@@ -6934,7 +6935,8 @@ async function elSpeakWirdMatin(btn) {
         body: JSON.stringify({
           text: WIRD_MATIN_SEGMENTS[index],
           model_id: EL_MODEL,
-          voice_settings: { stability: 0.90, similarity_boost: 0.90, style: 0.10, use_speaker_boost: true, speed: 0.55 }
+          speed: 0.75,
+          voice_settings: { stability: 0.90, similarity_boost: 0.90, style: 0.10, use_speaker_boost: true }
         })
       });
 
@@ -7345,12 +7347,13 @@ async function abSpeak(text, btnEl) {
       body: JSON.stringify({
         text: clean,
         model_id: EL_MODEL,
+        speed: 0.80,
         voice_settings: {
           stability: 0.85,
           similarity_boost: 0.90,
           style: 0.2,
           use_speaker_boost: true,
-          speed: 0.70
+
         }
       })
     });
