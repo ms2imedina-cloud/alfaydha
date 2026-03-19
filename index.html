@@ -274,55 +274,50 @@ body{
 .wlc-pray-card{
   display:flex;align-items:center;gap:.85rem;
   background:var(--white);border:1.5px solid var(--gold3);
-  border-radius:14px;padding:.6rem .9rem;
+  border-radius:14px;padding:.65rem .9rem;
   transition:all .2s;position:relative;overflow:hidden;
 }
 .wlc-pray-card.next{
-  background:linear-gradient(135deg,rgba(15,123,63,.06),rgba(212,175,55,.05));
+  background:linear-gradient(135deg,rgba(15,123,63,.06),rgba(212,175,55,.04));
   border-color:var(--gold);
-  box-shadow:0 3px 14px rgba(212,175,55,.15);
+  box-shadow:0 3px 14px rgba(212,175,55,.12);
 }
-.wlc-pray-card.past{
-  opacity:.45;
-}
+.wlc-pray-card.past{ opacity:.42; }
 .wlc-pray-card::before{
   content:'';position:absolute;left:0;top:0;bottom:0;width:3.5px;
   background:var(--gold3);border-radius:3px 0 0 3px;
 }
 .wlc-pray-card.next::before{ background:var(--gold); }
 .wlc-pray-card.past::before{ background:var(--text3); }
-.wlc-pray-icon2{ font-size:22px;width:32px;text-align:center;flex-shrink:0; }
+.wlc-pray-icon2{ font-size:22px;width:30px;text-align:center;flex-shrink:0; }
 .wlc-pray-body{ flex:1;min-width:0; }
-.wlc-pray-name2{
-  font-family:'Amiri',serif;font-size:17px;color:var(--g1);line-height:1;
-}
+.wlc-pray-name2{ font-family:'Amiri',serif;font-size:17px;color:var(--g1);line-height:1; }
 .wlc-pray-card.next .wlc-pray-name2{ color:var(--g1);font-weight:700; }
 .wlc-pray-card.past .wlc-pray-name2{ color:var(--text3); }
-.wlc-pray-fr{
-  font-size:11px;color:var(--text3);margin-top:2px;letter-spacing:.02em;
-}
+.wlc-pray-fr{ font-size:11px;color:var(--text3);margin-top:2px; }
 .wlc-pray-time2{
   font-size:24px;font-weight:700;color:var(--text2);
-  font-variant-numeric:tabular-nums;letter-spacing:.02em;flex-shrink:0;
+  font-variant-numeric:tabular-nums;flex-shrink:0;
 }
 .wlc-pray-card.next .wlc-pray-time2{ color:var(--g1); }
 .wlc-pray-card.past .wlc-pray-time2{ color:var(--text3); }
 .wlc-next-badge{
   font-size:9px;background:var(--g1);color:#fff;
   border-radius:100px;padding:2px 7px;font-weight:700;
-  letter-spacing:.06em;margin-left:.4rem;vertical-align:middle;
+  letter-spacing:.06em;margin-left:.5rem;vertical-align:middle;
 }
 .wlc-adhan-btn{
-  background:none;border:1.5px solid rgba(212,175,55,.4);
+  background:none;border:1.5px solid rgba(212,175,55,.35);
   border-radius:100px;color:var(--gold);
-  font-size:13px;padding:.28rem .65rem;cursor:pointer;
+  font-size:14px;padding:.3rem .6rem;cursor:pointer;
   transition:all .2s;flex-shrink:0;line-height:1;
   font-family:'Roboto',sans-serif;
 }
 .wlc-adhan-btn:hover{ background:var(--gold);color:#000;border-color:var(--gold); }
-.wlc-adhan-btn.playing{ background:var(--g1);border-color:var(--g1);color:var(--gold2);animation:wlcPulse 1.6s ease-in-out infinite; }
+.wlc-adhan-btn.playing{ background:var(--g1);border-color:var(--g1);color:var(--gold2);animation:wlcPulse 1.4s ease-in-out infinite; }
 .wlc-pray-card.next .wlc-adhan-btn{ border-color:var(--g1);color:var(--g1); }
-@keyframes wlcPulse{0%,100%{box-shadow:0 0 0 0 rgba(15,123,63,.4)}50%{box-shadow:0 0 0 6px rgba(15,123,63,0)}}
+.wlc-adhan-btn.disabled-adhan{ opacity:.3;cursor:default; }
+@keyframes wlcPulse{0%,100%{box-shadow:0 0 0 0 rgba(15,123,63,.4)}50%{box-shadow:0 0 0 7px rgba(15,123,63,0)}}
 
 
 #wird-progress-bar{
@@ -1748,41 +1743,101 @@ html { background: #0a0a0a; }
 <!-- SECTION UMMA -->
 <section id="sec-umma" class="sec active">
 
-  <!-- ══ WIDGET HEURES DE PRIÈRE ══ -->
+  <!-- ══ WIDGET HEURES DE PRIÈRE PROFESSIONNEL ══ -->
 
-  <!-- En-tête hero -->
-  <div style="background:linear-gradient(160deg,var(--g1) 0%,var(--g2) 55%,#084d24 100%);padding:1rem 1.2rem .85rem;position:relative;overflow:hidden;flex-shrink:0">
+  <!-- En-tête hero vert -->
+  <div style="background:linear-gradient(160deg,var(--g1) 0%,var(--g2) 55%,#084d24 100%);padding:1rem 1.2rem .9rem;position:relative;overflow:hidden;flex-shrink:0">
     <div style="position:absolute;inset:0;opacity:.05;background-image:radial-gradient(circle,var(--gold) 1px,transparent 1px);background-size:22px 22px;pointer-events:none"></div>
     <div style="display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1">
       <div style="display:flex;align-items:center;gap:.6rem">
-        <span style="font-size:26px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.3))">🕌</span>
+        <span style="font-size:26px">🕌</span>
         <div>
-          <div style="font-family:'Amiri',serif;font-size:20px;color:var(--gold2);line-height:1;letter-spacing:.02em">مَوَاقِيتُ الصَّلَاة</div>
+          <div style="font-family:'Amiri',serif;font-size:20px;color:var(--gold2);line-height:1">مَوَاقِيتُ الصَّلَاة</div>
           <div style="font-size:11px;color:rgba(251,248,232,.55);margin-top:3px" id="wlc-prayer-loc">📍 Détection GPS…</div>
         </div>
       </div>
-      <div style="text-align:right">
-        <div style="font-size:10px;color:rgba(212,175,55,.65);text-transform:uppercase;letter-spacing:.1em;margin-bottom:1px">Prochaine</div>
-        <div style="font-family:'Amiri',serif;font-size:15px;color:var(--gold2);line-height:1.1" id="wlc-next-name">—</div>
-        <div style="font-size:22px;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums;letter-spacing:.05em;line-height:1.1;text-shadow:0 0 18px rgba(212,175,55,.4)" id="wlc-next-cd">--:--:--</div>
+      <div style="display:flex;align-items:center;gap:.6rem">
+        <!-- Bouton paramètres adhan -->
+        <button onclick="wlcOpenSettings()" style="background:rgba(212,175,55,.18);border:1.5px solid rgba(212,175,55,.35);border-radius:100px;color:var(--gold2);font-size:13px;padding:.3rem .7rem;cursor:pointer;font-family:'Roboto',sans-serif;display:flex;align-items:center;gap:.3rem">⚙️</button>
+        <div style="text-align:right">
+          <div style="font-size:10px;color:rgba(212,175,55,.65);text-transform:uppercase;letter-spacing:.1em;margin-bottom:1px">Prochaine</div>
+          <div style="font-family:'Amiri',serif;font-size:15px;color:var(--gold2);line-height:1.1" id="wlc-next-name">—</div>
+          <div style="font-size:22px;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums;letter-spacing:.05em;line-height:1.1" id="wlc-next-cd">--:--:--</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Grille des 5 prières -->
-  <div id="wlc-prayer-list" style="background:var(--ivory);padding:.75rem 1rem;display:flex;flex-direction:column;gap:.45rem;flex-shrink:0">
-    <div style="color:var(--text3);font-size:13px;font-style:italic;text-align:center;padding:.5rem">Chargement des horaires…</div>
+  <!-- Liste des 5 prières -->
+  <div id="wlc-prayer-list" style="background:var(--ivory);padding:.65rem .9rem;display:flex;flex-direction:column;gap:.4rem;flex-shrink:0">
+    <div style="color:var(--text3);font-size:13px;text-align:center;padding:.5rem">Chargement…</div>
   </div>
 
-  <!-- Lecteur adhan -->
-  <div id="wlc-adhan-player" style="display:none;background:var(--g1);padding:.6rem 1rem;flex-direction:row;align-items:center;gap:.8rem;flex-shrink:0;border-top:1.5px solid rgba(212,175,55,.3)">
-    <div style="flex:1">
-      <div style="font-size:10px;color:rgba(212,175,55,.7);text-transform:uppercase;letter-spacing:.1em">Appel à la prière</div>
-      <div style="font-family:'Amiri',serif;font-size:16px;color:var(--gold2)" id="wlc-adhan-label">—</div>
+  <!-- Barre lecteur adhan (apparaît pendant la lecture) -->
+  <div id="wlc-adhan-player" style="display:none;background:var(--g1);padding:.55rem 1rem;flex-direction:row;align-items:center;gap:.8rem;flex-shrink:0;border-top:2px solid var(--gold)">
+    <div style="width:32px;height:32px;border-radius:50%;background:rgba(212,175,55,.25);border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;flex-shrink:0;animation:wlcPulse 1.4s ease-in-out infinite">🔊</div>
+    <div style="flex:1;min-width:0">
+      <div style="font-size:10px;color:rgba(212,175,55,.6);text-transform:uppercase;letter-spacing:.1em">Appel à la prière · <span id="wlc-adhan-muezzin" style="font-style:italic"></span></div>
+      <div style="font-family:'Amiri',serif;font-size:16px;color:var(--gold2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="wlc-adhan-label">—</div>
     </div>
-    <button id="wlc-adhan-stop" onclick="wlcStopAdhan()" style="background:rgba(192,57,43,.8);border:none;border-radius:100px;color:#fff;font-size:12px;font-weight:700;padding:.35rem .9rem;cursor:pointer;font-family:'Roboto',sans-serif;flex-shrink:0">✕ Arrêter</button>
+    <button onclick="wlcStopAdhan()" style="background:rgba(192,57,43,.85);border:none;border-radius:100px;color:#fff;font-size:12px;font-weight:700;padding:.3rem .85rem;cursor:pointer;font-family:'Roboto',sans-serif;flex-shrink:0">✕</button>
   </div>
-  <audio id="wlc-adhan-audio" preload="none"></audio>
+
+  <!-- Modal paramètres adhan -->
+  <div id="wlc-settings-overlay" style="display:none;position:fixed;inset:0;z-index:8500;background:rgba(0,0,0,.55);backdrop-filter:blur(4px)" onclick="if(event.target===this)wlcCloseSettings()">
+    <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--white);border-radius:22px 22px 0 0;max-height:88vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,0px)">
+      <!-- Handle -->
+      <div style="width:40px;height:4px;background:var(--gold3);border-radius:100px;margin:.75rem auto .2rem"></div>
+      <!-- Titre -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.2rem .5rem">
+        <div style="font-family:'Amiri',serif;font-size:20px;color:var(--g1)">⚙️ Paramètres Adhan</div>
+        <button onclick="wlcCloseSettings()" style="background:none;border:none;font-size:20px;color:var(--text3);cursor:pointer;padding:.2rem">✕</button>
+      </div>
+
+      <!-- Activation globale -->
+      <div style="margin:.4rem 1.2rem;background:var(--gold4);border:1.5px solid var(--gold3);border-radius:14px;padding:.8rem 1rem;display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:14px;font-weight:600;color:var(--g1)">🔔 Appel à la prière automatique</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:2px">Jouer l'adhan à l'heure de chaque prière</div>
+        </div>
+        <label style="position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0">
+          <input type="checkbox" id="wlc-toggle-auto" onchange="wlcSaveSettings()" style="opacity:0;width:0;height:0">
+          <span style="position:absolute;cursor:pointer;inset:0;background:#ccc;border-radius:100px;transition:.3s" id="wlc-toggle-auto-track"></span>
+          <span style="position:absolute;content:'';height:18px;width:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 1px 4px rgba(0,0,0,.2)" id="wlc-toggle-auto-thumb"></span>
+        </label>
+      </div>
+
+      <!-- Alerte avant -->
+      <div style="margin:.4rem 1.2rem;background:var(--white);border:1.5px solid var(--gold3);border-radius:14px;padding:.8rem 1rem;display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:14px;font-weight:600;color:var(--g1)">⏰ Alerte avant la prière</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:2px">Notification sonore avant l'heure</div>
+        </div>
+        <select id="wlc-alert-before" onchange="wlcSaveSettings()" style="background:var(--ivory);border:1.5px solid var(--gold3);border-radius:10px;padding:.3rem .6rem;font-size:13px;color:var(--text2);font-family:'Roboto',sans-serif">
+          <option value="0">Désactivée</option>
+          <option value="5">5 min avant</option>
+          <option value="10" selected>10 min avant</option>
+          <option value="15">15 min avant</option>
+          <option value="30">30 min avant</option>
+        </select>
+      </div>
+
+      <!-- Choix adhan par prière -->
+      <div style="padding:.4rem 1.2rem .2rem;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em">Adhan par prière</div>
+      <div id="wlc-per-prayer-settings" style="display:flex;flex-direction:column;gap:.35rem;padding:0 1.2rem .3rem"></div>
+
+      <!-- Info muezzins -->
+      <div style="margin:.5rem 1.2rem 1rem;background:linear-gradient(135deg,rgba(15,123,63,.06),rgba(212,175,55,.05));border:1.5px solid rgba(15,123,63,.15);border-radius:14px;padding:.75rem 1rem">
+        <div style="font-size:12px;font-weight:700;color:var(--g1);margin-bottom:.5rem">🎙️ Muezzins disponibles</div>
+        <div id="wlc-muezzin-info" style="display:flex;flex-direction:column;gap:.3rem"></div>
+      </div>
+
+      <!-- Bouton fermer -->
+      <div style="padding:0 1.2rem 1rem">
+        <button onclick="wlcCloseSettings()" style="width:100%;background:var(--g1);color:var(--gold2);border:none;border-radius:14px;padding:.7rem;font-size:15px;font-family:'Amiri',serif;cursor:pointer">حفظ الإعدادات · Sauvegarder</button>
+      </div>
+    </div>
+  </div>
 
   <!-- PROFIL ACTUEL -->
   <div id="ummaProfileBlock" style="padding:.8rem 1.2rem;background:var(--gold4);border-bottom:1px solid var(--gold3);display:flex;align-items:center;justify-content:space-between">
@@ -9559,106 +9614,336 @@ async function _prayerReverseGeocode(lat, lng) {
 }
 
 /* ════════════════════════════════════════
-   WIDGET PRIÈRE UMMA — Cartes lisibles + Adhan audio
+   WIDGET PRIÈRE UMMA — Système professionnel
+   Adhans CDN · Paramètres par prière · Auto-adhan
 ════════════════════════════════════════ */
 (function(){
-  var _wlcPrayData   = null;
-  var _wlcCdTimer    = null;
-  var _wlcNextPrayer = null;
-  var _wlcCurrentAdhanKey = null;
 
-  /* Adhan de Baba Diallo — muezzin de Médina Baye */
-  var ADHAN_URLS = {
-    Fajr:    'baba_diallo.mp3',
-    Dhuhr:   'baba_diallo.mp3',
-    Asr:     'baba_diallo.mp3',
-    Maghrib: 'baba_diallo.mp3',
-    Isha:    'baba_diallo.mp3'
-  };
-  var ADHAN_FALLBACK = 'baba_diallo.mp3';
-
-  var WLC_PRAYERS = [
-    {k:'Fajr',    ar:'الفجر',    fr:'Fajr — الفجر',    icon:'🌅'},
-    {k:'Dhuhr',   ar:'الظهر',    fr:'Dhuhr — الظهر',   icon:'🌤'},
-    {k:'Asr',     ar:'العصر',    fr:'Asr — العصر',     icon:'🌇'},
-    {k:'Maghrib', ar:'المغرب',   fr:'Maghrib — المغرب', icon:'🌆'},
-    {k:'Isha',    ar:'العشاء',   fr:'Isha — العشاء',    icon:'🌙'}
+  /* ─── Catalogue des muezzins (CDN fiables) ─── */
+  var MUEZZINS = [
+    {
+      id: 'baba',
+      name: 'Baba Diallo',
+      desc: 'Muezzin de Médina Baye',
+      url:  'baba_diallo.mp3',      /* fichier local — priorité si disponible */
+      fallback: 'https://cdn.islamic.network/mp3/adhan/ar.alafasy/adhan.mp3'
+    },
+    {
+      id: 'afasy',
+      name: 'Mishary Alafasy',
+      desc: 'Koweït — Adhan classique',
+      url:  'https://cdn.islamic.network/mp3/adhan/ar.alafasy/adhan.mp3',
+      fallback: 'https://islamicstudies.info/audio/adhan.mp3'
+    },
+    {
+      id: 'makkah',
+      name: 'Adhan Al-Haram',
+      desc: 'La Mecque',
+      url:  'https://cdn.islamic.network/mp3/adhan/ar.shaatree/adhan.mp3',
+      fallback: 'https://cdn.islamic.network/mp3/adhan/ar.alafasy/adhan.mp3'
+    },
+    {
+      id: 'madinah',
+      name: 'Adhan Madinah',
+      desc: 'Médine — Masjid Nabawi',
+      url:  'https://cdn.islamic.network/mp3/adhan/ar.abdurrahmaansudais/adhan.mp3',
+      fallback: 'https://cdn.islamic.network/mp3/adhan/ar.alafasy/adhan.mp3'
+    },
+    {
+      id: 'egypt',
+      name: 'Adhan Égypte',
+      desc: 'Style Hussam Radi',
+      url:  'https://cdn.islamic.network/mp3/adhan/ar.husary/adhan.mp3',
+      fallback: 'https://cdn.islamic.network/mp3/adhan/ar.alafasy/adhan.mp3'
+    }
   ];
 
-  /* ── Adhan ── */
-  window.wlcPlayAdhan = function(key, ar, btnEl) {
-    var player = document.getElementById('wlc-adhan-player');
-    var label  = document.getElementById('wlc-adhan-label');
+  var WLC_PRAYERS = [
+    {k:'Fajr',    ar:'\u0627\u0644\u0641\u062c\u0631',    fr:'Fajr',    icon:'\uD83C\uDF05'},
+    {k:'Dhuhr',   ar:'\u0627\u0644\u0638\u0647\u0631',   fr:'Dhuhr',   icon:'\uD83C\uDF24'},
+    {k:'Asr',     ar:'\u0627\u0644\u0639\u0635\u0631',    fr:'Asr',     icon:'\uD83C\uDF07'},
+    {k:'Maghrib', ar:'\u0627\u0644\u0645\u063a\u0631\u0628', fr:'Maghrib', icon:'\uD83C\uDF06'},
+    {k:'Isha',    ar:'\u0627\u0644\u0639\u0634\u0627\u0621',   fr:'Isha',    icon:'\uD83C\uDF19'}
+  ];
 
-    /* Si déjà en lecture → arrêter */
-    if(_wlcCurrentAdhanKey === key) {
-      wlcStopAdhan(); return;
+  /* ─── État ─── */
+  var _wlcPrayData        = null;
+  var _wlcCdTimer         = null;
+  var _wlcNextPrayer      = null;
+  var _wlcCurrentKey      = null;
+  var _wlcAdhanFired      = false;
+  var _wlcAlertTimers     = {};
+
+  /* ─── Paramètres (localStorage) ─── */
+  var DEFAULT_SETTINGS = {
+    autoAdhan:   true,
+    alertBefore: 10,
+    perPrayer: {
+      Fajr:    {muezzin:'baba', enabled:true},
+      Dhuhr:   {muezzin:'baba', enabled:true},
+      Asr:     {muezzin:'baba', enabled:true},
+      Maghrib: {muezzin:'baba', enabled:true},
+      Isha:    {muezzin:'baba', enabled:true}
     }
+  };
 
-    /* Arrêter tout audio en cours */
-    wlcStopAdhan();
+  function _loadSettings(){
+    try {
+      var s = JSON.parse(localStorage.getItem('wlc_adhan_settings') || 'null');
+      if(!s) return JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+      /* Fusionner pour éviter les clés manquantes */
+      s.perPrayer = s.perPrayer || {};
+      WLC_PRAYERS.forEach(function(p){
+        s.perPrayer[p.k] = s.perPrayer[p.k] || {muezzin:'baba', enabled:true};
+      });
+      return s;
+    } catch(e){ return JSON.parse(JSON.stringify(DEFAULT_SETTINGS)); }
+  }
 
-    /* Créer un NOUVEL élément audio à chaque fois — contourne les restrictions autoplay */
-    var oldAudio = document.getElementById('wlc-adhan-audio');
-    if(oldAudio) oldAudio.parentNode.removeChild(oldAudio);
+  function _saveSettings(s){
+    try { localStorage.setItem('wlc_adhan_settings', JSON.stringify(s)); } catch(e){}
+  }
 
-    var audio = document.createElement('audio');
-    audio.id = 'wlc-adhan-audio';
-    audio.preload = 'auto';
-    audio.src = ADHAN_URLS[key] || ADHAN_FALLBACK;
-    document.body.appendChild(audio);
+  var _cfg = _loadSettings();
 
-    _wlcCurrentAdhanKey = key;
+  /* ─── Toggle switch visuel ─── */
+  function _applyToggleStyle(chk, track, thumb){
+    if(chk.checked){
+      track.style.background = 'var(--g1)';
+      thumb.style.transform  = 'translateX(20px)';
+    } else {
+      track.style.background = '#ccc';
+      thumb.style.transform  = 'translateX(0)';
+    }
+  }
 
-    /* UI immédiat */
-    document.querySelectorAll('.wlc-adhan-btn').forEach(function(b){ b.classList.remove('playing'); b.textContent='🔊'; });
-    if(btnEl){ btnEl.classList.add('playing'); btnEl.textContent='⏸'; }
-    if(label) label.innerHTML = ar + ' &nbsp;&middot;&nbsp; <span style="font-size:11px;opacity:.75;font-family:Roboto,sans-serif">Baba Diallo — مؤذن المدينة بايّ</span>';
-    if(player){ player.style.display='flex'; }
+  /* ─── Ouvrir paramètres ─── */
+  window.wlcOpenSettings = function(){
+    var ov = document.getElementById('wlc-settings-overlay');
+    if(!ov) return;
+    _cfg = _loadSettings();
 
-    audio.onended = function(){ wlcStopAdhan(); };
-    audio.onerror = function(){ showToast('⚠️ Fichier audio introuvable — vérifiez baba_diallo.mp3'); wlcStopAdhan(); };
+    /* Toggle global */
+    var chk   = document.getElementById('wlc-toggle-auto');
+    var track = document.getElementById('wlc-toggle-auto-track');
+    var thumb = document.getElementById('wlc-toggle-auto-thumb');
+    if(chk){ chk.checked = _cfg.autoAdhan; _applyToggleStyle(chk, track, thumb); }
+    chk.onchange = function(){
+      _applyToggleStyle(chk, track, thumb);
+      wlcSaveSettings();
+    };
 
-    /* play() directement dans le gestionnaire de clic — autorisé par le navigateur */
-    var playPromise = audio.play();
-    if(playPromise !== undefined){
-      playPromise.catch(function(err){
-        console.warn('[Adhan play]', err.name, err.message);
-        /* Dernier recours : déclencher via interaction utilisateur simulée */
-        if(err.name === 'NotAllowedError'){
-          showToast('⚠️ Autorisation audio refusée — activez le son dans votre navigateur');
-        } else if(err.name === 'NotSupportedError'){
-          showToast('⚠️ Format audio non supporté sur cet appareil');
-        } else {
-          showToast('⚠️ Erreur audio : ' + err.message);
-        }
-        wlcStopAdhan();
+    /* Alerte avant */
+    var sel = document.getElementById('wlc-alert-before');
+    if(sel) sel.value = String(_cfg.alertBefore);
+
+    /* Par prière */
+    var container = document.getElementById('wlc-per-prayer-settings');
+    if(container){
+      container.innerHTML = '';
+      WLC_PRAYERS.forEach(function(p){
+        var pp = _cfg.perPrayer[p.k];
+        var row = document.createElement('div');
+        row.style.cssText = 'background:var(--white);border:1.5px solid var(--gold3);border-radius:14px;padding:.65rem .9rem;display:flex;align-items:center;gap:.75rem';
+
+        /* Icône + nom */
+        var iconSpan = document.createElement('span');
+        iconSpan.style.cssText = 'font-size:20px;width:28px;text-align:center;flex-shrink:0';
+        iconSpan.textContent = p.icon;
+
+        var nameDiv = document.createElement('div');
+        nameDiv.style.cssText = 'flex:1;min-width:0';
+        var nameAr = document.createElement('div');
+        nameAr.style.cssText = 'font-family:Amiri,serif;font-size:15px;color:var(--g1)';
+        nameAr.textContent = p.ar;
+        var nameFr = document.createElement('div');
+        nameFr.style.cssText = 'font-size:11px;color:var(--text3)';
+        nameFr.textContent = p.fr;
+        nameDiv.appendChild(nameAr);
+        nameDiv.appendChild(nameFr);
+
+        /* Sélecteur muezzin */
+        var selM = document.createElement('select');
+        selM.style.cssText = 'background:var(--ivory);border:1.5px solid var(--gold3);border-radius:10px;padding:.25rem .5rem;font-size:12px;color:var(--text2);font-family:Roboto,sans-serif;max-width:130px';
+        MUEZZINS.forEach(function(m){
+          var opt = document.createElement('option');
+          opt.value = m.id;
+          opt.textContent = m.name;
+          if(m.id === pp.muezzin) opt.selected = true;
+          selM.appendChild(opt);
+        });
+        selM.dataset.prayer = p.k;
+        selM.onchange = function(){ wlcSaveSettings(); };
+
+        /* Toggle activé/désactivé par prière */
+        var lbl = document.createElement('label');
+        lbl.style.cssText = 'position:relative;display:inline-block;width:38px;height:20px;flex-shrink:0';
+        var chkP = document.createElement('input');
+        chkP.type = 'checkbox';
+        chkP.style.cssText = 'opacity:0;width:0;height:0';
+        chkP.checked = pp.enabled;
+        chkP.dataset.prayer = p.k;
+        var trackP = document.createElement('span');
+        trackP.style.cssText = 'position:absolute;cursor:pointer;inset:0;border-radius:100px;transition:.3s';
+        var thumbP = document.createElement('span');
+        thumbP.style.cssText = 'position:absolute;height:14px;width:14px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 1px 3px rgba(0,0,0,.2)';
+        _applyToggleStyle(chkP, trackP, thumbP);
+        chkP.onchange = function(){
+          _applyToggleStyle(chkP, trackP, thumbP);
+          selM.disabled = !chkP.checked;
+          selM.style.opacity = chkP.checked ? '1' : '.35';
+          wlcSaveSettings();
+        };
+        if(!pp.enabled){ selM.disabled = true; selM.style.opacity = '.35'; }
+        lbl.appendChild(chkP);
+        lbl.appendChild(trackP);
+        lbl.appendChild(thumbP);
+
+        row.appendChild(iconSpan);
+        row.appendChild(nameDiv);
+        row.appendChild(selM);
+        row.appendChild(lbl);
+        container.appendChild(row);
       });
     }
-  };
 
-  window.wlcStopAdhan = function() {
-    var audio  = document.getElementById('wlc-adhan-audio');
-    var player = document.getElementById('wlc-adhan-player');
-    if(audio){
-      try { audio.pause(); } catch(e){}
-      audio.src = '';
-      try { audio.parentNode.removeChild(audio); } catch(e){}
+    /* Info muezzins */
+    var infoDiv = document.getElementById('wlc-muezzin-info');
+    if(infoDiv){
+      infoDiv.innerHTML = '';
+      MUEZZINS.forEach(function(m){
+        var d = document.createElement('div');
+        d.style.cssText = 'display:flex;align-items:center;justify-content:space-between;font-size:12px;padding:.2rem 0;border-bottom:1px solid var(--gold3)';
+        d.innerHTML = '<div><span style="font-weight:600;color:var(--g1)">' + m.name + '</span><span style="color:var(--text3);margin-left:.4rem">' + m.desc + '</span></div>'
+          + '<button onclick="wlcPreview(\'' + m.id + '\')" style="background:none;border:1.5px solid var(--gold3);border-radius:100px;padding:.15rem .55rem;font-size:11px;color:var(--g1);cursor:pointer">\uD83D\uDD0A</button>';
+        infoDiv.appendChild(d);
+      });
     }
-    if(player){ player.style.display='none'; }
-    document.querySelectorAll('.wlc-adhan-btn').forEach(function(b){ b.classList.remove('playing'); b.textContent='🔊'; });
-    _wlcCurrentAdhanKey = null;
+
+    ov.style.display = 'block';
+    requestAnimationFrame(function(){ ov.style.opacity = '1'; });
   };
 
-  /* ── Fetch API Aladhan ── */
-  function _wlcFetch(lat, lng, isFallback) {
+  window.wlcCloseSettings = function(){
+    var ov = document.getElementById('wlc-settings-overlay');
+    if(ov) ov.style.display = 'none';
+  };
+
+  /* ─── Sauvegarder depuis le modal ─── */
+  window.wlcSaveSettings = function(){
+    _cfg.autoAdhan   = document.getElementById('wlc-toggle-auto').checked;
+    _cfg.alertBefore = parseInt(document.getElementById('wlc-alert-before').value) || 0;
+    document.querySelectorAll('#wlc-per-prayer-settings select[data-prayer]').forEach(function(s){
+      _cfg.perPrayer[s.dataset.prayer].muezzin = s.value;
+    });
+    document.querySelectorAll('#wlc-per-prayer-settings input[type=checkbox][data-prayer]').forEach(function(c){
+      _cfg.perPrayer[c.dataset.prayer].enabled = c.checked;
+    });
+    _saveSettings(_cfg);
+    _rebuildAlerts();
+    showToast('\u2705 Param\u00e8tres Adhan sauvegard\u00e9s');
+  };
+
+  /* ─── Preview muezzin ─── */
+  window.wlcPreview = function(muezzinId){
+    var m = MUEZZINS.find(function(x){ return x.id === muezzinId; });
+    if(!m) return;
+    wlcPlayAdhan('preview', m.ar || 'Pr\u00e9visualisation', null, m);
+  };
+
+  /* ─── Audio : lecture ─── */
+  window.wlcPlayAdhan = function(key, ar, btnEl, forceMuezzin){
+    /* Si déjà en lecture → arrêter */
+    if(_wlcCurrentKey === key){ wlcStopAdhan(); return; }
+    wlcStopAdhan();
+
+    var pp      = _cfg.perPrayer[key];
+    var muezzin = forceMuezzin || MUEZZINS.find(function(m){ return m.id === (pp ? pp.muezzin : 'baba'); }) || MUEZZINS[0];
+
+    /* Créer élément audio frais */
+    var audio = document.createElement('audio');
+    audio.id  = 'wlc-adhan-audio';
+    audio.src = muezzin.url;
+    document.body.appendChild(audio);
+
+    _wlcCurrentKey = key;
+
+    /* UI */
+    document.querySelectorAll('.wlc-adhan-btn').forEach(function(b){ b.classList.remove('playing'); b.innerHTML = '\uD83D\uDD0A'; });
+    if(btnEl){ btnEl.classList.add('playing'); btnEl.innerHTML = '\u23F8'; }
+
+    var label   = document.getElementById('wlc-adhan-label');
+    var muzzEl  = document.getElementById('wlc-adhan-muezzin');
+    var player  = document.getElementById('wlc-adhan-player');
+    if(label)  label.textContent  = ar;
+    if(muzzEl) muzzEl.textContent = muezzin.name;
+    if(player) player.style.display = 'flex';
+
+    audio.onerror = function(){
+      /* Fallback sur autre URL */
+      if(audio.src !== muezzin.fallback && muezzin.fallback){
+        audio.src = muezzin.fallback;
+        audio.play().catch(function(){ wlcStopAdhan(); showToast('\u26A0\uFE0F Audio indisponible'); });
+      } else {
+        wlcStopAdhan();
+        showToast('\u26A0\uFE0F Audio indisponible sur cet appareil');
+      }
+    };
+    audio.onended = function(){ wlcStopAdhan(); };
+
+    var p = audio.play();
+    if(p) p.catch(function(err){
+      if(err.name === 'NotAllowedError'){
+        /* Bannière tap-to-play */
+        _showAdhanBanner(key, ar);
+        wlcStopAdhan();
+      } else {
+        /* Essayer le fallback */
+        audio.src = muezzin.fallback || '';
+        if(audio.src) audio.play().catch(function(){ wlcStopAdhan(); });
+        else wlcStopAdhan();
+      }
+    });
+  };
+
+  /* ─── Audio : arrêt ─── */
+  window.wlcStopAdhan = function(){
+    var old = document.getElementById('wlc-adhan-audio');
+    if(old){ try{old.pause();}catch(e){} old.src=''; try{old.parentNode.removeChild(old);}catch(e){} }
+    var player = document.getElementById('wlc-adhan-player');
+    if(player) player.style.display = 'none';
+    document.querySelectorAll('.wlc-adhan-btn').forEach(function(b){ b.classList.remove('playing'); b.innerHTML = '\uD83D\uDD0A'; });
+    _wlcCurrentKey = null;
+  };
+
+  /* ─── Bannière tap-to-play (autoplay bloqué) ─── */
+  function _showAdhanBanner(key, ar){
+    var existing = document.getElementById('wlc-adhan-auto-banner');
+    if(existing) existing.parentNode.removeChild(existing);
+    var banner = document.createElement('div');
+    banner.id = 'wlc-adhan-auto-banner';
+    banner.style.cssText = 'position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;z-index:9500;'
+      + 'background:linear-gradient(135deg,var(--g1),var(--g2));color:var(--gold2);'
+      + 'font-family:Amiri,serif;font-size:16px;text-align:center;padding:.8rem 1.2rem;'
+      + 'border-bottom:2px solid var(--gold);cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.3)';
+    banner.innerHTML = '\uD83D\uDD54 ' + ar + ' &nbsp;&mdash;&nbsp; Appuyez pour entendre l\'Adhan';
+    banner.onclick = function(){
+      if(banner.parentNode) banner.parentNode.removeChild(banner);
+      wlcPlayAdhan(key, ar, null);
+    };
+    document.body.appendChild(banner);
+    setTimeout(function(){ if(banner.parentNode) banner.parentNode.removeChild(banner); }, 40000);
+  }
+
+  /* ─── Fetch API Aladhan ─── */
+  function _wlcFetch(lat, lng, isFallback){
     var today = new Date();
     var dd = String(today.getDate()).padStart(2,'0');
     var mm = String(today.getMonth()+1).padStart(2,'0');
     var yyyy = today.getFullYear();
     var url = 'https://api.aladhan.com/v1/timings/'+dd+'-'+mm+'-'+yyyy+'?latitude='+lat+'&longitude='+lng+'&method=3';
     fetch(url).then(function(r){return r.json();}).then(function(json){
-      if(json.code!==200) throw new Error('API error');
+      if(json.code!==200) throw new Error();
       _wlcPrayData = json.data;
       _wlcRender(lat, lng, isFallback);
     }).catch(function(){
@@ -9667,32 +9952,29 @@ async function _prayerReverseGeocode(lat, lng) {
     });
   }
 
-  /* ── Rendu en cartes lisibles ── */
-  function _wlcRender(lat, lng, isFallback) {
+  /* ─── Rendu des cartes ─── */
+  function _wlcRender(lat, lng, isFallback){
     if(!_wlcPrayData) return;
     var timings = _wlcPrayData.timings;
     var locEl   = document.getElementById('wlc-prayer-loc');
-
     if(locEl){
       if(isFallback){
-        locEl.textContent = '📍 Médina Baye, Kaolack';
+        locEl.textContent = '\uD83D\uDCCD M\u00e9dina Baye, Kaolack';
       } else {
-        locEl.textContent = '📍 Position GPS…';
+        locEl.textContent = '\uD83D\uDCCD Position GPS\u2026';
         fetch('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lng+'&format=json&accept-language=fr')
           .then(function(r){return r.json();})
           .then(function(d){
-            var city = (d.address||{}).city || (d.address||{}).town || (d.address||{}).village || '';
-            var country = (d.address||{}).country || '';
-            if(locEl) locEl.textContent = '📍 '+(city ? city+(country?', '+country:'') : lat.toFixed(2)+', '+lng.toFixed(2));
-          }).catch(function(){ if(locEl) locEl.textContent = '📍 GPS détecté'; });
+            var city = (d.address||{}).city||(d.address||{}).town||(d.address||{}).village||'';
+            var ctry = (d.address||{}).country||'';
+            if(locEl) locEl.textContent = '\uD83D\uDCCD '+(city?(city+(ctry?', '+ctry:'')):(lat.toFixed(2)+', '+lng.toFixed(2)));
+          }).catch(function(){ if(locEl) locEl.textContent = '\uD83D\uDCCD GPS d\u00e9tect\u00e9'; });
       }
     }
 
-    var now     = new Date();
-    var nowMins = now.getHours()*60 + now.getMinutes();
-    var nextMins = Infinity, nextPrayer = null;
-    var firstNext = true; /* flag pour ne marquer qu'une seule prière comme "next" */
-
+    var now      = new Date();
+    var nowMins  = now.getHours()*60+now.getMinutes();
+    var nextMins = Infinity, nextPrayer = null, firstNext = true;
     var list = document.getElementById('wlc-prayer-list');
     if(!list) return;
     list.innerHTML = '';
@@ -9705,120 +9987,97 @@ async function _prayerReverseGeocode(lat, lng) {
       var isPast = total < nowMins;
       var isNext = false;
       if(!isPast && total < nextMins && firstNext){
-        nextMins = total;
-        nextPrayer = {key:p.k, ar:p.ar, h:h, m:m, total:total};
-        isNext = true;
-        firstNext = false;
+        nextMins = total; nextPrayer = {key:p.k, ar:p.ar, h:h, m:m, total:total}; isNext=true; firstNext=false;
       }
 
-      var timeStr = String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
-      var card = document.createElement('div');
-      card.className = 'wlc-pray-card' + (isNext?' next':isPast?' past':'');
+      var pp       = _cfg.perPrayer[p.k] || {enabled:true};
+      var timeStr  = String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+      var card     = document.createElement('div');
+      card.className = 'wlc-pray-card'+(isNext?' next':isPast?' past':'');
 
-      /* Construire la carte sans onclick inline pour éviter les conflits de quotes */
-      var cardInner = document.createElement('span');
-      cardInner.className = 'wlc-pray-icon2';
-      cardInner.textContent = p.icon;
-      card.appendChild(cardInner);
+      /* Icône */
+      var iconSpan = document.createElement('span');
+      iconSpan.className = 'wlc-pray-icon2';
+      iconSpan.textContent = p.icon;
 
-      var cardBody = document.createElement('div');
-      cardBody.className = 'wlc-pray-body';
+      /* Nom */
+      var body = document.createElement('div');
+      body.className = 'wlc-pray-body';
       var nameDiv = document.createElement('div');
       nameDiv.className = 'wlc-pray-name2';
       nameDiv.textContent = p.ar;
-      if(isNext){
-        var badge = document.createElement('span');
-        badge.className = 'wlc-next-badge';
-        badge.textContent = 'NEXT';
-        nameDiv.appendChild(badge);
-      }
+      if(isNext){ var badge=document.createElement('span'); badge.className='wlc-next-badge'; badge.textContent='NEXT'; nameDiv.appendChild(badge); }
       var frDiv = document.createElement('div');
       frDiv.className = 'wlc-pray-fr';
-      frDiv.textContent = p.fr.split(' — ')[0];
-      cardBody.appendChild(nameDiv);
-      cardBody.appendChild(frDiv);
-      card.appendChild(cardBody);
+      frDiv.textContent = p.fr;
+      body.appendChild(nameDiv); body.appendChild(frDiv);
 
-      var timeSpan = document.createElement('span');
-      timeSpan.className = 'wlc-pray-time2';
-      timeSpan.textContent = timeStr;
-      card.appendChild(timeSpan);
+      /* Heure */
+      var tSpan = document.createElement('span');
+      tSpan.className = 'wlc-pray-time2';
+      tSpan.textContent = timeStr;
 
-      var adhanBtn = document.createElement('button');
-      adhanBtn.className = 'wlc-adhan-btn';
-      adhanBtn.title = 'Écouter l\'adhan';
-      adhanBtn.textContent = '🔊';
-      (function(pKey, pAr, btn){ 
-        btn.addEventListener('click', function(){ wlcPlayAdhan(pKey, pAr, btn); });
-      })(p.k, p.ar, adhanBtn);
-      card.appendChild(adhanBtn);
+      /* Bouton adhan */
+      var btn = document.createElement('button');
+      btn.className = 'wlc-adhan-btn' + (pp.enabled ? '' : ' disabled-adhan');
+      btn.title = pp.enabled ? 'Écouter l\'adhan' : 'Adhan désactivé pour cette prière';
+      btn.innerHTML = pp.enabled ? '\uD83D\uDD0A' : '\uD83D\uDD07';
+      if(pp.enabled){
+        (function(pk, par, b){ btn.addEventListener('click', function(){ wlcPlayAdhan(pk, par, b); }); })(p.k, p.ar, btn);
+      } else {
+        btn.style.opacity = '.35';
+        btn.style.cursor  = 'default';
+      }
 
+      card.appendChild(iconSpan); card.appendChild(body); card.appendChild(tSpan); card.appendChild(btn);
       list.appendChild(card);
     });
 
     if(!nextPrayer){
       var fp = (timings['Fajr']||'05:00').split(':');
-      nextPrayer = {key:'Fajr',ar:'الفجر',h:parseInt(fp[0]),m:parseInt(fp[1]),tomorrow:true};
+      nextPrayer = {key:'Fajr', ar:'\u0627\u0644\u0641\u062c\u0631', h:parseInt(fp[0]), m:parseInt(fp[1]), tomorrow:true};
     }
     _wlcNextPrayer = nextPrayer;
-
     var nm = document.getElementById('wlc-next-name');
     if(nm) nm.textContent = nextPrayer.ar;
 
     _wlcStartCountdown(nextPrayer);
+    _rebuildAlerts();
   }
 
-  /* ── Compte à rebours + Adhan automatique ── */
-  var _wlcAdhanFired = false;
-
-  function _wlcAutoAdhan(prayer) {
-    /* Crée un audio frais et le joue — appel interne (pas de clic utilisateur)     */
-    /* Sur mobile, le navigateur autorise l'autoplay si l'utilisateur a déjà        */
-    /* interagi avec la page (appui sur le bouton adhan manuel au moins une fois).  */
-    var old = document.getElementById('wlc-adhan-audio');
-    if(old){ try{old.pause();}catch(e){} old.src=''; try{old.parentNode.removeChild(old);}catch(e){} }
-
-    var audio = document.createElement('audio');
-    audio.id  = 'wlc-adhan-audio';
-    audio.src = ADHAN_URLS[prayer.key] || ADHAN_FALLBACK;
-    document.body.appendChild(audio);
-
-    var player = document.getElementById('wlc-adhan-player');
-    var label  = document.getElementById('wlc-adhan-label');
-    _wlcCurrentAdhanKey = prayer.key;
-
-    if(label) label.textContent = prayer.ar + ' \u2014 Baba Diallo';
-    if(player) player.style.display = 'flex';
-
-    audio.onended = function(){ wlcStopAdhan(); };
-
-    var p = audio.play();
-    if(p) p.catch(function(err){
-      /* Navigateur bloque l'autoplay sans geste : on notifie et on attend le clic  */
-      wlcStopAdhan();
-      /* Afficher une bannière persistante pour que l'utilisateur lance manuellement */
-      var banner = document.getElementById('wlc-adhan-auto-banner');
-      if(!banner){
-        banner = document.createElement('div');
-        banner.id = 'wlc-adhan-auto-banner';
-        banner.style.cssText = 'position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;z-index:9000;background:var(--g1);color:var(--gold2);font-family:Amiri,serif;font-size:15px;text-align:center;padding:.7rem 1rem;border-bottom:2px solid var(--gold);cursor:pointer;';
-        banner.innerHTML = '\ud83d\udd54 ' + prayer.ar + ' \u2014 Appuyez ici pour entendre l\'Adhan';
-        banner.onclick = function(){
-          banner.parentNode.removeChild(banner);
-          wlcPlayAdhan(prayer.key, prayer.ar, null);
-        };
-        document.body.appendChild(banner);
-        setTimeout(function(){ if(banner.parentNode) banner.parentNode.removeChild(banner); }, 30000);
+  /* ─── Alertes avant la prière ─── */
+  function _rebuildAlerts(){
+    /* Annuler les timers existants */
+    Object.keys(_wlcAlertTimers).forEach(function(k){ clearTimeout(_wlcAlertTimers[k]); });
+    _wlcAlertTimers = {};
+    if(!_wlcPrayData || !_cfg.alertBefore) return;
+    var timings = _wlcPrayData.timings;
+    var now     = new Date();
+    var secs    = _cfg.alertBefore * 60;
+    WLC_PRAYERS.forEach(function(p){
+      var raw = timings[p.k]; if(!raw) return;
+      var parts = raw.split(':');
+      var h = parseInt(parts[0]), m = parseInt(parts[1]);
+      var tgt = new Date(); tgt.setHours(h, m, 0, 0);
+      var alertTime = new Date(tgt.getTime() - secs*1000);
+      var diff = alertTime - now;
+      if(diff > 0 && diff < 86400000){
+        _wlcAlertTimers[p.k] = setTimeout(function(){
+          showToast('\uD83D\uDD54 ' + p.ar + ' dans ' + _cfg.alertBefore + ' minute' + (_cfg.alertBefore>1?'s':''), 8000);
+        }, diff);
       }
     });
   }
 
-  function _wlcStartCountdown(prayer) {
+  /* ─── Compte à rebours + déclenchement auto adhan ─── */
+  var _wlcAdhanFired = false;
+
+  function _wlcStartCountdown(prayer){
     clearInterval(_wlcCdTimer);
     _wlcAdhanFired = false;
     _wlcCdTimer = setInterval(function(){
-      var now = new Date();
-      var tgt = new Date();
+      var now  = new Date();
+      var tgt  = new Date();
       tgt.setHours(prayer.h, prayer.m, 0, 0);
       if(prayer.tomorrow || tgt <= now) tgt.setDate(tgt.getDate()+1);
       var diff = Math.max(0, Math.floor((tgt-now)/1000));
@@ -9828,26 +10087,24 @@ async function _prayerReverseGeocode(lat, lng) {
       var el   = document.getElementById('wlc-next-cd');
       if(el){
         el.textContent = String(hh).padStart(2,'0')+':'+String(mm2).padStart(2,'0')+':'+String(ss).padStart(2,'0');
-        /* Pulse doré dans la dernière minute */
-        el.style.animation = (diff <= 60 && diff > 0) ? 'wlcPulse 1s ease-in-out infinite' : '';
+        el.style.animation = (diff<=60&&diff>0) ? 'wlcPulse 1s ease-in-out infinite' : '';
       }
-      /* Alerte 1 minute avant */
-      if(diff === 60){
-        showToast('\ud83d\udd54 ' + prayer.ar + ' dans 1 minute', 7000);
-      }
-      /* Heure pile : lancer l'adhan */
       if(diff === 0 && !_wlcAdhanFired){
         _wlcAdhanFired = true;
         clearInterval(_wlcCdTimer);
-        if(el){ el.textContent = '00:00:00'; el.style.animation = ''; }
-        _wlcAutoAdhan(prayer);
-        setTimeout(function(){ _wlcAdhanFired = false; _wlcInit(); }, 70000);
+        if(el){ el.textContent='00:00:00'; el.style.animation=''; }
+        /* Lancer l'adhan si activé pour cette prière */
+        var pp = _cfg.perPrayer[prayer.key];
+        if(_cfg.autoAdhan && pp && pp.enabled){
+          wlcPlayAdhan(prayer.key, prayer.ar, null);
+        }
+        setTimeout(function(){ _wlcAdhanFired=false; _wlcInit(); }, 70000);
       }
     }, 1000);
   }
 
-  /* ── Init GPS ── */
-  function _wlcInit() {
+  /* ─── Init GPS ─── */
+  function _wlcInit(){
     if(!navigator.geolocation){ _wlcFetch(14.1520, -16.0765, true); return; }
     navigator.geolocation.getCurrentPosition(
       function(pos){ _wlcFetch(pos.coords.latitude, pos.coords.longitude, false); },
@@ -9856,7 +10113,7 @@ async function _prayerReverseGeocode(lat, lng) {
     );
   }
 
-  if(document.readyState === 'loading'){
+  if(document.readyState==='loading'){
     document.addEventListener('DOMContentLoaded', _wlcInit);
   } else {
     _wlcInit();
