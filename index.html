@@ -3426,157 +3426,149 @@ html { background: #0a0a0a; }
 
 <script>
 (function(){
-  /* ── Chaînes : stream MyTuner API (id) + fallbacks ── */
+  /* ═══════════════════════════════════════════
+     RADIO PLAYER — Radio Browser API (CORS OK)
+     API: https://de1.api.radio-browser.info
+     Retourne url_resolved = vrai stream MP3
+  ═══════════════════════════════════════════ */
+
   var CH = [
     {
       name: 'Radio Al-Faydha 90.1 FM',
-      id: '439363',   // MyTuner ID
-      streams: [
-        'https://stream.zeno.fm/OUE5xD8nztzuv',
-        'https://stream.zeno.fm/mhpQee8nztzuv',
-        'https://c7.radioboss.fm:8231/stream'
-      ],
-      ext: 'https://mytuner-radio.com/fr/radio/radio-alfayda-439363/'
+      search: 'Radio Alfayda',
+      country: 'SN',
+      ext: 'https://www.radio-senegal.com/radio-alfayda'
     },
     {
       name: 'Radio Faydatidianiya',
-      id: null,
-      streams: ['https://stream.zeno.fm/faydatidianiya'],
+      search: 'Faydatidianiya',
+      country: 'SN',
       ext: 'https://zeno.fm/radio/faydatidianiya/'
     },
     {
       name: 'Xassida Online',
-      id: null,
-      streams: ['https://stream.zeno.fm/xassida-online'],
+      search: 'Xassida',
+      country: 'SN',
       ext: 'https://zeno.fm/radio/xassida-online/'
     }
   ];
 
-  var audio = document.getElementById('rAudio');
-  var playBtn = document.getElementById('rPlayBtn');
+  /* Radio Browser API servers (round-robin) */
+  var RB_SERVERS = [
+    'https://de1.api.radio-browser.info',
+    'https://nl1.api.radio-browser.info',
+    'https://at1.api.radio-browser.info'
+  ];
+
+  var audio  = document.getElementById('rAudio');
+  var playBtn= document.getElementById('rPlayBtn');
   var status = document.getElementById('rStatus');
-  var disc = document.getElementById('rDisc');
+  var disc   = document.getElementById('rDisc');
   var needle = document.getElementById('rNeedle');
-  var volSlider = document.getElementById('rVol');
-  var volIcon = document.getElementById('rVolIco');
+  var vol    = document.getElementById('rVol');
+  var volIco = document.getElementById('rVolIco');
   var isPlaying = false;
   var curCh = 0;
   var streamTimer = null;
-  var streamIdx = 0;
   var bars = [];
 
   /* Visualizer */
   var viz = document.getElementById('rViz');
-  for(var i=0;i<20;i++){
-    var b=document.createElement('div');
-    b.className='rv-bar';
-    var h=Math.round(7+Math.random()*20);
-    var d=(0.4+Math.random()*0.65).toFixed(2);
+  if(viz){ for(var i=0;i<20;i++){
+    var b=document.createElement('div'); b.className='rv-bar';
+    var h=Math.round(7+Math.random()*20), d=(0.4+Math.random()*.65).toFixed(2);
     b.style.cssText='--h:'+h+'px;--d:'+d+'s;animation-delay:'+(i*.05).toFixed(2)+'s';
     viz.appendChild(b); bars.push(b);
+  }}
+
+  function setViz(on){ bars.forEach(function(b){ on?b.classList.add('on'):(b.classList.remove('on'),b.style.height='3px'); }); }
+  function setSt(msg,cls){ status.className='rc-status'+(cls?' '+cls:''); status.textContent=msg; }
+  function setUI(on){
+    isPlaying=on; playBtn.textContent=on?'⏸':'▶'; playBtn.classList.remove('loading');
+    on?(disc.classList.add('spin'),needle.classList.add('on'),setViz(true))
+      :(disc.classList.remove('spin'),needle.classList.remove('on'),setViz(false));
   }
-
-  function setViz(on){ bars.forEach(function(b){ if(on) b.classList.add('on'); else{ b.classList.remove('on'); b.style.height='3px'; }}); }
-  function setStatus(msg,cls){ status.className='rc-status'+(cls?' '+cls:''); status.textContent=msg; }
-
-  function setUI(playing){
-    isPlaying=playing;
-    playBtn.textContent=playing?'⏸':'▶';
-    playBtn.classList.remove('loading');
-    if(playing){ disc.classList.add('spin'); needle.classList.add('on'); setViz(true); }
-    else { disc.classList.remove('spin'); needle.classList.remove('on'); setViz(false); }
-  }
-
-  function removeExtLink(){ var el=document.getElementById('rExtLink'); if(el) el.remove(); }
-
-  function showExtLink(){
+  function rmExt(){ var e=document.getElementById('rExtLink'); if(e) e.remove(); }
+  function showExt(){
     if(document.getElementById('rExtLink')) return;
-    var ch=CH[curCh];
-    var box=document.createElement('div');
+    var ch=CH[curCh], box=document.createElement('div');
     box.id='rExtLink'; box.className='rc-ext';
-    box.innerHTML='<a href="'+ch.ext+'" target="_blank">📻 Écouter Radio Al-Faydha</a>'
-      +'<div class="rc-ext-sub">Ouvre dans le navigateur · En direct</div>';
-    var rc=document.querySelector('.rc');
-    var st=document.getElementById('rStatus');
+    box.innerHTML='<a href="'+ch.ext+'" target="_blank">📻 Écouter '+ch.name+'</a>'
+      +'<div class="rc-ext-sub">Ouvre le player officiel dans le navigateur</div>';
+    var rc=document.querySelector('.rc'), st=document.getElementById('rStatus');
     if(rc&&st) rc.insertBefore(box,st);
   }
 
-  /* Fetch stream URL depuis l API MyTuner */
-  function fetchMyTunerStream(id, cb){
-    fetch('https://mytuner-radio.com/api/radios/'+id+'/?lang=fr')
+  /* ── Fetch stream via Radio Browser API ── */
+  function fetchRBStream(ch, cb){
+    var server = RB_SERVERS[Math.floor(Math.random()*RB_SERVERS.length)];
+    var url = server+'/json/stations/search?name='+encodeURIComponent(ch.search)
+            + '&countrycode='+ch.country+'&limit=5&hidebroken=true&order=clickcount&reverse=true';
+    fetch(url, { headers:{'User-Agent':'BayeNiassWorld/1.0'} })
       .then(function(r){ return r.json(); })
-      .then(function(d){ cb((d&&d.streamURL)||null); })
+      .then(function(data){
+        if(!data||!data.length){ cb(null); return; }
+        /* Prendre la 1ère station avec url_resolved HTTPS */
+        var st = data.find(function(s){ return s.url_resolved && s.url_resolved.startsWith('https'); })
+               || data[0];
+        cb(st ? (st.url_resolved || st.url) : null);
+      })
       .catch(function(){ cb(null); });
   }
 
-  function tryStreams(urls, idx){
-    if(idx>=urls.length){
-      setUI(false);
-      setStatus('Lien direct disponible ci-dessous','err');
-      showExtLink();
-      return;
-    }
-    audio.src=urls[idx];
+  function tryPlay(url){
+    if(!url){ setSt('Lien direct disponible ci-dessous','err'); showExt(); setUI(false); return; }
+    audio.src = url;
     audio.load();
-    setStatus('Connexion '+(idx+1)+'/'+urls.length+'...','');
+    setSt('Connexion en cours...','');
     clearTimeout(streamTimer);
-    streamTimer=setTimeout(function(){ if(!isPlaying){ audio.pause(); tryStreams(urls,idx+1); } },7000);
-    var p=audio.play();
-    if(p&&p.catch) p.catch(function(){ clearTimeout(streamTimer); tryStreams(urls,idx+1); });
+    streamTimer = setTimeout(function(){
+      if(!isPlaying){ audio.pause(); setSt('Délai dépassé — lien direct ci-dessous','err'); showExt(); setUI(false); }
+    }, 10000);
+    var p = audio.play();
+    if(p&&p.catch) p.catch(function(){ clearTimeout(streamTimer); setSt('Lien direct disponible ci-dessous','err'); showExt(); setUI(false); });
   }
 
   function rPlay(){
-    removeExtLink();
-    playBtn.classList.add('loading');
-    var ch=CH[curCh];
-    /* Essayer d abord l API MyTuner si on a un id */
-    if(ch.id){
-      setStatus('Récupération du stream...','');
-      fetchMyTunerStream(ch.id, function(apiUrl){
-        var urls=apiUrl?[apiUrl].concat(ch.streams):ch.streams.slice();
-        tryStreams(urls,0);
-      });
-    } else {
-      tryStreams(ch.streams.slice(),0);
-    }
+    rmExt(); playBtn.classList.add('loading');
+    var ch = CH[curCh];
+    setSt('Recherche du stream via Radio Browser...','');
+    fetchRBStream(ch, function(url){
+      if(url){ tryPlay(url); }
+      else { setSt('Lien direct disponible ci-dessous','err'); showExt(); setUI(false); }
+    });
   }
 
-  window.rToggle=function(){
-    if(isPlaying){ audio.pause(); audio.src=''; setUI(false); setStatus('En pause',''); clearTimeout(streamTimer); removeExtLink(); }
+  window.rToggle = function(){
+    if(isPlaying){ audio.pause(); audio.src=''; setUI(false); setSt('En pause',''); clearTimeout(streamTimer); rmExt(); }
     else { rPlay(); }
   };
-
-  window.rSelect=function(idx){
+  window.rSelect = function(idx){
     if(idx===curCh&&isPlaying) return;
     curCh=idx;
     for(var i=0;i<CH.length;i++) document.getElementById('rch'+i).classList.toggle('active',i===idx);
-    document.getElementById('rName').textContent=CH[idx].name;
-    audio.pause(); audio.src='';
-    setUI(false); removeExtLink();
-    setStatus('Appuyez pour écouter','');
+    document.getElementById('rName').textContent = CH[idx].name;
+    audio.pause(); audio.src=''; setUI(false); rmExt(); setSt('Appuyez pour écouter','');
+    clearTimeout(streamTimer);
   };
 
-  audio.addEventListener('playing',function(){
-    clearTimeout(streamTimer); setUI(true); removeExtLink();
-    setStatus('● En direct — '+CH[curCh].name,'on');
-  });
-  audio.addEventListener('waiting',function(){ setStatus('Mise en mémoire tampon...',''); });
-  audio.addEventListener('stalled',function(){ setStatus('Signal faible...',''); });
-  audio.addEventListener('error',function(){
-    clearTimeout(streamTimer); setUI(false);
-    showExtLink(); setStatus('Lien direct disponible ci-dessous','err');
-  });
+  audio.addEventListener('playing', function(){ clearTimeout(streamTimer); setUI(true); rmExt(); setSt('● En direct — '+CH[curCh].name,'on'); });
+  audio.addEventListener('waiting', function(){ setSt('Mise en mémoire tampon...',''); });
+  audio.addEventListener('stalled', function(){ setSt('Signal faible...',''); });
+  audio.addEventListener('error',   function(){ clearTimeout(streamTimer); setUI(false); showExt(); setSt('Lien direct disponible ci-dessous','err'); });
 
   /* Volume */
   audio.volume=0.8;
-  volSlider.addEventListener('input',function(){
+  vol.addEventListener('input',function(){
     var v=this.value/100; audio.volume=v;
     var p=this.value+'%';
     this.style.background='linear-gradient(90deg,#1a9650 '+p+',rgba(255,255,255,.1) '+p+')';
-    volIcon.textContent=v===0?'🔇':v<0.5?'🔈':'🔊';
+    volIco.textContent=v===0?'🔇':v<0.5?'🔈':'🔊';
   });
 
 })();
+</script>
+
 </script>
 
 </section>
