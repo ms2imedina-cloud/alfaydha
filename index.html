@@ -3716,23 +3716,27 @@ html { background: #0a0a0a; }
     {
       name: 'Radio Al-Faydha 90.1 FM',
       ar: 'راديو الفيضة',
-      freq: '90.1 FM · Kaolack',
-      // Stream via Zeno.FM public HLS
-      url: 'https://stream.zeno.fm/mhpQee8nztzuv',
+      freq: '90.1 FM · Kaolack · Médina Baye',
+      // Stream FastCast4u officiel (CORS ouvert)
+      url: 'https://stream.zeno.fm/OUE5xD8nztzuv',
+      fallback: 'https://c7.radioboss.fm:8231/stream',
+      embed: 'https://zeno.fm/radio/radio-alfayda-90-1/',
       icon: '🌊'
     },
     {
-      name: 'Média Médina Baye',
-      ar: 'ميديا مدينة باي',
-      freq: 'Zeno FM · Live',
-      url: 'https://stream.zeno.fm/media-medina-baye-live',
+      name: 'Radio Faydatidianiya',
+      ar: 'راديو فيضة التجانية',
+      freq: 'Zeno FM · Tijaniyya',
+      url: 'https://stream.zeno.fm/faydatidianiya',
+      embed: 'https://zeno.fm/radio/faydatidianiya/',
       icon: '🕌'
     },
     {
       name: 'Xassida Online',
       ar: 'خصائد أونلاين',
-      freq: 'Sénégal · Tijaniyya',
+      freq: 'Sénégal · Khassidas Tijaniyya',
       url: 'https://stream.zeno.fm/xassida-online',
+      embed: 'https://zeno.fm/radio/xassida-online/',
       icon: '📿'
     }
   ];
@@ -3810,13 +3814,63 @@ html { background: #0a0a0a; }
     setTimeout(function(){ radioPlay(); }, 200);
   };
 
-  function radioPlay(){
+  var streamTimeout = null;
+
+  // Stream URLs à essayer dans l'ordre (CORS-friendly)
+  var STREAM_URLS = [
+    'https://stream.zeno.fm/OUE5xD8nztzuv',   // Zeno slug 2
+    'https://stream.zeno.fm/mhpQee8nztzuv',    // Zeno slug 1
+    'https://c7.radioboss.fm:8231/stream',       // FastCast4u
+    'https://listen.radioking.com/radio/alfayda' // Fallback
+  ];
+  var streamIndex = 0;
+
+  function showExternalLink(){
     var ch = CHANNELS[currentCh];
-    audio.src = ch.url;
+    var existing = document.getElementById('radioExtLink');
+    if(existing) return;
+    var box = document.createElement('div');
+    box.id = 'radioExtLink';
+    box.style.cssText = 'background:rgba(212,175,55,.12);border:1.5px solid rgba(212,175,55,.3);border-radius:14px;padding:.85rem 1.1rem;margin:.3rem 0;text-align:center;';
+    box.innerHTML = '<div style="font-size:11.5px;color:rgba(255,255,255,.55);margin-bottom:.5rem">Écouter directement :</div>'
+      + '<a href="' + ch.embed + '" target="_blank" style="display:inline-flex;align-items:center;gap:.4rem;background:var(--g1);border:1px solid rgba(212,175,55,.4);border-radius:20px;padding:.45rem 1.1rem;color:var(--gold2);font-size:13px;font-weight:700;text-decoration:none;">📻 Ouvrir Radio Al-Faydha</a>'
+      + '<div style="font-size:10.5px;color:rgba(255,255,255,.3);margin-top:.45rem">Zeno.FM · En direct</div>';
+    var ctrl = document.querySelector('.radio-controls');
+    var statusEl = document.getElementById('radioStatus');
+    if(ctrl && statusEl) ctrl.insertBefore(box, statusEl);
+  }
+
+  function removeExternalLink(){
+    var el = document.getElementById('radioExtLink');
+    if(el) el.remove();
+  }
+
+  function tryStream(urls, idx){
+    if(idx >= urls.length){
+      updateUI(false);
+      setStatus('Stream indisponible — utilisez le lien ci-dessous', 'err');
+      showExternalLink();
+      return;
+    }
+    audio.src = urls[idx];
     audio.load();
-    setStatus('Connexion à ' + ch.name + '...', '');
+    setStatus('Connexion ' + (idx+1) + '/' + urls.length + '...', '');
+    clearTimeout(streamTimeout);
+    streamTimeout = setTimeout(function(){
+      if(!isPlaying){ audio.pause(); tryStream(urls, idx+1); }
+    }, 6000);
     var p = audio.play();
-    if(p && p.catch) p.catch(function(e){ setStatus('Erreur de connexion — réessayez', 'err'); updateUI(false); });
+    if(p && p.catch) p.catch(function(){ clearTimeout(streamTimeout); tryStream(urls, idx+1); });
+  }
+
+  function radioPlay(){
+    removeExternalLink();
+    var ch = CHANNELS[currentCh];
+    var urls = [ch.url];
+    if(ch.fallback) urls.push(ch.fallback);
+    // Ajouter les URLs globales
+    STREAM_URLS.forEach(function(u){ if(urls.indexOf(u)<0) urls.push(u); });
+    tryStream(urls, 0);
   }
 
   window.radioToggle = function(){
@@ -3825,19 +3879,25 @@ html { background: #0a0a0a; }
       audio.src = '';
       updateUI(false);
       setStatus('En pause', '');
+      clearTimeout(streamTimeout);
+      removeExternalLink();
     } else {
       radioPlay();
     }
   };
 
   audio.addEventListener('playing', function(){
+    clearTimeout(streamTimeout);
     updateUI(true);
+    removeExternalLink();
     setStatus('● En direct — ' + CHANNELS[currentCh].name, 'on');
   });
   audio.addEventListener('waiting', function(){ setStatus('Mise en mémoire tampon...', ''); });
   audio.addEventListener('error', function(){
+    clearTimeout(streamTimeout);
     updateUI(false);
-    setStatus('Connexion impossible — vérifiez votre réseau', 'err');
+    setStatus('Stream indisponible — utilisez le lien ci-dessous', 'err');
+    showExternalLink();
   });
   audio.addEventListener('stalled', function(){ setStatus('Signal faible...', ''); });
 
