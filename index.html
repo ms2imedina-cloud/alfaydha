@@ -10167,9 +10167,10 @@ async function _prayerReverseGeocode(lat, lng) {
     {
       id: 'baba',
       name: 'Baba Diallo',
-      desc: 'Muezzin de Médina Baye',
+      desc: 'Muezzin de Medina Baye',
       url:  'baba_diallo.mp3',
-      fallback: 'https://cdn.islamic.network/mp3/adhan/ar.alafasy/adhan.mp3'
+      fallback: 'https://cdn.islamic.network/mp3/adhan/ar.alafasy/adhan.mp3',
+      fallback2: 'https://www.islamcan.com/audio/adhan/azan1.mp3'
     }
   ];
 
@@ -10343,10 +10344,13 @@ async function _prayerReverseGeocode(lat, lng) {
     var pp      = _cfg.perPrayer[key];
     var muezzin = forceMuezzin || MUEZZINS.find(function(m){ return m.id === (pp ? pp.muezzin : 'baba'); }) || MUEZZINS[0];
 
-    /* Créer élément audio frais */
+    /* Créer élément audio frais avec attributs mobiles */
     var audio = document.createElement('audio');
     audio.id  = 'wlc-adhan-audio';
-    audio.src = muezzin.url;
+    audio.setAttribute('playsinline', '');
+    audio.setAttribute('webkit-playsinline', '');
+    audio.setAttribute('x5-playsinline', '');
+    audio.preload = 'auto';
     document.body.appendChild(audio);
 
     _wlcCurrentKey = key;
@@ -10362,31 +10366,36 @@ async function _prayerReverseGeocode(lat, lng) {
     if(muzzEl) muzzEl.textContent = muezzin.name;
     if(player) player.style.display = 'flex';
 
-    audio.onerror = function(){
-      /* Fallback sur autre URL */
-      if(audio.src !== muezzin.fallback && muezzin.fallback){
-        audio.src = muezzin.fallback;
-        audio.play().catch(function(){ wlcStopAdhan(); showToast('\u26A0\uFE0F Audio indisponible'); });
-      } else {
+    /* Chaine de fallbacks : url locale → fallback CDN → fallback2 */
+    var urls = [muezzin.url, muezzin.fallback, muezzin.fallback2].filter(Boolean);
+    var urlIdx = 0;
+
+    function tryNextUrl() {
+      if (urlIdx >= urls.length) {
         wlcStopAdhan();
-        showToast('\u26A0\uFE0F Audio indisponible sur cet appareil');
+        showToast('\u26A0\uFE0F Audio indisponible');
+        return;
       }
-    };
+      audio.src = urls[urlIdx++];
+      audio.load();
+      audio.play().then(function(){
+        /* OK */
+      }).catch(function(err){
+        if (err.name === 'NotAllowedError') {
+          /* Mobile bloque sans geste — afficher bannière tap */
+          _showAdhanBanner(key, ar);
+          wlcStopAdhan();
+        } else {
+          /* Essayer URL suivante */
+          tryNextUrl();
+        }
+      });
+    }
+
+    audio.onerror = function(){ tryNextUrl(); };
     audio.onended = function(){ wlcStopAdhan(); };
 
-    var p = audio.play();
-    if(p) p.catch(function(err){
-      if(err.name === 'NotAllowedError'){
-        /* Bannière tap-to-play */
-        _showAdhanBanner(key, ar);
-        wlcStopAdhan();
-      } else {
-        /* Essayer le fallback */
-        audio.src = muezzin.fallback || '';
-        if(audio.src) audio.play().catch(function(){ wlcStopAdhan(); });
-        else wlcStopAdhan();
-      }
-    });
+    tryNextUrl();
   };
 
   /* ─── Audio : arrêt ─── */
@@ -10889,6 +10898,8 @@ function _qiblaBindOrientation() {
     _qiblaTargetBearing = _qiblaCalcBearing(_qiblaCompassLat, _qiblaCompassLng);
     _qiblaRun(_qiblaCompassLat, _qiblaCompassLng, 'GPS');
     _qiblaSetStatus('Boussole active - posez le telephone a plat', 'var(--g1)');
+    var _smoothedHeading = null;
+    var _lastNeedle = null;
     _qiblaOrientHandler = function(e) {
       if (!_qiblaCompassActive) return;
       var heading = null;
@@ -10898,8 +10909,24 @@ function _qiblaBindOrientation() {
         heading = (360 - e.alpha) % 360;
       }
       if (heading === null) return;
-      /* L'aiguille seule tourne : bearing Qibla - cap actuel du téléphone */
-      var needleAngle = (_qiblaTargetBearing - heading + 360) % 360;
+
+      /* Lissage exponentiel sur l'angle (low-pass filter, alpha=0.15) */
+      if (_smoothedHeading === null) {
+        _smoothedHeading = heading;
+      } else {
+        /* Correction pour éviter le saut 359°→0° */
+        var diff = heading - _smoothedHeading;
+        if (diff > 180) diff -= 360;
+        if (diff < -180) diff += 360;
+        _smoothedHeading = (_smoothedHeading + 0.15 * diff + 360) % 360;
+      }
+
+      var needleAngle = (_qiblaTargetBearing - _smoothedHeading + 360) % 360;
+
+      /* Ne redessiner que si changement > 0.5° pour éviter micro-tremblements */
+      if (_lastNeedle !== null && Math.abs(needleAngle - _lastNeedle) < 0.5) return;
+      _lastNeedle = needleAngle;
+
       var el = document.getElementById('qiblaCompass');
       if (el) el.style.transform = 'rotate(' + needleAngle + 'deg)';
     };
@@ -10935,7 +10962,7 @@ function qiblaCompassToggle() {
     _qiblaCompassActive = true;
     if (btn) { btn.textContent = 'Arreter'; btn.style.background='linear-gradient(135deg,#c0392b,#e74c3c)'; }
     var el = document.getElementById('qiblaCompass');
-    if (el) el.style.transition = 'transform .15s ease-out';
+    if (el) el.style.transition = 'transform .3s ease-out';
     _qiblaStartCompass();
   }
 }
