@@ -1893,29 +1893,36 @@ button[onclick="qiblaGPS()"]:hover {
 
 /* ══ NAV — fond sombre élégant ══ */
 .nav {
-  background: rgba(4,10,5,.97) !important;
-  border-top: 1px solid rgba(212,175,55,.18) !important;
-  box-shadow: 0 -6px 32px rgba(0,0,0,.4) !important;
-  backdrop-filter: blur(24px) !important;
-  -webkit-backdrop-filter: blur(24px) !important;
+  background: linear-gradient(180deg,#0d2818 0%,#0a1f12 100%) !important;
+  border-top: 1px solid rgba(212,175,55,.25) !important;
+  box-shadow: 0 -4px 24px rgba(0,0,0,.25) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
 }
 .nav-btn {
-  color: rgba(255,255,255,.28) !important;
+  color: rgba(255,255,255,.42) !important;
   transition: all .22s cubic-bezier(.34,1.56,.64,1) !important;
 }
+.nav-btn:hover:not(.active) {
+  color: rgba(255,255,255,.7) !important;
+}
 .nav-btn.active {
-  color: #D4AF37 !important;
+  color: #F0DC82 !important;
   transform: translateY(-2px) !important;
 }
 .nav-btn.active .nav-icon {
-  filter: drop-shadow(0 0 8px rgba(212,175,55,.55)) !important;
+  filter: drop-shadow(0 0 10px rgba(240,220,130,.6)) !important;
 }
 .nav-btn::before {
-  background: linear-gradient(90deg,transparent,#D4AF37,transparent) !important;
-  height: 2px !important;
+  background: linear-gradient(90deg,transparent,#F0DC82,transparent) !important;
+  height: 2.5px !important;
 }
-.nav-label { font-size: 9.5px !important; letter-spacing: .07em !important; }
-.nav-icon { font-size: 22px !important; }
+.nav-label {
+  font-size: 9.5px !important;
+  letter-spacing: .06em !important;
+  font-weight: 700 !important;
+}
+.nav-icon { font-size: 21px !important; }
 
 /* ══ UMMA ══ */
 #umma-prayer-hero {
@@ -3959,7 +3966,72 @@ button[onclick="qiblaGPS()"] {
 
 </section>
 <!-- SECTION RADIO AL-FAYDHA -->
-<section id="sec-ens" class="sec">
+<section <section id="sec-ens" class="sec">
+
+<style>
+/* ── Tabs Studio/Radio ── */
+.ens-tabs {
+  display: flex;
+  background: #030906;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  position: sticky; top: 0; z-index: 10;
+  flex-shrink: 0;
+}
+.ens-tab {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 3px; padding: .65rem .5rem .55rem;
+  cursor: pointer; border: none; background: none;
+  font-family: 'Roboto', sans-serif;
+  transition: all .2s ease;
+  border-bottom: 3px solid transparent;
+  position: relative;
+}
+.ens-tab .et-icon { font-size: 19px; line-height: 1; }
+.ens-tab .et-label {
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .07em;
+  white-space: nowrap;
+}
+/* Radio tab — vert */
+.ens-tab.radio-tab { color: rgba(255,255,255,.38); }
+.ens-tab.radio-tab.active {
+  color: #4ade80;
+  border-bottom-color: #4ade80;
+  background: rgba(74,222,128,.04);
+}
+.ens-tab.radio-tab.active .et-icon {
+  filter: drop-shadow(0 0 8px rgba(74,222,128,.6));
+}
+/* Studio tab — doré/orange */
+.ens-tab.studio-tab { color: rgba(255,255,255,.38); }
+.ens-tab.studio-tab.active {
+  color: #fbbf24;
+  border-bottom-color: #fbbf24;
+  background: rgba(251,191,36,.04);
+}
+.ens-tab.studio-tab.active .et-icon {
+  filter: drop-shadow(0 0 8px rgba(251,191,36,.6));
+}
+/* Panels */
+.ens-panel { display: none; }
+.ens-panel.active { display: flex; flex-direction: column; }
+</style>
+
+<!-- Barre d'onglets -->
+<div class="ens-tabs">
+  <button class="ens-tab radio-tab active" id="ensTabRadio" onclick="switchEnsTab('radio')">
+    <span class="et-icon">📻</span>
+    <span class="et-label">Radio Al-Faydha</span>
+  </button>
+  <button class="ens-tab studio-tab" id="ensTabStudio" onclick="switchEnsTab('studio')">
+    <span class="et-icon">🎙</span>
+    <span class="et-label">Studio Enreg.</span>
+  </button>
+</div>
+
+<!-- Panel Radio -->
+<div class="ens-panel active" id="ensPanelRadio">
 <style>
 .rp-wrap{display:flex;flex-direction:column;min-height:100%;background:#07100a;}
 .rp-hero{position:relative;background:linear-gradient(170deg,#071410 0%,#0d2318 55%,#0a1a10 100%);padding:1.8rem 1.4rem 1.1rem;text-align:center;overflow:hidden;}
@@ -4243,9 +4315,10 @@ button[onclick="qiblaGPS()"] {
 
 })();
 </script>
+</div>
 
-
-
+<!-- Panel Studio -->
+<div class="ens-panel" id="ensPanelStudio">
 <!-- ══════════════════════════════════════════════════════════
      STUDIO D'ENREGISTREMENT — 100% Privé · IndexedDB · Web Audio API
 ══════════════════════════════════════════════════════════ -->
@@ -5090,6 +5163,18 @@ studioRenderLib();
 
 })();
 </script>
+</div>
+
+<script>
+window.switchEnsTab = function(tab) {
+  var isRadio = tab === 'radio';
+  document.getElementById('ensTabRadio').classList.toggle('active', isRadio);
+  document.getElementById('ensTabStudio').classList.toggle('active', !isRadio);
+  document.getElementById('ensPanelRadio').classList.toggle('active', isRadio);
+  document.getElementById('ensPanelStudio').classList.toggle('active', !isRadio);
+};
+</script>
+
 </section>
 
 <!-- ═══════════════════════════════════════
@@ -5407,24 +5492,24 @@ studioRenderLib();
 <nav class="nav" role="navigation" aria-label="Navigation principale">
   <button class="nav-btn active" id="nav-umma" onclick="showSec('umma',this)">
     <span class="nav-icon">🕌</span>
-    <span class="nav-label">Umma</span>
+    <span class="nav-label">Prières</span>
   </button>
   <button class="nav-btn" id="nav-wird" onclick="showSec('wird',this)">
-    <span class="nav-icon">📿</span>
-    <span class="nav-label">Pratique</span>
+    <span class="nav-icon">🌙</span>
+    <span class="nav-label">Zikr</span>
   </button>
   <button class="nav-btn" id="nav-live" onclick="showSec('live',this)">
-    <span class="nav-icon">📡</span>
-    <span class="nav-label">Live</span>
+    <span class="nav-icon">🔴</span>
+    <span class="nav-label">Direct</span>
     <span class="nav-live-badge">LIVE</span>
   </button>
   <button class="nav-btn" id="nav-ens" onclick="showSec('ens',this)">
-    <span class="nav-icon">📻</span>
-    <span class="nav-label">Radio</span>
+    <span class="nav-icon">🎙</span>
+    <span class="nav-label">Studio</span>
   </button>
   <button class="nav-btn" id="nav-ai" onclick="showSec('ai',this)">
-    <span class="nav-icon">✨</span>
-    <span class="nav-label">Ask Baye</span>
+    <span class="nav-icon">🤲</span>
+    <span class="nav-label">Baye IA</span>
   </button>
 </nav>
 
