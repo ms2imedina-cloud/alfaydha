@@ -3762,6 +3762,7 @@ button[onclick="qiblaGPS()"]:hover {
   var volIco  = document.getElementById('rpVolIco');
   var bars    = [];
   var playing = false;
+  var userStopped = false;
   var timer   = null;
   var metaTimer = null;
 
@@ -3869,25 +3870,35 @@ button[onclick="qiblaGPS()"]:hover {
 
   window.rpToggle = function(){
     if(playing){
-      audio.pause(); audio.src='';
-      setUI(false); setSt('En pause','');
+      userStopped = true;
       clearTimeout(timer);
+      try { audio.pause(); } catch(e){}
+      audio.src = '';
+      setUI(false);
+      setSt('En pause — appuyez pour reprendre','');
     } else {
+      userStopped = false;
       btn.classList.add('loading');
-      setSt('Connexion à Radio Al-Faydha...','');
-      /* Stream officiel radioalfayda.net en premier */
+      setSt('Connexion en cours...','');
       tryFallbacks(0);
     }
   };
 
   audio.addEventListener('playing', function(){
-    clearTimeout(timer); setUI(true);
-    setSt('● En direct · Radio Al-Faydha 90.1 FM','on');
+    clearTimeout(timer);
+    setUI(true);
+    setSt('● EN DIRECT · Radio Al-Faydha','on');
   });
-  audio.addEventListener('waiting', function(){ setSt('Mise en mémoire tampon...',''); });
-  audio.addEventListener('stalled', function(){ setSt('Signal faible...',''); });
-  audio.addEventListener('error',   function(){
-    clearTimeout(timer); setUI(false);
+  audio.addEventListener('waiting', function(){
+    if(!userStopped) setSt('Chargement...','');
+  });
+  audio.addEventListener('stalled', function(){
+    if(!userStopped) setSt('Signal faible...','');
+  });
+  audio.addEventListener('error', function(){
+    if(userStopped) return;
+    clearTimeout(timer);
+    setUI(false);
     tryFallbacks(0);
   });
 
@@ -11087,13 +11098,28 @@ function qiblaGo(){
 }
 
 function qiblaGPS(){
-  var msg=document.getElementById("qiblaMsg");
-  if(!navigator.geolocation){if(msg)msg.textContent="GPS non disponible";return;}
-  if(msg)msg.textContent="Localisation...";
+  var msg = document.getElementById('qiblaMsg');
+  var status = document.getElementById('qiblaCompassStatus');
+  if(!navigator.geolocation){
+    if(msg) msg.textContent = 'GPS non disponible';
+    return;
+  }
+  if(msg) msg.textContent = '';
+  if(status){ status.textContent = 'Localisation GPS...'; status.style.color = 'var(--g1)'; }
   navigator.geolocation.getCurrentPosition(
-    function(p){_qiblaRun(p.coords.latitude,p.coords.longitude,"GPS");},
-    function(){if(msg)msg.textContent="GPS refuse - entrez votre ville";},
-    {timeout:8000}
+    function(p){
+      if(status) status.textContent = '';
+      _qiblaRun(p.coords.latitude, p.coords.longitude, 'Ma position');
+    },
+    function(err){
+      var txt = 'GPS refuse';
+      if(err && err.code === 1) txt = 'Autorisez la localisation dans vos reglages';
+      else if(err && err.code === 2) txt = 'Position indisponible - entrez votre ville';
+      else if(err && err.code === 3) txt = 'GPS trop lent - entrez votre ville';
+      if(status){ status.textContent = txt; status.style.color = 'var(--red)'; }
+      if(msg) msg.textContent = '';
+    },
+    { timeout: 12000, maximumAge: 60000, enableHighAccuracy: false }
   );
 }
 
