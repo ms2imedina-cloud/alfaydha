@@ -10722,362 +10722,213 @@ async function _prayerReverseGeocode(lat, lng) {
 </script>
 
 <script>
-/* ══════════════════════════════════════════════════════
-   QIBLA — Direction de La Mecque
-   Calcul trigonométrique pur, sans API externe
-══════════════════════════════════════════════════════ */
-/* ══════════════════════════════════
-   QIBLA — Direction de La Mecque
-══════════════════════════════════ */
-function _qiblaRun(lat, lng, label) {
-  var MLAT=21.4225, MLNG=39.8262;
-  var p1=lat*Math.PI/180, p2=MLAT*Math.PI/180, dl=(MLNG-lng)*Math.PI/180;
-  var y=Math.sin(dl)*Math.cos(p2);
-  var x=Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl);
-  var b=(Math.atan2(y,x)*180/Math.PI+360)%360;
-  var R=6371, dLat=(MLAT-lat)*Math.PI/180, dLng=(MLNG-lng)*Math.PI/180;
-  var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(p1)*Math.cos(p2)*Math.sin(dLng/2)*Math.sin(dLng/2);
-  var dist=Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
-  var el=document.getElementById('qiblaCompass');
-  if(el) el.style.transform='rotate('+b+'deg)';
-  document.getElementById('qiblaDeg').textContent=Math.round(b)+'°';
-  document.getElementById('qiblaDist').textContent=dist.toLocaleString()+' km';
-  var dirs=['Nord','Nord-Est','Est','Sud-Est','Sud','Sud-Ouest','Ouest','Nord-Ouest'];
-  document.getElementById('qiblaLoc').textContent='📍 '+label+' — '+dirs[Math.round(b/45)%8];
-  document.getElementById('qiblaResult').style.display='block';
-  document.getElementById('qiblaMsg').textContent='';
-}
-
-/* Base de villes intégrée — aucune API externe */
-var _CITIES = {
-  "dakar":[14.6937,-17.4441],"thies":[14.7910,-16.9359],"kaolack":[14.1520,-16.0765],
-  "saint-louis":[16.0179,-16.4896],"ziguinchor":[12.5681,-16.2719],"touba":[14.8528,-15.8800],
+/* ══ QIBLA + LUNE ══ */
+var _CITIES={
+  "dakar":[14.6937,-17.4441],"thies":[14.791,-16.9359],"kaolack":[14.152,-16.0765],
+  "touba":[14.8528,-15.88],"saint-louis":[16.0179,-16.4896],"ziguinchor":[12.5681,-16.2719],
   "diourbel":[14.6553,-16.2333],"louga":[15.6173,-16.2247],"tambacounda":[13.7707,-13.6673],
-  "kolda":[12.8833,-14.9500],"matam":[15.6559,-13.2557],"medina baye":[14.1520,-16.0765],
+  "kolda":[12.8833,-14.95],"matam":[15.6559,-13.2557],"medina baye":[14.152,-16.0765],
   "rufisque":[14.7156,-17.2736],"mbour":[14.3682,-16.9644],"fatick":[14.3391,-16.4112],
-  "joal":[14.1667,-16.8333],"tivaouane":[14.9556,-16.8167],"kaffrine":[14.1056,-15.5500],
-  "kedougou":[12.5549,-12.1817],"sedhiou":[12.7040,-15.5570],"velingara":[13.1500,-14.1167],
-  "bambey":[14.7017,-16.4617],"mbacke":[14.7833,-15.9167],"gossas":[14.4833,-16.0667],
-  "bamako":[12.6392,-8.0029],"segou":[13.4500,-6.2667],"kayes":[14.4469,-11.4427],
-  "mopti":[14.4974,-4.1825],"sikasso":[11.3167,-5.6667],"gao":[16.2667,-0.0500],
-  "nouakchott":[18.0858,-15.9785],"nouadhibou":[20.9309,-17.0347],
-  "conakry":[9.5370,-13.6729],"kankan":[10.3852,-9.3060],"banjul":[13.4531,-16.5775],
-  "abidjan":[5.3599,-4.0083],"yamoussoukro":[6.8276,-5.2893],"bouake":[7.6906,-5.0310],
-  "accra":[5.5560,-0.1969],"kumasi":[6.6884,-1.6244],
-  "lagos":[6.5244,3.3792],"abuja":[9.0579,7.4951],"kano":[12.0000,8.5167],
-  "ibadan":[7.3776,3.9470],"sokoto":[13.0622,5.2339],"zaria":[11.0667,7.7000],
-  "niamey":[13.5137,2.1098],"zinder":[13.8000,8.9833],"maradi":[13.5000,7.1000],
-  "ouagadougou":[12.3647,-1.5353],"bobo-dioulasso":[11.1770,-4.2979],
-  "yaounde":[3.8480,11.5021],"douala":[4.0483,9.7043],
-  "casablanca":[33.5731,-7.5898],"rabat":[34.0209,-6.8417],"fes":[34.0333,-5.0000],
-  "marrakech":[31.6295,-7.9811],"tanger":[35.7595,-5.8340],
-  "alger":[36.7372,3.0865],"oran":[35.6969,-0.6331],"constantine":[36.3650,6.6147],
-  "tunis":[36.8190,10.1658],"sfax":[34.7400,10.7600],
-  "cairo":[30.0444,31.2357],"alexandrie":[31.2001,29.9187],"le caire":[30.0444,31.2357],
-  "paris":[48.8566,2.3522],"lyon":[45.7640,4.8357],"marseille":[43.2965,5.3698],
+  "joal":[14.1667,-16.8333],"tivaouane":[14.9556,-16.8167],"kaffrine":[14.1056,-15.55],
+  "kedougou":[12.5549,-12.1817],"sedhiou":[12.704,-15.557],"mbacke":[14.7833,-15.9167],
+  "bamako":[12.6392,-8.0029],"segou":[13.45,-6.2667],"kayes":[14.4469,-11.4427],
+  "mopti":[14.4974,-4.1825],"sikasso":[11.3167,-5.6667],
+  "nouakchott":[18.0858,-15.9785],"conakry":[9.537,-13.6729],"banjul":[13.4531,-16.5775],
+  "abidjan":[5.3599,-4.0083],"accra":[5.556,-0.1969],"kumasi":[6.6884,-1.6244],
+  "lagos":[6.5244,3.3792],"abuja":[9.0579,7.4951],"kano":[12.0,8.5167],
+  "niamey":[13.5137,2.1098],"ouagadougou":[12.3647,-1.5353],"yaounde":[3.848,11.5021],
+  "casablanca":[33.5731,-7.5898],"rabat":[34.0209,-6.8417],"marrakech":[31.6295,-7.9811],
+  "alger":[36.7372,3.0865],"tunis":[36.819,10.1658],"le caire":[30.0444,31.2357],
+  "cairo":[30.0444,31.2357],"paris":[48.8566,2.3522],"london":[51.5074,-0.1278],
   "la mecque":[21.4225,39.8262],"mecca":[21.4225,39.8262],"medine":[24.5247,39.5692],
-  "jeddah":[21.4858,39.1925],"riyadh":[24.6877,46.7219],
-  "new york":[40.7128,-74.0060],"chicago":[41.8781,-87.6298],
-  "london":[51.5074,-0.1278],"dubai":[25.2048,55.2708],"istanbul":[41.0082,28.9784]
+  "jeddah":[21.4858,39.1925],"riyadh":[24.6877,46.7219],"dubai":[25.2048,55.2708],
+  "istanbul":[41.0082,28.9784],"new york":[40.7128,-74.006],"chicago":[41.8781,-87.6298]
 };
 
-function _cityFind(input) {
-  var key = input.toLowerCase().trim()
-    .replace(/[\u00e0\u00e2\u00e4]/g,'a')
-    .replace(/[\u00e9\u00e8\u00ea\u00eb]/g,'e')
-    .replace(/[\u00ee\u00ef]/g,'i')
-    .replace(/[\u00f4\u00f6]/g,'o')
-    .replace(/[\u00f9\u00fb\u00fc]/g,'u')
-    .replace(/[\u00e7]/g,'c');
-  if (_CITIES[key]) return {lat:_CITIES[key][0], lng:_CITIES[key][1], name:input};
-  var keys = Object.keys(_CITIES);
-  for (var i=0; i<keys.length; i++) {
-    if (keys[i].indexOf(key)===0 || key.indexOf(keys[i])===0) {
-      return {lat:_CITIES[keys[i]][0], lng:_CITIES[keys[i]][1], name:input};
-    }
+function _cityFind(s){
+  var k=s.toLowerCase().trim()
+    .replace(/[àâä]/g,"a").replace(/[éèêë]/g,"e")
+    .replace(/[îï]/g,"i").replace(/[ôö]/g,"o")
+    .replace(/[ùûü]/g,"u").replace(/ç/g,"c");
+  if(_CITIES[k]) return {lat:_CITIES[k][0],lng:_CITIES[k][1],name:s};
+  var keys=Object.keys(_CITIES);
+  for(var i=0;i<keys.length;i++){
+    if(keys[i].indexOf(k)===0||k.indexOf(keys[i])===0)
+      return {lat:_CITIES[keys[i]][0],lng:_CITIES[keys[i]][1],name:s};
   }
   return null;
 }
 
-function qiblaGo() {
-  var city=(document.getElementById('qiblaCityIn').value||'').trim();
-  if(!city){ document.getElementById('qiblaMsg').textContent='⚠️ Entrez une ville'; return; }
-  var found = _cityFind(city);
-  if(found){
-    _qiblaRun(found.lat, found.lng, found.name);
-  } else {
-    document.getElementById('qiblaMsg').textContent='❌ Ville inconnue — essayez: Dakar, Thiès, Kaolack, Touba...';
-  }
+function _qiblaRun(lat,lng,label){
+  var MLAT=21.4225,MLNG=39.8262;
+  var p1=lat*Math.PI/180,p2=MLAT*Math.PI/180,dl=(MLNG-lng)*Math.PI/180;
+  var y=Math.sin(dl)*Math.cos(p2);
+  var x=Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl);
+  var b=(Math.atan2(y,x)*180/Math.PI+360)%360;
+  var R=6371,dLa=(MLAT-lat)*Math.PI/180,dLo=(MLNG-lng)*Math.PI/180;
+  var a=Math.sin(dLa/2)*Math.sin(dLa/2)+Math.cos(lat*Math.PI/180)*Math.cos(MLAT*Math.PI/180)*Math.sin(dLo/2)*Math.sin(dLo/2);
+  var dist=Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
+  var el=document.getElementById("qiblaCompass");
+  if(el) el.style.transform="rotate("+b+"deg)";
+  var ed=document.getElementById("qiblaDeg");   if(ed) ed.textContent=Math.round(b)+"deg";
+  var edi=document.getElementById("qiblaDist"); if(edi) edi.textContent=dist.toLocaleString()+" km";
+  var dirs=["Nord","Nord-Est","Est","Sud-Est","Sud","Sud-Ouest","Ouest","Nord-Ouest"];
+  var el2=document.getElementById("qiblaLoc");
+  if(el2) el2.textContent="Depuis "+label+" - Direction: "+dirs[Math.round(b/45)%8];
+  var er=document.getElementById("qiblaResult"); if(er) er.style.display="block";
+  var em=document.getElementById("qiblaMsg");   if(em) em.textContent="";
 }
 
-function qiblaGPS() {
-  if(!navigator.geolocation){ document.getElementById('qiblaMsg').textContent='❌ GPS non disponible sur ce navigateur'; return; }
-  document.getElementById('qiblaMsg').textContent='📍 Localisation GPS...';
+function qiblaGo(){
+  var inp=document.getElementById("qiblaCityIn");
+  var msg=document.getElementById("qiblaMsg");
+  if(!inp||!msg) return;
+  var city=inp.value.trim();
+  if(!city){msg.textContent="Entrez une ville";return;}
+  var f=_cityFind(city);
+  if(f){_qiblaRun(f.lat,f.lng,f.name);}
+  else{msg.textContent="Ville inconnue - essayez: Dakar, Thies, Kaolack, Touba";}
+}
+
+function qiblaGPS(){
+  var msg=document.getElementById("qiblaMsg");
+  if(!navigator.geolocation){if(msg)msg.textContent="GPS non disponible";return;}
+  if(msg)msg.textContent="Localisation...";
   navigator.geolocation.getCurrentPosition(
-    function(p){
-      fetch('https://nominatim.openstreetmap.org/reverse?lat='+p.coords.latitude+'&lon='+p.coords.longitude+'&format=json')
-        .then(function(r){ return r.json(); })
-        .then(function(d){
-          var a=d.address||{};
-          var n=(a.city||a.town||a.village||a.state||'')+(a.country?', '+a.country:'');
-          _qiblaRun(p.coords.latitude, p.coords.longitude, n||'GPS');
-        })
-        .catch(function(){ _qiblaRun(p.coords.latitude, p.coords.longitude, 'GPS'); });
-    },
-    function(){ document.getElementById('qiblaMsg').textContent='❌ GPS refusé — utilisez la recherche par ville'; },
+    function(p){_qiblaRun(p.coords.latitude,p.coords.longitude,"GPS");},
+    function(){if(msg)msg.textContent="GPS refuse - entrez votre ville";},
     {timeout:8000}
   );
 }
 
-/* Compatibilité ancienne fonction */
-function qiblaLocate(){ qiblaGPS(); }
+function qiblaLocate(){qiblaGPS();}
 function qiblaManual(){}
-function qiblaSearchCity(){ qiblaGo(); }
+function qiblaSearchCity(){qiblaGo();}
 
-/* ══════════════════════════════════
-   LUNE — Hilal
-══════════════════════════════════ */
-function _moonRun(lat, lng, cityName) {
-  var now = new Date();
-  var SYNODIC = 29.53058867;
-  var age = ((now - new Date('2000-01-06T18:14:00Z')) / 86400000 / SYNODIC % 1) * SYNODIC;
-  if(age < 0) age += SYNODIC;
-  var illum = Math.round((1 - Math.cos(age / SYNODIC * 2 * Math.PI)) / 2 * 100);
-  var ageH = age * 24;
+/* ══ LUNE ══ */
+function _sunsetTime(lat,lng){
+  var now=new Date();
+  var JD=now.getTime()/86400000+2440587.5;
+  var n=JD-2451545.0;
+  var L=(280.46+0.9856474*n)%360;
+  var g=(357.528+0.9856003*n)*Math.PI/180;
+  var lam=(L+1.915*Math.sin(g)+0.02*Math.sin(2*g))*Math.PI/180;
+  var sinD=Math.sin(23.439*Math.PI/180)*Math.sin(lam);
+  var dec=Math.asin(sinD);
+  var cosH=(Math.sin(-0.8333*Math.PI/180)-Math.sin(lat*Math.PI/180)*sinD)/(Math.cos(lat*Math.PI/180)*Math.cos(dec));
+  var HA=cosH>=1?0:cosH<=-1?180:Math.acos(cosH)*180/Math.PI;
+  var EqT=(-7.655*Math.sin(g)+9.873*Math.sin(2*lam+3.588)+0.439*Math.sin(4*lam))/60;
+  var utc=(360-HA)/15-EqT-(lng/15);
+  var tz=now.getTimezoneOffset()/-60;
+  var loc=utc+tz;
+  while(loc<0)loc+=24; while(loc>=24)loc-=24;
+  var h=Math.floor(loc),m=Math.floor((loc-h)*60);
+  return {h:h,m:m,str:h+"h"+(m<10?"0":"")+m,dec:loc};
+}
 
-  /* ── Calcul coucher du soleil ── */
-  /* Formule NOAA simplifiée */
-  var useLat = lat || 14.15;
-  var useLng = lng || -16.08;
-  var JD = now.getTime() / 86400000 + 2440587.5;
-  var n = JD - 2451545.0;
-  var L = (280.460 + 0.9856474 * n) % 360;
-  var g = (357.528 + 0.9856003 * n) * Math.PI / 180;
-  var lambda = (L + 1.915 * Math.sin(g) + 0.020 * Math.sin(2*g)) * Math.PI / 180;
-  var sinDec = Math.sin(23.439 * Math.PI / 180) * Math.sin(lambda);
-  var dec = Math.asin(sinDec);
-  var cosH = (Math.sin(-0.8333 * Math.PI / 180) - Math.sin(useLat * Math.PI / 180) * sinDec)
-             / (Math.cos(useLat * Math.PI / 180) * Math.cos(dec));
-  var HA = cosH >= 1 ? 0 : cosH <= -1 ? 180 : Math.acos(cosH) * 180 / Math.PI;
-  /* Heure coucher soleil en UTC */
-  var EqT = (-7.655 * Math.sin(g) + 9.873 * Math.sin(2*lambda + 3.588) + 0.439 * Math.sin(4*lambda)) / 60;
-  var sunsetUTC = (360 - HA) / 15 - EqT - (useLng / 15);
-  /* Convertir en heure locale */
-  var tzOffset = now.getTimezoneOffset() / -60;
-  var sunsetLocal = sunsetUTC + tzOffset;
-  while(sunsetLocal < 0) sunsetLocal += 24;
-  while(sunsetLocal >= 24) sunsetLocal -= 24;
-  var sunsetH = Math.floor(sunsetLocal);
-  var sunsetM = Math.floor((sunsetLocal - sunsetH) * 60);
-  var sunsetStr = sunsetH + 'h' + (sunsetM < 10 ? '0' : '') + sunsetM;
+function _moonRun(lat,lng,city){
+  var now=new Date();
+  var SYN=29.53058867;
+  var age=((now-new Date("2000-01-06T18:14:00Z"))/86400000/SYN%1)*SYN;
+  if(age<0) age+=SYN;
+  var ageH=age*24;
+  var illum=Math.round((1-Math.cos(age/SYN*2*Math.PI))/2*100);
 
-  /* Heure de visibilite = coucher soleil + 15-45 min selon age */
-  var visMin = age < 1.5 ? 20 : age < 2.5 ? 25 : 30;
-  var visLocal = sunsetLocal + visMin/60;
-  var visH = Math.floor(visLocal);
-  var visM = Math.floor((visLocal - visH) * 60);
-  var visStr = visH + 'h' + (visM < 10 ? '0' : '') + visM;
-
-  /* Heure prochaine NL exacte */
-  var phases = [
-    {max:1.5,e:'🌑',n:'Nouvelle Lune'},{max:7.4,e:'🌒',n:'Croissant croissant'},
-    {max:14.8,e:'🌓',n:'Premier Quartier'},{max:22.1,e:'🌔',n:'Gibbeuse croissante'},
-    {max:23.6,e:'🌕',n:'Pleine Lune'},{max:29.0,e:'🌖',n:'Gibbeuse decroissante'},
-    {max:99,e:'🌘',n:'Croissant decroissant'}
+  var phases=[
+    {max:1.5,e:"🌑",n:"Nouvelle Lune"},{max:7.4,e:"🌒",n:"Croissant croissant"},
+    {max:14.8,e:"🌓",n:"Premier Quartier"},{max:22.1,e:"🌔",n:"Gibbeuse croissante"},
+    {max:23.6,e:"🌕",n:"Pleine Lune"},{max:29.0,e:"🌖",n:"Gibbeuse decroissante"},
+    {max:99,e:"🌘",n:"Croissant decroissant"}
   ];
-  var phase = phases.find(function(p){return age<p.max;}) || phases[0];
-  var dNL = SYNODIC - age;
-  var dPL = (SYNODIC/2) - age; if(dPL < 0) dPL += SYNODIC;
-  var nextNew = new Date(now.getTime() + dNL * 86400000);
-  var nextFull = new Date(now.getTime() + dPL * 86400000);
+  var phase=phases.find(function(p){return age<p.max;})||phases[0];
+  var dNL=SYN-age, dPL=SYN/2-age; if(dPL<0)dPL+=SYN;
+  var nextNew=new Date(now.getTime()+dNL*86400000);
+  var nextFull=new Date(now.getTime()+dPL*86400000);
+  function fd(d){return d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});}
+  function fdt(d){return fd(d)+" a "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});}
 
-  function fd(d) {
-    return d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
-  }
-  function fdt(d) {
-    return d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})
-      + ' a ' + d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-  }
+  var useLat=lat||14.15, useLng=lng||-16.08;
+  var sun=_sunsetTime(useLat,useLng);
+  var visMin=age<1.5?20:age<2.5?25:30;
+  var visD=sun.dec+visMin/60;
+  var visH=Math.floor(visD),visM=Math.floor((visD-visH)*60);
+  var visStr=visH+"h"+(visM<10?"0":"")+visM;
 
-  /* ── Verdict ── */
-  var v, reasons = [];
-  if(age < 0.7){
-    v={icon:'🌑',
-       title:'Nouvelle Lune — Hilal pas encore ne',
-       desc:'Le croissant a ' + ageH.toFixed(0) + 'h seulement. Minimum 15h requis. Prochaine NL : ' + fdt(nextNew) + '.',
-       bg:'rgba(52,73,94,.12)',border:'rgba(52,73,94,.4)',color:'var(--text2)'};
-  } else if(age < 1.0){
-    if(Math.abs(useLat) > 45) reasons.push('Haute latitude defavorable');
-    v={icon:'🌙⚠️',
-       title:'Hilal naissance — tres difficile a voir',
-       desc:'Croissant de ' + ageH.toFixed(0) + 'h. Cherchez a ' + visStr + ' vers l'ouest, pres de l'horizon. Conditions parfaites requises.',
-       bg:'rgba(243,156,18,.1)',border:'rgba(243,156,18,.4)',color:'#e67e22'};
-  } else if(age <= 2.5){
-    v={icon:'🌙✅',
-       title:'Hilal visible' + (cityName ? ' a ' + cityName : ''),
-       desc:'Croissant de ' + age.toFixed(1) + ' jours. Ce soir a ' + visStr + ', regardez a l'ouest apres le coucher du soleil (' + sunsetStr + '). Illumination : ' + illum + '%.',
-       bg:'rgba(39,174,96,.12)',border:'rgba(39,174,96,.45)',color:'#27AE60'};
-  } else if(age <= 4.0){
-    v={icon:'🌒✅',
-       title:'Croissant bien visible',
-       desc:'Lune de ' + age.toFixed(1) + ' jours. Visible a l'ouest des ' + sunsetStr + '. Illumination : ' + illum + '%.',
-       bg:'rgba(39,174,96,.08)',border:'rgba(39,174,96,.3)',color:'#27AE60'};
-  } else if(dNL <= 2.5){
-    v={icon:'🌘⏳',
-       title:'Fin de mois — NL dans ' + Math.round(dNL) + ' jour(s)',
-       desc:'Prochaine nouvelle lune le ' + fdt(nextNew) + '. Vieux croissant visible a l'aube vers l'est.',
-       bg:'rgba(147,112,219,.1)',border:'rgba(147,112,219,.3)',color:'#9B59B6'};
+  var icon,title,desc,bg,border,color;
+  if(age<0.7){
+    icon="🌑"; title="Hilal pas encore ne";
+    desc="Le croissant a seulement "+ageH.toFixed(0)+"h. Minimum 15h requis. Prochaine NL: "+fdt(nextNew)+".";
+    bg="rgba(52,73,94,.12)"; border="rgba(52,73,94,.4)"; color="var(--text2)";
+  } else if(age<1.0){
+    icon="🌙⚠️"; title="Hilal naissance - visible en conditions parfaites";
+    desc="Croissant de "+ageH.toFixed(0)+"h. Ce soir a "+visStr+", regardez vers l'ouest pres de l'horizon. Ciel parfaitement dégagé requis.";
+    bg="rgba(243,156,18,.1)"; border="rgba(243,156,18,.4)"; color="#e67e22";
+  } else if(age<=2.5){
+    icon="🌙✅"; title="Hilal visible a l oeil nu"+(city?" a "+city:"");
+    desc="Le croissant a "+age.toFixed(1)+" jours. Ce soir a "+visStr+", cherchez vers l'ouest apres le coucher du soleil ("+sun.str+"). Illumination: "+illum+"%.";
+    bg="rgba(39,174,96,.12)"; border="rgba(39,174,96,.45)"; color="#27AE60";
+  } else if(age<=4.0){
+    icon="🌒✅"; title="Croissant bien visible";
+    desc="Lune de "+age.toFixed(1)+" jours. Visible vers l'ouest des "+sun.str+". Illumination: "+illum+"%.";
+    bg="rgba(39,174,96,.08)"; border="rgba(39,174,96,.3)"; color="#27AE60";
+  } else if(dNL<=2.5){
+    icon="🌘⏳"; title="Fin de mois - NL dans "+Math.round(dNL)+" jour(s)";
+    desc="Prochaine nouvelle lune: "+fdt(nextNew)+". Vieux croissant visible a l'aube vers l'est.";
+    bg="rgba(147,112,219,.1)"; border="rgba(147,112,219,.3)"; color="#9B59B6";
   } else {
-    v={icon:'🌕❌',
-       title:'Pas de Hilal — ' + phase.n,
-       desc:'Lune de ' + age.toFixed(1) + ' jours (' + phase.n + '). Le Hilal n'est visible qu'en debut de cycle (1-4 jours apres NL).',
-       bg:'rgba(192,57,43,.08)',border:'rgba(192,57,43,.3)',color:'var(--red)'};
+    icon="🌕❌"; title="Pas de Hilal - "+phase.n;
+    desc="Lune de "+age.toFixed(1)+" jours ("+phase.n+"). Le Hilal n'est visible qu'en debut de cycle (1-4 jours apres NL).";
+    bg="rgba(192,57,43,.08)"; border="rgba(192,57,43,.3)"; color="var(--red)";
   }
 
-  /* ── Affichage ── */
-  document.getElementById('moonEmoji').textContent = phase.e;
-  document.getElementById('moonPhaseName').textContent = phase.n;
-  document.getElementById('moonAge').textContent = age.toFixed(1);
-  document.getElementById('moonIllum').textContent = illum;
-  document.getElementById('moonNextNew').textContent = fdt(nextNew);
-  document.getElementById('moonNextFull').textContent = fd(nextFull);
-
-  /* Ajouter heure de recherche si applicable */
-  var sunsetInfo = document.getElementById('moonSunsetInfo');
-  if(!sunsetInfo){
-    sunsetInfo = document.createElement('div');
-    sunsetInfo.id = 'moonSunsetInfo';
-    sunsetInfo.style.cssText = 'background:linear-gradient(135deg,#0a0e1a,#1a2d5a);border-radius:12px;padding:.8rem 1rem;text-align:center;margin:.5rem 0;';
-    var moonData = document.getElementById('moonData');
-    if(moonData) moonData.insertBefore(sunsetInfo, moonData.firstChild);
-  }
-  if(age >= 0.7 && age <= 4.0){
-    sunsetInfo.innerHTML = '<div style="color:rgba(212,175,55,.7);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem;">🌅 Chercher le Hilal ce soir</div>'
-      + '<div style="display:flex;justify-content:center;gap:1.2rem;">'
-      + '<div><div style="color:rgba(255,255,255,.5);font-size:10px;">Coucher soleil</div><div style="color:#fff;font-size:20px;font-weight:700;">' + sunsetStr + '</div></div>'
-      + '<div style="color:rgba(212,175,55,.4);font-size:24px;line-height:2;">→</div>'
-      + '<div><div style="color:rgba(255,255,255,.5);font-size:10px;">Cherchez la lune</div><div style="color:var(--gold);font-size:20px;font-weight:700;">' + visStr + '</div></div>'
-      + '</div>'
-      + '<div style="color:rgba(255,255,255,.5);font-size:11px;margin-top:.4rem;">Direction : Ouest 🌙 · Pres de l'horizon</div>';
-    sunsetInfo.style.display = 'block';
-  } else {
-    sunsetInfo.style.display = 'none';
+  /* Affichage heure coucher */
+  var si=document.getElementById("moonSunsetInfo");
+  if(si){
+    if(age>=0.7&&age<=4.0){
+      si.innerHTML="<div style=\"background:linear-gradient(135deg,#0a0e1a,#1a2d5a);border-radius:12px;padding:.8rem;text-align:center;\"><div style=\"color:rgba(212,175,55,.8);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem;\">Chercher le Hilal ce soir</div><div style=\"display:flex;justify-content:center;gap:1.2rem;\"><div><div style=\"color:rgba(255,255,255,.5);font-size:10px;\">Coucher soleil</div><div style=\"color:#fff;font-size:22px;font-weight:700;\">"+sun.str+"</div></div><div style=\"color:rgba(212,175,55,.4);font-size:22px;line-height:2;\">&#8594;</div><div><div style=\"color:rgba(255,255,255,.5);font-size:10px;\">Cherchez la lune</div><div style=\"color:var(--gold);font-size:22px;font-weight:700;\">"+visStr+"</div></div></div><div style=\"color:rgba(255,255,255,.4);font-size:11px;margin-top:.4rem;\">Direction: Ouest - pres de l horizon</div></div>";
+      si.style.display="block";
+    } else { si.style.display="none"; }
   }
 
-  var vEl = document.getElementById('hilalVerdict');
-  vEl.style.background = 'linear-gradient(135deg,' + v.bg + ',transparent)';
-  vEl.style.border = '1.5px solid ' + v.border;
-  document.getElementById('hilalIcon').textContent = v.icon;
-  document.getElementById('hilalTitle').style.color = v.color;
-  document.getElementById('hilalTitle').textContent = v.title;
-  var html = v.desc;
-  if(reasons.length) html += '<div style="margin-top:.5rem;font-size:11.5px;color:var(--text3);">' + reasons.map(function(r){return '• '+r;}).join('<br>') + '</div>';
-  document.getElementById('hilalDesc').innerHTML = html;
-
-  var loc = (cityName||'Senegal') + ' — ' + now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}) + ' a ' + now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-  document.getElementById('moonLoc').textContent = '📍 ' + loc;
-  document.getElementById('moonData').style.display = 'block';
-  document.getElementById('moonMsg').textContent = '';
+  function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+  function setH(id,v){var e=document.getElementById(id);if(e)e.innerHTML=v;}
+  set("moonEmoji",phase.e); set("moonPhaseName",phase.n);
+  set("moonAge",age.toFixed(1)); set("moonIllum",illum);
+  set("moonNextNew",fdt(nextNew)); set("moonNextFull",fd(nextFull));
+  set("hilalIcon",icon); set("hilalTitle",title);
+  setH("hilalDesc",desc);
+  var vEl=document.getElementById("hilalVerdict");
+  if(vEl){vEl.style.background="linear-gradient(135deg,"+bg+",transparent)";vEl.style.border="1.5px solid "+border;}
+  var ti=document.getElementById("hilalTitle"); if(ti)ti.style.color=color;
+  set("moonLoc","📍 "+(city||"Senegal")+" - "+now.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"})+" a "+now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}));
+  var md=document.getElementById("moonData"); if(md)md.style.display="block";
+  var mm=document.getElementById("moonMsg"); if(mm)mm.textContent="";
 }
 
-function moonGo() {
-  var city=(document.getElementById('moonCityIn').value||'').trim();
-  if(!city){ moonGoNow('Sénégal',14.15,-16.08); return; }
-  var found = _cityFind(city);
-  if(found){
-    _moonRun(found.lat, found.lng, found.name);
-  } else {
-    document.getElementById('moonMsg').textContent='❌ Ville inconnue — essayez: Dakar, Thiès, Kaolack...';
-    _moonRun(14.15,-16.08, city+' (approximatif)');
-  }
+function moonGo(){
+  var inp=document.getElementById("moonCityIn");
+  var city=inp?inp.value.trim():"";
+  if(!city){_moonRun(14.15,-16.08,"Senegal");return;}
+  var f=_cityFind(city);
+  if(f){_moonRun(f.lat,f.lng,f.name);}
+  else{_moonRun(14.15,-16.08,city);var m=document.getElementById("moonMsg");if(m)m.textContent="Ville inconnue - calcul pour Senegal";}
 }
 
-function moonGoNow(label, lat, lng) {
-  _moonRun(lat||14.15, lng||-16.08, label||'Sénégal');
-}
+function moonGoNow(label,lat,lng){_moonRun(lat||14.15,lng||-16.08,label||"Senegal");}
 
-function moonGPS() {
-  if(!navigator.geolocation){ document.getElementById('moonMsg').textContent='❌ GPS non disponible'; moonGoNow('Sénégal',14.15,-16.08); return; }
-  document.getElementById('moonMsg').textContent='📍 Localisation GPS...';
+function moonGPS(){
+  var msg=document.getElementById("moonMsg");
+  if(!navigator.geolocation){moonGoNow("Senegal",14.15,-16.08);return;}
+  if(msg)msg.textContent="Localisation...";
   navigator.geolocation.getCurrentPosition(
-    function(p){
-      _moonRun(p.coords.latitude, p.coords.longitude, 'GPS ('+p.coords.latitude.toFixed(2)+'°, '+p.coords.longitude.toFixed(2)+'°)');
-    },
-    function(){ document.getElementById('moonMsg').textContent='❌ GPS refusé'; moonGoNow('Sénégal',14.15,-16.08); },
+    function(p){_moonRun(p.coords.latitude,p.coords.longitude,"GPS");},
+    function(){moonGoNow("Senegal",14.15,-16.08);},
     {timeout:8000}
   );
 }
 
-/* Compatibilité */
-function moonCalc(){ moonGoNow('',14.15,-16.08); }
-function moonCitySearch(){ moonGo(); }
-
-
-  /* Phase */
-  var phases = [
-    { max: 1.5,  emoji: '🌑', name: 'Nouvelle Lune' },
-    { max: 7.4,  emoji: '🌒', name: 'Croissant croissant' },
-    { max: 14.8, emoji: '🌓', name: 'Premier Quartier' },
-    { max: 22.1, emoji: '🌔', name: 'Lune Gibbeuse croissante' },
-    { max: 23.6, emoji: '🌕', name: 'Pleine Lune' },
-    { max: 29.0, emoji: '🌘', name: 'Lune Gibbeuse décroissante' },
-    { max: 99,   emoji: '🌑', name: 'Croissant décroissant' }
-  ];
-  var phase = phases.find(function(p){ return age < p.max; }) || phases[0];
-
-  /* Prochaines NL et PL */
-  var daysToNewMoon = SYNODIC - age;
-  var daysToPL = (SYNODIC / 2) - age;
-  if (daysToPL < 0) daysToPL += SYNODIC;
-
-  var nextNew = new Date(now.getTime() + daysToNewMoon * 86400000);
-  var nextFull = new Date(now.getTime() + daysToPL * 86400000);
-
-  function fmtDate(d) {
-    return d.toLocaleDateString('fr-FR', { day:'numeric', month:'short' });
-  }
-
-  /* ── Critère de visibilité Hilal (Odeh 2006) ── */
-  /* Le Hilal est généralement visible si :
-     - âge > 15 heures après NL
-     - illumination > 1%
-     - Critère simplifié : visible si 1.5 < age < 3.5 jours */
-  var hilalVisible = age >= 1.0 && age <= 3.5;
-  var hilalPossible = age >= 0.7 && age < 1.0;
-  var hilalBientot = daysToNewMoon <= 2;
-
-  var verdict;
-  if (hilalVisible) {
-    verdict = {
-      bg: 'linear-gradient(135deg,rgba(39,174,96,.15),rgba(39,174,96,.05))',
-      border: '1.5px solid rgba(39,174,96,.4)',
-      icon: '🌙✅',
-      title: 'Hilal potentiellement visible',
-      desc: 'Le croissant a ' + age.toFixed(1) + ' jours. Regardez à l\'ouest juste après le coucher du soleil, près de l\'horizon. Sa visibilité dépend aussi des conditions météo.',
-      color: '#27AE60'
-    };
-  } else if (hilalPossible) {
-    verdict = {
-      bg: 'linear-gradient(135deg,rgba(243,156,18,.12),rgba(243,156,18,.04))',
-      border: '1.5px solid rgba(243,156,18,.4)',
-      icon: '🌙⚠️',
-      title: 'Visibilité incertaine',
-      desc: 'Le croissant est très jeune (' + age.toFixed(1) + ' jours). Difficile à voir à l\'œil nu. Conditions météo parfaites requises.',
-      color: '#e67e22'
-    };
-  } else if (hilalBientot) {
-    verdict = {
-      bg: 'linear-gradient(135deg,rgba(52,73,94,.1),rgba(52,73,94,.05))',
-      border: '1.5px solid rgba(52,73,94,.3)',
-      icon: '🌑⏳',
-      title: 'Nouvelle Lune dans ' + Math.round(daysToNewMoon) + ' jours',
-      desc: 'Le Hilal ne sera pas visible. Attend la prochaine nouvelle lune le ' + fmtDate(nextNew) + '.',
-      color: 'var(--text2)'
-    };
-  } else {
-    verdict = {
-      bg: 'linear-gradient(135deg,rgba(192,57,43,.1),rgba(192,57,43,.04))',
-
+function moonCalc(){moonGoNow("Senegal",14.15,-16.08);}
+function moonCitySearch(){moonGo();}
 </script>
 
 
