@@ -1001,6 +1001,12 @@ body{
 .ab-eng:hover:not(.active){background:rgba(212,175,55,.2)}
 .ab-eng-istikh{border-color:rgba(147,112,219,.6) !important;color:rgba(216,191,255,.85) !important}
 .ab-eng-istikh.active{background:linear-gradient(135deg,#4B0082,#7B2FBE) !important;border-color:#9B59B6 !important;color:#fff !important}
+.ab-eng-conseil{border-color:rgba(231,76,60,.5) !important;color:rgba(255,180,170,.85) !important}
+.ab-eng-conseil.active{background:linear-gradient(135deg,#922B21,#E74C3C) !important;border-color:#E74C3C !important;color:#fff !important}
+.ab-eng-reve{border-color:rgba(52,152,219,.5) !important;color:rgba(174,214,241,.85) !important}
+.ab-eng-reve.active{background:linear-gradient(135deg,#1A5276,#2E86C1) !important;border-color:#3498DB !important;color:#fff !important}
+.ab-eng-sensible{border-color:rgba(243,156,18,.5) !important;color:rgba(253,212,160,.85) !important}
+.ab-eng-sensible.active{background:linear-gradient(135deg,#7D6608,#D4AC0D) !important;border-color:#F39C12 !important;color:#fff !important}
 .ab-istikh-form{background:rgba(75,0,130,.12);border:1.5px solid rgba(147,112,219,.35);border-radius:16px;padding:1.1rem 1.2rem;margin:.5rem 0 .8rem}
 .ab-istikh-label{font-size:11px;color:rgba(216,191,255,.6);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.3rem;margin-top:.6rem}
 .ab-istikh-label:first-child{margin-top:0}
@@ -3269,8 +3275,6 @@ html { background: #0a0a0a; }
 <section id="sec-ens" class="sec">
 <style>
 .rp-wrap{display:flex;flex-direction:column;min-height:100%;background:#07100a;}
-
-/* HERO */
 .rp-hero{position:relative;background:linear-gradient(170deg,#071410 0%,#0d2318 55%,#0a1a10 100%);padding:1.8rem 1.4rem 1.1rem;text-align:center;overflow:hidden;}
 .rp-rings{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
 .rp-ring{position:absolute;border-radius:50%;border:1px solid rgba(212,175,55,.1);animation:rpRing 4s ease-in-out infinite;}
@@ -3279,7 +3283,6 @@ html { background: #0a0a0a; }
 .rp-ring:nth-child(3){width:270px;height:270px;animation-delay:1.4s;}
 .rp-ring:nth-child(4){width:390px;height:390px;animation-delay:2.1s;}
 @keyframes rpRing{0%,100%{transform:scale(1);opacity:.18}50%{transform:scale(1.05);opacity:.55}}
-
 .rp-disc-wrap{position:relative;width:110px;height:110px;margin:0 auto .9rem;z-index:2;}
 .rp-disc{width:110px;height:110px;border-radius:50%;
   background:conic-gradient(from 0deg,#0F7B3F 0%,#1a9650 12%,#D4AF37 12%,#b8962e 25%,#0F7B3F 25%,#145a32 38%,#D4AF37 38%,#f0dc82 50%,#0F7B3F 50%,#0a5c2e 62%,#D4AF37 62%,#c8a200 75%,#0F7B3F 75%,#1a9650 88%,#D4AF37 88%,#b8962e 100%);
@@ -3290,40 +3293,39 @@ html { background: #0a0a0a; }
 .rp-needle{position:absolute;top:5px;right:-8px;width:44px;height:3px;background:linear-gradient(90deg,var(--gold),rgba(212,175,55,.15));border-radius:2px;transform-origin:right center;transform:rotate(-28deg);transition:transform .6s cubic-bezier(.34,1.56,.64,1);z-index:4;}
 .rp-needle.on{transform:rotate(-6deg);}
 .rp-needle::after{content:'';position:absolute;right:-4px;top:-4px;width:11px;height:11px;background:var(--gold);border-radius:50%;box-shadow:0 0 8px rgba(212,175,55,.65);}
-
 .rp-name{font-family:'Amiri',serif;font-size:21px;color:#fff;margin-bottom:.12rem;position:relative;z-index:2;}
 .rp-ar{font-family:'Amiri',serif;font-size:15px;color:var(--gold2);direction:rtl;margin-bottom:.18rem;position:relative;z-index:2;}
 .rp-freq{font-size:11px;font-weight:700;letter-spacing:.11em;color:rgba(255,255,255,.35);text-transform:uppercase;position:relative;z-index:2;}
 .rp-live{display:inline-flex;align-items:center;gap:.3rem;background:rgba(39,174,96,.15);border:1px solid rgba(39,174,96,.3);border-radius:20px;padding:.18rem .6rem;font-size:10.5px;font-weight:700;color:#27AE60;margin:.5rem auto 0;position:relative;z-index:2;}
 .rp-dot{width:5px;height:5px;background:#27AE60;border-radius:50%;animation:rpBlink 1.3s ease-in-out infinite;}
 @keyframes rpBlink{0%,100%{opacity:1}50%{opacity:.12}}
-
 .rp-viz{display:flex;align-items:flex-end;justify-content:center;gap:2.5px;height:28px;margin:.8rem 0 0;position:relative;z-index:2;}
 .rp-bar{width:3px;background:linear-gradient(180deg,var(--gold) 0%,var(--g2) 100%);border-radius:2px;min-height:3px;}
 .rp-bar.on{animation:rpBar var(--d,.8s) ease-in-out infinite alternate;}
 @keyframes rpBar{from{height:3px}to{height:var(--h,14px)}}
-
-/* CONTROLS */
 .rp-ctrl{background:#0c1810;padding:1.2rem 1.4rem 1rem;display:flex;flex-direction:column;align-items:center;gap:.8rem;}
-
 .rp-vol-row{display:flex;align-items:center;gap:.7rem;width:100%;}
 .rp-vol-ico{font-size:14px;color:rgba(255,255,255,.4);flex-shrink:0;}
 .rp-vol{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;outline:none;cursor:pointer;background:linear-gradient(90deg,var(--g2) 80%,rgba(255,255,255,.1) 80%);}
 .rp-vol::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--gold);box-shadow:0 0 7px rgba(212,175,55,.5);cursor:pointer;}
-
 .rp-btn{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--g1),var(--g2));border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:24px;color:#fff;box-shadow:0 4px 22px rgba(15,123,63,.5),0 0 0 6px rgba(15,123,63,.12);transition:all .2s;}
 .rp-btn:hover{transform:scale(1.08);}
 .rp-btn:active{transform:scale(.96);}
 .rp-btn.loading{animation:rpBtnPulse 1s ease-in-out infinite;}
 @keyframes rpBtnPulse{0%,100%{box-shadow:0 4px 22px rgba(15,123,63,.5),0 0 0 6px rgba(15,123,63,.12)}50%{box-shadow:0 4px 22px rgba(15,123,63,.8),0 0 0 14px rgba(15,123,63,.05)}}
-
-.rp-status{font-size:12px;color:rgba(255,255,255,.38);letter-spacing:.04em;min-height:16px;text-align:center;}
+.rp-status{font-size:12px;color:rgba(255,255,255,.38);letter-spacing:.04em;min-height:16px;text-align:center;width:100%;}
 .rp-status.on{color:#27AE60;font-weight:600;}
 .rp-status.err{color:#e67e22;}
+.rp-now{background:#0d1f14;margin:.4rem 1.2rem;border-radius:12px;padding:.7rem 1rem;display:none;align-items:center;gap:.8rem;border:1px solid rgba(212,175,55,.15);}
+.rp-now.visible{display:flex;}
+.rp-now-art{width:42px;height:42px;border-radius:8px;object-fit:cover;flex-shrink:0;background:rgba(212,175,55,.1);}
+.rp-now-info{flex:1;min-width:0;}
+.rp-now-label{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,175,55,.5);margin-bottom:.15rem;}
+.rp-now-track{font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rp-now-artist{font-size:11px;color:rgba(255,255,255,.45);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 </style>
 
 <div class="rp-wrap">
-
   <div class="rp-hero">
     <div class="rp-rings"><div class="rp-ring"></div><div class="rp-ring"></div><div class="rp-ring"></div><div class="rp-ring"></div></div>
     <div class="rp-disc-wrap">
@@ -3337,6 +3339,16 @@ html { background: #0a0a0a; }
     <div class="rp-viz" id="rpViz"></div>
   </div>
 
+  <!-- En cours de diffusion -->
+  <div class="rp-now" id="rpNow">
+    <img class="rp-now-art" id="rpArt" src="" alt="">
+    <div class="rp-now-info">
+      <div class="rp-now-label">🎵 En cours</div>
+      <div class="rp-now-track" id="rpTrack">—</div>
+      <div class="rp-now-artist" id="rpArtist">Radio Al-Faydha</div>
+    </div>
+  </div>
+
   <div class="rp-ctrl">
     <div class="rp-vol-row">
       <span class="rp-vol-ico" id="rpVolIco">🔈</span>
@@ -3346,32 +3358,40 @@ html { background: #0a0a0a; }
     <button class="rp-btn" id="rpBtn" onclick="rpToggle()">▶</button>
     <div class="rp-status" id="rpStatus">Appuyez ▶ pour écouter</div>
   </div>
-
 </div>
 
 <audio id="rpAudio" preload="none" playsinline webkit-playsinline></audio>
 
 <script>
 (function(){
-  /* ══ RADIO AL-FAYDHA — Player unifié PC + Mobile ══ */
-  var STREAMS = [
+  /* ══════════════════════════════════════════════════════
+     RADIO AL-FAYDHA — Stream via API MyTuner/radio-senegal
+     L'API retourne l'URL déchiffrée en temps réel
+  ══════════════════════════════════════════════════════ */
+
+  var RADIO_SLUG  = 'radio-alfayda';
+  var RADIO_ID    = 439363;
+  var API_BASE    = 'https://www.radio-senegal.com';
+  var META_API    = 'https://metadata-api.mytuner.mobi/v2/' + RADIO_ID;
+
+  /* Fallbacks si l'API échoue */
+  var FALLBACK_STREAMS = [
     'https://c7.radioboss.fm/stream/379',
-    'https://c7.radioboss.fm:8010/stream/379',
     'https://lyartech.fastcast4u.com/stream',
-    'https://stream.zeno.fm/OUE5xD8nztzuv',
-    'https://stream.zeno.fm/mhpQee8nztzuv'
+    'https://stream.zeno.fm/OUE5xD8nztzuv'
   ];
 
-  var audio  = document.getElementById('rpAudio');
-  var btn    = document.getElementById('rpBtn');
-  var stat   = document.getElementById('rpStatus');
-  var disc   = document.getElementById('rpDisc');
-  var needle = document.getElementById('rpNeedle');
-  var volEl  = document.getElementById('rpVol');
-  var volIco = document.getElementById('rpVolIco');
-  var bars   = [];
+  var audio   = document.getElementById('rpAudio');
+  var btn     = document.getElementById('rpBtn');
+  var stat    = document.getElementById('rpStatus');
+  var disc    = document.getElementById('rpDisc');
+  var needle  = document.getElementById('rpNeedle');
+  var volEl   = document.getElementById('rpVol');
+  var volIco  = document.getElementById('rpVolIco');
+  var bars    = [];
   var playing = false;
   var timer   = null;
+  var metaTimer = null;
 
   /* Visualizer */
   var viz = document.getElementById('rpViz');
@@ -3385,64 +3405,132 @@ html { background: #0a0a0a; }
   function setUI(on){
     playing=on; btn.textContent=on?'⏸':'▶'; btn.classList.remove('loading');
     disc.classList.toggle('spin',on); needle.classList.toggle('on',on); vizOn(on);
+    if(on) startMetaPolling(); else stopMetaPolling();
   }
   function setSt(msg,cls){ stat.className='rp-status'+(cls?' '+cls:''); stat.textContent=msg; }
 
-  function tryStream(idx){
-    if(idx>=STREAMS.length){
-      setUI(false);
-      setSt('Stream indisponible — réessayez plus tard','err');
-      return;
+  /* ── Métadonnées en cours ── */
+  function startMetaPolling(){
+    fetchMeta();
+    metaTimer = setInterval(fetchMeta, 15000);
+  }
+  function stopMetaPolling(){
+    clearInterval(metaTimer);
+    document.getElementById('rpNow').classList.remove('visible');
+  }
+  function fetchMeta(){
+    fetch(META_API, {headers:{'Accept':'application/json'}})
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        var title  = (d&&d.title)  || '';
+        var artist = (d&&d.artist) || '';
+        var art    = (d&&d.image)  || '';
+        if(title){
+          document.getElementById('rpTrack').textContent  = title;
+          document.getElementById('rpArtist').textContent = artist || 'Radio Al-Faydha';
+          if(art) document.getElementById('rpArt').src = art;
+          document.getElementById('rpNow').classList.add('visible');
+        }
+      }).catch(function(){});
+  }
+
+  /* ── Récupérer le vrai stream URL via l'API radio-senegal ── */
+  function fetchStreamUrl(cb){
+    /* L'API MyTuner retourne le stream URL pour ce radio_id */
+    var endpoints = [
+      API_BASE + '/ajax/play/?radio_id=' + RADIO_ID,
+      API_BASE + '/ajax/streaming/?radio_id=' + RADIO_ID,
+      API_BASE + '/ajax/radio_stream/?slug=' + RADIO_SLUG,
+      'https://mytuner-radio.com/api/radios/' + RADIO_ID + '/?lang=fr'
+    ];
+    var idx = 0;
+    function tryEndpoint(){
+      if(idx >= endpoints.length){ cb(null); return; }
+      fetch(endpoints[idx++], {
+        headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'},
+        credentials:'omit'
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        /* Chercher l'URL dans différents formats de réponse */
+        var url = data.url || data.stream_url || data.streamURL
+               || data.radio_url || (data.streams&&data.streams[0])
+               || null;
+        if(url && (url.startsWith('http'))){
+          cb(url);
+        } else {
+          tryEndpoint();
+        }
+      })
+      .catch(function(){ tryEndpoint(); });
     }
-    audio.src=STREAMS[idx];
+    tryEndpoint();
+  }
+
+  /* ── Jouer une URL ── */
+  function playUrl(url){
+    audio.src = url;
     audio.load();
-    setSt('Connexion '+(idx+1)+'/'+STREAMS.length+'...','');
+    setSt('Connexion...','');
     clearTimeout(timer);
-    timer=setTimeout(function(){ if(!playing){ audio.pause(); tryStream(idx+1); } },7000);
-    var p=audio.play();
+    timer = setTimeout(function(){
+      if(!playing){ audio.pause(); tryFallbacks(0); }
+    }, 8000);
+    var p = audio.play();
     if(p&&p.catch) p.catch(function(e){
       clearTimeout(timer);
-      // NotAllowedError = besoin interaction utilisateur, pas CORS
-      if(e&&e.name==='NotAllowedError'){
-        setSt('Appuyez ▶ pour démarrer','');
-        setUI(false);
-      } else {
-        tryStream(idx+1);
-      }
+      if(e&&e.name==='NotAllowedError'){ setSt('Appuyez ▶ pour démarrer',''); setUI(false); }
+      else { tryFallbacks(0); }
     });
   }
 
-  window.rpToggle=function(){
+  function tryFallbacks(idx){
+    if(idx >= FALLBACK_STREAMS.length){ setUI(false); setSt('Stream indisponible','err'); return; }
+    audio.src = FALLBACK_STREAMS[idx];
+    audio.load();
+    setSt('Tentative '+(idx+1)+'/'+FALLBACK_STREAMS.length+'...','');
+    clearTimeout(timer);
+    timer = setTimeout(function(){ if(!playing){ audio.pause(); tryFallbacks(idx+1); } }, 7000);
+    var p = audio.play();
+    if(p&&p.catch) p.catch(function(){ clearTimeout(timer); tryFallbacks(idx+1); });
+  }
+
+  window.rpToggle = function(){
     if(playing){
       audio.pause(); audio.src='';
       setUI(false); setSt('En pause','');
       clearTimeout(timer);
     } else {
       btn.classList.add('loading');
-      setSt('Connexion...','');
-      tryStream(0);
+      setSt('Récupération du stream...','');
+      /* 1. Essayer l'API pour avoir le vrai URL */
+      fetchStreamUrl(function(url){
+        if(url){ playUrl(url); }
+        else { tryFallbacks(0); }
+      });
     }
   };
 
-  audio.addEventListener('playing',function(){
+  audio.addEventListener('playing', function(){
     clearTimeout(timer); setUI(true);
     setSt('● En direct · Radio Al-Faydha 90.1 FM','on');
   });
-  audio.addEventListener('waiting',function(){ setSt('Mise en mémoire tampon...',''); });
-  audio.addEventListener('stalled',function(){ setSt('Signal faible...',''); });
-  audio.addEventListener('error',function(){
-    clearTimeout(timer); setUI(false); tryStream((STREAMS.indexOf(audio.src)+1)||1);
+  audio.addEventListener('waiting', function(){ setSt('Mise en mémoire tampon...',''); });
+  audio.addEventListener('stalled', function(){ setSt('Signal faible...',''); });
+  audio.addEventListener('error',   function(){
+    clearTimeout(timer); setUI(false);
+    tryFallbacks(0);
   });
 
   /* Volume */
-  audio.volume=0.8;
-  volEl.addEventListener('input',function(){
+  audio.volume = 0.8;
+  volEl.addEventListener('input', function(){
     var v=this.value/100; audio.volume=v;
     this.style.background='linear-gradient(90deg,#1a9650 '+this.value+'%,rgba(255,255,255,.1) '+this.value+'%)';
     volIco.textContent=v===0?'🔇':v<0.5?'🔈':'🔊';
   });
 
-  /* Déverrouiller AudioContext sur iOS au premier touch */
+  /* iOS unlock */
   document.addEventListener('touchstart',function u(){
     var C=window.AudioContext||window.webkitAudioContext;
     if(C){try{new C().resume();}catch(e){}}
@@ -3673,6 +3761,9 @@ html { background: #0a0a0a; }
     <button class="ab-eng"        id="eng-tasaw"      onclick="setEngine('tasaw',this)">&#x2728; Tasawwuf</button>
     <button class="ab-eng"        id="eng-multi"      onclick="setEngine('multi',this)">&#x1F52E; Multi-IA</button>
     <button class="ab-eng ab-eng-istikh" id="eng-istikh" onclick="setEngine('istikh',this)">&#x1F319; Istikhara</button>
+    <button class="ab-eng ab-eng-conseil" id="eng-conseil" onclick="setEngine('conseil',this)">&#x1F91D; Conseiller</button>
+    <button class="ab-eng ab-eng-reve"    id="eng-reve"    onclick="setEngine('reve',this)">&#x1F319; Rêves</button>
+    <button class="ab-eng ab-eng-sensible" id="eng-sensible" onclick="setEngine('sensible',this)">&#x1F512; Confidentiel</button>
   </div>
 </div>
 
@@ -6436,15 +6527,24 @@ var AB_SYSTEMS = {
   baye: "Tu es un assistant spirituel islamique spécialisé dans les enseignements de Cheikh Ibrahim Niass (Baye Niass), fondateur de la Tijaniyya Niassène et de la Faydha. Tu réponds en français avec respect et profondeur spirituelle. Tu cites les œuvres de Baye Niass (Kashif al-Ilbas, Jawahir al-Rasa'il, Rimah, etc.) quand pertinent. Tu inclus parfois une courte citation en arabe (translittérée) pour enrichir ta réponse. Tu es bienveillant, savant, et ancré dans la tradition soufie Tijaniyya. Commence toujours par une formule de bénédiction appropriée.",
   quran: "Tu es un assistant spécialisé dans le Coran et son exégèse (tafsir), avec une perspective Tijaniyya. Tu réponds en français. Tu cites les versets coraniques en arabe et leur traduction. Tu expliques le contexte de révélation (asbab al-nuzul) quand pertinent. Tu fais des liens avec les enseignements de Cheikh Ibrahim Niass sur les versets mentionnés.",
   tasaw: "Tu es un maître du tasawwuf (soufisme) spécialisé dans la voie Tijaniyya et les enseignements de Cheikh Ibrahim Niass sur la Marifah (connaissance divine), le Fana (extinction du soi) et la Baqa (subsistance en Dieu). Tu réponds en français avec profondeur mystique. Tu utilises les termes arabes du soufisme avec leurs explications. Tu guides l'aspirant (murid) sur le chemin spirituel.",
-  multi: "Tu es un système multi-IA qui analyse une question islamique sous 3 angles complémentaires : 1) Perspective Baye Niass et Tijaniyya, 2) Perspective coranique et hadith, 3) Perspective du tasawwuf classique (Ghazali, Ibn Arabi, etc.). Structure ta réponse en 3 sections clairement séparées avec emoji. Réponds en français avec rigueur et bienveillance."
+  multi: "Tu es un système multi-IA qui analyse une question islamique sous 3 angles complémentaires : 1) Perspective Baye Niass et Tijaniyya, 2) Perspective coranique et hadith, 3) Perspective du tasawwuf classique (Ghazali, Ibn Arabi, etc.). Structure ta réponse en 3 sections clairement séparées avec emoji. Réponds en français avec rigueur et bienveillance.",
+
+  conseil: "Tu es un conseiller confidentiel, intelligent et profondément humain. Les utilisateurs viennent te poser des questions personnelles très intimes qu'ils ne peuvent poser à personne d'autre — relations, mariage, famille, conflits, choix de vie, trahisons, solitude, doutes. Tu réponds toujours avec : empathie sincère, profondeur, intelligence, et une discrétion absolue. Tu ne juges JAMAIS. Tu aides à comprendre la situation, à l'analyser avec clarté, et à trouver des pistes concrètes. Tu peux t'inspirer de la sagesse islamique, du bon sens humain et de la psychologie sans dogmatisme. Quand la situation est complexe, pose 1 ou 2 questions ciblées avant de répondre. Structure tes réponses ainsi : 1. 🫂 Ce que j'entends (résumé empathique) 2. 🔍 Ce que ça révèle (analyse) 3. 💡 Ce que je te conseille (pistes concrètes) 4. 🤲 Une parole de sagesse (optionnel). Ton ton est celui d'un ami sage, bienveillant et expérimenté. Réponds en français.",
+
+  reve: "Tu es un interprète de rêves inspiré des principes traditionnels islamiques, notamment l'approche de l'imam Ibn Sirin (الإمام ابن سيرين). L'utilisateur te décrit un rêve. Tu dois : 1) Identifier les symboles importants du rêve. 2) Proposer des significations possibles selon la symbolique islamique et universelle. 3) Expliquer de manière claire et accessible. Tu restes toujours prudent : tu ne donnes jamais une interprétation absolue, tu proposes plusieurs pistes possibles. Structure obligatoire de ta réponse : 📖 Résumé du rêve (en une phrase), 🔑 Symboles clés identifiés (liste avec explication de chaque symbole), 🌙 Interprétation possible (selon Ibn Sirin et la tradition islamique), 💡 Conseil (que faire avec cette interprétation). Rappelle toujours que seul Allah connaît la vraie signification des rêves. Réponds en français avec des termes arabes expliqués quand pertinent.",
+
+  sensible: "Tu es un conseiller confidentiel et bienveillant. L'utilisateur te pose une question sensible, difficile ou tabou — relations intimes, problèmes de couple, questions sur la sexualité dans le mariage, infidélité, dépression, addictions, situations honteuses, secrets. Tu réponds avec : respect absolu, intelligence, discrétion totale. Tu ne juges JAMAIS. Tu aides à comprendre et à prendre une décision réfléchie. Tu évites les réponses extrêmes ou dangereuses. Tu proposes des conseils équilibrés, humains, et réalistes. Tu t'appuies sur la sagesse islamique quand c'est pertinent, sans être moralisateur. Si la situation nécessite une aide professionnelle (médecin, psychologue, imam), tu le suggères avec douceur. Structure : 1. 🔒 Réponse personnalisée (s'adresse directement à la personne) 2. 🧠 Analyse de la situation 3. 🛤️ Pistes concrètes 4. 💬 Un mot de réconfort. Réponds en français avec humanité et profondeur."
 };
 
 var AB_ENGINE_LABELS = {
-  baye:  '🕌 Baye IA',
-  quran: '📖 Coran',
-  tasaw: '✨ Tasawwuf',
-  multi: '🔮 Multi-IA',
-  istikh:'🌙 Istikhara'
+  baye:    '🕌 Baye IA',
+  quran:   '📖 Coran',
+  tasaw:   '✨ Tasawwuf',
+  multi:   '🔮 Multi-IA',
+  istikh:  '🌙 Istikhara',
+  conseil: '🤝 Conseiller',
+  reve:    '🌙 Rêves',
+  sensible:'🔒 Confidentiel'
 };
 
 var AB_SUGGESTIONS = {
@@ -6478,6 +6578,30 @@ var AB_SUGGESTIONS = {
     {icon:'🔮', q:"Quelle est la place de l'amour divin (Hubb) en Islam ?", cat:"Analyse multi-IA"},
     {icon:'💎', q:"Comment concilier Sharia et Haqiqa selon les maîtres soufis ?", cat:"Analyse multi-IA"},
     {icon:'🌍', q:"L'Islam africain et la Faydha : un pont entre traditions", cat:"Analyse multi-IA"}
+  ],
+  conseil: [
+    {icon:'💔', q:"Je suis amoureux/se mais ma famille s'oppose à cette relation. Que faire ?", cat:"Relations"},
+    {icon:'💍', q:"Mon conjoint me fait souffrir en silence. Comment lui parler ?", cat:"Mariage"},
+    {icon:'😔', q:"Je me sens seul(e) et incompris(e) de tout le monde autour de moi", cat:"Solitude"},
+    {icon:'🤔', q:"J'ai une décision très difficile à prendre et je ne sais pas quoi choisir", cat:"Décision"},
+    {icon:'😰', q:"Quelqu'un m'a trahi profondément. Comment guérir de cette blessure ?", cat:"Trahison"},
+    {icon:'🏠', q:"Il y a des conflits graves dans ma famille. Comment gérer ça ?", cat:"Famille"}
+  ],
+  reve: [
+    {icon:'🌊', q:"J'ai rêvé que je me noyais dans une mer immense mais je ne mourais pas", cat:"Eau"},
+    {icon:'🐍', q:"J'ai rêvé d'un serpent qui me poursuivait sans me mordre", cat:"Animal"},
+    {icon:'🌟', q:"J'ai rêvé du Prophète ﷺ. Que signifie ce rêve béni ?", cat:"Prophétique"},
+    {icon:'👤', q:"J'ai rêvé d'un proche décédé qui me parlait. Que veut-il me dire ?", cat:"Les morts"},
+    {icon:'🏃', q:"Je rêve souvent que je cours mais mes jambes ne m'obéissent pas", cat:"Récurrent"},
+    {icon:'🦁', q:"J'ai rêvé d'un lion qui me regardait fixement sans m'attaquer", cat:"Animal"}
+  ],
+  sensible: [
+    {icon:'❤️', q:"Mon conjoint(e) ne s'intéresse plus à moi. Que faire ?", cat:"Vie intime"},
+    {icon:'😞', q:"J'ai commis quelque chose dont j'ai honte et je ne sais pas quoi faire", cat:"Repentir"},
+    {icon:'💭', q:"J'ai des pensées que je ne peux partager avec personne. Est-ce normal ?", cat:"Pensées"},
+    {icon:'💔', q:"Mon conjoint(e) m'a trompé(e). Dois-je pardonner ou partir ?", cat:"Infidélité"},
+    {icon:'😰', q:"Je souffre en silence depuis longtemps et je n'en peux plus", cat:"Détresse"},
+    {icon:'🔓', q:"Il y a un secret que je porte seul(e) depuis des années", cat:"Secret"}
   ]
 };
 
