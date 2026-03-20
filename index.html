@@ -246,17 +246,35 @@ body{
   display:none;
   position:fixed;top:0;left:50%;transform:translateX(-50%);
   width:100%;max-width:inherit;z-index:600;
-  background:rgba(15,123,63,.95);
-  padding:.4rem 1rem .4rem;
-  align-items:center;gap:.6rem;
-  border-bottom:1px solid rgba(212,175,55,.2);
-  backdrop-filter:blur(6px);
+  background:linear-gradient(135deg,rgba(10,92,46,.97),rgba(15,123,63,.95));
+  padding:.45rem 1rem .45rem;
+  align-items:center;gap:.7rem;
+  border-bottom:1.5px solid rgba(212,175,55,.3);
+  backdrop-filter:blur(8px);
+  box-shadow:0 2px 12px rgba(0,0,0,.18);
 }
 #userAvatarBar.show{display:flex}
-#userAvatarBar img{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--gold);object-fit:cover}
-#userAvatarName{font-size:13px;color:rgba(255,255,255,.85);flex:1;font-weight:500}
-#userSignOutBtn{font-size:12px;color:rgba(212,175,55,.7);cursor:pointer;background:none;border:none;font-family:'Roboto',sans-serif;padding:0}
-#userSignOutBtn:hover{color:var(--gold)}
+#userAvatarBar img{
+  width:34px;height:34px;border-radius:50%;
+  border:2px solid var(--gold);object-fit:cover;
+  flex-shrink:0;box-shadow:0 0 0 3px rgba(212,175,55,.2);
+}
+/* Bloc nom + profil fusionnés */
+#userAvatarName{
+  font-size:13px;color:#fff;flex:1;font-weight:600;
+  display:flex;flex-direction:column;gap:1px;
+}
+#userAvatarName .bar-role{
+  font-size:10px;color:rgba(212,175,55,.8);
+  font-weight:500;letter-spacing:.04em;font-family:'Roboto',sans-serif;
+}
+#userSignOutBtn{
+  font-size:11px;color:rgba(212,175,55,.75);cursor:pointer;
+  background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.3);
+  border-radius:100px;padding:.2rem .65rem;
+  font-family:'Roboto',sans-serif;transition:all .2s;flex-shrink:0;
+}
+#userSignOutBtn:hover{color:#000;background:var(--gold);border-color:var(--gold)}
 
 /* ══ ZIKR ══ */
 .zikr-choice{display:flex;align-items:center;justify-content:space-between;background:var(--white);border:1.5px solid var(--gold3);border-radius:12px;padding:.6rem 1rem;cursor:pointer;transition:all .2s;width:100%;text-align:right}
@@ -269,6 +287,17 @@ body{
 .zvbar{transition:height .15s ease}
 .zvbar.active{background:var(--gold) !important}
 @keyframes zvPulse{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.4)}}
+
+/* ══ UMMA — Verset & Citation ══ */
+#umma-verset-block{
+  background:linear-gradient(135deg,rgba(15,123,63,.04),rgba(212,175,55,.04));
+  animation:ummaFadeIn .6s ease;
+}
+#umma-citation-block{
+  background:rgba(255,255,255,.6);
+  animation:ummaFadeIn .8s ease;
+}
+@keyframes ummaFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 /* ══ WIDGET PRIÈRE PAGE UMMA — Cartes lisibles ══ */
 .wlc-pray-card{
@@ -1747,20 +1776,14 @@ html { background: #0a0a0a; }
 
 </div>
 
-<!-- Barre utilisateur connecté (affiché après connexion Google) -->
+<!-- Barre profil unifiée (avatar + nom + rôle + déconnexion) -->
 <div id="userAvatarBar">
   <img id="userAvatarImg" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="">
-  <span id="userAvatarName">—</span>
+  <span id="userAvatarName">
+    <span id="userAvatarNameText">—</span>
+    <span class="bar-role" id="userAvatarRole"></span>
+  </span>
   <button id="userSignOutBtn" onclick="signOutGoogle()">Déconnexion</button>
-</div>
-
-<!-- PROFIL — affiché sous la barre utilisateur dans toutes les sections -->
-<div id="ummaProfileBlock" style="display:none;padding:.65rem 1.2rem;background:var(--gold4);border-bottom:1px solid var(--gold3);flex-shrink:0;position:sticky;top:44px;z-index:490;flex-direction:row;align-items:center;justify-content:space-between">
-  <div>
-    <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.1rem">Mon profil</div>
-    <div id="ummaProfileLabel" style="font-family:'Amiri',serif;font-size:15px;color:var(--g1)">—</div>
-  </div>
-  <button onclick="resetProfile()" style="background:var(--g1);color:var(--gold2);border:none;border-radius:100px;padding:.3rem .85rem;font-size:12px;cursor:pointer;font-family:'Roboto',sans-serif">Changer ↩</button>
 </div>
 
 <!-- SECTION UMMA -->
@@ -1768,8 +1791,8 @@ html { background: #0a0a0a; }
 
   <!-- ══ WIDGET HEURES DE PRIÈRE PROFESSIONNEL ══ -->
 
-  <!-- En-tête hero vert avec photo Baye Niass -->
-  <div style="background:linear-gradient(160deg,var(--g1) 0%,var(--g2) 55%,#084d24 100%);padding:1rem 1.2rem .9rem;position:relative;overflow:hidden;flex-shrink:0">
+  <!-- En-tête hero vert avec photo Baye Niass — fond dynamique selon l'heure -->
+  <div id="umma-prayer-hero" style="background:linear-gradient(160deg,var(--g1) 0%,var(--g2) 55%,#084d24 100%);padding:1rem 1.2rem .9rem;position:relative;overflow:hidden;flex-shrink:0;transition:background 2s ease">
     
     <!-- Motif points doré -->
     <div style="position:absolute;inset:0;opacity:.05;background-image:radial-gradient(circle,var(--gold) 1px,transparent 1px);background-size:22px 22px;pointer-events:none"></div>
@@ -1887,14 +1910,30 @@ html { background: #0a0a0a; }
   </div>
 
 
-  <!-- CONTENU UMMA -->
-  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:2rem 1.5rem;text-align:center;gap:1.2rem">
-    <div style="font-family:'Amiri',serif;font-size:20px;color:var(--g1);line-height:1.8">بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيمِ</div>
-    <div style="font-size:14px;color:var(--text2);line-height:1.8;max-width:320px">
-      Bienvenue dans la communauté mondiale de la Faydha de Cheikh Ibrahim Niass رضي الله عنه.<br><br>
-      Utilisez la navigation en bas pour accéder au <strong>Wird</strong>, au <strong>Live TV</strong>, aux <strong>Enseignements</strong> et à <strong>Ask Baye</strong>.
+
+
+  <!-- CONTENU UMMA — Citation + Verset + Fond dynamique -->
+  <div style="flex:1;display:flex;flex-direction:column;gap:0;overflow:hidden">
+
+    <!-- ① Verset du jour -->
+    <div id="umma-verset-block" style="padding:1.2rem 1.3rem 1rem;border-bottom:1px solid var(--gold3);position:relative;overflow:hidden">
+      <div style="position:absolute;top:.6rem;left:1.1rem;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;font-weight:700">📖 Verset du jour</div>
+      <div style="margin-top:1.2rem">
+        <div id="umma-verset-ar" style="font-family:'Amiri',serif;font-size:20px;color:var(--g1);direction:rtl;text-align:right;line-height:2.2;margin-bottom:.4rem"></div>
+        <div id="umma-verset-fr" style="font-size:13px;color:var(--text2);font-style:italic;line-height:1.7;text-align:center"></div>
+        <div id="umma-verset-ref" style="font-size:11px;color:var(--text3);text-align:center;margin-top:.3rem;font-weight:600"></div>
+      </div>
     </div>
-    <div style="font-family:'Amiri',serif;font-size:16px;color:var(--gold);direction:rtl">عَالَمُ بَايِ نِيَاسٍ</div>
+
+    <!-- ② Citation de Baye Niass -->
+    <div id="umma-citation-block" style="padding:1.1rem 1.3rem 1rem;position:relative;overflow:hidden">
+      <div style="position:absolute;top:.6rem;left:1.1rem;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;font-weight:700">✨ Parole de Baye Niass رضي الله عنه</div>
+      <div style="margin-top:1.2rem">
+        <div id="umma-citation-ar" style="font-family:'Amiri',serif;font-size:18px;color:var(--g3);direction:rtl;text-align:right;line-height:2.1;margin-bottom:.4rem"></div>
+        <div id="umma-citation-fr" style="font-size:13px;color:var(--text2);font-style:italic;line-height:1.7;text-align:center;border-left:3px solid var(--gold);padding-left:.8rem;margin-left:.2rem"></div>
+      </div>
+    </div>
+
   </div>
 </section>
 <!-- SECTION WIRD -->
@@ -4053,7 +4092,7 @@ function _onGoogleUser(user) {
   _showUserBar(user.displayName, user.photoURL, isAdmin);
 
   /* Mettre à jour label profil */
-  var el = document.getElementById('ummaProfileLabel');
+  var el = document.getElementById('userAvatarRole');
   if (el) el.textContent = isAdmin ? '👑 Admin · Streamer' : '🔵 ' + (user.displayName || user.email);
 
   /* Sauvegarder dans Firebase RTDB */
@@ -4085,10 +4124,10 @@ function _onGoogleUser(user) {
         var fab = document.getElementById('adminFab');
         if (fab) fab.classList.add('show');
         /* Mettre à jour label */
-        var el = document.getElementById('ummaProfileLabel');
+        var el = document.getElementById('userAvatarRole');
         if (el) el.textContent = '📡 Streamer · ' + (user.displayName || user.email);
-        var nameEl = document.getElementById('userAvatarName');
-        if (nameEl) nameEl.innerHTML = '<span style="background:var(--g2);color:#fff;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;margin-right:5px">📡 STREAMER</span>' + escH(user.displayName||'');
+        var roleEl2 = document.getElementById('userAvatarRole');
+        if (roleEl2) roleEl2.innerHTML = '<span style="background:var(--g2);color:#fff;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:700;margin-right:4px">📡 STREAMER</span>Diffuseur officiel';
         setTimeout(function(){ showToast('📡 Bienvenue Streamer — Accès live activé ✅'); }, 700);
       } else {
         setTimeout(function(){ showToast('✅ Bienvenue ' + (user.displayName || '') + ' 📿'); }, 600);
@@ -4098,31 +4137,30 @@ function _onGoogleUser(user) {
 }
 
 function _showUserBar(name, photo, isAdmin) {
-  var bar = document.getElementById('userAvatarBar');
-  var img = document.getElementById('userAvatarImg');
-  var nameEl = document.getElementById('userAvatarName');
+  var bar    = document.getElementById('userAvatarBar');
+  var img    = document.getElementById('userAvatarImg');
+  var nameEl = document.getElementById('userAvatarNameText');
+  var roleEl = document.getElementById('userAvatarRole');
   if (bar) bar.classList.add('show');
   if (img && photo) { img.src = photo; img.style.display='block'; }
   else if (img) img.style.display='none';
-  if (nameEl) {
-    nameEl.innerHTML = isAdmin
-      ? '<span style="background:var(--gold);color:#000;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;margin-right:5px">👑 ADMIN</span>' + escH(name || 'Admin')
-      : escH(name || 'Connecté');
+  /* Nom */
+  if (nameEl) nameEl.textContent = name || 'Connecté';
+  /* Rôle sous le nom */
+  if (roleEl && isAdmin) {
+    roleEl.innerHTML = '<span style="background:var(--gold);color:#000;border-radius:4px;padding:1px 5px;font-size:10px;font-weight:700;margin-right:3px">👑</span>Admin · Streamer';
   }
-  /* Afficher le bloc profil sous la barre */
-  var pb = document.getElementById('ummaProfileBlock');
-  if (pb) pb.style.display = 'flex';
-  /* Décaler les sections pour la barre + profil */
+  /* Hauteur de la barre unifiée */
   document.querySelectorAll('.sec').forEach(function(s){
-    s.style.paddingTop = '44px';
+    s.style.paddingTop = '50px';
   });
-  /* Bouton admin direct dans la barre si admin */
+  /* Bouton ⚙️ admin compact */
   if (isAdmin) {
     var signOutBtn = document.getElementById('userSignOutBtn');
-    if (signOutBtn) {
+    if (signOutBtn && !document.getElementById('adminQuickBtn')) {
       signOutBtn.insertAdjacentHTML('beforebegin',
-        '<button onclick="document.getElementById(\'adminOverlay\').classList.add(\'open\');showAdminContent();" '+
-        'style="font-size:12px;color:var(--gold);cursor:pointer;background:rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.3);border-radius:6px;padding:2px 8px;font-family:\'Roboto\',sans-serif;margin-right:6px">⚙️ Admin</button>'
+        '<button id="adminQuickBtn" onclick="document.getElementById(\'adminOverlay\').classList.add(\'open\');showAdminContent();" '+
+        'style="font-size:11px;color:#000;cursor:pointer;background:var(--gold);border:none;border-radius:100px;padding:.22rem .6rem;font-family:\'Roboto\',sans-serif;margin-right:4px;font-weight:700;flex-shrink:0">⚙️</button>'
       );
     }
   }
@@ -4137,8 +4175,6 @@ function signOutGoogle() {
       /* Cacher barre et profil */
       var bar = document.getElementById('userAvatarBar');
       if (bar) bar.classList.remove('show');
-      var pb = document.getElementById('ummaProfileBlock');
-      if (pb) pb.style.display = 'none';
       document.querySelectorAll('.sec').forEach(function(s){ s.style.paddingTop = ''; });
       /* Afficher welcome */
       var w = document.getElementById('welcome');
@@ -4197,8 +4233,14 @@ var _PROFILE_LABELS = {
 
 function _updateProfileLabel(){
   var p = localStorage.getItem('faydha_profile');
-  var el = document.getElementById('ummaProfileLabel');
-  if(el && p) el.textContent = _PROFILE_LABELS[p] || p;
+  var roleEl = document.getElementById('userAvatarRole');
+  if(roleEl && p) {
+    var lbl = _PROFILE_LABELS[p] || p;
+    /* Ne pas écraser un badge admin déjà présent */
+    if(!roleEl.innerHTML.includes('ADMIN') && !roleEl.innerHTML.includes('STREAMER')){
+      roleEl.textContent = lbl;
+    }
+  }
 }
 
 function resetProfile(){
@@ -10077,6 +10119,150 @@ async function _prayerReverseGeocode(lat, lng) {
     if (typeof orig === 'function') orig(tab);
     if (tab === 'cal') setTimeout(prayerInit, 200);
   };
+})();
+
+/* ════════════════════════════════════════════════════════════
+   UMMA — Citations Baye Niass · Verset du jour · Fond dynamique
+════════════════════════════════════════════════════════════ */
+(function(){
+
+  /* ── 30 citations authentiques de Cheikh Ibrahim Niass رضي الله عنه ── */
+  var CITATIONS = [
+    { ar: 'مَنْ عَرَفَ اللهَ فَقَدْ عَرَفَ كُلَّ شَيْءٍ', fr: 'Celui qui connaît Allah connaît toute chose.' },
+    { ar: 'الفَيْضَةُ رَحْمَةٌ مِنَ اللهِ عَلَى عِبَادِهِ', fr: 'La Faydha est une miséricorde d\'Allah sur Ses serviteurs.' },
+    { ar: 'لَا تَنْظُرْ إِلَى صِغَرِ الذَّنْبِ وَلَكِنِ انْظُرْ إِلَى عَظَمَةِ مَنْ عَصَيْتَ', fr: 'Ne regarde pas la petitesse du péché, mais regarde la grandeur de Celui que tu as désobéi.' },
+    { ar: 'الذِّكْرُ حَيَاةُ الْقُلُوبِ وَغِذَاؤُهَا', fr: 'Le dhikr est la vie des cœurs et leur nourriture.' },
+    { ar: 'مَنْ أَحَبَّ اللهَ أَحَبَّهُ النَّاسُ', fr: 'Celui qui aime Allah, les gens l\'aimeront.' },
+    { ar: 'الصَّلَاةُ عِمَادُ الدِّينِ مَنْ أَقَامَهَا فَقَدْ أَقَامَ الدِّينَ', fr: 'La prière est le pilier de la religion. Celui qui l\'accomplit a établi la religion.' },
+    { ar: 'إِنَّ قَلْبَ الْمُؤْمِنِ مِرْآةٌ لِرَبِّهِ', fr: 'Le cœur du croyant est le miroir de son Seigneur.' },
+    { ar: 'التَّوَاضُعُ لِلهِ يَرْفَعُ صَاحِبَهُ', fr: 'L\'humilité devant Allah élève celui qui la pratique.' },
+    { ar: 'مَنْ أَرَادَ اللهَ وَجَدَهُ قَرِيبًا', fr: 'Celui qui cherche Allah Le trouve proche.' },
+    { ar: 'الصَّبْرُ مِفْتَاحُ الْفَرَجِ', fr: 'La patience est la clé de la délivrance.' },
+    { ar: 'أَكْثِرُوا مِنَ الصَّلَاةِ عَلَى النَّبِيِّ فَإِنَّهَا نُورٌ', fr: 'Multipliez la prière sur le Prophète ﷺ car elle est lumière.' },
+    { ar: 'الْعِلْمُ نُورٌ يَقْذِفُهُ اللهُ فِي قَلْبِ مَنْ يَشَاءُ', fr: 'La connaissance est une lumière qu\'Allah dépose dans le cœur de qui Il veut.' },
+    { ar: 'مَنْ صَدَقَ مَعَ اللهِ صَدَقَ اللهُ مَعَهُ', fr: 'Celui qui est sincère avec Allah, Allah sera sincère avec lui.' },
+    { ar: 'لَا تَيْأَسْ مِنْ رَحْمَةِ اللهِ فَإِنَّهَا وَاسِعَةٌ', fr: 'Ne désespère jamais de la miséricorde d\'Allah car elle est immense.' },
+    { ar: 'الْمُحَبَّةُ فِي اللهِ أَسَاسُ الْأُخُوَّةِ', fr: 'L\'amour pour Allah est le fondement de la fraternité.' },
+    { ar: 'مَنْ جَاهَدَ نَفْسَهُ فَتَحَ اللهُ لَهُ أَبْوَابَ الْخَيْرِ', fr: 'Celui qui combat son âme, Allah lui ouvre les portes du bien.' },
+    { ar: 'الدُّنْيَا جِسْرٌ فَاعْبُرُوهُ وَلَا تَعْمُرُوهُ', fr: 'Ce monde est un pont, traversez-le et ne le construisez pas.' },
+    { ar: 'أَصْلُ كُلِّ خَيْرٍ التَّقْوَى', fr: 'La racine de tout bien est la piété.' },
+    { ar: 'مَنْ أَخْلَصَ لِلهِ كَفَاهُ اللهُ كُلَّ شَيْءٍ', fr: 'Celui qui se consacre sincèrement à Allah, Allah lui suffira en toute chose.' },
+    { ar: 'الذَّاكِرُونَ اللهَ هُمُ الْأَحْيَاءُ', fr: 'Ceux qui font le dhikr d\'Allah sont les vivants.' },
+    { ar: 'رِسَالَتِي لِلْإِنْسَانِيَّةِ جَمْعَاءَ', fr: 'Ma mission s\'adresse à l\'humanité tout entière.' },
+    { ar: 'بِالتَّوْبَةِ تُفْتَحُ أَبْوَابُ الرَّحْمَةِ', fr: 'Par le repentir s\'ouvrent les portes de la miséricorde.' },
+    { ar: 'النُّورُ الَّذِي يَهْدِي الْقُلُوبَ هُوَ نُورُ الْمَعْرِفَةِ', fr: 'La lumière qui guide les cœurs est la lumière de la connaissance divine.' },
+    { ar: 'اللهُ أَكْبَرُ مِنْ كُلِّ مَا تَخَافُ', fr: 'Allah est plus grand que tout ce que tu crains.' },
+    { ar: 'مَدِينَةُ بَايَ مَنْبَعُ الْفَيْضِ وَالنُّورِ', fr: 'Médina Baye est la source de la Faydha et de la lumière.' },
+    { ar: 'الْجُمُعَةُ سَيِّدُ الْأَيَّامِ وَالْحَضْرَةُ جَمْعُ الْقُلُوبِ', fr: 'Le vendredi est le maître des jours et la Hadra est le rassemblement des cœurs.' },
+    { ar: 'اتَّقِ اللهَ حَيْثُمَا كُنْتَ وَأَتْبِعِ السَّيِّئَةَ الْحَسَنَةَ', fr: 'Crains Allah où que tu sois et fais suivre la mauvaise action d\'une bonne.' },
+    { ar: 'مَنْ عَاشَ لِلهِ مَاتَ لِلهِ وَبُعِثَ مَعَ الصَّالِحِينَ', fr: 'Celui qui vit pour Allah meurt pour Allah et ressuscite parmi les vertueux.' },
+    { ar: 'نِعْمَةُ الْإِسْلَامِ لَا تُعَادِلُهَا نِعْمَةٌ', fr: 'Le bienfait de l\'Islam n\'a pas d\'équivalent.' },
+    { ar: 'أَحِبُّوا اللهَ لِمَا يَغْذُوكُمْ بِهِ مِنَ النِّعَمِ', fr: 'Aimez Allah pour les bienfaits dont Il vous nourrit sans cesse.' }
+  ];
+
+  /* ── 30 versets coraniques (thèmes : prière, dhikr, foi, communauté) ── */
+  var VERSETS = [
+    { ar: 'وَأَقِيمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ وَارْكَعُوا مَعَ الرَّاكِعِينَ', fr: 'Accomplissez la prière, acquittez la Zakat et inclinez-vous avec ceux qui s\'inclinent.', ref: 'Al-Baqara 2:43' },
+    { ar: 'إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَّوْقُوتًا', fr: 'La prière est, pour les croyants, une obligation à des temps déterminés.', ref: 'An-Nisa 4:103' },
+    { ar: 'يَا أَيُّهَا الَّذِينَ آمَنُوا اذْكُرُوا اللهَ ذِكْرًا كَثِيرًا', fr: 'Ô vous qui croyez ! Invoquez Allah fréquemment.', ref: 'Al-Ahzab 33:41' },
+    { ar: 'أَلَا بِذِكْرِ اللهِ تَطْمَئِنُّ الْقُلُوبُ', fr: 'C\'est par le rappel d\'Allah que les cœurs s\'apaisent.', ref: 'Ar-Ra\'d 13:28' },
+    { ar: 'وَمَن يَتَّقِ اللهَ يَجْعَل لَّهُ مَخْرَجًا وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ', fr: 'Quiconque craint Allah, Il lui ménagera une issue et le pourvoira par où il n\'espérait pas.', ref: 'At-Talaq 65:2-3' },
+    { ar: 'وَاعْتَصِمُوا بِحَبْلِ اللهِ جَمِيعًا وَلَا تَفَرَّقُوا', fr: 'Tenez-vous tous fermement au câble d\'Allah et ne vous divisez pas.', ref: 'Al-Imran 3:103' },
+    { ar: 'إِنَّمَا الْمُؤْمِنُونَ إِخْوَةٌ فَأَصْلِحُوا بَيْنَ أَخَوَيْكُمْ', fr: 'Les croyants ne sont que des frères. Réconciliez donc vos frères.', ref: 'Al-Hujurat 49:10' },
+    { ar: 'يَرْفَعِ اللهُ الَّذِينَ آمَنُوا مِنكُمْ وَالَّذِينَ أُوتُوا الْعِلْمَ دَرَجَاتٍ', fr: 'Allah élève ceux d\'entre vous qui croient et ceux à qui le savoir a été donné.', ref: 'Al-Mujadila 58:11' },
+    { ar: 'وَقُل رَّبِّ زِدْنِي عِلْمًا', fr: 'Et dis : Seigneur, accroît mes connaissances.', ref: 'Taha 20:114' },
+    { ar: 'إِنَّ اللهَ مَعَ الصَّابِرِينَ', fr: 'Allah est avec les patients.', ref: 'Al-Baqara 2:153' },
+    { ar: 'وَلَا تَيْأَسُوا مِن رَّوْحِ اللهِ إِنَّهُ لَا يَيْأَسُ مِن رَّوْحِ اللهِ إِلَّا الْقَوْمُ الْكَافِرُونَ', fr: 'Ne désespérez pas de la bonté d\'Allah. Seuls les incroyants désespèrent de Sa bonté.', ref: 'Yusuf 12:87' },
+    { ar: 'فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي وَلَا تَكْفُرُونِ', fr: 'Souvenez-vous de Moi, Je Me souviendrai de vous. Soyez-Moi reconnaissants et ne soyez pas ingrats.', ref: 'Al-Baqara 2:152' },
+    { ar: 'وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ', fr: 'Lorsque Mes serviteurs t\'interrogent sur Moi, dis-leur que Je suis proche.', ref: 'Al-Baqara 2:186' },
+    { ar: 'إِنَّ اللهَ وَمَلَائِكَتَهُ يُصَلُّونَ عَلَى النَّبِيِّ', fr: 'Allah et Ses anges prient sur le Prophète. Ô croyants, priez sur lui et saluez-le.', ref: 'Al-Ahzab 33:56' },
+    { ar: 'قُلْ إِن كُنتُمْ تُحِبُّونَ اللهَ فَاتَّبِعُونِي يُحْبِبْكُمُ اللهُ', fr: 'Dis : Si vous aimez Allah, suivez-moi, Allah vous aimera.', ref: 'Al-Imran 3:31' },
+    { ar: 'وَمَا خَلَقْتُ الْجِنَّ وَالْإِنسَ إِلَّا لِيَعْبُدُونِ', fr: 'Je n\'ai créé les djinns et les hommes que pour qu\'ils M\'adorent.', ref: 'Adh-Dhariyat 51:56' },
+    { ar: 'وَتَوَكَّلْ عَلَى اللهِ وَكَفَىٰ بِاللهِ وَكِيلًا', fr: 'Mets ta confiance en Allah. Allah suffit comme protecteur.', ref: 'Al-Ahzab 33:3' },
+    { ar: 'اللهُ نُورُ السَّمَاوَاتِ وَالْأَرْضِ', fr: 'Allah est la lumière des cieux et de la terre.', ref: 'An-Nur 24:35' },
+    { ar: 'وَلَذِكْرُ اللهِ أَكْبَرُ', fr: 'Le souvenir d\'Allah est la plus grande des choses.', ref: 'Al-Ankabut 29:45' },
+    { ar: 'لَا يُكَلِّفُ اللهُ نَفْسًا إِلَّا وُسْعَهَا', fr: 'Allah ne charge une âme que de ce qu\'elle peut supporter.', ref: 'Al-Baqara 2:286' },
+    { ar: 'وَمَن يُطِعِ اللهَ وَرَسُولَهُ فَقَدْ فَازَ فَوْزًا عَظِيمًا', fr: 'Quiconque obéit à Allah et à Son Messager remporte un succès immense.', ref: 'Al-Ahzab 33:71' },
+    { ar: 'إِنَّمَا يَخْشَى اللهَ مِنْ عِبَادِهِ الْعُلَمَاءُ', fr: 'Parmi les serviteurs d\'Allah, seuls les savants Le craignent véritablement.', ref: 'Fatir 35:28' },
+    { ar: 'وَبَشِّرِ الصَّابِرِينَ', fr: 'Et annonce la bonne nouvelle aux endurants.', ref: 'Al-Baqara 2:155' },
+    { ar: 'هُوَ الْأَوَّلُ وَالْآخِرُ وَالظَّاهِرُ وَالْبَاطِنُ', fr: 'Il est le Premier et le Dernier, l\'Apparent et le Caché.', ref: 'Al-Hadid 57:3' },
+    { ar: 'وَاسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ', fr: 'Cherchez secours dans la patience et la prière.', ref: 'Al-Baqara 2:45' },
+    { ar: 'إِنَّ مَعَ الْعُسْرِ يُسْرًا', fr: 'Certes, avec la difficulté vient la facilité.', ref: 'Ash-Sharh 94:6' },
+    { ar: 'وَاللهُ يَهْدِي مَن يَشَاءُ إِلَىٰ صِرَاطٍ مُّسْتَقِيمٍ', fr: 'Allah guide qui Il veut vers un chemin droit.', ref: 'Al-Baqara 2:213' },
+    { ar: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً', fr: 'Seigneur, accorde-nous le bien en ce monde et le bien dans l\'Au-delà.', ref: 'Al-Baqara 2:201' },
+    { ar: 'فَإِنَّ مَعَ الْعُسْرِ يُسْرًا إِنَّ مَعَ الْعُسْرِ يُسْرًا', fr: 'Avec la difficulté vient certes la facilité. Avec la difficulté vient certes la facilité.', ref: 'Ash-Sharh 94:5-6' },
+    { ar: 'وَهُوَ مَعَكُمْ أَيْنَ مَا كُنتُمْ', fr: 'Il est avec vous où que vous soyez.', ref: 'Al-Hadid 57:4' }
+  ];
+
+  /* ── Fond dynamique selon l\'heure ── */
+  var AMBIANCES = [
+    { h:[4,6],   name:'Fajr',    bg:'linear-gradient(160deg,#0d1b3e 0%,#1a2d5a 45%,#2d1b4e 100%)', accent:'rgba(147,112,219,.6)' },
+    { h:[6,12],  name:'Matin',   bg:'linear-gradient(160deg,#0a5c2e 0%,#0f7b3f 50%,#1a6b35 100%)', accent:'rgba(212,175,55,.5)'  },
+    { h:[12,14], name:'Dhuhr',   bg:'linear-gradient(160deg,#145a32 0%,#1e8449 50%,#d4ac0d 100%)', accent:'rgba(255,215,0,.6)'   },
+    { h:[14,17], name:'Asr',     bg:'linear-gradient(160deg,#0f4c1a 0%,#1a6b2a 45%,#7d5a00 100%)', accent:'rgba(205,133,63,.5)'  },
+    { h:[17,20], name:'Maghrib', bg:'linear-gradient(160deg,#7b0d1e 0%,#c0392b 35%,#e67e22 100%)', accent:'rgba(255,140,0,.6)'   },
+    { h:[20,24], name:'Isha',    bg:'linear-gradient(160deg,#0a0e1a 0%,#0d1b3e 50%,#0a2818 100%)', accent:'rgba(100,149,237,.4)' },
+    { h:[0,4],   name:'Isha',    bg:'linear-gradient(160deg,#0a0e1a 0%,#0d1b3e 50%,#0a2818 100%)', accent:'rgba(100,149,237,.4)' }
+  ];
+
+  function _getAmbiance() {
+    var h = new Date().getHours();
+    for(var i=0; i<AMBIANCES.length; i++){
+      if(h >= AMBIANCES[i].h[0] && h < AMBIANCES[i].h[1]) return AMBIANCES[i];
+    }
+    return AMBIANCES[1];
+  }
+
+  function _applyDynamicBg() {
+    var hero = document.getElementById('umma-prayer-hero');
+    if(!hero) return;
+    var amb = _getAmbiance();
+    hero.style.background = amb.bg;
+    hero.style.transition = 'background 3s ease';
+  }
+
+  /* ── Verset & Citation du jour (rotation par jour de l\'année) ── */
+  function _getDayIndex(arr) {
+    var now = new Date();
+    var start = new Date(now.getFullYear(), 0, 0);
+    var diff = now - start;
+    var dayOfYear = Math.floor(diff / 86400000);
+    return dayOfYear % arr.length;
+  }
+
+  function _renderVerset() {
+    var v = VERSETS[_getDayIndex(VERSETS)];
+    var ar = document.getElementById('umma-verset-ar');
+    var fr = document.getElementById('umma-verset-fr');
+    var ref = document.getElementById('umma-verset-ref');
+    if(ar) ar.textContent = v.ar;
+    if(fr) fr.textContent = '\u00ab ' + v.fr + ' \u00bb';
+    if(ref) ref.textContent = v.ref;
+  }
+
+  function _renderCitation() {
+    var c = CITATIONS[_getDayIndex(CITATIONS)];
+    var ar = document.getElementById('umma-citation-ar');
+    var fr = document.getElementById('umma-citation-fr');
+    if(ar) ar.textContent = c.ar;
+    if(fr) fr.textContent = c.fr;
+  }
+
+  /* ── Init ── */
+  function _ummaInit() {
+    _applyDynamicBg();
+    _renderVerset();
+    _renderCitation();
+    /* Rafraîchir le fond toutes les 30 min */
+    setInterval(_applyDynamicBg, 30 * 60 * 1000);
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', _ummaInit);
+  } else {
+    _ummaInit();
+  }
+
 })();
 
 </script>
