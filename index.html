@@ -59,6 +59,20 @@
 <link rel="dns-prefetch" href="https://faydha-app-default-rtdb.firebaseio.com">
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<style>
+.adm-role-btn{background:rgba(255,255,255,.05);border:1.5px solid var(--gold3);border-radius:10px;padding:.45rem .5rem;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;transition:all .2s;font-family:'Roboto',sans-serif;text-align:center}
+.adm-role-btn.active{background:var(--g1);border-color:var(--g1);color:var(--gold2)}
+.adm-user-row{display:flex;align-items:center;gap:.6rem;padding:.55rem .7rem;background:var(--white);border:1px solid var(--gold3);border-radius:12px;cursor:pointer;transition:all .18s}
+.adm-user-row:hover{border-color:var(--g1);background:rgba(15,123,63,.04)}
+.adm-user-avatar{width:36px;height:36px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;flex-shrink:0}
+.adm-user-name{font-size:13px;font-weight:600;color:var(--text1)}
+.adm-user-meta{font-size:11px;color:var(--text3)}
+.adm-role-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;flex-shrink:0}
+.adm-role-badge.admin{background:rgba(212,175,55,.15);color:#b8962e}
+.adm-role-badge.streamer{background:rgba(41,128,185,.12);color:#2471a3}
+.adm-role-badge.banned{background:rgba(192,57,43,.12);color:var(--red)}
+.adm-role-badge.user{background:rgba(136,135,128,.1);color:var(--text3)}
+</style>
 <!-- Firebase config -->
 <script>
 window._fbConfig={
@@ -3989,6 +4003,223 @@ window.switchEnsTab = function(tab) {
 <!-- SECTION CALENDRIER -->
 
 <!-- SECTION ASK BAYE -->
+<!-- ═══════════════════════════════════════
+     SECTION QIBLA & LUNE
+═══════════════════════════════════════ -->
+<section id="sec-qibla" class="sec">
+
+<style>
+/* ── Tabs Qibla/Lune ── */
+.ql-tabs {
+  display: flex;
+  background: #030906;
+  border-bottom: 1px solid rgba(212,175,55,.15);
+  flex-shrink: 0;
+  position: sticky; top: 0; z-index: 10;
+}
+.ql-tab {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 4px; padding: .65rem .5rem .55rem;
+  cursor: pointer; border: none; background: none;
+  font-family: 'Roboto', sans-serif;
+  transition: all .2s;
+  border-bottom: 3px solid transparent;
+}
+.ql-tab .qt-icon { font-size: 20px; line-height: 1; }
+.ql-tab .qt-label {
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em;
+}
+/* Qibla — vert doré */
+.ql-tab.qibla-tab { color: rgba(255,255,255,.4); }
+.ql-tab.qibla-tab.active { color: #D4AF37; border-bottom-color: #D4AF37; background: rgba(212,175,55,.05); }
+.ql-tab.qibla-tab.active .qt-icon { filter: drop-shadow(0 0 8px rgba(212,175,55,.6)); }
+/* Lune — bleu argenté */
+.ql-tab.lune-tab { color: rgba(255,255,255,.4); }
+.ql-tab.lune-tab.active { color: #a8d8f0; border-bottom-color: #a8d8f0; background: rgba(168,216,240,.05); }
+.ql-tab.lune-tab.active .qt-icon { filter: drop-shadow(0 0 8px rgba(168,216,240,.5)); }
+
+.ql-panel { display: none; flex: 1; flex-direction: column; overflow-y: auto; }
+.ql-panel.active { display: flex; }
+</style>
+
+<!-- Barre onglets -->
+<div class="ql-tabs">
+  <button class="ql-tab qibla-tab active" id="qltab-qibla" onclick="switchQlTab('qibla')">
+    <span class="qt-icon">🕋</span>
+    <span class="qt-label">Direction Mecque</span>
+  </button>
+  <button class="ql-tab lune-tab" id="qltab-lune" onclick="switchQlTab('lune')">
+    <span class="qt-icon">🌙</span>
+    <span class="qt-label">Croissant Hilal</span>
+  </button>
+</div>
+
+<!-- ═══ PANEL QIBLA ═══ -->
+<div class="ql-panel active" id="ql-panel-qibla">
+
+  <div style="background:linear-gradient(135deg,var(--g1),var(--g3));padding:1.2rem 1.3rem .9rem;text-align:center;">
+    <div style="font-family:'Amiri',serif;font-size:22px;color:#fff;margin-bottom:.1rem">🕋 Direction de La Mecque</div>
+    <div style="font-family:'Amiri',serif;font-size:14px;color:var(--gold2);direction:rtl">القِبْلَة — اتِّجَاهُ مَكَّةَ المُكَرَّمَة</div>
+  </div>
+
+  <div style="padding:1.2rem 1.3rem;background:var(--white);border-bottom:1px solid var(--gold3);">
+    <!-- Boussole -->
+    <div style="position:relative;width:200px;height:200px;margin:0 auto 1rem;">
+      <svg viewBox="0 0 200 200" style="position:absolute;inset:0;width:100%;height:100%;">
+        <circle cx="100" cy="100" r="95" fill="none" stroke="var(--gold3)" stroke-width="2"/>
+        <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(15,123,63,.1)" stroke-width="1"/>
+        <text x="100" y="16" text-anchor="middle" font-size="13" font-weight="700" fill="var(--g1)" font-family="sans-serif">N</text>
+        <text x="186" y="104" text-anchor="middle" font-size="13" font-weight="700" fill="var(--text3)" font-family="sans-serif">E</text>
+        <text x="100" y="196" text-anchor="middle" font-size="13" font-weight="700" fill="var(--text3)" font-family="sans-serif">S</text>
+        <text x="14" y="104" text-anchor="middle" font-size="13" font-weight="700" fill="var(--text3)" font-family="sans-serif">O</text>
+        <line x1="100" y1="6" x2="100" y2="18" stroke="var(--g1)" stroke-width="2"/>
+        <line x1="100" y1="182" x2="100" y2="194" stroke="var(--text3)" stroke-width="1.5"/>
+        <line x1="6" y1="100" x2="18" y2="100" stroke="var(--text3)" stroke-width="1.5"/>
+        <line x1="182" y1="100" x2="194" y2="100" stroke="var(--text3)" stroke-width="1.5"/>
+      </svg>
+      <!-- Aiguille -->
+      <div id="qiblaCompass" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transition:transform .8s cubic-bezier(.34,1.56,.64,1);">
+        <svg viewBox="0 0 40 120" style="width:40px;height:120px;">
+          <polygon points="20,5 28,55 20,48 12,55" fill="#D4AF37"/>
+          <polygon points="20,115 28,65 20,72 12,65" fill="#ccc"/>
+          <circle cx="20" cy="60" r="6" fill="var(--g1)" stroke="var(--gold)" stroke-width="2"/>
+          <text x="20" y="35" text-anchor="middle" font-size="12">🕋</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Infos + recherche -->
+    <div id="qiblaInfo" style="text-align:center;">
+      <div style="display:flex;align-items:center;justify-content:center;gap:.4rem;margin-bottom:.7rem;padding:.4rem .8rem;background:linear-gradient(135deg,rgba(15,123,63,.08),rgba(212,175,55,.06));border-radius:10px;border:1px solid rgba(212,175,55,.15)">
+        <span style="font-size:14px">🕋</span>
+        <span style="font-size:12px;color:var(--text2);font-style:italic;">Posez à plat ou entrez votre ville</span>
+      </div>
+      <div style="display:flex;gap:.5rem;margin-bottom:.6rem;">
+        <input id="qiblaCityIn" placeholder="Ex: Thiès, Dakar, Kaolack..."
+          style="flex:1;padding:.55rem .8rem;border:1.5px solid var(--g1);border-radius:10px;font-size:14px;outline:none;"
+          onkeydown="if(event.key==='Enter') qiblaGo()">
+        <button onclick="qiblaGo()" style="background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;border:none;border-radius:10px;padding:.55rem 1rem;font-size:14px;font-weight:700;cursor:pointer;">🔍</button>
+      </div>
+      <div style="display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap">
+        <button onclick="qiblaGPS()" style="background:none;border:1px solid var(--g1);border-radius:20px;padding:.4rem 1rem;font-size:12px;color:var(--g1);cursor:pointer;">📍 GPS</button>
+        <button id="qiblaCompassBtn" onclick="qiblaCompassToggle()" style="background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;border:none;border-radius:20px;padding:.4rem 1rem;font-size:12px;font-weight:700;cursor:pointer;">🧭 Boussole auto</button>
+      </div>
+      <div id="qiblaCompassStatus" style="font-size:11px;color:var(--text3);margin-top:.3rem;min-height:15px;font-weight:600;"></div>
+      <div id="qiblaMsg" style="font-size:12px;color:var(--red);margin-top:.2rem;min-height:16px;"></div>
+    </div>
+
+    <!-- Résultat -->
+    <div id="qiblaResult" style="display:none;text-align:center;margin-top:.8rem;">
+      <div style="display:flex;justify-content:center;gap:1.5rem;margin-bottom:.6rem;">
+        <div style="background:var(--gold3);border-radius:12px;padding:.5rem .9rem;">
+          <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase">Direction</div>
+          <div id="qiblaDeg" style="font-size:22px;font-weight:700;color:var(--g1)">—°</div>
+        </div>
+        <div style="background:var(--gold3);border-radius:12px;padding:.5rem .9rem;">
+          <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase">Distance</div>
+          <div id="qiblaDist" style="font-size:22px;font-weight:700;color:var(--g1)">— km</div>
+        </div>
+      </div>
+      <div id="qiblaLoc" style="font-size:12px;color:var(--text3);font-style:italic;"></div>
+    </div>
+  </div>
+
+</div><!-- /ql-panel-qibla -->
+
+<!-- ═══ PANEL LUNE ═══ -->
+<div class="ql-panel" id="ql-panel-lune">
+
+  <div style="background:linear-gradient(135deg,#0a0e1a,#0d1b3e);padding:1.1rem 1.3rem .8rem;text-align:center;flex-shrink:0">
+    <div style="font-family:'Amiri',serif;font-size:22px;color:#fff;margin-bottom:.1rem">🌙 Visibilité du Croissant</div>
+    <div style="font-family:'Amiri',serif;font-size:14px;color:rgba(212,175,55,.8);direction:rtl">الهِلَال — رُؤْيَةُ الهِلَال</div>
+  </div>
+
+  <div style="padding:1.1rem 1.3rem;background:var(--white);flex:1">
+    <div id="moonResult" style="text-align:center;">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:.6rem;font-style:italic;">Entrez votre ville pour un calcul précis</div>
+      <div style="display:flex;gap:.5rem;margin-bottom:.6rem;">
+        <input id="moonCityIn" placeholder="Ex: Thiès, Dakar, Kaolack..."
+          style="flex:1;padding:.55rem .8rem;border:1.5px solid #0d1b3e;border-radius:10px;font-size:14px;outline:none;"
+          onkeydown="if(event.key==='Enter') moonGo()">
+        <button onclick="moonGo()" style="background:linear-gradient(135deg,#0d1b3e,#1a2d5a);color:#fff;border:none;border-radius:10px;padding:.55rem 1rem;font-size:14px;font-weight:700;cursor:pointer;">🔍</button>
+      </div>
+      <div style="display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap;margin-bottom:.4rem">
+        <button onclick="moonGPS()" style="background:none;border:1px solid #0d1b3e;border-radius:20px;padding:.4rem 1rem;font-size:12px;color:#0d1b3e;cursor:pointer;">📍 GPS</button>
+        <button onclick="moonGoNow('',0,0)" style="background:linear-gradient(135deg,#0d1b3e,#1a2d5a);color:#fff;border:none;border-radius:20px;padding:.4rem 1rem;font-size:13px;font-weight:700;cursor:pointer;">🌙 Calculer maintenant</button>
+      </div>
+      <div id="moonMsg" style="font-size:12px;color:var(--red);margin-top:.4rem;min-height:16px;"></div>
+    </div>
+
+    <div id="moonSunsetInfo" style="display:none;margin:.6rem 0"></div>
+
+    <div id="moonData" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:center;gap:.8rem;margin:.8rem 0 .4rem;">
+        <div style="font-size:48px" id="moonEmoji">🌙</div>
+        <div>
+          <div style="font-size:18px;font-weight:700;color:var(--text1)" id="moonPhaseName">—</div>
+          <div style="font-size:13px;color:var(--text3)">Âge : <strong id="moonAge">—</strong> jours · Illumination : <strong id="moonIllum">—</strong>%</div>
+        </div>
+      </div>
+
+      <div id="hilalVerdict" style="border-radius:14px;padding:.9rem 1rem;margin:.5rem 0;border:1.5px solid rgba(0,0,0,.1)">
+        <div style="font-size:24px;margin-bottom:.3rem" id="hilalIcon">🌙</div>
+        <div style="font-size:15px;font-weight:700;margin-bottom:.3rem" id="hilalTitle">—</div>
+        <div style="font-size:13px;line-height:1.6" id="hilalDesc">—</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin:.5rem 0;font-size:12px">
+        <div style="background:rgba(212,175,55,.08);border-radius:10px;padding:.5rem .7rem">
+          <div style="color:var(--text3);margin-bottom:2px">🌑 Nouvelle Lune</div>
+          <div style="font-weight:600;color:var(--text1)" id="moonNextNew">—</div>
+        </div>
+        <div style="background:rgba(212,175,55,.08);border-radius:10px;padding:.5rem .7rem">
+          <div style="color:var(--text3);margin-bottom:2px">🌕 Pleine Lune</div>
+          <div style="font-weight:600;color:var(--text1)" id="moonNextFull">—</div>
+        </div>
+      </div>
+      <div id="moonLoc" style="font-size:11px;color:var(--text3);text-align:center;font-style:italic;margin-top:.4rem;"></div>
+    </div>
+  </div>
+
+</div><!-- /ql-panel-lune -->
+
+<script>
+window.switchQlTab = function(tab) {
+  var isQibla = tab === 'qibla';
+  document.getElementById('qltab-qibla').classList.toggle('active', isQibla);
+  document.getElementById('qltab-lune').classList.toggle('active', !isQibla);
+  document.getElementById('ql-panel-qibla').classList.toggle('active', isQibla);
+  document.getElementById('ql-panel-lune').classList.toggle('active', !isQibla);
+
+  if (!isQibla) {
+    /* Auto-calcul lune avec GPS */
+    var moonData = document.getElementById('moonData');
+    if (!moonData || moonData.style.display === 'none') {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function(p) { if (typeof _moonRun === 'function') _moonRun(p.coords.latitude, p.coords.longitude, 'Ma position'); },
+          function() { if (typeof _moonRun === 'function') _moonRun(14.15, -16.08, 'Senegal'); },
+          { timeout: 8000, maximumAge: 60000, enableHighAccuracy: false }
+        );
+      } else {
+        if (typeof _moonRun === 'function') _moonRun(14.15, -16.08, 'Senegal');
+      }
+    }
+  } else {
+    /* Qibla — message invite */
+    var status = document.getElementById('qiblaCompassStatus');
+    var result = document.getElementById('qiblaResult');
+    if (result && result.style.display === 'none') {
+      if (status) { status.textContent = 'Appuyez sur GPS ou Boussole auto'; status.style.color = 'var(--g1)'; }
+    }
+  }
+};
+</script>
+
+</section>
+
 <section id="sec-ai" class="sec">
 
 <!-- ASK BAYE HERO — REFONTE -->
@@ -4208,6 +4439,10 @@ window.switchEnsTab = function(tab) {
     <span class="nav-icon">🎙</span>
     <span class="nav-label">Studio</span>
   </button>
+  <button class="nav-btn" id="nav-qibla" onclick="showSec('qibla',this)">
+    <span class="nav-icon">🕋</span>
+    <span class="nav-label">Qibla</span>
+  </button>
   <button class="nav-btn" id="nav-ai" onclick="showSec('ai',this)">
     <span class="nav-icon">🤲</span>
     <span class="nav-label">Baye IA</span>
@@ -4246,6 +4481,7 @@ window.switchEnsTab = function(tab) {
         <button class="adm-tab" id="atab-streamers" onclick="switchAdmTab('streamers')">👥 Streamers</button>
         <button class="adm-tab" id="atab-params" onclick="switchAdmTab('params')">⚙ Params</button>
         <button class="adm-tab" id="atab-notif" onclick="switchAdmTab('notif')">🔔 Notifs</button>
+        <button class="adm-tab" id="atab-users" onclick="switchAdmTab('users')">👤 Profils</button>
       </div>
 
       <!-- ── ONGLET CHAÎNES ── -->
@@ -4574,6 +4810,86 @@ window.switchEnsTab = function(tab) {
         <!-- Historique -->
         <div style="font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem">Historique récent</div>
         <div id="notifHistory" style="display:flex;flex-direction:column;gap:.4rem;max-height:200px;overflow-y:auto"></div>
+      </div>
+
+
+      <!-- ── ONGLET PROFILS ── -->
+      <div class="adm-panel" id="adm-users" style="display:none">
+
+        <!-- Barre de recherche + stats -->
+        <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.7rem;flex-wrap:wrap">
+          <input id="admUserSearch" class="f-input" type="search" placeholder="🔍 Nom, email, UID…"
+            style="flex:1;min-width:160px" oninput="admSearchUsers()">
+          <select id="admUserFilter" class="f-input" style="width:auto;padding:.3rem .5rem;font-size:13px" onchange="admSearchUsers()">
+            <option value="all">Tous</option>
+            <option value="admin">Admins</option>
+            <option value="streamer">Streamers</option>
+            <option value="banned">Bannis</option>
+          </select>
+          <button class="add-btn" onclick="admLoadUsers()" style="padding:.35rem .8rem;font-size:13px">↻ Actualiser</button>
+        </div>
+
+        <!-- Stats rapides -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:.8rem">
+          <div style="background:rgba(15,123,63,.08);border:1px solid rgba(15,123,63,.2);border-radius:10px;padding:.5rem;text-align:center">
+            <div style="font-size:18px;font-weight:700;color:var(--g1)" id="admStatTotal">—</div>
+            <div style="font-size:10px;color:var(--text3)">Total</div>
+          </div>
+          <div style="background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.2);border-radius:10px;padding:.5rem;text-align:center">
+            <div style="font-size:18px;font-weight:700;color:var(--gold)" id="admStatAdmins">—</div>
+            <div style="font-size:10px;color:var(--text3)">Admins</div>
+          </div>
+          <div style="background:rgba(41,128,185,.08);border:1px solid rgba(41,128,185,.2);border-radius:10px;padding:.5rem;text-align:center">
+            <div style="font-size:18px;font-weight:700;color:#2980b9" id="admStatStreamers">—</div>
+            <div style="font-size:10px;color:var(--text3)">Streamers</div>
+          </div>
+          <div style="background:rgba(192,57,43,.08);border:1px solid rgba(192,57,43,.2);border-radius:10px;padding:.5rem;text-align:center">
+            <div style="font-size:18px;font-weight:700;color:var(--red)" id="admStatBanned">—</div>
+            <div style="font-size:10px;color:var(--text3)">Bannis</div>
+          </div>
+        </div>
+
+        <!-- Liste utilisateurs -->
+        <div id="admUserList" style="display:flex;flex-direction:column;gap:.4rem;max-height:340px;overflow-y:auto">
+          <div style="text-align:center;padding:1.5rem;color:var(--text3);font-style:italic">Cliquez sur Actualiser pour charger les profils</div>
+        </div>
+
+        <!-- Modal édition profil -->
+        <div id="admUserModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);backdrop-filter:blur(4px)" onclick="if(event.target===this)admCloseUserModal()">
+          <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--white);border-radius:20px 20px 0 0;padding:1.2rem 1.3rem 1.5rem;max-height:85vh;overflow-y:auto">
+            <div style="width:36px;height:4px;background:var(--gold3);border-radius:100px;margin:0 auto .8rem"></div>
+            <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:1rem">
+              <div id="admModalAvatar" style="width:48px;height:48px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;flex-shrink:0"></div>
+              <div>
+                <div id="admModalName" style="font-size:16px;font-weight:700;color:var(--text1)"></div>
+                <div id="admModalEmail" style="font-size:12px;color:var(--text3)"></div>
+                <div id="admModalUid" style="font-size:10px;color:var(--text3);font-family:monospace"></div>
+              </div>
+            </div>
+
+            <!-- Rôle -->
+            <div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem">Rôle</div>
+            <div style="display:flex;gap:.4rem;margin-bottom:.9rem;flex-wrap:wrap">
+              <button class="adm-role-btn" id="roleBtn-user"    onclick="admSetRole('user')"    style="flex:1">👤 Utilisateur</button>
+              <button class="adm-role-btn" id="roleBtn-streamer" onclick="admSetRole('streamer')" style="flex:1">📡 Streamer</button>
+              <button class="adm-role-btn" id="roleBtn-admin"   onclick="admSetRole('admin')"   style="flex:1">👑 Admin</button>
+            </div>
+
+            <!-- Infos affichées -->
+            <div style="background:var(--gold4);border-radius:10px;padding:.7rem .9rem;margin-bottom:.9rem;font-size:13px;line-height:1.8">
+              <div>📅 Inscription : <strong id="admModalJoined">—</strong></div>
+              <div>🕐 Dernière connexion : <strong id="admModalLastSeen">—</strong></div>
+              <div>🌍 Pays : <strong id="admModalCountry">—</strong></div>
+            </div>
+
+            <!-- Actions -->
+            <div style="display:flex;flex-direction:column;gap:.5rem">
+              <button id="admBanBtn" onclick="admToggleBan()" style="background:rgba(192,57,43,.1);border:1.5px solid rgba(192,57,43,.3);border-radius:10px;padding:.55rem;font-size:13px;font-weight:600;color:var(--red);cursor:pointer;transition:all .2s">🚫 Bannir l'utilisateur</button>
+              <button onclick="admSendNotifToUser()" style="background:rgba(15,123,63,.08);border:1.5px solid rgba(15,123,63,.2);border-radius:10px;padding:.55rem;font-size:13px;font-weight:600;color:var(--g1);cursor:pointer">📨 Envoyer un message</button>
+              <button onclick="admCloseUserModal()" style="background:none;border:1px solid var(--gold3);border-radius:10px;padding:.45rem;font-size:13px;color:var(--text3);cursor:pointer">Fermer</button>
+            </div>
+          </div>
+        </div>
       </div>
 
     </div><!-- /admin-content -->
@@ -5425,7 +5741,7 @@ document.addEventListener('keydown', function(e){
   }
   /* Navigation Smart TV — touches fléchées */
   if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
-    var navBtns=['nav-umma','nav-live','nav-ens','nav-ai'];
+    var navBtns=['nav-umma','nav-live','nav-ens','nav-qibla','nav-ai'];
     var cur=navBtns.findIndex(function(id){return document.getElementById(id)&&document.getElementById(id).classList.contains('active');});
     var next=e.key==='ArrowRight'?Math.min(cur+1,navBtns.length-1):Math.max(cur-1,0);
     var btn=document.getElementById(navBtns[next]);
@@ -5628,7 +5944,7 @@ function checkStreamerAccess(user, callback) {
 
 function switchAdmTab(id){
   // Masquer tous les panels
-  ['chaines','direct','prog','stats','streamers','params','notif','interact','qa'].forEach(function(n){
+  ['chaines','direct','prog','stats','streamers','params','notif','interact','qa','users'].forEach(function(n){
     var p = document.getElementById('adm-'+n);
     if(p) p.style.display = 'none';
     var b = document.getElementById('atab-'+n);
@@ -5643,6 +5959,7 @@ function switchAdmTab(id){
   if(id === 'stats') updateStats();
   if(id === 'streamers') loadStreamers();
   if(id === 'qa') _lkInteractStart();
+  if(id === 'users') admLoadUsers();
   if(id === 'params') {
     /* Charger la clé Anthropic actuelle */
     var _abInp = document.getElementById('adminAbKey');
@@ -10930,5 +11247,216 @@ function _encodeWav(buffer) {
 
 </script>
 
+<script>
+/* ════════════════════════════════════════════════════════
+   ADMIN — GESTION DES PROFILS UTILISATEURS
+════════════════════════════════════════════════════════ */
+var _admUsers = [];
+var _admCurrentUser = null;
+var _admCurrentUid = null;
+
+/* Charger tous les utilisateurs depuis Firebase */
+window.admLoadUsers = function() {
+  var list = document.getElementById('admUserList');
+  if (list) list.innerHTML = '<div style="text-align:center;padding:1.2rem;color:var(--text3)">Chargement…</div>';
+
+  _fbInit(function() {
+    firebase.database().ref('users').once('value', function(snap) {
+      _admUsers = [];
+      snap.forEach(function(child) {
+        var u = child.val();
+        u._uid = child.key;
+        _admUsers.push(u);
+      });
+
+      // Stats
+      var total    = _admUsers.length;
+      var admins   = _admUsers.filter(function(u){ return u.role === 'admin'; }).length;
+      var streamers= _admUsers.filter(function(u){ return u.role === 'streamer'; }).length;
+      var banned   = _admUsers.filter(function(u){ return u.banned; }).length;
+
+      var el;
+      if((el=document.getElementById('admStatTotal')))    el.textContent = total;
+      if((el=document.getElementById('admStatAdmins')))   el.textContent = admins;
+      if((el=document.getElementById('admStatStreamers')))el.textContent = streamers;
+      if((el=document.getElementById('admStatBanned')))   el.textContent = banned;
+
+      admRenderUsers(_admUsers);
+    }, function(err) {
+      if (list) list.innerHTML = '<div style="color:var(--red);padding:1rem">Erreur : ' + err.message + '</div>';
+    });
+  });
+};
+
+/* Rendre la liste */
+function admRenderUsers(users) {
+  var list = document.getElementById('admUserList');
+  if (!list) return;
+  if (!users.length) {
+    list.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--text3);font-style:italic">Aucun utilisateur trouvé</div>';
+    return;
+  }
+  list.innerHTML = '';
+  users.forEach(function(u) {
+    var row = document.createElement('div');
+    row.className = 'adm-user-row';
+
+    var role   = u.role || 'user';
+    var isBanned = !!u.banned;
+    var badgeClass = isBanned ? 'banned' : role;
+    var badgeLabel = isBanned ? '🚫 Banni' : (role === 'admin' ? '👑 Admin' : role === 'streamer' ? '📡 Streamer' : '👤 User');
+    var initial = (u.displayName || u.email || '?').charAt(0).toUpperCase();
+    var name    = u.displayName || u.email || u._uid.slice(0,8);
+    var email   = u.email || '—';
+    var lastSeen = u.lastSeen ? new Date(u.lastSeen).toLocaleDateString('fr-FR', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
+
+    row.innerHTML =
+      '<div class="adm-user-avatar">' + initial + '</div>' +
+      '<div style="flex:1;min-width:0">' +
+        '<div class="adm-user-name">' + escH(name) + '</div>' +
+        '<div class="adm-user-meta">' + escH(email) + ' · ' + lastSeen + '</div>' +
+      '</div>' +
+      '<span class="adm-role-badge ' + badgeClass + '">' + badgeLabel + '</span>';
+
+    row.onclick = function() { admOpenUserModal(u); };
+    list.appendChild(row);
+  });
+}
+
+/* Recherche / filtre */
+window.admSearchUsers = function() {
+  var q = (document.getElementById('admUserSearch') || {}).value || '';
+  var filter = (document.getElementById('admUserFilter') || {}).value || 'all';
+  q = q.toLowerCase().trim();
+
+  var filtered = _admUsers.filter(function(u) {
+    var matchQ = !q ||
+      (u.displayName || '').toLowerCase().includes(q) ||
+      (u.email || '').toLowerCase().includes(q) ||
+      (u._uid || '').toLowerCase().includes(q);
+    var matchF = filter === 'all' ||
+      (filter === 'admin'    && u.role === 'admin') ||
+      (filter === 'streamer' && u.role === 'streamer') ||
+      (filter === 'banned'   && u.banned);
+    return matchQ && matchF;
+  });
+  admRenderUsers(filtered);
+};
+
+/* Ouvrir le modal d'un utilisateur */
+window.admOpenUserModal = function(u) {
+  _admCurrentUser = u;
+  _admCurrentUid  = u._uid;
+
+  var modal = document.getElementById('admUserModal');
+  if (!modal) return;
+
+  var initial = (u.displayName || u.email || '?').charAt(0).toUpperCase();
+  var avatar  = document.getElementById('admModalAvatar');
+  if (avatar) {
+    avatar.textContent = initial;
+    if (u.photoURL) {
+      avatar.innerHTML = '<img src="'+escH(u.photoURL)+'" style="width:48px;height:48px;border-radius:50%;object-fit:cover">';
+    }
+  }
+
+  var el;
+  if((el=document.getElementById('admModalName')))    el.textContent = u.displayName || '—';
+  if((el=document.getElementById('admModalEmail')))   el.textContent = u.email || '—';
+  if((el=document.getElementById('admModalUid')))     el.textContent = 'UID: ' + u._uid;
+  if((el=document.getElementById('admModalJoined')))  el.textContent = u.createdAt ? new Date(u.createdAt).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}) : '—';
+  if((el=document.getElementById('admModalLastSeen')))el.textContent = u.lastSeen  ? new Date(u.lastSeen).toLocaleDateString('fr-FR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
+  if((el=document.getElementById('admModalCountry'))) el.textContent = u.country || '—';
+
+  /* Boutons rôle */
+  ['user','streamer','admin'].forEach(function(r) {
+    var btn = document.getElementById('roleBtn-' + r);
+    if (btn) btn.classList.toggle('active', (u.role || 'user') === r);
+  });
+
+  /* Bouton ban */
+  var banBtn = document.getElementById('admBanBtn');
+  if (banBtn) {
+    if (u.banned) {
+      banBtn.textContent = '\u2705 D\u00e9bannir l\'utilisateur';
+      banBtn.style.background = 'rgba(39,174,96,.1)';
+      banBtn.style.borderColor = 'rgba(39,174,96,.3)';
+      banBtn.style.color = '#27AE60';
+    } else {
+      banBtn.textContent = '\uD83D\uDEAB Bannir l\'utilisateur';
+      banBtn.style.background = 'rgba(192,57,43,.1)';
+      banBtn.style.borderColor = 'rgba(192,57,43,.3)';
+      banBtn.style.color = 'var(--red)';
+    }
+  }
+
+  modal.style.display = 'block';
+  requestAnimationFrame(function() { modal.style.opacity = '1'; });
+};
+
+window.admCloseUserModal = function() {
+  var modal = document.getElementById('admUserModal');
+  if (modal) modal.style.display = 'none';
+  _admCurrentUser = null;
+  _admCurrentUid  = null;
+};
+
+/* Changer le rôle */
+window.admSetRole = function(role) {
+  if (!_admCurrentUid) return;
+  _fbInit(function() {
+    firebase.database().ref('users/' + _admCurrentUid + '/role').set(role, function(err) {
+      if (err) { showToast('\u26A0\uFE0F Erreur : ' + err.message); return; }
+      if (_admCurrentUser) _admCurrentUser.role = role;
+      ['user','streamer','admin'].forEach(function(r) {
+        var btn = document.getElementById('roleBtn-' + r);
+        if (btn) btn.classList.toggle('active', r === role);
+      });
+      var labels = { user: '\uD83D\uDC64 Utilisateur', streamer: '\uD83D\uDCE1 Streamer', admin: '\uD83D\uDC51 Admin' };
+      showToast('\u2705 R\u00f4le mis \u00e0 jour : ' + (labels[role] || role));
+      // Mettre à jour dans la liste locale
+      var u = _admUsers.find(function(x){ return x._uid === _admCurrentUid; });
+      if (u) u.role = role;
+      admSearchUsers();
+    });
+  });
+};
+
+/* Bannir / débannir */
+window.admToggleBan = function() {
+  if (!_admCurrentUid || !_admCurrentUser) return;
+  var newBan = !_admCurrentUser.banned;
+  _fbInit(function() {
+    firebase.database().ref('users/' + _admCurrentUid + '/banned').set(newBan, function(err) {
+      if (err) { showToast('\u26A0\uFE0F Erreur : ' + err.message); return; }
+      _admCurrentUser.banned = newBan;
+      var u = _admUsers.find(function(x){ return x._uid === _admCurrentUid; });
+      if (u) u.banned = newBan;
+      showToast(newBan ? '\uD83D\uDEAB Utilisateur banni' : '\u2705 Utilisateur r\u00e9tabli');
+      admCloseUserModal();
+      admSearchUsers();
+    });
+  });
+};
+
+/* Envoyer une notification directe */
+window.admSendNotifToUser = function() {
+  if (!_admCurrentUser) return;
+  var name = _admCurrentUser.displayName || _admCurrentUser.email || 'cet utilisateur';
+  var msg = prompt('Message pour ' + name + ' :');
+  if (!msg || !msg.trim()) return;
+  _fbInit(function() {
+    var notifRef = firebase.database().ref('user_notifs/' + _admCurrentUid).push();
+    notifRef.set({
+      msg: msg.trim(),
+      date: firebase.database.ServerValue.TIMESTAMP,
+      from: 'Admin'
+    }, function(err) {
+      if (err) showToast('\u26A0\uFE0F Erreur envoi');
+      else showToast('\uD83D\uDCE8 Message envoy\u00e9 \u00e0 ' + name);
+    });
+  });
+};
+</script>
 </body>
 </html>
