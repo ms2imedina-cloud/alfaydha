@@ -2492,1479 +2492,7 @@ button[onclick="qiblaGPS()"] {
   </div>
 </section>
 <!-- SECTION WIRD -->
-<section id="sec-wird" class="sec">
 
-  <!-- ══════════════════════════════════════════
-       HERO COMPACT — Pratique Spirituelle
-  ══════════════════════════════════════════ -->
-  <div style="background:linear-gradient(160deg,#063d1e 0%,var(--g1) 50%,#0a5c2e 100%);padding:1.2rem 1.3rem 1rem;text-align:center;position:relative;overflow:hidden;flex-shrink:0;border-bottom:1px solid rgba(212,175,55,.15)">
-    <div style="position:absolute;inset:0;opacity:.05;background-image:radial-gradient(circle,var(--gold) 1px,transparent 1px);background-size:20px 20px;pointer-events:none"></div>
-    <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.4),transparent)"></div>
-    <div style="font-family:'Amiri',serif;font-size:28px;color:#fff;line-height:1;position:relative;z-index:1;text-shadow:0 2px 12px rgba(0,0,0,.3)">الممارسة الروحية</div>
-    <div style="font-family:'Amiri',serif;font-size:13px;color:var(--gold2);margin-top:.3rem;position:relative;z-index:1;opacity:.85">Pratique Spirituelle · Wird · Zikr · Calendrier · Qibla</div>
-  </div>
-
-  <!-- ══════════════════════════════════════════
-       TAB BAR — Style Pill Flutter
-  ══════════════════════════════════════════ -->
-  <div class="pratique-tabs">
-    <button class="pratique-tab active" id="pratique-tab-wird" onclick="switchPratiqueTab('wird')">
-      <span class="pt-icon">📿</span>
-      <span class="pt-label">Wird</span>
-    </button>
-    <button class="pratique-tab" id="pratique-tab-zikr" onclick="switchPratiqueTab('zikr')">
-      <span class="pt-icon">☽</span>
-      <span class="pt-label">Zikr</span>
-    </button>
-    <button class="pratique-tab" id="pratique-tab-cal" onclick="switchPratiqueTab('cal')">
-      <span class="pt-icon">🌙</span>
-      <span class="pt-label">Calendrier</span>
-    </button>
-    <button class="pratique-tab" id="pratique-tab-qibla" onclick="switchPratiqueTab('qibla')">
-      <span class="pt-icon">🕋</span>
-      <span class="pt-label">Qibla</span>
-    </button>
-  </div>
-
-  <!-- ══════════════════════════════════════════
-       PANEL WIRD
-  ══════════════════════════════════════════ -->
-  <div class="pratique-panel active" id="pratique-panel-wird">
-    
-
-
-
-
-<!-- ══ CARTES ÉCOUTER — ElevenLabs ══ -->
-
-<!-- ONGLETS WIRD / WAZIFA / HADRA -->
-<div style="display:flex;border-bottom:2px solid var(--gold3);background:var(--white);flex-shrink:0;overflow-x:auto;scrollbar-width:none">
-  <button id="tab-wird" onclick="switchWirdTab('wird')" style="flex:1;min-width:70px;padding:.65rem .3rem;background:none;border:none;border-bottom:3px solid var(--gold);cursor:pointer;font-family:'Amiri',serif;font-size:14px;color:var(--g1);font-weight:700;white-space:nowrap">📿 Wird</button>
-  <button id="tab-wazifa" onclick="switchWirdTab('wazifa')" style="flex:1;min-width:70px;padding:.65rem .3rem;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-family:'Amiri',serif;font-size:14px;color:var(--text3);white-space:nowrap">✨ Wazifa</button>
-  <button id="tab-hadra" onclick="switchWirdTab('hadra')" style="flex:1;min-width:80px;padding:.65rem .3rem;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-family:'Amiri',serif;font-size:14px;color:var(--text3);white-space:nowrap">🌙 Hadra Jum'a</button>
-</div>
-
-<!-- ══════════════════════════════
-     PANEL WIRD
-══════════════════════════════ -->
-<div id="panel-wird-content">
-
-<!-- ══ BARRE DE PROGRESSION ══ -->
-<div id="wird-progress-bar">
-  <div class="wpb-header">
-    <span class="wpb-label">📿 Al-Wird at-Tijānī</span>
-    <span class="wpb-fraction">
-      <span class="wpb-fraction-current" id="wpb-current">1</span>
-      <span class="wpb-fraction-sep">/</span>
-      <span class="wpb-fraction-total">8 étapes</span>
-    </span>
-  </div>
-  <div class="wpb-track"><div class="wpb-fill" id="wpb-fill"></div></div>
-  <div class="wpb-steps" id="wpb-dots"></div>
-  <div style="text-align:right;padding:.3rem 0 .1rem">
-    <button id="tts-wird-all" onclick="wirdSpeakAll()" style="background:none;border:1px solid var(--gold3);border-radius:100px;padding:.25rem .8rem;font-size:12px;color:var(--g1);cursor:pointer;font-family:'Roboto',sans-serif;transition:all .15s">
-      <span>🔊</span> <span>Écouter tout le Wird</span>
-    </button>
-  </div>
-</div>
-
-<div class="ui-row-gold">
-  <div class="ui-caption">
-    Le <strong>Wird Tijani</strong> se récite <strong>deux fois par jour</strong> — après Sobh (matin) et après Asr (soir). Il comporte 8 étapes dans un ordre strict et immuable. La régularité (<em>Mudāwama</em>) est une condition essentielle de la voie.
-  </div>
-</div>
-
-<!-- ① A'OUTHOU BILLAH -->
-<div id="wird-step-1" class="ui-sep">
-  <div class="ui-hdr-g1">
-    <div>
-      <div class="ui-amiri-gold">① أعوذ بالله — A'ūdhu billāh</div>
-      <div class="ui-lbl">1 fois · Protection contre Shaytan</div>
-    </div>
-    <span style="background:rgba(212,175,55,.2);color:var(--gold2);font-family:'Amiri',serif;font-size:13px;padding:.18rem .55rem;border-radius:100px;border:1px solid rgba(212,175,55,.3)">× 1</span>
-  </div>
-  <div style="padding:1rem 1.2rem;text-align:center;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:28px;color:var(--g1);direction:rtl;line-height:2">أَعُوذُ بِاللهِ مِنَ الشَّيْطَانِ الرَّجِيمِ</div>
-    <div class="ui-note">A'ūdhu bi-llāhi mina sh-shayṭāni r-rajīm</div>
-    <div style="font-size:13px;color:var(--text2);margin-top:.15rem">« Je cherche refuge auprès d'Allah contre le Shaytan maudit »</div>
-  </div>
-</div>
-
-<!-- ② FATIHA 1× -->
-<div id="wird-step-2" class="ui-sep">
-  <div class="ui-hdr-g1">
-    <div>
-      <div class="ui-amiri-gold">② الفاتحة — Al-Fātiḥa</div>
-      <div class="ui-lbl">1 fois · Ouverture du Wird</div>
-    </div>
-    <span style="background:rgba(212,175,55,.2);color:var(--gold2);font-family:'Amiri',serif;font-size:13px;padding:.18rem .55rem;border-radius:100px;border:1px solid rgba(212,175,55,.3)">× 1</span>
-  </div>
-  <div style="padding:1rem 1.2rem;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:24px;color:var(--g1);direction:rtl;text-align:right;line-height:2.8">
-      بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيمِ ﴿١﴾<br>
-      اَلْحَمْدُ للهِ رَبِّ الْعَالَمِينَ ﴿٢﴾<br>
-      الرَّحْمَنِ الرَّحِيمِ ﴿٣﴾<br>
-      مَالِكِ يَوْمِ الدِّينِ ﴿٤﴾<br>
-      إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ﴿٥﴾<br>
-      اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ ﴿٦﴾<br>
-      صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ ﴿٧﴾
-    </div>
-    <div style="text-align:center;margin-top:.3rem;font-family:'Amiri',serif;font-size:16px;color:var(--gold)">آمِينَ</div>
-  </div>
-  <div style="padding:.65rem 1.2rem;background:var(--ivory);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-size:12px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.25rem">Translittération</div>
-    <div style="font-size:12px;color:var(--g2);font-style:italic;line-height:2">
-      Bismi-llāhi r-raḥmāni r-raḥīm<br>
-      Al-ḥamdu li-llāhi rabbi l-'ālamīn<br>
-      Ar-raḥmāni r-raḥīm<br>
-      Māliki yawmi d-dīn<br>
-      Iyyāka na'budu wa iyyāka nasta'īn<br>
-      Ihdinā ṣ-ṣirāṭa l-mustaqīm<br>
-      Ṣirāṭa lladhīna an'amta 'alayhim, ghayri l-maghḍūbi 'alayhim wa lā ḍ-ḍāllīn. Āmīn.
-    </div>
-  </div>
-  <div class="ui-row-gold4">
-    <div style="font-size:12px;color:var(--text1);line-height:1.9">
-      « Au nom d'Allah, le Très Miséricordieux, le Tout Miséricordieux.<br>
-      Louange à Allah, Seigneur des mondes,<br>
-      le Très Miséricordieux, le Tout Miséricordieux,<br>
-      Maître du Jour de la rétribution.<br>
-      C'est Toi seul que nous adorons, et c'est Toi seul dont nous implorons l'aide.<br>
-      Guide-nous dans le droit chemin,<br>
-      le chemin de ceux que Tu as comblés de bienfaits, non de ceux qui ont encouru Ta colère, ni des égarés.<br>
-      <strong>Āmīn.</strong> »
-    </div>
-  </div>
-</div>
-
-<!-- ③ ASTAGHFIRULLAH 100× -->
-<div id="wird-step-3" class="ui-sep">
-  <div class="ui-hdr-g1">
-    <div>
-      <div class="ui-amiri-gold">③ الاستغفار — Astaghfirullāh</div>
-      <div class="ui-lbl">100 fois</div>
-    </div>
-    <span style="background:rgba(212,175,55,.2);color:var(--gold2);font-family:'Amiri',serif;font-size:13px;padding:.18rem .55rem;border-radius:100px;border:1px solid rgba(212,175,55,.3)">× 100</span>
-  </div>
-  <div style="padding:1rem 1.2rem;text-align:center;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:32px;color:var(--g1);direction:rtl;line-height:1.9">أَسْتَغْفِرُ اللهَ</div>
-    <div class="ui-note">Astaghfiru-llāh</div>
-    <div style="font-size:13px;color:var(--text2);margin-top:.15rem">« Je demande pardon à Allah »</div>
-  </div>
-  <div style="padding:.6rem 1.2rem;background:rgba(15,123,63,.04)">
-    <div style="font-size:12px;color:var(--text2);line-height:1.6;font-style:italic">Récité 100 fois. Purification du cœur avant le dhikr — c'est la descente vers Allah avant l'élévation.</div>
-  </div>
-</div>
-
-<!-- ④ SALAT AL-FATIHI 100× -->
-<div id="wird-step-4" class="ui-sep">
-  <div class="ui-hdr-g1">
-    <div>
-      <div class="ui-amiri-gold">④ الصلاة الفاتحة — Ṣalāt al-Fātiḥ</div>
-      <div class="ui-lbl">100 fois · Bénédiction sur le Prophète ﷺ</div>
-    </div>
-    <span style="background:rgba(212,175,55,.2);color:var(--gold2);font-family:'Amiri',serif;font-size:13px;padding:.18rem .55rem;border-radius:100px;border:1px solid rgba(212,175,55,.3)">× 100</span>
-  </div>
-  <div style="padding:1rem 1.2rem;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:20px;color:var(--g1);direction:rtl;text-align:right;line-height:2.7">
-      اَللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ الْفَاتِحِ لِمَا أُغْلِقَ<br>
-      وَالْخَاتِمِ لِمَا سَبَقَ<br>
-      نَاصِرِ الْحَقِّ بِالْحَقِّ<br>
-      وَالْهَادِي إِلَى صِرَاطِكَ الْمُسْتَقِيمِ<br>
-      وَعَلَى آلِهِ حَقَّ قَدْرِهِ وَمِقْدَارِهِ الْعَظِيمِ
-    </div>
-  </div>
-  <div style="padding:.65rem 1.2rem;background:var(--ivory);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-size:12px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.25rem">Translittération</div>
-    <div style="font-size:12px;color:var(--g2);font-style:italic;line-height:2">
-      Allāhumma ṣalli 'alā sayyidinā Muḥammadin l-fātiḥi limā ughliq,<br>
-      wa l-khātimi limā sabaq,<br>
-      nāṣiri l-ḥaqqi bi-l-ḥaqq,<br>
-      wa l-hādī ilā ṣirāṭika l-mustaqīm,<br>
-      wa 'alā ālihi, ḥaqqa qadrihi, wa miqdārihi l-'aẓīm.
-    </div>
-  </div>
-  <div style="padding:.65rem 1.2rem;background:var(--gold4);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-size:12px;color:var(--text1);line-height:2">
-      « Ô Allah, bénis notre Seigneur Muhammad,<br>
-      l'Ouvreur de ce qui était fermé,<br>
-      et le Sceau de ce qui a précédé,<br>
-      le Défenseur de la Vérité par la Vérité,<br>
-      et le Guide vers Ta voie droite,<br>
-      ainsi que sur sa famille — à la mesure de sa valeur et de son immense rang. »
-    </div>
-  </div>
-  <div style="padding:.6rem 1.2rem;background:rgba(15,123,63,.04)">
-    <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:.15rem">📖 Baye Niass رضي الله عنه</div>
-    <div style="font-size:12px;color:var(--text2);line-height:1.7;font-style:italic">« La Ṣalāt al-Fātiḥ est le cœur du Wird. C'est par elle que s'ouvre la porte de la Marifah. Elle équivaut en récompense à 6 000 salawats ordinaires. »</div>
-  </div>
-</div>
-
-<!-- ⑤ SOUBHANA RABBIKA -->
-<div id="wird-step-5" class="ui-sep">
-  <div class="ui-hdr-g1">
-    <div>
-      <div class="ui-amiri-gold">⑤ سُبْحَانَ رَبِّكَ — Subḥāna rabbika</div>
-      <div class="ui-lbl">1 fois · après les 100 Salat al-Fatihi</div>
-    </div>
-    <span style="background:rgba(212,175,55,.2);color:var(--gold2);font-family:'Amiri',serif;font-size:13px;padding:.18rem .55rem;border-radius:100px;border:1px solid rgba(212,175,55,.3)">× 1</span>
-  </div>
-  <div style="padding:1rem 1.2rem;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:22px;color:var(--g1);direction:rtl;text-align:right;line-height:2.5">
-      سُبْحَانَ رَبِّكَ رَبِّ الْعِزَّةِ عَمَّا يَصِفُونَ<br>
-      وَسَلَامٌ عَلَى الْمُرْسَلِينَ<br>
-      وَالْحَمْدُ للهِ رَبِّ الْعَالَمِينَ
-    </div>
-  </div>
-  <div style="padding:.65rem 1.2rem;background:var(--ivory);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-size:12px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.25rem">Translittération</div>
-    <div style="font-size:12px;color:var(--g2);font-style:italic;line-height:2">
-      Subḥāna rabbika rabbi l-'izzati 'ammā yaṣifūn<br>
-      wa salāmun 'ala l-mursalīn<br>
-      wa l-ḥamdu li-llāhi rabbi l-'ālamīn
-    </div>
-  </div>
-  <div class="ui-row-gold4">
-    <div style="font-size:12px;color:var(--text1);line-height:1.9">
-      « Gloire à ton Seigneur, le Seigneur de la Puissance, au-delà de ce qu'ils Lui attribuent,<br>
-      et paix sur les Envoyés,<br>
-      et louange à Allah, Seigneur des mondes. »<br>
-      <em style="font-size:12px;color:var(--text3)">(Coran 37:180-182)</em>
-    </div>
-  </div>
-</div>
-
-<!-- ⑥ LA ILAHA ILLALLAH 100× -->
-<div id="wird-step-6" class="ui-sep">
-  <div class="ui-hdr-g1">
-    <div>
-      <div class="ui-amiri-gold">⑥ لا إله إلا الله — Lā ilāha illa-llāh</div>
-      <div class="ui-lbl">100 fois · Dhikr de l'Unicité divine</div>
-    </div>
-    <span style="background:rgba(212,175,55,.2);color:var(--gold2);font-family:'Amiri',serif;font-size:13px;padding:.18rem .55rem;border-radius:100px;border:1px solid rgba(212,175,55,.3)">× 100</span>
-  </div>
-  <div style="padding:1.2rem 1.2rem;text-align:center;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:36px;color:var(--g1);direction:rtl;line-height:1.8">لَا إِلَهَ إِلَّا اللهُ</div>
-    <div style="font-size:14px;color:var(--text3);font-style:italic;margin-top:.3rem">Lā ilāha illa-llāh</div>
-    <div style="font-size:14px;color:var(--text2);margin-top:.15rem">« Il n'y a de divinité sinon Allah »</div>
-  </div>
-  <div style="padding:.6rem 1.2rem;background:rgba(15,123,63,.04)">
-    <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:.15rem">📖 Baye Niass رضي الله عنه</div>
-    <div style="font-size:12px;color:var(--text2);line-height:1.7;font-style:italic">« Lā ilāha illa-llāh récité avec présence totale du cœur est l'épée qui tranche le voile entre le serviteur et son Seigneur. C'est la porte du Fanā'. »</div>
-  </div>
-</div>
-
-<!-- ⑦ SAYYIDOUNA MOUHAMMADOUN -->
-<div id="wird-step-7" class="ui-sep">
-  <div class="ui-hdr-g1">
-    <div>
-      <div class="ui-amiri-gold">⑦ سيدنا محمد رسول الله — Après les 100 Lā ilāha</div>
-      <div class="ui-lbl">1 fois</div>
-    </div>
-    <span style="background:rgba(212,175,55,.2);color:var(--gold2);font-family:'Amiri',serif;font-size:13px;padding:.18rem .55rem;border-radius:100px;border:1px solid rgba(212,175,55,.3)">× 1</span>
-  </div>
-  <div style="padding:1rem 1.2rem;text-align:center;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:24px;color:var(--g1);direction:rtl;line-height:2">سَيِّدُنَا مُحَمَّدٌ رَسُولُ اللهِ عَلَيْهِ صَلَاةُ اللهِ</div>
-    <div class="ui-note">Sayyidunā Muḥammadun Rasūlu-llāhi 'alayhi ṣalātu-llāh</div>
-    <div style="font-size:13px;color:var(--text2);margin-top:.15rem">« Notre Seigneur Muhammad est le Messager d'Allah — sur lui la bénédiction d'Allah »</div>
-  </div>
-</div>
-
-<!-- ⑧ CLÔTURE COMPLÈTE DU WIRD -->
-<div id="wird-step-8" style="border-bottom:2px solid var(--gold)">
-  <div style="background:linear-gradient(135deg,var(--g1),#0d3826);padding:.6rem 1.2rem">
-    <div class="ui-amiri-gold">⑧ خاتمة الوِرد — Clôture du Wird</div>
-    <div class="ui-lbl">1 fois · Fermeture obligatoire</div>
-  </div>
-  <div style="padding:1rem 1.2rem;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:20px;color:var(--g1);direction:rtl;text-align:right;line-height:2.8">
-      إِنَّ اللهَ وَمَلَائِكَتَهُ يُصَلُّونَ عَلَى النَّبِيِّ<br>
-      يَا أَيُّهَا الَّذِينَ آمَنُوا صَلُّوا عَلَيْهِ وَسَلِّمُوا تَسْلِيمًا<br>
-      صَلَّى اللهُ عَلَيْهِ وَعَلَى آلِهِ وَصَحْبِهِ وَسَلَّمَ تَسْلِيمًا<br>
-      سُبْحَانَ رَبِّكَ رَبِّ الْعِزَّةِ عَمَّا يَصِفُونَ<br>
-      وَسَلَامٌ عَلَى الْمُرْسَلِينَ<br>
-      وَالْحَمْدُ للهِ رَبِّ الْعَالَمِينَ
-    </div>
-  </div>
-  <div style="padding:.65rem 1.2rem;background:var(--ivory);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-size:12px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.25rem">Translittération</div>
-    <div style="font-size:12px;color:var(--g2);font-style:italic;line-height:2.1">
-      Inna-llāha wa malā'ikatahu yuṣallūna 'ala n-nabiyy<br>
-      yā ayyuhā lladhīna āmanū ṣallū 'alayhi wa sallimū taslīmā<br>
-      Ṣalla-llāhu 'alayhi wa 'alā ālihi wa ṣaḥbihi wa sallama taslīmā<br>
-      Subḥāna rabbika rabbi l-'izzati 'ammā yaṣifūn<br>
-      wa salāmun 'ala l-mursalīn<br>
-      wa l-ḥamdu li-llāhi rabbi l-'ālamīn
-    </div>
-  </div>
-  <div class="ui-row-gold4">
-    <div style="font-size:12px;color:var(--text1);line-height:2">
-      « Certes, Allah et Ses anges prient sur le Prophète. Ô vous qui croyez, priez sur lui et saluez-le d'un sincère salut.<br>
-      Qu'Allah le bénisse, lui, sa famille et ses Compagnons, et lui accorde la paix.<br>
-      Gloire à ton Seigneur, le Seigneur de la Puissance, au-delà de ce qu'ils Lui attribuent,<br>
-      et paix sur les Envoyés,<br>
-      et louange à Allah, Seigneur des mondes. »
-    </div>
-  </div>
-</div>
-
-<!-- DEMANDE À ALLAH APRÈS LE WIRD -->
-<div style="background:linear-gradient(135deg,var(--g1),var(--g2));padding:.65rem 1.2rem;border-bottom:1px solid var(--gold3)">
-  <div style="font-family:'Amiri',serif;font-size:16px;color:var(--gold2)">🤲 Demande à Allah — après la clôture</div>
-  <div style="font-size:12px;color:var(--gold3);margin-top:2px">Mains levées · cœur présent · visualiser la chaîne spirituelle</div>
-</div>
-<div style="padding:.8rem 1.2rem;background:rgba(15,123,63,.05);border-bottom:1px solid var(--gold3)">
-  <div class="ui-caption">
-    Une fois le lazim (wird) terminé, lève les mains et demande à Allah tout ce que tu désires — pardon, santé, famille, Marifah, bonne fin... Allah exauce le serviteur qui vient à Lui par Sa voie. Commence par :<br><br>
-    <div style="font-family:'Amiri',serif;font-size:16px;color:var(--g1);direction:rtl;text-align:right;line-height:2.5;margin:.4rem 0">
-      اللَّهُمَّ بِجَاهِ سَيِّدِنَا مُحَمَّدٍ ﷺ وَبِجَاهِ سَيِّدِنَا الشَّيْخِ أَحْمَدَ التِّيجَانِي رَضِيَ اللهُ عَنْهُ وَبِجَاهِ سَيِّدِنَا الشَّيْخِ إِبْرَاهِيمَ نِيَاسٍ رَضِيَ اللهُ عَنْهُ اقْضِ حَاجَتِي وَاغْفِرْ لِي وَلِوَالِدَيَّ وَلِجَمِيعِ الْمُسْلِمِينَ آمِينَ
-    </div>
-    <div style="font-size:12px;color:var(--g2);font-style:italic;margin-top:.2rem">Allāhumma bi-jāhi sayyidinā Muḥammadin ﷺ wa bi-jāhi sayyidinā sh-Shaykhi Aḥmada t-Tijānī raḍiya-llāhu 'anhu wa bi-jāhi sayyidinā sh-Shaykhi Ibrāhīma Niyāsi raḍiya-llāhu 'anhu — iqḍi ḥājatī wa ghfir lī wa li-wālidayya wa li-jamī'i l-muslimīn. Āmīn.</div>
-    <div style="font-size:12px;color:var(--text1);margin-top:.3rem">« Ô Allah, par l'intercession de notre Seigneur Muhammad ﷺ, de Cheikh Ahmad Tijani et de Cheikh Ibrahim Niass رضي الله عنهما — exauce mon besoin, pardonne-moi, à mes parents et à tous les musulmans. Āmīn. »</div>
-  </div>
-</div>
-
-<!-- CONDITIONS -->
-<div style="padding:.9rem 1.2rem;background:var(--white);border-bottom:1px solid var(--gold3)">
-  <div style="font-family:'Amiri',serif;font-size:16px;color:var(--g1);margin-bottom:.5rem">⚖️ Conditions du Wird</div>
-  <div style="display:flex;flex-direction:column;gap:.35rem">
-    <div style="display:flex;gap:.5rem;font-size:12px;color:var(--text2);line-height:1.6;align-items:flex-start"><span class="ui-gold-bold">•</span><span><strong>Ijāza obligatoire</strong> — reçue d'un Muqaddam autorisé de la Tijaniyya</span></div>
-    <div style="display:flex;gap:.5rem;font-size:12px;color:var(--text2);line-height:1.6;align-items:flex-start"><span class="ui-gold-bold">•</span><span><strong>Ordre strict</strong> — les 8 étapes dans l'ordre, sans modification possible</span></div>
-    <div style="display:flex;gap:.5rem;font-size:12px;color:var(--text2);line-height:1.6;align-items:flex-start"><span class="ui-gold-bold">•</span><span><strong>Mudāwama</strong> — le wird manqué sans excuse valable ne se rattrape pas</span></div>
-    <div style="display:flex;gap:.5rem;font-size:12px;color:var(--text2);line-height:1.6;align-items:flex-start"><span class="ui-gold-bold">•</span><span><strong>Horaires</strong> — après Sobh (jusqu'à Dhuhr) et après Asr (jusqu'au coucher du soleil)</span></div>
-    <div style="display:flex;gap:.5rem;font-size:12px;color:var(--text2);line-height:1.6;align-items:flex-start"><span class="ui-gold-bold">•</span><span><strong>Hudūr al-qalb</strong> — présence totale du cœur à chaque formule</span></div>
-  </div>
-</div>
-
-</div><!-- /panel-wird-content -->
-
-
-<!-- ══════════════════════════════
-     PANEL WAZIFA
-══════════════════════════════ -->
-<div id="panel-wazifa-content" style="display:none">
-
-<!-- INTRO WAZIFA -->
-<div class="ui-row-gold">
-  <div class="ui-caption">
-    La <strong>Wazifa</strong> se récite <strong>1 fois par jour</strong> — matin ou soir. Il est préférable de la pratiquer <strong>en groupe</strong> après la prière de Maghreb ou après Sobh. Elle comporte 12 étapes dans un ordre strict.
-  </div>
-</div>
-
-<!-- ① A'OUTHOU BILLAH -->
-<div class="ui-sep">
-  <div class="ui-hdr-g2">
-    <div>
-      <div class="ui-amiri-gold">① أعوذ بالله — A'ūdhu billāh</div>
-      <div class="ui-lbl">1 fois · Protection contre Shaytan</div>
-    </div>
-    <span style="background:rgba(212,175,55,.2);color:var(--gold2);font-family:'Amiri',serif;font-size:13px;padding:.18rem .55rem;border-radius:100px;border:1px solid rgba(212,175,55,.3)">× 1</span>
-  </div>
-  <div style="padding:1rem 1.2rem;text-align:center;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:28px;color:var(--g1);direction:rtl;line-height:2">أَعُوذُ بِاللهِ مِنَ الشَّيْطَانِ الرَّجِيمِ</div>
-    <div style="font-size:13px;color:var(--text3);font-style:italic;margin-top:.3rem">A'ūdhu bi-llāhi mina sh-shayṭāni r-rajīm</div>
-    <div style="font-size:13px;color:var(--text2);margin-top:.12rem">« Je cherche refuge auprès d'Allah contre le Shaytan maudit »</div>
-  </div>
-</div>
-
-<!-- ② FATIHA 1× -->
-<div class="ui-sep">
-  <div class="ui-hdr-g2">
-    <div>
-      <div class="ui-amiri-gold">② الفاتحة — Al-Fātiḥa</div>
-      <div class="ui-lbl">1 fois · Ouverture de la Wazifa</div>
-    </div>
-    <span style="background:rgba(212,175,55,.2);color:var(--gold2);font-family:'Amiri',serif;font-size:13px;padding:.18rem .55rem;border-radius:100px;border:1px solid rgba(212,175,55,.3)">× 1</span>
-  </div>
-  <div style="padding:1rem 1.2rem;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:24px;color:var(--g1);direction:rtl;text-align:right;line-height:2.8">
-      بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيمِ ﴿١﴾<br>
-      اَلْحَمْدُ للهِ رَبِّ الْعَالَمِينَ ﴿٢﴾ الرَّحْمَنِ الرَّحِيمِ ﴿٣﴾<br>
-      مَالِكِ يَوْمِ الدِّينِ ﴿٤﴾<br>
-      إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ﴿٥﴾<br>
-      اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ ﴿٦﴾<br>
-      صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ ﴿٧﴾
-    </div>
-    <div style="text-align:center;margin-top:.4rem;font-family:'Amiri',serif;font-size:16px;color:var(--gold)">آمِينَ</div>
-  </div>
-  <div style="padding:.65rem 1.2rem;background:var(--ivory)">
-    <div style="font-size:12px;color:var(--g2);font-style:italic;line-height:2">
-      Bismi-llāhi r-raḥmāni r-raḥīm — Al-ḥamdu li-llāhi rabbi l-'ālamīn — Ar-raḥmāni r-raḥīm — Māliki yawmi d-dīn — Iyyāka na'budu wa iyyāka nasta'īn — Ihdinā ṣ-ṣirāṭa l-mustaqīm — Ṣirāṭa lladhīna an'amta 'alayhim, ghayri l-maghḍūbi 'alayhim wa lā ḍ-ḍāllīn. Āmīn.
-    </div>
-  </div>
-</div>
-
-<!-- ③ ISTIGHFAR LONG 30× -->
-<div class="ui-sep">
-  <div class="ui-hdr-g2">
-    <div>
-      <div class="ui-amiri-gold">③ الاستغفار الطويل — Istighfār long</div>
-      <div class="ui-lbl">30 fois · Forme longue obligatoire</div>
-    </div>
-    <span style="background:rgba(212,175,55,.2);color:var(--gold2);font-family:'Amiri',serif;font-size:13px;padding:.18rem .55rem;border-radius:100px;border:1px solid rgba(212,175,55,.3)">× 30</span>
-  </div>
-  <div style="padding:1rem 1.2rem;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:22px;color:var(--g1);direction:rtl;text-align:right;line-height:2.5">
-      أَسْتَغْفِرُ اللهَ الْعَظِيمَ الَّذِي لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ
-    </div>
-  </div>
-  <div style="padding:.65rem 1.2rem;background:var(--ivory);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-size:12px;color:var(--g2);font-style:italic;line-height:1.8">Astaghfiru-llāha l-'Aẓīma lladhī lā ilāha illā huwa l-Ḥayyu l-Qayyūm</div>
-    <div style="font-size:12px;color:var(--text1);margin-top:.15rem">« Je demande pardon à Allah le Très Grand, Lui en dehors de qui il n'y a de divinité, le Vivant, le Subsistant »</div>
-  </div>
-  <div style="padding:.55rem 1.2rem;background:rgba(15,123,63,.04)">
-    <div style="font-size:12px;color:var(--text2);line-height:1.6;font-style:italic">Dans la Wazifa : forme longue uniquement, 30 fois. Différent du Wird (Astaghfiru-llāh court, 100 fois).</div>
-  </div>
-</div>
-
-<!-- ④ SALAT AL-FATIHI 50× -->
-<div class="ui-sep">
-  <div class="ui-hdr-g2">
-    <div>
-      <div class="ui-amiri-gold">④ الصلاة الفاتحة — Ṣalāt al-Fātiḥ</div>
-      <div class="ui-lbl">50 fois · dans la Wazifa</div>
-    </div>
-    <span style="background:rgba(212,175,55,.2);color:var(--gold2);font-family:'Amiri',serif;font-size:13px;padding:.18rem .55rem;border-radius:100px;border:1px solid rgba(212,175,55,.3)">× 50</span>
-  </div>
-  <div style="padding:1rem 1.2rem;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:20px;color:var(--g1);direction:rtl;text-align:right;line-height:2.7">
-      اَللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ الْفَاتِحِ لِمَا أُغْلِقَ<br>
-      وَالْخَاتِمِ لِمَا سَبَقَ<br>
-      نَاصِرِ الْحَقِّ بِالْحَقِّ<br>
-      وَالْهَادِي إِلَى صِرَاطِكَ الْمُسْتَقِيمِ<br>
-      وَعَلَى آلِهِ حَقَّ قَدْرِهِ وَمِقْدَارِهِ الْعَظِيمِ
-    </div>
-  </div>
-  <div style="padding:.65rem 1.2rem;background:var(--ivory);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-size:12px;color:var(--g2);font-style:italic;line-height:2">
-      Allāhumma ṣalli 'alā sayyidinā Muḥammadin l-fātiḥi limā ughliq, wa l-khātimi limā sabaq, nāṣiri l-ḥaqqi bi-l-ḥaqq, wa l-hādī ilā ṣirāṭika l-mustaqīm, wa 'alā ālihi, ḥaqqa qadrihi, wa miqdārihi l-'aẓīm.
-    </div>
-  </div>
-  <div class="ui-row-gold4">
-    <div style="font-size:12px;color:var(--text1);line-height:2">
-      « Ô Allah, bénis notre Seigneur Muhammad, l'Ouvreur de ce qui était fermé, le Sceau de ce qui a précédé, le Défenseur de la Vérité par la Vérité, le Guide vers Ta voie droite, ainsi que sur sa famille — à la mesure de sa valeur et de son immense rang. »
-    </div>
-  </div>
-</div>
-
-<!-- ⑤ SOUBHANA RABBIKA après 50 Salat al-Fatihi -->
-<div class="ui-sep">
-  <div class="ui-hdr-g2">
-    <div>
-      <div class="ui-amiri-gold">⑤ سُبْحَانَ رَبِّكَ — Subḥāna rabbika</div>
-      <div class="ui-lbl">1 fois · après les 50 Ṣalāt al-Fātiḥ</div>
-    </div>
-    <span style="background:rgba(212,175,55,.2);color:var(--gold2);font-family:'Amiri',serif;font-size:13px;padding:.18rem .55rem;border-radius:100px;border:1px solid rgba(212,175,55,.3)">× 1</span>
-  </div>
-  <div style="padding:1rem 1.2rem;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:22px;color:var(--g1);direction:rtl;text-align:right;line-height:2.5">
-      سُبْحَانَ رَبِّكَ رَبِّ الْعِزَّةِ عَمَّا يَصِفُونَ وَسَلَامٌ عَلَى الْمُرْسَلِينَ وَالْحَمْدُ للهِ رَبِّ الْعَالَمِينَ
-    </div>
-  </div>
-  <div style="padding:.65rem 1.2rem;background:var(--ivory)">
-    <div style="font-size:12px;color:var(--g2);font-style:italic;line-height:1.9">Subḥāna rabbika rabbi l-'izzati 'ammā yaṣifūn, wa salāmun 'ala l-mursalīn, wa l-ḥamdu li-llāhi rabbi l-'ālamīn.</div>
-    <div style="font-size:12px;color:var(--text1);margin-top:.15rem">« Gloire à ton Seigneur le Seigneur de la Puissance, au-delà de ce qu'ils Lui attribuent, et paix sur les Envoyés, et louange à Allah Seigneur des mondes. »</div>
-  </div>
-</div>
-
-<!-- ⑥ LA ILAHA ILLALLAH 100× -->
-<div class="ui-sep">
-  <div class="ui-hdr-g2">
-    <div>
-      <div class="ui-amiri-gold">⑥ لا إله إلا الله — Lā ilāha illa-llāh</div>
-      <div class="ui-lbl">100 fois</div>
-    </div>
-    <span style="background:rgba(212,175,55,.2);color:var(--gold2);font-family:'Amiri',serif;font-size:13px;padding:.18rem .55rem;border-radius:100px;border:1px solid rgba(212,175,55,.3)">× 100</span>
-  </div>
-  <div style="padding:1.2rem 1.2rem;text-align:center;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:36px;color:var(--g1);direction:rtl;line-height:1.8">لَا إِلَهَ إِلَّا اللهُ</div>
-    <div style="font-size:14px;color:var(--text3);font-style:italic;margin-top:.3rem">Lā ilāha illa-llāh</div>
-    <div style="font-size:14px;color:var(--text2);margin-top:.15rem">« Il n'y a de divinité sinon Allah »</div>
-  </div>
-</div>
-
-<!-- ⑦ SAYYIDOUNA MOUHAMMADOUN 1× -->
-<div class="ui-sep">
-  <div class="ui-hdr-g2">
-    <div>
-      <div class="ui-amiri-gold">⑦ سيدنا محمد رسول الله — Après les 100</div>
-      <div class="ui-lbl">1 fois</div>
-    </div>
-    <span style="background:rgba(212,175,55,.2);color:var(--gold2);font-family:'Amiri',serif;font-size:13px;padding:.18rem .55rem;border-radius:100px;border:1px solid rgba(212,175,55,.3)">× 1</span>
-  </div>
-  <div style="padding:1rem 1.2rem;text-align:center;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:24px;color:var(--g1);direction:rtl;line-height:2">سَيِّدُنَا مُحَمَّدٌ رَسُولُ اللهِ عَلَيْهِ صَلَاةُ اللهِ</div>
-    <div class="ui-note">Sayyidunā Muḥammadun Rasūlu-llāhi 'alayhi ṣalātu-llāh</div>
-    <div style="font-size:13px;color:var(--text2);margin-top:.15rem">« Notre Seigneur Muhammad est le Messager d'Allah — sur lui la bénédiction d'Allah »</div>
-  </div>
-</div>
-
-<!-- ⑧ JAWHARAT AL-KAMAL 12× -->
-<div class="ui-sep">
-  <div style="background:linear-gradient(135deg,#1a0a3e,#2d1060);padding:.6rem 1.2rem;display:flex;align-items:center;justify-content:space-between">
-    <div>
-      <div style="font-family:'Amiri',serif;font-size:16px;color:#d4b8ff">⑧ جَوْهَرَةُ الكَمَال — Jawharat al-Kamāl</div>
-      <div style="font-size:12px;color:rgba(212,184,255,.6)">12 fois · ou Ṣalāt al-Fātiḥ 20 fois (*)</div>
-    </div>
-    <span style="background:rgba(212,184,255,.15);color:#d4b8ff;font-family:'Amiri',serif;font-size:13px;padding:.18rem .55rem;border-radius:100px;border:1px solid rgba(212,184,255,.3)">× 12</span>
-  </div>
-  <div style="padding:.9rem 1.2rem;background:rgba(45,16,96,.04);border-bottom:1px solid rgba(212,184,255,.2)">
-    <div style="font-family:'Amiri',serif;font-size:16px;color:#1a0a3e;direction:rtl;text-align:right;line-height:2.8">
-      اَللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى عَيْنِ الرَّحْمَةِ الرَّبَّانِيَّةِ وَالْيَاقُوتَةِ الْمُتَحَقِّقَةِ الْحَائِطَةِ بِمَرْكَزِ الْفُهُومِ وَالْمَعَانِي<br>
-      وَنُورِ الْأَكْوَانِ الْمُتَكَوِّنَةِ الْآدَمِيِّ صَاحِبِ الْحَقِّ الرَّبَّانِي<br>
-      الْبَرْقِ الْأَسْطَعِ بِمُزُونِ الْأَرْبَاحِ الْمَالِئَةِ لِكُلِّ مُتَعَرِّضٍ مِنَ الْبُحُورِ وَالْأَوَانِي<br>
-      وَنُورِكَ اللَّامِعِ الَّذِي مَلَأْتَ بِهِ كَوْنَكَ الْحَائِطَ بِأَمْكِنَةِ الْمَكَانِ<br>
-      اَللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى عَيْنِ الْحَقِّ الَّتِي تَتَجَلَّى مِنْهَا عُرُوشُ الْحَقَائِقِ<br>
-      عَيْنِ الْمَعَارِفِ الْأَقْوَمِ صِرَاطِكَ التَّامِّ الْأَسْقَمِ<br>
-      اَللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى طَلْعَةِ الْحَقِّ بِالْحَقِّ الْكَنْزِ الْأَعْظَمِ<br>
-      إِفَادَتِكَ مِنْكَ إِلَيْكَ إِحَاطَةِ النُّورِ الْمُتَلَسَّمِ<br>
-      صَلَّى اللهُ عَلَيْهِ وَعَلَى آلِهِ صَلَاةً تُعَرِّفُنَا بِهَا إِيَّاهُ
-    </div>
-  </div>
-  <div style="padding:.65rem 1.2rem;background:var(--ivory);border-bottom:1px solid rgba(212,184,255,.2)">
-    <div style="font-size:12px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.25rem">Translittération</div>
-    <div style="font-size:12px;color:#2d1060;font-style:italic;line-height:2.1">
-      Allāhumma ṣalli wa sallim 'alā 'ayni r-raḥmati r-rabbāniyyati wa l-yāqūtati l-mutaḥaqqiqati l-ḥā'iṭati bi-markazi l-fuhūmi wa l-ma'ānī,<br>
-      wa nūri l-akwāni l-mutakawwinati l-ādamiyyi ṣāḥibi l-ḥaqqi r-rabbānī,<br>
-      al-barqi l-aṣṭa'i bi-muzūni l-arbāḥi l-māli'ati li-kulli muta'arriḍin mina l-buḥūri wa l-awānī,<br>
-      wa nūrika l-lāmi'i lladhī mala'ta bihi kawnaka l-ḥā'iṭa bi-amkinati l-makān.<br>
-      Allāhumma ṣalli wa sallim 'alā 'ayni l-ḥaqqi llatī tatajallā minhā 'urūshu l-ḥaqā'iqi,<br>
-      'ayni l-ma'ārifi l-aqwami ṣirāṭika t-tāmmi l-asqam.<br>
-      Allāhumma ṣalli wa sallim 'alā ṭal'ati l-ḥaqqi bi-l-ḥaqqi l-kanzi l-a'ẓam,<br>
-      ifādatika minka ilayka iḥāṭati n-nūri l-mutalsam.<br>
-      Ṣalla-llāhu 'alayhi wa 'alā ālihi ṣalātan tu'arrifunā bihā iyyāh.
-    </div>
-  </div>
-  <div style="padding:.65rem 1.2rem;background:rgba(212,184,255,.07)">
-    <div style="font-size:12px;color:var(--text2);line-height:1.9">
-      « Ô Allah, répands bénédictions et paix sur l'Œil de la Miséricorde Seigneuriale, le Rubis réalisé, entourant le centre des compréhensions et des significations, la lumière des univers créés, l'humain — maître de la vérité divine, l'Éclair éblouissant dans les nuages des gains qui emplissent tout réceptacle parmi les mers et les vases, et Ta lumière resplendissante dont Tu as rempli Ton univers entourant tous les lieux. Ô Allah, bénis et fais paix sur l'Œil de la Vérité d'où se manifestent les trônes des réalités, l'Œil des connaissances les plus droites, Ta voie parfaite et la plus solide. Ô Allah, bénis et fais paix sur l'Apparition de la Vérité par la Vérité, le Trésor Suprême, Ton déversement de Toi vers Toi, entourement de la Lumière voilée. Qu'Allah le bénisse, lui et sa famille, d'une bénédiction par laquelle Tu nous le feras connaître. »
-    </div>
-    <div style="font-size:12px;color:var(--text3);font-style:italic;margin-top:.4rem">(*) Si la Jawharat al-Kamāl n'est pas connue, on peut la remplacer par la Ṣalāt al-Fātiḥ récitée 20 fois.</div>
-  </div>
-</div>
-
-<!-- ⑨ CLÔTURE DE LA WAZIFA -->
-<div style="border-bottom:2px solid var(--gold)">
-  <div style="background:linear-gradient(135deg,var(--g1),#0d3826);padding:.6rem 1.2rem">
-    <div class="ui-amiri-gold">⑨ خاتمة الوزيفة — Clôture (même que le Wird)</div>
-    <div class="ui-lbl">1 fois · Fermeture obligatoire</div>
-  </div>
-  <div style="padding:1rem 1.2rem;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:20px;color:var(--g1);direction:rtl;text-align:right;line-height:2.8">
-      إِنَّ اللهَ وَمَلَائِكَتَهُ يُصَلُّونَ عَلَى النَّبِيِّ<br>
-      يَا أَيُّهَا الَّذِينَ آمَنُوا صَلُّوا عَلَيْهِ وَسَلِّمُوا تَسْلِيمًا<br>
-      صَلَّى اللهُ عَلَيْهِ وَعَلَى آلِهِ وَصَحْبِهِ وَسَلَّمَ تَسْلِيمًا<br>
-      سُبْحَانَ رَبِّكَ رَبِّ الْعِزَّةِ عَمَّا يَصِفُونَ<br>
-      وَسَلَامٌ عَلَى الْمُرْسَلِينَ<br>
-      وَالْحَمْدُ للهِ رَبِّ الْعَالَمِينَ
-    </div>
-  </div>
-  <div style="padding:.65rem 1.2rem;background:var(--ivory);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-size:12px;color:var(--g2);font-style:italic;line-height:2.1">
-      Inna-llāha wa malā'ikatahu yuṣallūna 'ala n-nabiyy — yā ayyuhā lladhīna āmanū ṣallū 'alayhi wa sallimū taslīmā — Ṣalla-llāhu 'alayhi wa 'alā ālihi wa ṣaḥbihi wa sallama taslīmā — Subḥāna rabbika rabbi l-'izzati 'ammā yaṣifūn — wa salāmun 'ala l-mursalīn — wa l-ḥamdu li-llāhi rabbi l-'ālamīn.
-    </div>
-  </div>
-  <div class="ui-row-gold4">
-    <div style="font-size:12px;color:var(--text1);line-height:2">
-      « Certes, Allah et Ses anges prient sur le Prophète. Ô vous qui croyez, priez sur lui et saluez-le d'un sincère salut. (S. 33, v. 56) — Qu'Allah le bénisse, lui, sa famille et ses Compagnons, et lui accorde la paix — Gloire à ton Seigneur, le Seigneur de la Puissance, au-delà de ce qu'ils Lui attribuent — et paix sur les Envoyés — et louange à Allah, Seigneur des mondes. »
-    </div>
-  </div>
-</div>
-
-<!-- DOU'A APRÈS LA WAZIFA -->
-<div class="ui-sep">
-  <div style="background:linear-gradient(135deg,var(--g1),var(--g2));padding:.65rem 1.2rem">
-    <div style="font-family:'Amiri',serif;font-size:16px;color:var(--gold2)">🤲 Dou'â officiel après la Wazifa</div>
-    <div class="ui-lbl">Mains levées · présence totale du cœur · tradition de la Tijaniyya</div>
-  </div>
-
-  <!-- Translittération avec bouton accordéon -->
-  <div style="padding:.8rem 1.2rem;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-size:12px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem">Translittération latine</div>
-    <div style="font-size:13px;color:var(--g2);font-style:italic;line-height:2.1">
-      Allāhumma anta l-awwalu fa laysa qablaka shay'un, wa anta l-ākhiru fa laysa ba'daka shay'un, wa anta ẓ-ẓāhiru fa laysa fawqaka shay'un, wa anta l-bāṭinu fa laysa dūnaka shay'un.<br><br>
-
-      Fa-kun lanā yā awwalu yā ākhiru yā ẓāhiru yā bāṭinu waliyyan wa naṣīran. Anta waliyyunā fa ni'ma l-mawlā wa ni'ma n-naṣīr.<br><br>
-
-      Allāhumma innā nas'aluka bi-fātiḥiyyati l-fātiḥi fatḥa t-tāmma, wa bi-khātimiyyati l-khātimi ḥusna l-khitām.<br><br>
-
-      Allāhumma innā nas'aluka l-khayra kullahū 'ājilahū wa ājilahū mā 'alimnā minhu wa mā lam na'lam, wa na'ūdhu bika mina sh-sharri kullihī 'ājilihī wa ājilihī mā 'alimnā minhu wa mā lam na'lam.<br><br>
-
-      Allāhumma innā nas'aluka l-jannata wa mā qarraba ilayhā min qawlin wa 'amalin, wa na'ūdhu bika mina n-nāri wa mā qarraba ilayhā min qawlin wa 'amalin.<br><br>
-
-      Allāhumma innā nas'aluka l-'afwa wa l-'āfiyata wa l-mu'āfāta d-dā'imata fi d-dīni wa d-dunyā wa l-ākhira.<br><br>
-
-      Allāhumma innā nas'aluka riḍāka wa riḍā nabiyyika sayyidinā Muḥammadin ṣalla-llāhu 'alayhi wa sallam, wa riḍā l-ashyākhi wa riḍā l-wālidayn.<br><br>
-
-      Allāhumma j'al mā nuḥibbu fī mā tuḥibbu wa tarḍā. Allāhumma j'al fī ikhtiyārika ikhtiyāranā wa lā taj'al illā ilayka iḍṭirāranā.<br><br>
-
-      <em>Yā rabbanā yā khāliqa l-'awālim — hul baynanā wa bayna kulli ẓālim<br>
-      Wajzi li-kulli man ilaynā aḥsanā — wa jāzihī 'annā jazā'a l-aḥsanā</em><br><br>
-
-      Allāhumma irfa' 'anna l-jahda wa l-jū'a wa l-'urya, wakshif 'annā mina l-balā'i mā lā yakshifuhā ghayruk.<br><br>
-
-      Allāhumma farrij 'an ummati sayyidinā Muḥammadin ṣalla-llāhu 'alayhi wa sallam.<br><br>
-
-      Rabbanā ātinā fi d-dunyā ḥasanatan wa fi l-ākhirati ḥasanatan wa qinā 'adhāba n-nār.<br><br>
-
-      Rabbanā lā tu'ākhidhnā in nasīnā aw akhṭa'nā, rabbanā wa lā taḥmil 'alaynā iṣran kamā ḥamaltahū 'alā lladhīna min qablinā, rabbanā wa lā tuḥammilnā mā lā ṭāqata lanā bih. Wa'fu 'annā wa ghfir lanā wa rḥamnā, anta mawlānā fa nṣurnā 'alā l-qawmi l-kāfirīn.<br><br>
-
-      Rabbanā lā tuzigh qulūbanā ba'da idh hadaytanā wa hab lanā min ladunka raḥmatan, innaka anta l-wahhāb.<br><br>
-
-      Rabbanā innanā sami'nā munādiyan yunādī li l-īmāni an āminū bi-rabbikum fa āmannā. Rabbanā fa-ghfir lanā dhunūbanā wa kaffir 'annā sayyi'ātinā wa tawaffanā ma'a l-abrār.<br><br>
-
-      Rabbanā wa ātinā mā wa'adtanā 'alā rusulika wa lā tukhzinā yawma l-qiyāmati, innaka lā tukhliful mī'ād.<br><br>
-
-      Rabbanā ẓalamnā anfusanā wa in lam taghfir lanā wa tarḥamnā la-nakūnanna mina l-khāsirīn.<br><br>
-
-      Rabbanā ātinā min ladunka raḥmatan wa hayyi' lanā min amrinā rashadā.<br><br>
-
-      Rabbanā hab lanā min azwājinā wa dhurriyyātinā qurrata a'yunin wa j'alnā li l-muttaqīna imāmā.<br><br>
-
-      Allāhumma ghfir li-ḥayyinā wa mayyitinā, wa kabīrinā wa ṣaghīrinā, wa dhakārinā wa unthānā, wa ḥurrinā wa 'abdinā, wa ḥāḍirinā wa ghā'ibinā, wa ṭā'i'inā wa 'āṣīnā.<br><br>
-
-      <strong>Āmīn.</strong>
-    </div>
-  </div>
-
-  <!-- Traduction française -->
-  <div style="padding:.8rem 1.2rem;background:var(--ivory);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-size:12px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem">Traduction française</div>
-    <div style="font-size:13px;color:var(--text1);line-height:2.1">
-      « Ô Allah, Tu es le Premier — rien n'était avant Toi. Tu es le Dernier — rien ne sera après Toi. Tu es l'Apparent — rien n'est au-dessus de Toi. Tu es le Caché — rien n'est en dessous de Toi.<br><br>
-
-      Sois pour nous, ô Premier, ô Dernier, ô Apparent, ô Caché, un Protecteur et un Soutien. Tu es notre Seigneur — quel excellent Maître et quel excellent Soutien !<br><br>
-
-      Ô Allah, nous T'implorons par la propriété d'ouverture du Fātih une ouverture complète, et par la propriété de sceau du Khātim une belle fin.<br><br>
-
-      Ô Allah, nous Te demandons tout bien — immédiat ou différé, connu de nous ou inconnu — et nous cherchons refuge en Toi contre tout mal — immédiat ou différé, connu ou inconnu.<br><br>
-
-      Ô Allah, nous Te demandons le Paradis et tout ce qui en rapproche par parole ou action, et nous cherchons refuge contre le Feu et tout ce qui en rapproche.<br><br>
-
-      Ô Allah, nous Te demandons le pardon, la santé et la guérison permanente en religion, en ce monde et dans l'Au-delà.<br><br>
-
-      Ô Allah, nous Te demandons Ta satisfaction et la satisfaction de Ton Prophète Muhammad ﷺ, et la satisfaction des Cheikhs et des parents.<br><br>
-
-      Ô Allah, fais que ce que nous aimons soit dans ce que Tu aimes et agrées. Ô Allah, fais que notre choix soit dans Ton choix, et ne nous laisse de recours qu'en Toi.<br><br>
-
-      <em>Ô notre Seigneur, ô Créateur des mondes — juge entre nous et tout oppresseur.<br>
-      Récompense pour nous tout bienfaiteur — et rends-lui de notre part la meilleure récompense.</em><br><br>
-
-      Ô Allah, éloigne de nous la fatigue, la faim et le dénuement, et détourne de nous les épreuves que nul autre que Toi ne peut écarter.<br><br>
-
-      Ô Allah, allège les souffrances de la communauté de notre Seigneur Muhammad ﷺ.<br><br>
-
-      Seigneur, accorde-nous le bien en ce monde et le bien dans l'Au-delà, et préserve-nous du châtiment du Feu.<br><br>
-
-      Seigneur, ne nous impute pas nos oublis et nos erreurs. Seigneur, ne nous impose pas un fardeau comme Tu en as imposé à ceux avant nous. Seigneur, ne nous charge pas de ce que nous n'avons pas la force de porter. Pardonne-nous, fais-nous miséricorde, Tu es notre Maître — donne-nous la victoire sur les incroyants.<br><br>
-
-      Seigneur, ne laisse pas nos cœurs dévier après que Tu nous as guidés, et accorde-nous de Ta part une miséricorde — Tu es, en vérité, le Très Donateur.<br><br>
-
-      Seigneur, nous avons entendu un appelant appeler à la foi : « Croyez en votre Seigneur » — et nous avons cru. Seigneur, pardonne-nous nos péchés, efface nos fautes, et fais-nous mourir parmi les vertueux.<br><br>
-
-      Seigneur, donne-nous ce que Tu nous as promis par Tes messagers, et ne nous couvre pas de honte au Jour de la Résurrection — Tu ne manques jamais à Ta promesse.<br><br>
-
-      Seigneur, nous avons fait du tort à nous-mêmes — si Tu ne nous pardonnes pas et ne nous fais pas miséricorde, nous serons certes parmi les perdants.<br><br>
-
-      Seigneur, accorde-nous de Ta part une miséricorde, et dispose bien nos affaires pour nous.<br><br>
-
-      Seigneur, donne-nous en nos épouses et nos enfants la joie de nos yeux, et fais de nous un modèle pour les pieux.<br><br>
-
-      Ô Allah, pardonne à nos vivants et à nos morts, à nos grands et à nos petits, à nos hommes et à nos femmes, à nos libres et à nos serviteurs, à ceux qui sont présents et à ceux qui sont absents, à ceux qui T'obéissent et à ceux qui T'ont désobéi.<br><br>
-
-      <strong>Āmīn.</strong> »
-    </div>
-  </div>
-</div>
-
-<!-- NOTE FINALE -->
-<div style="padding:.85rem 1.2rem;background:rgba(15,123,63,.05)">
-  <div style="font-size:12px;color:var(--text2);line-height:1.9">
-    <strong>Note :</strong> Ce Dou'â est récité mains levées, en pleine présence du cœur, après la clôture de la Wazifa. Visualise la chaîne spirituelle : Mouride → Cheikh → Cheikh Ibrahim Niass → Cheikh Ahmad Tijani → Prophète ﷺ → Allah. Tu peux ensuite ajouter tes demandes personnelles.
-  </div>
-</div>
-
-</div><!-- /panel-wazifa-content -->
-
-<!-- ══════════════════════════════
-     PANEL HADRAT AL-JUMU'A
-══════════════════════════════ -->
-<div id="panel-hadra-content" style="display:none">
-
-<!-- INTRO -->
-<div style="padding:.8rem 1.2rem;background:linear-gradient(135deg,rgba(15,123,63,.08),rgba(212,175,55,.08));border-bottom:1px solid var(--gold3)">
-  <div style="font-family:'Amiri',serif;font-size:16px;color:var(--g1);margin-bottom:.3rem">حَضْرَةُ الْجُمُعَة — Ḥaḍrat al-Jumu'a</div>
-  <div class="ui-caption">
-    La <strong>Hadra du Vendredi</strong> se pratique <strong>le vendredi après Asr et avant le coucher du soleil (Maghreb)</strong>. Elle comporte deux parties séparées par un Dou'â libre.
-  </div>
-</div>
-
-<!-- ════ PREMIÈRE PARTIE ════ -->
-<div style="padding:.55rem 1.2rem;background:var(--g1)">
-  <div style="font-family:'Amiri',serif;font-size:14px;color:var(--gold2);text-align:center;letter-spacing:.05em">— PREMIÈRE PARTIE —</div>
-</div>
-
-<!-- ① A'OUTHOU BILLAH -->
-<div class="ui-sep">
-  <div class="ui-hdr-grad">
-    <div>
-      <div class="ui-amiri-gold">① أعوذ بالله — A'ūdhu billāh</div>
-      <div class="ui-lbl">1 fois</div>
-    </div>
-    <span style="background:rgba(212,175,55,.2);color:var(--gold2);font-family:'Amiri',serif;font-size:13px;padding:.18rem .55rem;border-radius:100px;border:1px solid rgba(212,175,55,.3)">× 1</span>
-  </div>
-  <div style="padding:.9rem 1.2rem;text-align:center;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:28px;color:var(--g1);direction:rtl;line-height:2">أَعُوذُ بِاللهِ مِنَ الشَّيْطَانِ الرَّجِيمِ</div>
-    <div style="font-size:13px;color:var(--text3);font-style:italic;margin-top:.25rem">A'ūdhu bi-llāhi mina sh-shayṭāni r-rajīm</div>
-  </div>
-</div>
-
-<!-- ② FATIHA 1× -->
-<div class="ui-sep">
-  <div class="ui-hdr-grad">
-    <div>
-      <div class="ui-amiri-gold">② الفاتحة — Al-Fātiḥa</div>
-      <div class="ui-lbl">1 fois</div>
-    </div>
-    <span style="background:rgba(212,175,55,.2);color:var(--gold2);font-family:'Amiri',serif;font-size:13px;padding:.18rem .55rem;border-radius:100px;border:1px solid rgba(212,175,55,.3)">× 1</span>
-  </div>
-  <div style="padding:.9rem 1.2rem;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:24px;color:var(--g1);direction:rtl;text-align:right;line-height:2.8">
-      بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيمِ ﴿١﴾<br>
-      اَلْحَمْدُ للهِ رَبِّ الْعَالَمِينَ ﴿٢﴾ الرَّحْمَنِ الرَّحِيمِ ﴿٣﴾ مَالِكِ يَوْمِ الدِّينِ ﴿٤﴾<br>
-      إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ﴿٥﴾<br>
-      اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ ﴿٦﴾<br>
-      صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ ﴿٧﴾
-    </div>
-    <div style="text-align:center;margin-top:.35rem;font-family:'Amiri',serif;font-size:16px;color:var(--gold)">آمِينَ</div>
-  </div>
-  <div style="padding:.6rem 1.2rem;background:var(--ivory)">
-    <div class="ui-italic">Bismi-llāhi r-raḥmāni r-raḥīm — Al-ḥamdu li-llāhi rabbi l-'ālamīn — Ar-raḥmāni r-raḥīm — Māliki yawmi d-dīn — Iyyāka na'budu wa iyyāka nasta'īn — Ihdinā ṣ-ṣirāṭa l-mustaqīm — Ṣirāṭa lladhīna an'amta 'alayhim, ghayri l-maghḍūbi 'alayhim wa lā ḍ-ḍāllīn. Āmīn.</div>
-  </div>
-</div>
-
-<!-- ③ ISTIGHFAR LONG 3× -->
-<div class="ui-sep">
-  <div class="ui-hdr-grad">
-    <div>
-      <div class="ui-amiri-gold">③ الاستغفار الطويل — Istighfār long</div>
-      <div class="ui-lbl">3 fois</div>
-    </div>
-    <span style="background:rgba(212,175,55,.2);color:var(--gold2);font-family:'Amiri',serif;font-size:13px;padding:.18rem .55rem;border-radius:100px;border:1px solid rgba(212,175,55,.3)">× 3</span>
-  </div>
-  <div style="padding:.9rem 1.2rem;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:22px;color:var(--g1);direction:rtl;text-align:right;line-height:2.4">أَسْتَغْفِرُ اللهَ الْعَظِيمَ الَّذِي لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ</div>
-  </div>
-  <div style="padding:.6rem 1.2rem;background:var(--ivory)">
-    <div style="font-size:12px;color:var(--g2);font-style:italic">Astaghfiru-llāha l-'Aẓīma lladhī lā ilāha illā huwa l-Ḥayyu l-Qayyūm</div>
-    <div style="font-size:12px;color:var(--text1);margin-top:.12rem">« Je demande pardon à Allah le Très Grand, Lui en dehors de qui il n'y a de divinité, le Vivant, le Subsistant »</div>
-  </div>
-</div>
-
-<!-- ④ SALAT AL-FATIHI 3× -->
-<div class="ui-sep">
-  <div class="ui-hdr-grad">
-    <div>
-      <div class="ui-amiri-gold">④ الصلاة الفاتحة — Ṣalāt al-Fātiḥ</div>
-      <div class="ui-lbl">3 fois</div>
-    </div>
-    <span style="background:rgba(212,175,55,.2);color:var(--gold2);font-family:'Amiri',serif;font-size:13px;padding:.18rem .55rem;border-radius:100px;border:1px solid rgba(212,175,55,.3)">× 3</span>
-  </div>
-  <div style="padding:.9rem 1.2rem;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:20px;color:var(--g1);direction:rtl;text-align:right;line-height:2.7">
-      اَللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ الْفَاتِحِ لِمَا أُغْلِقَ وَالْخَاتِمِ لِمَا سَبَقَ نَاصِرِ الْحَقِّ بِالْحَقِّ وَالْهَادِي إِلَى صِرَاطِكَ الْمُسْتَقِيمِ وَعَلَى آلِهِ حَقَّ قَدْرِهِ وَمِقْدَارِهِ الْعَظِيمِ
-    </div>
-  </div>
-  <div style="padding:.6rem 1.2rem;background:var(--ivory)">
-    <div class="ui-italic">Allāhumma ṣalli 'alā sayyidinā Muḥammadin l-fātiḥi limā ughliq, wa l-khātimi limā sabaq, nāṣiri l-ḥaqqi bi-l-ḥaqq, wa l-hādī ilā ṣirāṭika l-mustaqīm, wa 'alā ālihi, ḥaqqa qadrihi, wa miqdārihi l-'aẓīm.</div>
-  </div>
-</div>
-
-<!-- ⑤ SOUBHANA RABBIKA 1× -->
-<div class="ui-sep">
-  <div class="ui-hdr-grad">
-    <div>
-      <div class="ui-amiri-gold">⑤ سُبْحَانَ رَبِّكَ — Subḥāna rabbika</div>
-      <div class="ui-lbl">1 fois · après les 3 Ṣalāt al-Fātiḥ</div>
-    </div>
-    <span style="background:rgba(212,175,55,.2);color:var(--gold2);font-family:'Amiri',serif;font-size:13px;padding:.18rem .55rem;border-radius:100px;border:1px solid rgba(212,175,55,.3)">× 1</span>
-  </div>
-  <div style="padding:.9rem 1.2rem;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:22px;color:var(--g1);direction:rtl;text-align:right;line-height:2.4">سُبْحَانَ رَبِّكَ رَبِّ الْعِزَّةِ عَمَّا يَصِفُونَ وَسَلَامٌ عَلَى الْمُرْسَلِينَ وَالْحَمْدُ للهِ رَبِّ الْعَالَمِينَ</div>
-  </div>
-  <div style="padding:.6rem 1.2rem;background:var(--ivory)">
-    <div style="font-size:12px;color:var(--g2);font-style:italic">Subḥāna rabbika rabbi l-'izzati 'ammā yaṣifūn, wa salāmun 'ala l-mursalīn, wa l-ḥamdu li-llāhi rabbi l-'ālamīn.</div>
-  </div>
-</div>
-
-<!-- ⑥ LA ILAHA ILLALLAH 600–1600× -->
-<div class="ui-sep">
-  <div class="ui-hdr-grad">
-    <div>
-      <div class="ui-amiri-gold">⑥ لا إله إلا الله — Lā ilāha illa-llāh</div>
-      <div class="ui-lbl">Variable : 600 à 1600 fois</div>
-    </div>
-    <span style="background:rgba(212,175,55,.2);color:var(--gold2);font-family:'Amiri',serif;font-size:12px;padding:.18rem .5rem;border-radius:100px;border:1px solid rgba(212,175,55,.3)">600–1600</span>
-  </div>
-  <div style="padding:1.2rem 1.2rem;text-align:center;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:36px;color:var(--g1);direction:rtl;line-height:1.8">لَا إِلَهَ إِلَّا اللهُ</div>
-    <div style="font-size:14px;color:var(--text3);font-style:italic;margin-top:.3rem">Lā ilāha illa-llāh</div>
-  </div>
-  <div style="padding:.7rem 1.2rem;background:var(--gold4)">
-    <div style="font-size:12px;color:var(--text2);line-height:1.8">
-      Le nombre varie selon la capacité du groupe et le temps disponible avant Maghreb. Le minimum est <strong>600 fois</strong>, l'idéal est <strong>1600 fois</strong> ou plus. C'est le cœur de la Hadra — le dhikr collectif intense qui ouvre les cœurs. Se pratique en groupe, voix unies, rythme soutenu.
-    </div>
-  </div>
-  <div style="padding:.6rem 1.2rem;background:rgba(15,123,63,.05)">
-    <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:.12rem">📖 Baye Niass رضي الله عنه</div>
-    <div style="font-size:12px;color:var(--text2);line-height:1.7;font-style:italic">« Le vendredi est le Seigneur des jours. La Hadra est le rassemblement des cœurs autour du Nom d'Allah. Les anges descendent, la Rahma se répand, les voiles se lèvent. »</div>
-  </div>
-</div>
-
-<!-- ⑦ SAYYIDOUNA 1× -->
-<div class="ui-sep">
-  <div class="ui-hdr-grad">
-    <div>
-      <div class="ui-amiri-gold">⑦ سيدنا محمد رسول الله</div>
-      <div class="ui-lbl">1 fois · après le dhikr</div>
-    </div>
-    <span style="background:rgba(212,175,55,.2);color:var(--gold2);font-family:'Amiri',serif;font-size:13px;padding:.18rem .55rem;border-radius:100px;border:1px solid rgba(212,175,55,.3)">× 1</span>
-  </div>
-  <div style="padding:.9rem 1.2rem;text-align:center;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:24px;color:var(--g1);direction:rtl;line-height:2">سَيِّدُنَا مُحَمَّدٌ رَسُولُ اللهِ عَلَيْهِ صَلَاةُ اللهِ</div>
-    <div style="font-size:13px;color:var(--text3);font-style:italic;margin-top:.25rem">Sayyidunā Muḥammadun Rasūlu-llāhi 'alayhi ṣalātu-llāh</div>
-  </div>
-</div>
-
-<!-- ⑧ CLOTURE PREMIERE PARTIE -->
-<div class="ui-sep">
-  <div style="background:linear-gradient(135deg,var(--g1),var(--g2));padding:.6rem 1.2rem">
-    <div class="ui-amiri-gold">⑧ إِنَّ اللهَ وَمَلَائِكَتَهُ — Clôture 1ère partie</div>
-    <div class="ui-lbl">1 fois</div>
-  </div>
-  <div style="padding:.9rem 1.2rem;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:20px;color:var(--g1);direction:rtl;text-align:right;line-height:2.8">
-      إِنَّ اللهَ وَمَلَائِكَتَهُ يُصَلُّونَ عَلَى النَّبِيِّ يَا أَيُّهَا الَّذِينَ آمَنُوا صَلُّوا عَلَيْهِ وَسَلِّمُوا تَسْلِيمًا<br>
-      صَلَّى اللهُ عَلَيْهِ وَعَلَى آلِهِ وَصَحْبِهِ وَسَلَّمَ تَسْلِيمًا<br>
-      سُبْحَانَ رَبِّكَ رَبِّ الْعِزَّةِ عَمَّا يَصِفُونَ وَسَلَامٌ عَلَى الْمُرْسَلِينَ وَالْحَمْدُ للهِ رَبِّ الْعَالَمِينَ
-    </div>
-  </div>
-  <div style="padding:.6rem 1.2rem;background:var(--ivory)">
-    <div style="font-size:12px;color:var(--g2);font-style:italic;line-height:2">Inna-llāha wa malā'ikatahu yuṣallūna 'ala n-nabiyy, yā ayyuhā lladhīna āmanū ṣallū 'alayhi wa sallimū taslīmā — Ṣalla-llāhu 'alayhi wa 'alā ālihi wa ṣaḥbihi wa sallama taslīmā — Subḥāna rabbika rabbi l-'izzati 'ammā yaṣifūn, wa salāmun 'ala l-mursalīn, wa l-ḥamdu li-llāhi rabbi l-'ālamīn.</div>
-  </div>
-</div>
-
-<!-- ⑨ DOU'A LIBRE -->
-<div style="border-bottom:2px dashed var(--gold3)">
-  <div style="background:linear-gradient(135deg,#0d3826,var(--g1));padding:.6rem 1.2rem">
-    <div class="ui-amiri-gold">⑨ 🤲 Dou'â libre — n'importe quelle bonne Dou'â</div>
-    <div class="ui-lbl">Séparation entre les deux parties · mains levées</div>
-  </div>
-  <div style="padding:.9rem 1.2rem;background:rgba(15,123,63,.05)">
-    <div class="ui-caption">
-      À ce moment, on récite n'importe quelle Dou'â sincère pour soi, ses proches, la communauté et tous les musulmans. C'est le moment de l'exaucement entre les deux parties de la Hadra.
-    </div>
-    <div style="font-family:'Amiri',serif;font-size:18px;color:var(--g1);direction:rtl;text-align:center;line-height:2;margin-top:.6rem">
-      رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ
-    </div>
-    <div style="font-size:12px;color:var(--g2);font-style:italic;text-align:center;margin-top:.2rem">Rabbanā ātinā fi d-dunyā ḥasanatan wa fi l-ākhirati ḥasanatan wa qinā 'adhāba n-nār.</div>
-    <div style="font-size:12px;color:var(--text2);text-align:center;margin-top:.1rem">« Seigneur, accorde-nous le bien en ce monde et le bien dans l'Au-delà, et préserve-nous du châtiment du Feu. » (Coran 2:201)</div>
-  </div>
-</div>
-
-<!-- ════ DEUXIÈME PARTIE ════ -->
-<div style="padding:.55rem 1.2rem;background:var(--g1)">
-  <div style="font-family:'Amiri',serif;font-size:14px;color:var(--gold2);text-align:center;letter-spacing:.05em">— DEUXIÈME PARTIE —</div>
-</div>
-
-<!-- ⑩ A'OUTHOU BILLAH -->
-<div class="ui-sep">
-  <div style="background:linear-gradient(135deg,var(--g2),var(--g3));padding:.6rem 1.2rem;display:flex;align-items:center;justify-content:space-between">
-    <div>
-      <div class="ui-amiri-gold">⑩ أعوذ بالله — A'ūdhu billāh</div>
-      <div class="ui-lbl">1 fois · début de la 2e partie</div>
-    </div>
-    <span style="background:rgba(212,175,55,.2);color:var(--gold2);font-family:'Amiri',serif;font-size:13px;padding:.18rem .55rem;border-radius:100px;border:1px solid rgba(212,175,55,.3)">× 1</span>
-  </div>
-  <div style="padding:.9rem 1.2rem;text-align:center;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:28px;color:var(--g1);direction:rtl;line-height:2">أَعُوذُ بِاللهِ مِنَ الشَّيْطَانِ الرَّجِيمِ</div>
-    <div style="font-size:13px;color:var(--text3);font-style:italic;margin-top:.25rem">A'ūdhu bi-llāhi mina sh-shayṭāni r-rajīm</div>
-  </div>
-</div>
-
-<!-- ⑪ FATIHA 1× -->
-<div class="ui-sep">
-  <div style="background:linear-gradient(135deg,var(--g2),var(--g3));padding:.6rem 1.2rem;display:flex;align-items:center;justify-content:space-between">
-    <div>
-      <div class="ui-amiri-gold">⑪ الفاتحة — Al-Fātiḥa</div>
-      <div class="ui-lbl">1 fois</div>
-    </div>
-    <span style="background:rgba(212,175,55,.2);color:var(--gold2);font-family:'Amiri',serif;font-size:13px;padding:.18rem .55rem;border-radius:100px;border:1px solid rgba(212,175,55,.3)">× 1</span>
-  </div>
-  <div style="padding:.9rem 1.2rem;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:24px;color:var(--g1);direction:rtl;text-align:right;line-height:2.8">
-      بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيمِ ﴿١﴾<br>
-      اَلْحَمْدُ للهِ رَبِّ الْعَالَمِينَ ﴿٢﴾ الرَّحْمَنِ الرَّحِيمِ ﴿٣﴾ مَالِكِ يَوْمِ الدِّينِ ﴿٤﴾<br>
-      إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ﴿٥﴾<br>
-      اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ ﴿٦﴾<br>
-      صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ ﴿٧﴾
-    </div>
-    <div style="text-align:center;margin-top:.35rem;font-family:'Amiri',serif;font-size:16px;color:var(--gold)">آمِينَ</div>
-  </div>
-</div>
-
-<!-- ⑫ SALAT AL-FATIHI 3× -->
-<div class="ui-sep">
-  <div style="background:linear-gradient(135deg,var(--g2),var(--g3));padding:.6rem 1.2rem;display:flex;align-items:center;justify-content:space-between">
-    <div>
-      <div class="ui-amiri-gold">⑫ الصلاة الفاتحة — Ṣalāt al-Fātiḥ</div>
-      <div class="ui-lbl">3 fois · clôture de la Hadra</div>
-    </div>
-    <span style="background:rgba(212,175,55,.2);color:var(--gold2);font-family:'Amiri',serif;font-size:13px;padding:.18rem .55rem;border-radius:100px;border:1px solid rgba(212,175,55,.3)">× 3</span>
-  </div>
-  <div style="padding:.9rem 1.2rem;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:20px;color:var(--g1);direction:rtl;text-align:right;line-height:2.7">
-      اَللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ الْفَاتِحِ لِمَا أُغْلِقَ وَالْخَاتِمِ لِمَا سَبَقَ نَاصِرِ الْحَقِّ بِالْحَقِّ وَالْهَادِي إِلَى صِرَاطِكَ الْمُسْتَقِيمِ وَعَلَى آلِهِ حَقَّ قَدْرِهِ وَمِقْدَارِهِ الْعَظِيمِ
-    </div>
-  </div>
-  <div style="padding:.6rem 1.2rem;background:var(--ivory);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div class="ui-italic">Allāhumma ṣalli 'alā sayyidinā Muḥammadin l-fātiḥi limā ughliq, wa l-khātimi limā sabaq, nāṣiri l-ḥaqqi bi-l-ḥaqq, wa l-hādī ilā ṣirāṭika l-mustaqīm, wa 'alā ālihi, ḥaqqa qadrihi, wa miqdārihi l-'aẓīm.</div>
-  </div>
-</div>
-
-<!-- ⑬ SOUBHANA RABBIKA — CLOTURE FINALE -->
-<div style="border-bottom:2px solid var(--gold)">
-  <div style="background:linear-gradient(135deg,var(--g1),#0d3826);padding:.6rem 1.2rem">
-    <div class="ui-amiri-gold">⑬ خاتمة الحضرة — Clôture finale de la Hadra</div>
-    <div class="ui-lbl">1 fois</div>
-  </div>
-  <div style="padding:.9rem 1.2rem;background:var(--white);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div style="font-family:'Amiri',serif;font-size:20px;color:var(--g1);direction:rtl;text-align:right;line-height:2.8">
-      سُبْحَانَ رَبِّكَ رَبِّ الْعِزَّةِ عَمَّا يَصِفُونَ<br>
-      وَسَلَامٌ عَلَى الْمُرْسَلِينَ<br>
-      وَالْحَمْدُ للهِ رَبِّ الْعَالَمِينَ
-    </div>
-  </div>
-  <div style="padding:.6rem 1.2rem;background:var(--ivory);border-bottom:1px solid rgba(212,175,55,.1)">
-    <div class="ui-italic">Subḥāna rabbika rabbi l-'izzati 'ammā yaṣifūn, wa salāmun 'ala l-mursalīn, wa l-ḥamdu li-llāhi rabbi l-'ālamīn.</div>
-    <div style="font-size:12px;color:var(--text1);margin-top:.12rem">« Gloire à ton Seigneur le Seigneur de la Puissance, au-delà de ce qu'ils Lui attribuent, et paix sur les Envoyés, et louange à Allah Seigneur des mondes. »</div>
-  </div>
-</div>
-
-<!-- RÉSUMÉ HADRA -->
-<div style="padding:.9rem 1.2rem;background:var(--white);border-bottom:1px solid var(--gold3)">
-  <div style="font-family:'Amiri',serif;font-size:14px;color:var(--g1);margin-bottom:.4rem">📋 Résumé de la Hadra du Vendredi</div>
-  <div style="display:flex;flex-direction:column;gap:.3rem">
-    <div class="u-flex-sb" style="font-size:12px;color:var(--text2);padding:.25rem 0;border-bottom:1px solid rgba(212,175,55,.1)"><span>① A'ūdhu billāh</span><span class="u-gold-bold">× 1</span></div>
-    <div class="u-flex-sb" style="font-size:12px;color:var(--text2);padding:.25rem 0;border-bottom:1px solid rgba(212,175,55,.1)"><span>② Al-Fātiḥa</span><span class="u-gold-bold">× 1</span></div>
-    <div class="u-flex-sb" style="font-size:12px;color:var(--text2);padding:.25rem 0;border-bottom:1px solid rgba(212,175,55,.1)"><span>③ Istighfār long</span><span class="u-gold-bold">× 3</span></div>
-    <div class="u-flex-sb" style="font-size:12px;color:var(--text2);padding:.25rem 0;border-bottom:1px solid rgba(212,175,55,.1)"><span>④ Ṣalāt al-Fātiḥ</span><span class="u-gold-bold">× 3</span></div>
-    <div class="u-flex-sb" style="font-size:12px;color:var(--text2);padding:.25rem 0;border-bottom:1px solid rgba(212,175,55,.1)"><span>⑤ Subḥāna rabbika</span><span class="u-gold-bold">× 1</span></div>
-    <div class="u-flex-sb" style="font-size:12px;color:var(--text2);padding:.25rem 0;border-bottom:1px solid rgba(212,175,55,.1)"><span>⑥ Lā ilāha illa-llāh</span><span style="color:var(--red);font-weight:700">600–1600×</span></div>
-    <div class="u-flex-sb" style="font-size:12px;color:var(--text2);padding:.25rem 0;border-bottom:1px solid rgba(212,175,55,.1)"><span>⑦ Sayyidunā Muḥammadun...</span><span class="u-gold-bold">× 1</span></div>
-    <div class="u-flex-sb" style="font-size:12px;color:var(--text2);padding:.25rem 0;border-bottom:1px solid rgba(212,175,55,.1)"><span>⑧ Inna-llāha wa malā'ikatahu... (clôture)</span><span class="u-gold-bold">× 1</span></div>
-    <div class="u-flex-sb" style="font-size:12px;color:var(--text2);padding:.25rem 0;border-bottom:1px solid rgba(212,175,55,.1)"><span>⑨ 🤲 Dou'â libre</span><span style="color:var(--g2);font-weight:700">libre</span></div>
-    <div class="u-flex-sb" style="font-size:12px;color:var(--text2);padding:.25rem 0;border-bottom:1px solid rgba(212,175,55,.1)"><span>⑩ A'ūdhu billāh (2e partie)</span><span class="u-gold-bold">× 1</span></div>
-    <div class="u-flex-sb" style="font-size:12px;color:var(--text2);padding:.25rem 0;border-bottom:1px solid rgba(212,175,55,.1)"><span>⑪ Al-Fātiḥa</span><span class="u-gold-bold">× 1</span></div>
-    <div class="u-flex-sb" style="font-size:12px;color:var(--text2);padding:.25rem 0;border-bottom:1px solid rgba(212,175,55,.1)"><span>⑫ Ṣalāt al-Fātiḥ</span><span class="u-gold-bold">× 3</span></div>
-    <div class="u-flex-sb" style="font-size:12px;color:var(--text2);padding:.25rem 0"><span>⑬ Subḥāna rabbika (clôture finale)</span><span class="u-gold-bold">× 1</span></div>
-  </div>
-</div>
-
-<!-- NOTE -->
-<div style="padding:.85rem 1.2rem;background:rgba(15,123,63,.05)">
-  <div style="font-size:12px;color:var(--text2);line-height:1.9">
-    <strong>Moment :</strong> vendredi après Asr, avant Maghreb. <strong>En groupe</strong> de préférence. Le dhikr collectif (⑥) peut être accompagné de balancement du corps (<em>ḥaraka</em>) selon la tradition de la Zawiya. Arrêter le dhikr à temps pour ne pas dépasser Maghreb.
-  </div>
-</div>
-
-</div><!-- /panel-hadra-content -->
-
-
-  </div>
-
-  <!-- ══════════════════════════════════════════
-       PANEL ZIKR
-  ══════════════════════════════════════════ -->
-  <div class="pratique-panel" id="pratique-panel-zikr">
-    
-
-<!-- HERO -->
-<div style="background:linear-gradient(160deg,var(--g1) 0%,#0a5c2e 55%,#0a1a12 100%);padding:1.4rem 1.2rem 1rem;text-align:center;position:relative;overflow:hidden;flex-shrink:0">
-  <div style="position:absolute;inset:0;opacity:.04;background-image:radial-gradient(circle,var(--gold) 1px,transparent 1px);background-size:20px 20px;pointer-events:none"></div>
-  <img id="zikrLogo" alt="Logo" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" style="border-radius:8px;width:60px;height:60px;object-fit:contain;display:block;margin:0 auto .5rem">
-  <div style="font-family:'Amiri',serif;font-size:28px;color:#fff;line-height:1">ذِكْرُ اللهِ</div>
-  <div style="font-family:'Amiri',serif;font-size:14px;color:var(--gold2);margin:.15rem 0">Dhikr — Zikr Live · بايي نياس</div>
-  <div style="font-size:12px;color:var(--gold3);font-style:italic;margin-top:.25rem">وَاذْكُرُوا اللهَ كَثِيرًا لَّعَلَّكُمْ تُفْلِحُونَ</div>
-</div>
-
-<!-- ONGLETS ZIKR -->
-<div style="display:flex;border-bottom:2px solid var(--gold3);background:var(--white);flex-shrink:0">
-  <button id="ztab-counter" onclick="switchZikrTab('counter')" style="flex:1;padding:.6rem .2rem;background:none;border:none;border-bottom:3px solid var(--gold);cursor:pointer;font-size:12px;font-weight:700;color:var(--g1);font-family:'Roboto',sans-serif;white-space:nowrap">📿 Compteur</button>
-  <button id="ztab-group"   onclick="switchZikrTab('group')"   style="flex:1;padding:.6rem .2rem;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:12px;color:var(--text3);font-family:'Roboto',sans-serif;white-space:nowrap">👥 Groupe</button>
-  <button id="ztab-audio"   onclick="switchZikrTab('audio')"   style="flex:1;padding:.6rem .2rem;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:12px;color:var(--text3);font-family:'Roboto',sans-serif;white-space:nowrap">🔊 Audio</button>
-</div>
-
-<!-- ══ PANEL COMPTEUR ══ -->
-<div id="zpanel-counter">
-
-  <!-- Sélecteur dhikr -->
-  <div style="padding:.8rem 1.2rem;background:var(--white);border-bottom:1px solid var(--gold3)">
-    <div style="font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem">Choisir le dhikr</div>
-    <div style="display:flex;flex-direction:column;gap:.3rem" id="zikrSelector">
-      <button class="zikr-choice active" data-zikr="lahila" onclick="selectZikr(this,'لَا إِلَهَ إِلَّا اللهُ','Lā ilāha illa-llāh',100)">
-        <span class="zc-ar">لَا إِلَهَ إِلَّا اللهُ</span><span class="zc-target">× 100</span>
-      </button>
-      <button class="zikr-choice" data-zikr="astagh" onclick="selectZikr(this,'أَسْتَغْفِرُ اللهَ','Astaghfiru-llāh',100)">
-        <span class="zc-ar">أَسْتَغْفِرُ اللهَ</span><span class="zc-target">× 100</span>
-      </button>
-      <button class="zikr-choice" data-zikr="salat" onclick="selectZikr(this,'اَللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ','Ṣalāt al-Fātiḥ',100)">
-        <span class="zc-ar" style="font-size:16px">اَللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ</span><span class="zc-target">× 100</span>
-      </button>
-      <button class="zikr-choice" data-zikr="subhan" onclick="selectZikr(this,'سُبْحَانَ اللهِ','Subḥāna-llāh',33)">
-        <span class="zc-ar">سُبْحَانَ اللهِ</span><span class="zc-target">× 33</span>
-      </button>
-      <button class="zikr-choice" data-zikr="hamd" onclick="selectZikr(this,'الْحَمْدُ للهِ','Al-ḥamdu li-llāh',33)">
-        <span class="zc-ar">الْحَمْدُ للهِ</span><span class="zc-target">× 33</span>
-      </button>
-      <button class="zikr-choice" data-zikr="akbar" onclick="selectZikr(this,'اللهُ أَكْبَرُ','Allāhu akbar',33)">
-        <span class="zc-ar">اللهُ أَكْبَرُ</span><span class="zc-target">× 33</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- Compteur principal -->
-  <div style="padding:1.5rem 1.2rem;text-align:center;background:var(--ivory)">
-    <!-- Dhikr actif -->
-    <div id="zCurrentAr" style="font-family:'Amiri',serif;font-size:28px;color:var(--g1);direction:rtl;line-height:1.8;margin-bottom:.2rem">لَا إِلَهَ إِلَّا اللهُ</div>
-    <div id="zCurrentLat" style="font-size:13px;color:var(--text3);font-style:italic;margin-bottom:1rem">Lā ilāha illa-llāh</div>
-
-    <!-- Cercle compteur -->
-    <div style="position:relative;width:160px;height:160px;margin:0 auto 1rem">
-      <svg width="160" height="160" style="transform:rotate(-90deg)">
-        <circle cx="80" cy="80" r="70" fill="none" stroke="var(--gold3)" stroke-width="8"/>
-        <circle id="zProgressCircle" cx="80" cy="80" r="70" fill="none" stroke="var(--gold)" stroke-width="8"
-          stroke-dasharray="439.8" stroke-dashoffset="439.8" stroke-linecap="round"
-          style="transition:stroke-dashoffset .3s ease"/>
-      </svg>
-      <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
-        <div id="zCount" style="font-family:'Amiri',serif;font-size:45px;color:var(--g1);line-height:1;font-weight:700">0</div>
-        <div id="zTarget" style="font-size:12px;color:var(--text3)">/ 100</div>
-      </div>
-    </div>
-
-    <!-- Bouton tap -->
-    <button id="zTapBtn" onclick="zTap()" style="width:160px;height:160px;border-radius:50%;background:linear-gradient(135deg,var(--g1),var(--g2));border:3px solid var(--gold);color:var(--gold2);font-family:'Amiri',serif;font-size:24px;cursor:pointer;transition:all .1s;box-shadow:0 8px 32px rgba(15,123,63,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.2rem;margin:0 auto">
-      <span style="font-size:28px">☽</span>
-      <span style="font-size:13px;color:var(--gold3)">Appuyer</span>
-    </button>
-
-    <!-- Sessions terminées -->
-    <div id="zSessions" style="margin-top:1rem;font-size:14px;color:var(--text3)">
-      Sessions complètes : <strong id="zSessionCount" class="ui-g1">0</strong>
-    </div>
-
-    <!-- Contrôles -->
-    <div style="display:flex;gap:.5rem;justify-content:center;margin-top:.8rem">
-      <button onclick="zReset()" style="background:none;border:1px solid var(--gold3);border-radius:100px;padding:.4rem 1rem;font-size:12px;color:var(--text2);cursor:pointer;font-family:'Roboto',sans-serif">↺ Réinitialiser</button>
-      <button onclick="zCustomTarget()" style="background:var(--g1);border:none;border-radius:100px;padding:.4rem 1rem;font-size:12px;color:var(--gold2);cursor:pointer;font-family:'Roboto',sans-serif">✏ Objectif</button>
-    </div>
-  </div>
-
-  <!-- Total session -->
-  <div style="padding:.7rem 1.2rem;background:var(--white);border-top:1px solid var(--gold3);display:flex;justify-content:space-around;text-align:center">
-    <div><div id="zTotalToday" style="font-family:'Amiri',serif;font-size:24px;color:var(--g1)">0</div><div style="font-size:12px;color:var(--text3)">Aujourd'hui</div></div>
-    <div style="width:1px;background:var(--gold3)"></div>
-    <div><div id="zTotalAll" style="font-family:'Amiri',serif;font-size:24px;color:var(--g1)">0</div><div style="font-size:12px;color:var(--text3)">Total</div></div>
-    <div style="width:1px;background:var(--gold3)"></div>
-    <div><div id="zStreak" style="font-family:'Amiri',serif;font-size:24px;color:var(--gold)">0</div><div style="font-size:12px;color:var(--text3)">Jours consécutifs</div></div>
-  </div>
-
-</div><!-- /zpanel-counter -->
-
-<!-- ══ PANEL GROUPE ══ -->
-<div id="zpanel-group" style="display:none">
-
-  <!-- Statut Firebase -->
-  <div id="zFbStatus" style="padding:.5rem 1.2rem;background:rgba(192,57,43,.08);border-bottom:1px solid rgba(192,57,43,.2);display:flex;align-items:center;gap:.5rem">
-    <div style="width:7px;height:7px;border-radius:50%;background:var(--text3);flex-shrink:0" id="zFbDot"></div>
-    <span style="font-size:12px;color:var(--text3)" id="zFbStatusTxt">Connexion Firebase…</span>
-  </div>
-
-  <!-- ÉTAPE 1 : Lobby (avant de rejoindre) -->
-  <div id="zLobby">
-    <div class="ui-row-gold">
-      <div style="font-size:13px;color:var(--text2);line-height:1.7">
-        Faites le dhikr <strong>ensemble</strong> à distance en temps réel. Plusieurs groupes peuvent fonctionner simultanément.
-      </div>
-    </div>
-
-    <!-- Créer un groupe -->
-    <div style="padding:.9rem 1.2rem;border-bottom:1px solid var(--gold3);background:var(--white)">
-      <div style="font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem">Créer un nouveau groupe</div>
-      <input id="zCreateName" type="text" placeholder="Ton prénom…" style="width:100%;background:var(--white);border:1px solid var(--gold3);border-radius:10px;padding:.45rem .8rem;font-family:'Roboto',sans-serif;font-size:14px;color:var(--text1);outline:none;margin-bottom:.4rem;box-sizing:border-box">
-      <div style="display:flex;gap:.4rem;margin-bottom:.4rem">
-        <select id="zCreateDhikr" style="flex:1;background:var(--white);border:1px solid var(--gold3);border-radius:10px;padding:.42rem .6rem;font-family:'Amiri',serif;font-size:14px;color:var(--text1);outline:none">
-          <option value="lahila">لَا إِلَهَ إِلَّا اللهُ · × 100</option>
-          <option value="astagh">أَسْتَغْفِرُ اللهَ · × 100</option>
-          <option value="salat">صَلِّ عَلَى مُحَمَّدٍ · × 100</option>
-          <option value="subhan">سُبْحَانَ اللهِ · × 33</option>
-        </select>
-        <input id="zCreateTarget" type="number" min="1" max="9999" value="100" placeholder="Objectif" style="width:70px;background:var(--white);border:1px solid var(--gold3);border-radius:10px;padding:.42rem .5rem;font-family:'Roboto',sans-serif;font-size:14px;color:var(--text1);outline:none;text-align:center">
-      </div>
-      <button onclick="zCreateGroup()" style="width:100%;background:var(--g1);color:var(--gold2);border:none;border-radius:100px;padding:.6rem;font-family:'Amiri',serif;font-size:16px;cursor:pointer">✦ Créer le groupe (je suis le fondateur)</button>
-    </div>
-
-    <!-- Rejoindre un groupe existant -->
-    <div style="padding:.9rem 1.2rem;border-bottom:1px solid var(--gold3)">
-      <div style="font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem">Rejoindre un groupe existant</div>
-      <input id="zJoinNameInput" type="text" placeholder="Ton prénom…" style="width:100%;background:var(--white);border:1px solid var(--gold3);border-radius:10px;padding:.45rem .8rem;font-family:'Roboto',sans-serif;font-size:14px;color:var(--text1);outline:none;margin-bottom:.4rem;box-sizing:border-box">
-      <div style="display:flex;gap:.4rem">
-        <input id="zJoinCodeInput" type="text" placeholder="Code du groupe (ex: BNW-4829)" style="flex:1;background:var(--white);border:1px solid var(--gold3);border-radius:10px;padding:.45rem .8rem;font-family:monospace;font-size:14px;color:var(--text1);outline:none;text-transform:uppercase">
-        <button onclick="zJoinGroup()" style="background:var(--g2);color:var(--gold2);border:none;border-radius:10px;padding:.45rem 1rem;font-size:13px;cursor:pointer;font-family:'Roboto',sans-serif;white-space:nowrap">Rejoindre</button>
-      </div>
-    </div>
-
-    <!-- Groupes actifs -->
-    <div style="padding:.7rem 1.2rem;background:var(--ivory)">
-      <div style="font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem">Groupes actifs en ce moment</div>
-      <div id="zActiveGroups" style="font-size:13px;color:var(--text3);font-style:italic">Chargement…</div>
-    </div>
-  </div>
-
-  <!-- ÉTAPE 2 : Session active -->
-  <div id="zSession" style="display:none">
-
-    <!-- Header session -->
-    <div style="background:var(--g1);padding:.65rem 1.2rem;display:flex;align-items:center;justify-content:space-between">
-      <div>
-        <div style="font-family:'Amiri',serif;font-size:16px;color:var(--gold2)" id="zSessionDhikrName">لَا إِلَهَ إِلَّا اللهُ</div>
-        <div class="ui-lbl">Code : <strong id="zSessionCode" style="font-family:monospace;color:var(--gold2)">—</strong> · <span id="zSessionRole" class="ui-gold2">Membre</span></div>
-      </div>
-      <div style="display:flex;align-items:center;gap:.5rem">
-        <div style="width:7px;height:7px;border-radius:50%;background:#4CAF50;animation:ldPulse 1.4s infinite"></div>
-        <span style="font-size:12px;color:var(--gold3)">Live</span>
-        <button onclick="zLeaveGroup()" style="background:rgba(192,57,43,.3);border:1px solid rgba(192,57,43,.5);color:#ffaaaa;border-radius:100px;padding:.2rem .6rem;font-size:12px;cursor:pointer;font-family:'Roboto',sans-serif">Quitter</button>
-      </div>
-    </div>
-
-    <!-- Vue FONDATEUR : total global + détail par membre -->
-    <div id="zFounderView" style="display:none">
-      <div style="padding:.8rem 1.2rem;background:rgba(212,175,55,.08);border-bottom:1px solid var(--gold3);text-align:center">
-        <div style="font-size:12px;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.2rem">👑 Compteur global du groupe</div>
-        <div style="font-family:'Amiri',serif;font-size:57px;color:var(--g1);line-height:1;font-weight:700" id="zGlobalTotal">0</div>
-        <div style="font-size:12px;color:var(--text3)" id="zGlobalTarget">/ 100 objectif groupe</div>
-        <!-- Barre de progression groupe -->
-        <div style="background:var(--gold3);border-radius:100px;height:6px;margin:.6rem 0 .2rem;overflow:hidden">
-          <div id="zGlobalBar" style="height:100%;background:var(--gold);border-radius:100px;width:0%;transition:width .3s ease"></div>
-        </div>
-      </div>
-      <!-- Tableau membres -->
-      <div style="padding:.6rem 1.2rem;border-bottom:1px solid var(--gold3)">
-        <div style="font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem">Détail par membre</div>
-        <div id="zMembersTable" style="display:flex;flex-direction:column;gap:.3rem"></div>
-      </div>
-    </div>
-
-    <!-- Vue MEMBRE : son propre compteur uniquement -->
-    <div id="zMemberView" style="display:none">
-      <div style="padding:.7rem 1.2rem;background:rgba(15,123,63,.04);border-bottom:1px solid var(--gold3);text-align:center">
-        <div style="font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.1rem">Mes dhikr</div>
-        <div style="font-family:'Amiri',serif;font-size:36px;color:var(--g1);line-height:1;font-weight:700" id="zMyCount">0</div>
-        <div style="font-size:12px;color:var(--text3)">Participants : <span id="zMemberCount2" style="color:var(--g1);font-weight:700">—</span></div>
-      </div>
-    </div>
-
-    <!-- Bouton TAP commun -->
-    <div style="padding:1.2rem 1.2rem;text-align:center;background:var(--ivory)">
-      <button id="zGroupTapBtn" onclick="zGroupTap()" style="width:150px;height:150px;border-radius:50%;background:linear-gradient(135deg,var(--g1),var(--g2));border:3px solid var(--gold);color:var(--gold2);cursor:pointer;box-shadow:0 8px 32px rgba(15,123,63,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem;margin:0 auto;transition:transform .1s">
-        <span style="font-family:'Amiri',serif;font-size:28px">☽</span>
-        <span style="font-size:12px;color:var(--gold3)">Appuyer</span>
-      </button>
-    </div>
-
-    <!-- Liste membres connectés -->
-    <div style="padding:.6rem 1.2rem;background:var(--white)">
-      <div style="font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.35rem">En ligne maintenant</div>
-      <div id="zOnlineMembers" style="display:flex;flex-wrap:wrap;gap:.3rem"></div>
-    </div>
-
-  </div><!-- /zSession -->
-
-</div><!-- /zpanel-group -->
-
-
-<!-- ══ PANEL AUDIO ══ -->
-<div id="zpanel-audio" style="display:none">
-
-  <div class="ui-row-gold">
-    <div style="font-size:13px;color:var(--text2);line-height:1.7">
-      Écoute le dhikr récité, laisse le compteur s'incrémenter automatiquement à chaque répétition, et suis le rythme.
-    </div>
-  </div>
-
-  <!-- Sélecteur dhikr audio -->
-  <div style="padding:.8rem 1.2rem;border-bottom:1px solid var(--gold3);background:var(--white)">
-    <div style="font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem">Dhikr à réciter</div>
-    <div style="display:flex;gap:.4rem;flex-wrap:wrap">
-      <button class="za-choice active" onclick="selectAudioZikr(this,'lahila')" style="background:var(--g1);color:var(--gold2);border:1px solid var(--gold);border-radius:100px;padding:.3rem .8rem;font-family:'Amiri',serif;font-size:14px;cursor:pointer">لَا إِلَهَ إِلَّا اللهُ</button>
-      <button class="za-choice" onclick="selectAudioZikr(this,'astagh')" style="background:var(--white);color:var(--g1);border:1px solid var(--gold3);border-radius:100px;padding:.3rem .8rem;font-family:'Amiri',serif;font-size:14px;cursor:pointer">أَسْتَغْفِرُ اللهَ</button>
-      <button class="za-choice" onclick="selectAudioZikr(this,'salat')" style="background:var(--white);color:var(--g1);border:1px solid var(--gold3);border-radius:100px;padding:.3rem .8rem;font-family:'Amiri',serif;font-size:14px;cursor:pointer">صَلِّ عَلَى مُحَمَّدٍ</button>
-    </div>
-  </div>
-
-  <!-- Player audio -->
-  <div style="padding:1.2rem 1.2rem;text-align:center;background:var(--ivory);border-bottom:1px solid var(--gold3)">
-    <!-- Visualiseur animé -->
-    <div id="zAudioViz" style="display:flex;align-items:flex-end;justify-content:center;gap:3px;height:40px;margin-bottom:1rem">
-      <div class="zvbar" style="width:4px;background:var(--gold3);border-radius:2px;height:8px"></div>
-      <div class="zvbar" style="width:4px;background:var(--gold3);border-radius:2px;height:16px"></div>
-      <div class="zvbar" style="width:4px;background:var(--gold3);border-radius:2px;height:24px"></div>
-      <div class="zvbar" style="width:4px;background:var(--gold3);border-radius:2px;height:32px"></div>
-      <div class="zvbar" style="width:4px;background:var(--gold3);border-radius:2px;height:40px"></div>
-      <div class="zvbar" style="width:4px;background:var(--gold3);border-radius:2px;height:32px"></div>
-      <div class="zvbar" style="width:4px;background:var(--gold3);border-radius:2px;height:24px"></div>
-      <div class="zvbar" style="width:4px;background:var(--gold3);border-radius:2px;height:16px"></div>
-      <div class="zvbar" style="width:4px;background:var(--gold3);border-radius:2px;height:8px"></div>
-    </div>
-
-    <!-- Dhikr affiché -->
-    <div id="zAudioAr" style="font-family:'Amiri',serif;font-size:28px;color:var(--g1);direction:rtl;line-height:1.8;margin-bottom:.3rem">لَا إِلَهَ إِلَّا اللهُ</div>
-    <div id="zAudioCount" style="font-family:'Amiri',serif;font-size:36px;color:var(--gold);line-height:1;margin-bottom:.3rem">0</div>
-    <div id="zAudioTarget2" style="font-size:12px;color:var(--text3);margin-bottom:1rem">Objectif : 100</div>
-
-    <!-- Contrôles vitesse -->
-    <div style="display:flex;align-items:center;gap:.6rem;justify-content:center;margin-bottom:.8rem">
-      <span style="font-size:12px;color:var(--text3)">Rythme</span>
-      <button onclick="zSetSpeed(3000)" id="zspd-slow" class="zspd-btn active" style="background:var(--g1);color:var(--gold2);border:1px solid var(--gold);border-radius:100px;padding:.25rem .6rem;font-size:12px;cursor:pointer">🐢 Lent</button>
-      <button onclick="zSetSpeed(2000)" id="zspd-med" class="zspd-btn" style="background:var(--white);color:var(--g1);border:1px solid var(--gold3);border-radius:100px;padding:.25rem .6rem;font-size:12px;cursor:pointer">➡ Moyen</button>
-      <button onclick="zSetSpeed(1200)" id="zspd-fast" class="zspd-btn" style="background:var(--white);color:var(--g1);border:1px solid var(--gold3);border-radius:100px;padding:.25rem .6rem;font-size:12px;cursor:pointer">⚡ Rapide</button>
-    </div>
-
-    <!-- Boutons play/stop -->
-    <div style="display:flex;gap:.7rem;justify-content:center">
-      <button id="zAudioPlayBtn" onclick="zAudioPlay()" style="background:var(--g1);color:var(--gold2);border:1px solid var(--gold);border-radius:100px;padding:.55rem 1.5rem;font-family:'Amiri',serif;font-size:16px;cursor:pointer;display:flex;align-items:center;gap:.4rem">
-        <span>▶</span><span>Démarrer</span>
-      </button>
-      <button onclick="zAudioStop()" style="background:none;color:var(--text2);border:1px solid var(--gold3);border-radius:100px;padding:.55rem 1rem;font-size:14px;cursor:pointer;font-family:'Roboto',sans-serif">⏹ Stop</button>
-    </div>
-  </div>
-
-  <!-- Info audio -->
-  <div style="padding:.7rem 1.2rem;background:var(--white)">
-    <div style="font-size:12px;color:var(--text2);line-height:1.7">
-      La lecture utilise la <strong>synthèse vocale arabe</strong> de votre appareil. Pour la meilleure expérience, installez la voix <em>Microsoft Arabic</em> (Windows) ou activez la voix arabe dans les paramètres de votre téléphone.
-    </div>
-  </div>
-
-</div><!-- /zpanel-audio -->
-
-
-  </div>
-
-  <!-- ══════════════════════════════════════════
-       PANEL CALENDRIER HÉGIRIEN
-  ══════════════════════════════════════════ -->
-  <div class="pratique-panel" id="pratique-panel-cal">
-
-
-<!-- ═══ CALENDRIER HIJRI INTELLIGENT ═══ -->
-<div style="background:var(--ivory);padding:.8rem 1rem 1.2rem">
-
-  <!-- Header date hijri aujourd'hui -->
-  <div style="background:linear-gradient(160deg,var(--g1),var(--g2));border-radius:16px;padding:1.2rem;text-align:center;margin-bottom:.8rem;position:relative;overflow:hidden">
-    <div style="position:absolute;inset:0;opacity:.06;background-image:radial-gradient(circle,var(--gold) 1px,transparent 1px);background-size:18px 18px;pointer-events:none"></div>
-    <div style="font-family:'Amiri',serif;font-size:13px;color:var(--gold2);margin-bottom:.2rem;position:relative">التَّقْوِيمُ الهِجْرِيّ</div>
-    <div id="hijri-day-num" style="font-family:'Amiri',serif;font-size:52px;color:#fff;line-height:1;position:relative">—</div>
-    <div id="hijri-month-ar" style="font-family:'Amiri',serif;font-size:20px;color:var(--gold2);position:relative">—</div>
-    <div id="hijri-year" style="font-size:13px;color:rgba(255,255,255,.7);margin-top:.2rem;position:relative">— هـ</div>
-    <div id="hijri-greg" style="font-size:12px;color:rgba(255,255,255,.5);margin-top:.3rem;position:relative"></div>
-  </div>
-
-  <!-- Navigation mois -->
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem">
-    <button onclick="hijriPrev()" style="width:36px;height:36px;border-radius:50%;background:var(--white);border:1px solid var(--gold3);font-size:18px;cursor:pointer;color:var(--g1)">‹</button>
-    <div id="hijri-nav-title" style="text-align:center">
-      <div style="font-family:'Amiri',serif;font-size:16px;color:var(--g1)">—</div>
-      <div style="font-size:11px;color:var(--text3)">—</div>
-    </div>
-    <button onclick="hijriNext()" style="width:36px;height:36px;border-radius:50%;background:var(--white);border:1px solid var(--gold3);font-size:18px;cursor:pointer;color:var(--g1)">›</button>
-  </div>
-
-  <!-- Jours de la semaine -->
-  <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px">
-    <div style="text-align:center;font-size:11px;color:var(--text3);font-weight:700;padding:.2rem">L</div>
-    <div style="text-align:center;font-size:11px;color:var(--text3);font-weight:700;padding:.2rem">M</div>
-    <div style="text-align:center;font-size:11px;color:var(--text3);font-weight:700;padding:.2rem">M</div>
-    <div style="text-align:center;font-size:11px;color:var(--text3);font-weight:700;padding:.2rem">J</div>
-    <div style="text-align:center;font-size:11px;color:var(--gold);font-weight:700;padding:.2rem">V</div>
-    <div style="text-align:center;font-size:11px;color:var(--text3);font-weight:700;padding:.2rem">S</div>
-    <div style="text-align:center;font-size:11px;color:var(--text3);font-weight:700;padding:.2rem">D</div>
-  </div>
-  <div id="hijri-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:.8rem"></div>
-
-  <!-- Événements du mois -->
-  <div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem">📅 Événements du mois</div>
-  <div id="hijri-events-list" style="display:flex;flex-direction:column;gap:.4rem"></div>
-
-</div>
-
-<!-- ═══ PROCHAINS JOURS IMPORTANTS ═══ -->
-<div style="padding:.8rem 1rem 1.2rem;background:var(--white)">
-  <div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.6rem">🌙 Prochains jours importants</div>
-  <div id="hijri-upcoming" style="display:flex;flex-direction:column;gap:.4rem"></div>
-</div>
-
-</div>
-
-  <!-- PANEL QIBLA & LUNE -->
-  <div class="pratique-panel" id="pratique-panel-qibla">
-  <div id="qibla-wrap" style="display:flex;flex-direction:column;gap:0;overflow-y:auto;padding-bottom:1rem;">
-
-  <!-- ═══ QIBLA ═══ -->
-  <div style="background:linear-gradient(135deg,var(--g1),var(--g3));padding:1.2rem 1.3rem .9rem;text-align:center;">
-    <div style="font-family:'Amiri',serif;font-size:22px;color:#fff;margin-bottom:.1rem">🕋 Direction de La Mecque</div>
-    <div style="font-family:'Amiri',serif;font-size:14px;color:var(--gold2);direction:rtl">القِبْلَة — اتِّجَاهُ مَكَّةَ المُكَرَّمَة</div>
-  </div>
-
-  <div style="padding:1.2rem 1.3rem;background:var(--white);border-bottom:1px solid var(--gold3);">
-    <!-- Boussole -->
-    <div style="position:relative;width:200px;height:200px;margin:0 auto 1rem;">
-      <!-- Cercle extérieur graduation -->
-      <svg viewBox="0 0 200 200" style="position:absolute;inset:0;width:100%;height:100%;">
-        <circle cx="100" cy="100" r="95" fill="none" stroke="var(--gold3)" stroke-width="2"/>
-        <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(15,123,63,.1)" stroke-width="1"/>
-        <!-- Points cardinaux -->
-        <text x="100" y="16" text-anchor="middle" font-size="13" font-weight="700" fill="var(--g1)" font-family="sans-serif">N</text>
-        <text x="186" y="104" text-anchor="middle" font-size="13" font-weight="700" fill="var(--text3)" font-family="sans-serif">E</text>
-        <text x="100" y="196" text-anchor="middle" font-size="13" font-weight="700" fill="var(--text3)" font-family="sans-serif">S</text>
-        <text x="14" y="104" text-anchor="middle" font-size="13" font-weight="700" fill="var(--text3)" font-family="sans-serif">O</text>
-        <!-- Graduations -->
-        <line x1="100" y1="6" x2="100" y2="18" stroke="var(--g1)" stroke-width="2"/>
-        <line x1="100" y1="182" x2="100" y2="194" stroke="var(--text3)" stroke-width="1.5"/>
-        <line x1="6" y1="100" x2="18" y2="100" stroke="var(--text3)" stroke-width="1.5"/>
-        <line x1="182" y1="100" x2="194" y2="100" stroke="var(--text3)" stroke-width="1.5"/>
-      </svg>
-      <!-- Aiguille qui tourne -->
-      <div id="qiblaCompass" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transition:transform .8s cubic-bezier(.34,1.56,.64,1);">
-        <svg viewBox="0 0 40 120" style="width:40px;height:120px;">
-          <!-- Flèche vers Qibla (dorée) -->
-          <polygon points="20,5 28,55 20,48 12,55" fill="#D4AF37"/>
-          <!-- Flèche opposée (grise) -->
-          <polygon points="20,115 28,65 20,72 12,65" fill="#ccc"/>
-          <!-- Centre -->
-          <circle cx="20" cy="60" r="6" fill="var(--g1)" stroke="var(--gold)" stroke-width="2"/>
-          <!-- Kaaba icon -->
-          <text x="20" y="35" text-anchor="middle" font-size="12">🕋</text>
-        </svg>
-      </div>
-    </div>
-
-    <!-- Infos Qibla -->
-    <div id="qiblaInfo" style="text-align:center;">
-      <div style="display:flex;align-items:center;justify-content:center;gap:.4rem;margin-bottom:.7rem;padding:.4rem .8rem;background:linear-gradient(135deg,rgba(15,123,63,.08),rgba(212,175,55,.06));border-radius:10px;border:1px solid rgba(212,175,55,.15)">
-        <span style="font-size:14px">🕋</span>
-        <span style="font-size:12px;color:var(--text2);font-style:italic;">Direction de La Mecque · Posez à plat ou entrez votre ville</span>
-      </div>
-      <div style="display:flex;gap:.5rem;margin-bottom:.6rem;">
-        <input id="qiblaCityIn" placeholder="Ex: Thiès, Dakar, Kaolack..." 
-          style="flex:1;padding:.55rem .8rem;border:1.5px solid var(--g1);border-radius:10px;font-size:14px;outline:none;"
-          onkeydown="if(event.key==='Enter') qiblaGo()">
-        <button onclick="qiblaGo()" style="background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;border:none;border-radius:10px;padding:.55rem 1rem;font-size:14px;font-weight:700;cursor:pointer;">🔍</button>
-      </div>
-      <button onclick="qiblaGPS()" style="background:none;border:1px solid var(--g1);border-radius:20px;padding:.4rem 1rem;font-size:12px;color:var(--g1);cursor:pointer;">📍 Utiliser mon GPS</button>
-      <button id="qiblaCompassBtn" onclick="qiblaCompassToggle()" style="background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;border:none;border-radius:20px;padding:.4rem 1rem;font-size:12px;font-weight:700;cursor:pointer;margin-left:.4rem;">🧭 Boussole auto</button>
-      <div id="qiblaCompassStatus" style="font-size:11px;color:var(--text3);margin-top:.3rem;min-height:15px;"></div>
-      <div id="qiblaMsg" style="font-size:12px;color:var(--red);margin-top:.2rem;min-height:16px;"></div>
-    </div>
-
-    <div id="qiblaResult" style="display:none;text-align:center;margin-top:.8rem;">
-      <div style="display:flex;justify-content:center;gap:1.5rem;margin-bottom:.6rem;">
-        <div style="background:var(--gold3);border-radius:12px;padding:.5rem .9rem;">
-          <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase">Direction</div>
-          <div id="qiblaDeg" style="font-size:22px;font-weight:700;color:var(--g1)">—°</div>
-        </div>
-        <div style="background:var(--gold3);border-radius:12px;padding:.5rem .9rem;">
-          <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase">Distance</div>
-          <div id="qiblaDist" style="font-size:22px;font-weight:700;color:var(--g1)">— km</div>
-        </div>
-      </div>
-      <div id="qiblaLoc" style="font-size:12px;color:var(--text3);font-style:italic;"></div>
-    </div>
-  </div>
-
-  <!-- ═══ LUNE ═══ -->
-  <div style="background:linear-gradient(135deg,#0a0e1a,#0d1b3e);padding:1.1rem 1.3rem .8rem;text-align:center;margin-top:.5rem;">
-    <div style="font-family:'Amiri',serif;font-size:22px;color:#fff;margin-bottom:.1rem">🌙 Visibilité du Croissant</div>
-    <div style="font-family:'Amiri',serif;font-size:14px;color:rgba(212,175,55,.8);direction:rtl">الهِلَال — رُؤْيَةُ الهِلَال</div>
-  </div>
-
-  <div style="padding:1.1rem 1.3rem;background:var(--white);">
-
-    <div id="moonResult" style="text-align:center;">
-      <div style="font-size:12px;color:var(--text3);margin-bottom:.6rem;font-style:italic;">Entrez votre ville pour un calcul précis</div>
-      <div style="display:flex;gap:.5rem;margin-bottom:.6rem;">
-        <input id="moonCityIn" placeholder="Ex: Thiès, Dakar, Kaolack..."
-          style="flex:1;padding:.55rem .8rem;border:1.5px solid #0d1b3e;border-radius:10px;font-size:14px;outline:none;"
-          onkeydown="if(event.key==='Enter') moonGo()">
-        <button onclick="moonGo()" style="background:linear-gradient(135deg,#0d1b3e,#1a2d5a);color:#fff;border:none;border-radius:10px;padding:.55rem 1rem;font-size:14px;font-weight:700;cursor:pointer;">🔍</button>
-      </div>
-      <button onclick="moonGPS()" style="background:none;border:1px solid #0d1b3e;border-radius:20px;padding:.4rem 1rem;font-size:12px;color:#0d1b3e;cursor:pointer;margin-bottom:.4rem;">📍 Utiliser mon GPS</button>
-      <br><button onclick="moonGoNow('',0,0)" style="background:linear-gradient(135deg,#0d1b3e,#1a2d5a);color:#fff;border:none;border-radius:20px;padding:.5rem 1.2rem;font-size:13px;font-weight:700;cursor:pointer;">🌙 Calculer maintenant</button>
-      <div id="moonMsg" style="font-size:12px;color:var(--red);margin-top:.4rem;min-height:16px;"></div>
-    </div>
-
-    <div id="moonData" style="display:none;margin-top:.8rem;">
-
-  <!-- RÉSULTAT PRINCIPAL -->
-  <div id="hilalVerdict" style="border-radius:16px;padding:1.1rem 1rem;text-align:center;margin-bottom:.7rem;">
-    <div id="hilalIcon" style="font-size:44px;margin-bottom:.35rem;line-height:1;">🌙</div>
-    <div id="hilalTitle" style="font-size:15px;font-weight:700;margin-bottom:.4rem;line-height:1.4;"></div>
-    <div id="hilalDesc" style="font-size:12.5px;line-height:1.7;"></div>
-  </div>
-
-  <!-- HEURE DE RECHERCHE -->
-  <div id="moonSunsetInfo" style="display:none;margin-bottom:.7rem;"></div>
-
-  <!-- STATS -->
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;margin-bottom:.5rem;">
-    <div style="background:var(--gold3);border-radius:10px;padding:.5rem;text-align:center;">
-      <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;">Age</div>
-      <div id="moonAge" style="font-size:17px;font-weight:700;color:var(--g1);">—</div>
-      <div style="font-size:10px;color:var(--text3);">jours</div>
-    </div>
-    <div style="background:var(--gold3);border-radius:10px;padding:.5rem;text-align:center;">
-      <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;">Lumiere</div>
-      <div id="moonIllum" style="font-size:17px;font-weight:700;color:var(--g1);">—</div>
-      <div style="font-size:10px;color:var(--text3);">%</div>
-    </div>
-    <div style="background:var(--gold3);border-radius:10px;padding:.5rem;text-align:center;">
-      <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;">Phase</div>
-      <div id="moonEmoji" style="font-size:20px;line-height:1.5;">🌑</div>
-      <div id="moonPhaseName" style="font-size:9px;color:var(--text3);"></div>
-    </div>
-  </div>
-
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.6rem;">
-    <div style="background:#eef0ff;border-radius:10px;padding:.5rem;text-align:center;">
-      <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;">Prochaine NL</div>
-      <div id="moonNextNew" style="font-size:11px;font-weight:700;color:#0d1b3e;">—</div>
-    </div>
-    <div style="background:#eef0ff;border-radius:10px;padding:.5rem;text-align:center;">
-      <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;">Pleine Lune</div>
-      <div id="moonNextFull" style="font-size:11px;font-weight:700;color:#0d1b3e;">—</div>
-    </div>
-  </div>
-
-  <div id="moonLoc" style="font-size:11px;color:var(--text3);text-align:center;font-style:italic;"></div>
-</div>
-  </div>
-
-  </div>
-  </div>
-
-
-</section>
 <!-- SECTION RADIO AL-FAYDHA -->
 <section <section id="sec-ens" class="sec">
 
@@ -5200,6 +3728,12 @@ function studioRenderLib() {
   });
 }
 
+// ── Exposer globalement pour accès externe ──
+window._studioIsRecording = function(){ return isRecording; };
+window._studioGetDb = function(cb){ dbGetAll(cb); };
+window._studioSaveDb = dbSave;
+window._studioRenderLib = studioRenderLib;
+
 // ── Init ──
 drawIdle();
 studioRenderLib();
@@ -5430,29 +3964,130 @@ window.switchEnsTab = function(tab) {
 <!-- SECTION ASK BAYE -->
 <section id="sec-ai" class="sec">
 
-<!-- ASK BAYE HERO -->
-<div class="ab-hero">
-  <div class="ab-hero-bg"></div>
-  <div style="text-align:center;padding:.5rem 1rem .65rem;position:relative;z-index:2;">
-    <div style="font-family:'Amiri',serif;font-size:18px;color:var(--gold2);direction:rtl;margin-bottom:.5rem;letter-spacing:.03em;text-shadow:0 0 20px rgba(212,175,55,.3)">بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيم</div>
-    <div style="display:inline-flex;align-items:center;gap:.5rem;background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.25);border-radius:30px;padding:.45rem 1.2rem;backdrop-filter:blur(8px)">
-      <span style="font-size:16px">✨</span>
-      <div>
-        <div style="font-family:'Amiri',serif;font-size:20px;color:#fff;line-height:1.1">Ask Baye</div>
-        <div style="font-size:10px;color:rgba(212,175,55,.6);letter-spacing:.08em;text-transform:uppercase;margin-top:1px">Enseignements · Coran · Tasawwuf</div>
-      </div>
-      <span style="font-size:16px">✨</span>
-    </div>
-  </div>
-  <div class="ab-engine-row">
-    <button class="ab-eng active" id="eng-baye"       onclick="setEngine('baye',this)">&#x1F54C; Baye IA</button>
-    <button class="ab-eng"        id="eng-quran"      onclick="setEngine('quran',this)">&#x1F4D6; Coran</button>
-    <button class="ab-eng"        id="eng-tasaw"      onclick="setEngine('tasaw',this)">&#x2728; Tasawwuf</button>
-    <button class="ab-eng"        id="eng-multi"      onclick="setEngine('multi',this)">&#x1F52E; Multi-IA</button>
+<!-- ASK BAYE HERO — REFONTE -->
+<style>
+.ab-hero-v2 {
+  background: linear-gradient(160deg,#08061a 0%,#120a30 50%,#08061a 100%);
+  border-bottom: 1px solid rgba(212,175,55,.15);
+  flex-shrink: 0;
+}
+.ab-modes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: .8rem .9rem .7rem;
+}
+.ab-mode-btn {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .7rem .85rem;
+  background: rgba(255,255,255,.04);
+  border: 1.5px solid rgba(255,255,255,.08);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all .2s cubic-bezier(.34,1.56,.64,1);
+  font-family: 'Roboto', sans-serif;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+.ab-mode-btn:active { transform: scale(.94); }
+.ab-mode-btn.active {
+  border-color: rgba(212,175,55,.55);
+  background: rgba(212,175,55,.1);
+  box-shadow: 0 0 0 1px rgba(212,175,55,.2), 0 4px 18px rgba(0,0,0,.3);
+}
+.ab-mode-icon {
+  font-size: 24px;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: rgba(255,255,255,.05);
+}
+.ab-mode-btn.active .ab-mode-icon {
+  background: rgba(212,175,55,.15);
+}
+.ab-mode-label {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: rgba(255,255,255,.75);
+  line-height: 1.15;
+  letter-spacing: .01em;
+}
+.ab-mode-btn.active .ab-mode-label { color: #F0DC82; }
+.ab-mode-sub {
+  font-size: 10.5px;
+  color: rgba(255,255,255,.3);
+  margin-top: 2px;
+  line-height: 1.3;
+}
+.ab-mode-btn.active .ab-mode-sub { color: rgba(212,175,55,.5); }
+</style>
 
-    <button class="ab-eng ab-eng-conseil" id="eng-conseil" onclick="setEngine('conseil',this)">&#x1F91D; Conseiller</button>
-    <button class="ab-eng ab-eng-reve"    id="eng-reve"    onclick="setEngine('reve',this)">&#x1F319; Rêves</button>
-    <button class="ab-eng ab-eng-sensible" id="eng-sensible" onclick="setEngine('sensible',this)">&#x1F512; Confidentiel</button>
+<div class="ab-hero-v2">
+  <div class="ab-modes">
+
+    <button class="ab-mode-btn active" id="eng-baye" onclick="setEngine('baye',this)">
+      <div class="ab-mode-icon">🕌</div>
+      <div>
+        <div class="ab-mode-label">Baye IA</div>
+        <div class="ab-mode-sub">Enseignements Tijaniyya</div>
+      </div>
+    </button>
+
+    <button class="ab-mode-btn" id="eng-quran" onclick="setEngine('quran',this)">
+      <div class="ab-mode-icon">📖</div>
+      <div>
+        <div class="ab-mode-label">Coran</div>
+        <div class="ab-mode-sub">Tafsir · Mémorisation</div>
+      </div>
+    </button>
+
+    <button class="ab-mode-btn" id="eng-tasaw" onclick="setEngine('tasaw',this)">
+      <div class="ab-mode-icon">✨</div>
+      <div>
+        <div class="ab-mode-label">Tasawwuf</div>
+        <div class="ab-mode-sub">Spiritualité · Zikr</div>
+      </div>
+    </button>
+
+    <button class="ab-mode-btn" id="eng-reve" onclick="setEngine('reve',this)">
+      <div class="ab-mode-icon">🌙</div>
+      <div>
+        <div class="ab-mode-label">Rêves</div>
+        <div class="ab-mode-sub">Interprétation islamique</div>
+      </div>
+    </button>
+
+    <button class="ab-mode-btn" id="eng-conseil" onclick="setEngine('conseil',this)">
+      <div class="ab-mode-icon">🤝</div>
+      <div>
+        <div class="ab-mode-label">Conseiller</div>
+        <div class="ab-mode-sub">Guidance spirituelle</div>
+      </div>
+    </button>
+
+    <button class="ab-mode-btn" id="eng-sensible" onclick="setEngine('sensible',this)">
+      <div class="ab-mode-icon">🔒</div>
+      <div>
+        <div class="ab-mode-label">Confidentiel</div>
+        <div class="ab-mode-sub">Questions privées</div>
+      </div>
+    </button>
+
+    <button class="ab-mode-btn" id="eng-multi" onclick="setEngine('multi',this)" style="grid-column:1/-1">
+      <div class="ab-mode-icon">🔮</div>
+      <div>
+        <div class="ab-mode-label">Multi-IA</div>
+        <div class="ab-mode-sub">Analyse croisée · Plusieurs perspectives</div>
+      </div>
+    </button>
+
   </div>
 </div>
 
@@ -5536,10 +4171,6 @@ window.switchEnsTab = function(tab) {
   <button class="nav-btn active" id="nav-umma" onclick="showSec('umma',this)">
     <span class="nav-icon">🕌</span>
     <span class="nav-label">Prières</span>
-  </button>
-  <button class="nav-btn" id="nav-wird" onclick="showSec('wird',this)">
-    <span class="nav-icon">🌙</span>
-    <span class="nav-label">Zikr</span>
   </button>
   <button class="nav-btn" id="nav-live" onclick="showSec('live',this)">
     <span class="nav-icon">🔴</span>
@@ -6243,8 +4874,7 @@ function _initSecCache() {
 function showSec(id,btn){
   /* Zikr et Cal sont maintenant dans la section Pratique (wird) */
   var pratTab = null;
-  if (id === 'zikr') { pratTab = 'zikr'; id = 'wird'; }
-  if (id === 'cal')  { pratTab = 'cal';  id = 'wird'; }
+
   _initSecCache();
   _cachedSecs.forEach(function(s){s.classList.remove('active')});
   _cachedNavBtns.forEach(function(b){b.classList.remove('active')});
@@ -6768,7 +5398,7 @@ document.addEventListener('keydown', function(e){
   }
   /* Navigation Smart TV — touches fléchées */
   if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
-    var navBtns=['nav-umma','nav-wird','nav-live','nav-ens','nav-ai'];
+    var navBtns=['nav-umma','nav-live','nav-ens','nav-ai'];
     var cur=navBtns.findIndex(function(id){return document.getElementById(id)&&document.getElementById(id).classList.contains('active');});
     var next=e.key==='ArrowRight'?Math.min(cur+1,navBtns.length-1):Math.max(cur-1,0);
     var btn=document.getElementById(navBtns[next]);
@@ -8345,7 +6975,7 @@ function _abHideConfig() {
 
 function setEngine(e, btn) {
   _abEngine = e;
-  document.querySelectorAll('.ab-eng').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('.ab-eng,.ab-mode-btn').forEach(function(b) { b.classList.remove('active'); });
   if (btn) btn.classList.add('active');
   var lbl = document.getElementById('abEngLabel');
   if (lbl) lbl.textContent = AB_ENGINE_LABELS[e] || e;
@@ -8902,715 +7532,7 @@ var _abInited = false;
   var _origSwitch = window.switchWirdTab;
   function _hookedSwitch(tab) {
     if (_origSwitch) _origSwitch(tab);
-    if (tab === 'wird') {
-      setTimeout(function(){ _wpbInit(); _wpbUpdate(); }, 80);
-    }
-  }
-  function _patchWirdTab() {
-    if (typeof window.switchWirdTab === 'function' && window.switchWirdTab !== _hookedSwitch) {
-      _origSwitch = window.switchWirdTab;
-      window.switchWirdTab = _hookedSwitch;
-    }
-  }
-  
-  // Activer aussi au clic nav wird
-  document.addEventListener('DOMContentLoaded', function(){
-    var navBtn = document.getElementById('nav-wird');
-    if (navBtn) {
-      navBtn.addEventListener('click', function(){
-        setTimeout(function(){
-          _wpbInit();
-          _wpbUpdate();
-        }, 120);
-      });
-    }
-    _patchWirdTab();
-  });
-
-  // Exposition globale pour forcer une mise à jour
-  window._wpbUpdate = _wpbUpdate;
-  window._wpbInit   = _wpbInit;
-})();
-
-/* ════════════════════════════════════════
-   WIRD — ONGLETS WIRD / WAZIFA
-════════════════════════════════════════ */
-function switchWirdTab(tab) {
-  var tabs = ['wird','wazifa','hadra'];
-  tabs.forEach(function(t) {
-    var btn = document.getElementById('tab-'+t);
-    var pan = document.getElementById('panel-'+t+'-content');
-    var active = t === tab;
-    if (btn) {
-      btn.style.color      = active ? 'var(--g1)' : 'var(--text3)';
-      btn.style.fontWeight = active ? '700'        : '400';
-      btn.style.borderBottom = active ? '3px solid var(--gold)' : '3px solid transparent';
-    }
-    if (pan) pan.style.display = active ? 'block' : 'none';
-  });
-}
-
-/* ════════════════════════════════════════
-   WIRD — LECTURE AUDIO (speechSynthesis)
-════════════════════════════════════════ */
-var _wirdSpeaking = false;
-var _wirdCurrentBtn = null;
-
-var WIRD_TEXTS = {
-  istighfar: {
-    label: 'Istighfar — 100 fois',
-    ar: 'أَسْتَغْفِرُ اللهَ الْعَظِيمَ الَّذِي لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ وَأَتُوبُ إِلَيْهِ',
-    latin: "Astaghfiru-llāha l-'Aẓīma lladhī lā ilāha illā huwa l-Ḥayyu l-Qayyūmu wa atūbu ilayh.",
-    fr: "Je demande pardon à Allah le Très Grand, Lui en dehors de qui il n'y a de divinité, le Vivant, le Subsistant, et je me repens à Lui. À réciter cent fois."
-  },
-  fatiha: {
-    label: 'Salat al-Fatiha — 100 fois',
-    ar: 'اَللَّهُمَّ صَلِّ صَلَاةً كَامِلَةً وَسَلِّمْ سَلَامًا تَامًّا عَلَى سَيِّدِنَا مُحَمَّدٍ الَّذِي تَنْحَلُّ بِهِ الْعُقَدُ وَتَنْفَرِجُ بِهِ الْكُرَبُ وَتُقْضَى بِهِ الْحَوَائِجُ وَتُنَالُ بِهِ الرَّغَائِبُ وَحُسْنُ الْخَوَاتِمِ وَيُسْتَسْقَى الْغَمَامُ بِوَجْهِهِ الْكَرِيمِ وَعَلَى آلِهِ وَصَحْبِهِ فِي كُلِّ لَمْحَةٍ وَنَفَسٍ بِعَدَدِ كُلِّ مَعْلُومٍ لَكَ',
-    latin: "Allāhumma ṣalli ṣalātan kāmilatan wa sallim salāman tāmman 'alā sayyidinā Muḥammadin alladhī tanḥallu bihi l-'uqadu wa tanfariju bihi l-kurabu wa tuqḍā bihi l-ḥawā'iju wa tunālu bihi r-raghā'ibu wa ḥusnu l-khawātimi wa yustasqā l-ghamāmu bi-wajhihi l-karīmi wa 'alā ālihi wa ṣaḥbihi fī kulli lamḥatin wa nafasin bi-'adadi kulli ma'lūmin lak.",
-    fr: "Ô Allah, répands une bénédiction parfaite et un salut complet sur notre Seigneur Muhammad, par qui les nœuds se dénouent, les afflictions se dissipent, les besoins sont comblés, les désirs et la belle fin sont atteints, et par la noblesse de son visage les nuages déversent la pluie, ainsi que sur sa famille et ses Compagnons, à chaque instant et à chaque souffle, autant que le nombre de toutes les choses que Tu connais. À réciter cent fois."
-  },
-  shahada: {
-    label: 'La Ilaha Illallah — 100 fois',
-    ar: 'لَا إِلَهَ إِلَّا اللهُ',
-    latin: "Lā ilāha illa-llāh.",
-    fr: "Il n'y a de divinité sinon Allah. À réciter cent fois avec présence totale du cœur."
-  },
-  haylala: {
-    label: 'Haylala — Dhikr supplémentaire',
-    ar: 'اَللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَيْهِ وَعَلَى آلِهِ صَلَاةً تَكُونُ لَكَ رِضَاءً وَلِحَقِّهِ أَدَاءً بِقَدْرِ عَظَمَتِكَ وَكَمَالِ صِفَاتِكَ يَا رَبَّنَا',
-    latin: "Allāhumma ṣalli wa sallim wa bārik 'alayhi wa 'alā ālihi — ṣalātan takūnu laka riḍā'an wa li-ḥaqqihi adā'an — bi-qadri 'aẓamatika wa kamāli ṣifātika yā rabbanā.",
-    fr: "Ô Allah, répands bénédictions, paix et grâces sur lui et sur sa famille, une bénédiction qui soit pour Toi satisfaction et à son droit accomplissement, à la mesure de Ta grandeur et de la perfection de Tes attributs, ô notre Seigneur."
-  },
-  jawhara: {
-    label: 'Jawharat al-Kamal — 12 fois',
-    ar: 'اَللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى عَيْنِ الرَّحْمَةِ الرَّبَّانِيَّةِ وَالْيَاقُوتَةِ الْمُتَحَقِّقَةِ فِي الْحَضَرَاتِ الرَّحْمَانِيَّةِ وَأَشَدِّ الْمَوْجُودَاتِ ارْتِبَاطًا بِالشُّؤُونِ الرَّبَّانِيَّةِ مَنِ اكْتَنَفَتْهُ السَّحَابُ وَالْغَمَامُ وَالْأَوْلِيَاءُ الْكِرَامُ وَمَعَادِنُ الْأَسْرَارِ الرَّبَّانِيَّةِ صَلَاةً تُعَرِّفُنَا بِهَا إِيَّاهُ',
-    latin: "Allāhumma ṣalli wa sallim 'alā 'ayni r-raḥmati r-rabbāniyyati wa l-yāqūtati l-mutaḥaqqiqati fī l-ḥaḍarāti r-raḥmāniyyati wa ashaddi l-mawjūdāti rtibāṭan bi-sh-shu'ūni r-rabbāniyyati mani ktanafathu s-saḥābu wa l-ghamāmu wa l-awliyā'u l-kirāmu wa ma'ādinu l-asrāri r-rabbāniyyati ṣalātan tu'arrifunā bihā iyyāh.",
-    fr: "Ô Allah, répands bénédictions et paix sur l'Œil de la Miséricorde Seigneuriale, le Rubis réalisé dans les présences du Rahman, le plus lié de tous les existants aux affaires divines, celui qu'entourent les nuages, les Saints nobles et les mines des secrets divins, une bénédiction par laquelle Tu nous le feras connaître. À réciter douze fois dans la Wazifa."
-  }
-};
-
-/* ── Sélectionner une voix par langue et genre ── */
-function _getVoice(langPrefix, preferMale) {
-  var voices = window.speechSynthesis.getVoices();
-  var langVoices = voices.filter(function(v){ return v.lang.startsWith(langPrefix); });
-  if (!langVoices.length) return null;
-  if (!preferMale) return langVoices[0];
-  var maleKw = ['male','homme','man','thomas','nicolas','pierre','henri','omar','khalid','majed','naayf','maged'];
-  var femKw  = ['female','femme','woman','amelie','audrey','marie','fatima','laila'];
-  var m = langVoices.find(function(v){ var n=v.name.toLowerCase(); return maleKw.some(function(k){return n.indexOf(k)>=0;}); });
-  if (!m) m = langVoices.find(function(v){ var n=v.name.toLowerCase(); return !femKw.some(function(k){return n.indexOf(k)>=0;}); });
-  return m || langVoices[0];
-}
-
-/* ── Chrome hack : empêche speechSynthesis de se figer après ~15s ── */
-var _chromeFix = null;
-function _startChromeFix() {
-  _chromeFix = setInterval(function(){
-    if (window.speechSynthesis.speaking) {
-      window.speechSynthesis.pause();
-      window.speechSynthesis.resume();
-    }
-  }, 10000);
-}
-function _stopChromeFix() {
-  clearInterval(_chromeFix);
-  _chromeFix = null;
-}
-
-/* ── Lire une liste de {text, lang, voice, rate, pitch} en séquence stricte ── */
-function _speakList(items, onDone) {
-  if (!items || !items.length) {
-    _stopChromeFix();
-    _wirdSpeaking = false;
-    if (_wirdCurrentBtn) { _wirdCurrentBtn.textContent = '🔊'; _wirdCurrentBtn = null; }
-    var ab = document.getElementById('tts-wird-all');
-    if (ab && ab.innerHTML.indexOf('Arrêter') >= 0) ab.innerHTML = '<span>🔊</span> <span>Écouter tout le Wird</span>';
-    if (onDone) onDone();
-    return;
-  }
-
-  var item = items[0];
-  var rest = items.slice(1);
-
-  var u = new SpeechSynthesisUtterance(item.text);
-  u.lang  = item.lang  || 'fr-FR';
-  u.rate  = item.rate  || 0.85;
-  u.pitch = item.pitch || 1;
-  if (item.voice) u.voice = item.voice;
-
-  u.onend = function() {
-    // Petite pause entre utterances pour Chrome
-    setTimeout(function(){ _speakList(rest, onDone); }, item.pauseAfter || 300);
-  };
-  u.onerror = function(e) {
-    // Si erreur sur l'arabe (voix non dispo), passer au suivant quand même
-    setTimeout(function(){ _speakList(rest, onDone); }, 200);
-  };
-
-  // Fix Chrome : cancel + parler immédiatement résout le saut d'utterance
-  window.speechSynthesis.cancel();
-  setTimeout(function(){ window.speechSynthesis.speak(u); }, 80);
-}
-
-/* ── wirdSpeak : arabe natif → traduction française ── */
-function wirdSpeak(key) {
-  if (!window.speechSynthesis) { showToast('⚠️ Synthèse vocale non supportée'); return; }
-  /* Stopper ElevenLabs si en cours */
-  try {
-    var _elP = document.getElementById('el-audio-player');
-    if (_elP && !_elP.paused) { _elP.pause(); _elP.currentTime = 0; }
-    if (typeof _elResetBtn === 'function' && _elCurrentBtn) _elResetBtn(_elCurrentBtn);
-    _elCurrentKey = null; _elCurrentBtn = null;
-  } catch(e) {}
-  var btn = document.getElementById('tts-' + key);
-
-  if (_wirdSpeaking) {
-    window.speechSynthesis.cancel();
-    _stopChromeFix();
-    _wirdSpeaking = false;
-    if (_wirdCurrentBtn) { _wirdCurrentBtn.textContent = '🔊'; }
-    if (_wirdCurrentBtn === btn) { _wirdCurrentBtn = null; return; }
-  }
-
-  var data = WIRD_TEXTS[key];
-  if (!data) return;
-
-  var voices = window.speechSynthesis.getVoices();
-  if (voices.length === 0) {
-    window.speechSynthesis.onvoiceschanged = function(){
-      window.speechSynthesis.onvoiceschanged = null;
-      wirdSpeak(key);
-    };
-    return;
-  }
-
-  var arVoice = _getVoice('ar', true);
-  var frVoice = _getVoice('fr', true);
-
-  _wirdSpeaking = true;
-  _wirdCurrentBtn = btn;
-  if (btn) btn.textContent = '⏹';
-  showToast('🔊 ' + data.label);
-  _startChromeFix();
-
-  var items = [];
-
-  // Annonce française
-  items.push({ text: data.label + '.', lang: 'fr-FR', rate: 0.88, pitch: 0.7, voice: frVoice, pauseAfter: 600 });
-
-  // Texte arabe — si voix arabe dispo : lire en arabe ; sinon lire la translittération en FR
-  if (arVoice) {
-    items.push({ text: data.ar, lang: 'ar-SA', rate: 0.75, pitch: 0.85, voice: arVoice, pauseAfter: 800 });
-  } else {
-    items.push({ text: data.latin, lang: 'fr-FR', rate: 0.78, pitch: 0.8, voice: frVoice, pauseAfter: 800 });
-  }
-
-  // Traduction française
-  items.push({ text: 'Traduction. ' + data.fr, lang: 'fr-FR', rate: 0.88, pitch: 0.7, voice: frVoice, pauseAfter: 400 });
-
-  _speakList(items, function() {
-    _wirdSpeaking = false;
-    _stopChromeFix();
-    if (btn) btn.textContent = '🔊';
-    _wirdCurrentBtn = null;
-  });
-}
-
-/* ── wirdSpeakAll : tout le wird complet en arabe + français ── */
-function wirdSpeakAll() {
-  if (!window.speechSynthesis) { showToast('⚠️ Synthèse vocale non supportée'); return; }
-  /* Stopper ElevenLabs si en cours */
-  try {
-    var _elP2 = document.getElementById('el-audio-player');
-    if (_elP2 && !_elP2.paused) { _elP2.pause(); _elP2.currentTime = 0; }
-    if (typeof _elResetBtn === 'function' && _elCurrentBtn) _elResetBtn(_elCurrentBtn);
-    _elCurrentKey = null; _elCurrentBtn = null;
-  } catch(e) {}
-
-  if (_wirdSpeaking) {
-    window.speechSynthesis.cancel();
-    _stopChromeFix();
-    _wirdSpeaking = false;
-    if (_wirdCurrentBtn) { _wirdCurrentBtn.textContent = '🔊'; _wirdCurrentBtn = null; }
-    var ab2 = document.getElementById('tts-wird-all');
-    if (ab2) ab2.innerHTML = '<span>🔊</span> <span>Écouter tout le Wird</span>';
-    return;
-  }
-
-  var voices = window.speechSynthesis.getVoices();
-  if (voices.length === 0) {
-    window.speechSynthesis.onvoiceschanged = function(){
-      window.speechSynthesis.onvoiceschanged = null;
-      wirdSpeakAll();
-    };
-    return;
-  }
-
-  var allBtn = document.getElementById('tts-wird-all');
-  if (allBtn) allBtn.innerHTML = '<span>⏹</span> <span>Arrêter la lecture</span>';
-
-  var arVoice = _getVoice('ar', true);
-  var frVoice = _getVoice('fr', true);
-
-  _wirdSpeaking = true;
-  _startChromeFix();
-
-  var items = [];
-
-  // Intro
-  items.push({ text: 'Wird Tijani. Le wird quotidien de la voie Tijaniyya. Trois éléments, cent fois chacun.', lang: 'fr-FR', rate: 0.88, pitch: 0.7, voice: frVoice, pauseAfter: 800 });
-
-  ['istighfar','fatiha','shahada'].forEach(function(key) {
-    var d = WIRD_TEXTS[key];
-    items.push({ text: d.label + '.', lang: 'fr-FR', rate: 0.88, pitch: 0.7, voice: frVoice, pauseAfter: 500 });
-    if (arVoice) {
-      items.push({ text: d.ar, lang: 'ar-SA', rate: 0.75, pitch: 0.85, voice: arVoice, pauseAfter: 900 });
-    } else {
-      items.push({ text: d.latin, lang: 'fr-FR', rate: 0.78, pitch: 0.8, voice: frVoice, pauseAfter: 900 });
-    }
-    items.push({ text: 'Traduction. ' + d.fr, lang: 'fr-FR', rate: 0.88, pitch: 0.7, voice: frVoice, pauseAfter: 700 });
-  });
-
-  _speakList(items, function() {
-    _wirdSpeaking = false;
-    _stopChromeFix();
-    if (allBtn) allBtn.innerHTML = '<span>🔊</span> <span>Écouter tout le Wird</span>';
-  });
-}
-
-/* ════════════════════════════════════════
-   VOCAL — RECONNAISSANCE + SYNTHÈSE VOCALE
-════════════════════════════════════════ */
-var _abVoiceLang = 'fr-FR'; // fr-FR ou wo (wolof)
-var _abRecognition = null;
-var _abListening = false;
-var _abSpeaking = false;
-
-/* Basculer la langue vocale FR ↔ Wolof */
-function abToggleLang() {
-  _abVoiceLang = _abVoiceLang === 'fr-FR' ? 'wo' : 'fr-FR';
-  var btn = document.getElementById('abLangBtn');
-  if (btn) btn.textContent = _abVoiceLang === 'fr-FR' ? '🇫🇷 FR' : '🇸🇳 WO';
-  var inp = document.getElementById('abInput');
-  if (inp) inp.placeholder = _abVoiceLang === 'fr-FR' ? 'Posez votre question...' : 'Bind sa laaj bi...';
-  showToast(_abVoiceLang === 'fr-FR' ? '🇫🇷 Français activé' : '🇸🇳 Wolof activé');
-}
-
-/* Reconnaissance vocale (STT) */
-function abToggleMic() {
-  if (_abListening) {
-    abStopMic();
-    return;
-  }
-  var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRec) {
-    showToast('⚠️ Reconnaissance vocale non supportée sur ce navigateur');
-    return;
-  }
-  _abRecognition = new SpeechRec();
-  _abRecognition.lang = _abVoiceLang === 'wo' ? 'fr-FR' : 'fr-FR'; // Wolof non dispo → français
-  _abRecognition.continuous = false;
-  _abRecognition.interimResults = true;
-
-  _abRecognition.onstart = function() {
-    _abListening = true;
-    var btn = document.getElementById('abMicBtn');
-    if (btn) { btn.classList.add('listening'); btn.textContent = '🔴'; }
-    var inp = document.getElementById('abInput');
-    if (inp) inp.placeholder = _abVoiceLang === 'wo' ? 'Wax la...' : 'Parlez maintenant...';
-    showToast(_abVoiceLang === 'wo' ? '🎤 Wax la Wolof bi...' : '🎤 Parlez en français...');
-  };
-
-  _abRecognition.onresult = function(e) {
-    var transcript = '';
-    for (var i = e.resultIndex; i < e.results.length; i++) {
-      transcript += e.results[i][0].transcript;
-    }
-    var inp = document.getElementById('abInput');
-    if (inp) {
-      inp.value = transcript;
-      inp.style.height = 'auto';
-      inp.style.height = Math.min(inp.scrollHeight, 120) + 'px';
-    }
-    if (e.results[e.results.length - 1].isFinal) {
-      abStopMic();
-      setTimeout(abSend, 300);
-    }
-  };
-
-  _abRecognition.onerror = function(e) {
-    abStopMic();
-    if (e.error === 'not-allowed') showToast('⚠️ Permission micro refusée');
-    else showToast('⚠️ Erreur micro : ' + e.error);
-  };
-
-  _abRecognition.onend = function() { abStopMic(); };
-  _abRecognition.start();
-}
-
-function abStopMic() {
-  _abListening = false;
-  if (_abRecognition) { try { _abRecognition.stop(); } catch(e){} _abRecognition = null; }
-  var btn = document.getElementById('abMicBtn');
-  if (btn) { btn.classList.remove('listening'); btn.textContent = '🎤'; }
-  var inp = document.getElementById('abInput');
-  if (inp) inp.placeholder = _abVoiceLang === 'wo' ? 'Bind sa laaj bi...' : 'Posez votre question...';
-}
-
-/* Synthèse vocale (TTS) — lire une réponse */
-/* ── Config ElevenLabs — Ask Baye ── */
-var EL_API_KEY     = 'sk_293238401490b607ef8d79573e96652f63146612e918753b';
-var EL_VOICE_ID_AB = 'h0TwoFQf7NYsiJYrhYf8'; /* voix baye niass — ASK BAYE */
-var EL_MODEL       = 'eleven_multilingual_v2';
-
-
-/* ── Contrôle vitesse voix Ask Baye ── */
-var _abPlaybackRate = 0.85;
-var _abSpeedSteps   = [0.5, 0.65, 0.75, 0.85, 1.0, 1.15, 1.25, 1.5];
-
-function abSpeedUp() {
-  var idx = _abSpeedSteps.indexOf(_abPlaybackRate);
-  if (idx < _abSpeedSteps.length - 1) {
-    _abPlaybackRate = _abSpeedSteps[idx + 1];
-    _abUpdateSpeedLabel();
-  }
-}
-
-function abSpeedDown() {
-  var idx = _abSpeedSteps.indexOf(_abPlaybackRate);
-  if (idx > 0) {
-    _abPlaybackRate = _abSpeedSteps[idx - 1];
-    _abUpdateSpeedLabel();
-  }
-}
-
-function _abUpdateSpeedLabel() {
-  var el = document.getElementById('abSpeedLabel');
-  var spd = _abPlaybackRate.toFixed(2).replace('.00','').replace(/0+$/,'');
-  if (el) el.textContent = '×' + spd;
-  /* Appliquer au player en cours si actif */
-  var player = document.getElementById('ab-audio-player');
-  if (player && !player.paused) player.playbackRate = _abPlaybackRate;
-  showToast('🎙️ Vitesse voix : ×' + _abPlaybackRate);
-}
-
-async function abSpeak(text, btnEl) {
-  /* Créer le player audio si absent */
-  var player = document.getElementById('ab-audio-player');
-  if (!player) {
-    player = document.createElement('audio');
-    player.id = 'ab-audio-player';
-    player.style.display = 'none';
-    document.body.appendChild(player);
-  }
-
-  /* Si déjà en lecture → arrêter proprement */
-  if (_abSpeaking) {
-    player.pause();
-    player.src = '';
-    player.load();
-    _abSpeaking = false;
-    document.querySelectorAll('.ab-tts-btn').forEach(function(b){ b.textContent = '🔊'; b.classList.remove('speaking'); });
-    return;
-  }
-
-  /* Nettoyer le texte */
-  var clean = text
-    .replace(/\*\*([^*]+)\*\*/g, '$1')
-    .replace(/\*([^*]+)\*/g, '$1')
-    .replace(/^#{1,3} /gm, '')
-    .replace(/[\u{1F300}-\u{1FFFF}]/gu, '')
-    .replace(/[\n]{2,}/g, '. ')
-    .replace(/[\n]/g, ' ')
-    .trim();
-
-  /* Limiter à 2500 caractères max (limite ElevenLabs) */
-  if (clean.length > 2500) clean = clean.substring(0, 2500);
-
-  if (!clean) return;
-
-  /* Réinitialiser le player avant nouvelle lecture */
-  player.pause();
-  player.src = '';
-  player.load();
-
-  /* Bouton → chargement */
-  if (btnEl) { btnEl.textContent = '⏳'; btnEl.classList.add('speaking'); }
-
-  try {
-    var resp = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + EL_VOICE_ID_AB + '/stream', {
-      method: 'POST',
-      headers: {
-        'xi-api-key': EL_API_KEY,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        text: clean,
-        model_id: EL_MODEL,
-        voice_settings: {
-          stability: 0.85,
-          similarity_boost: 0.90,
-          style: 0.2,
-          use_speaker_boost: true
-        }
-      })
-    });
-
-    if (!resp.ok) {
-      var errText = await resp.text();
-      throw new Error('ElevenLabs ' + resp.status + ' : ' + errText.substring(0, 100));
-    }
-
-    var blob = await resp.blob();
-    var url  = URL.createObjectURL(blob);
-
-    /* Réinitialiser encore une fois avant de charger le nouveau blob */
-    player.pause();
-    player.src = '';
-    player.load();
-
-    await new Promise(function(resolve) { setTimeout(resolve, 80); });
-
-    player.src = url;
-    player.playbackRate = _abPlaybackRate;
-
-    player.onended = function() {
-      _abSpeaking = false;
-      document.querySelectorAll('.ab-tts-btn').forEach(function(b){ b.textContent = '🔊'; b.classList.remove('speaking'); });
-      URL.revokeObjectURL(url);
-    };
-    player.onerror = function() {
-      _abSpeaking = false;
-      document.querySelectorAll('.ab-tts-btn').forEach(function(b){ b.textContent = '🔊'; b.classList.remove('speaking'); });
-      showToast('⚠️ Erreur lecture audio');
-    };
-
-    await player.play();
-    _abSpeaking = true;
-    if (btnEl) { btnEl.textContent = '⏹'; }
-
-  } catch(e) {
-    console.error('[abSpeak ElevenLabs]', e);
-    showToast('⚠️ Erreur voix : ' + (e.message || e));
-    _abSpeaking = false;
-    document.querySelectorAll('.ab-tts-btn').forEach(function(b){ b.textContent = '🔊'; b.classList.remove('speaking'); });
-  }
-}
-
-/* ════════════════════════════════════════
-   ZIKR LIVE — JS COMPLET
-════════════════════════════════════════ */
-function switchZikrTab(tab) {
-  ['counter','group','audio'].forEach(function(t){
-    var btn=document.getElementById('ztab-'+t);
-    var pan=document.getElementById('zpanel-'+t);
-    var active=t===tab;
-    if(btn){btn.style.color=active?'var(--g1)':'var(--text3)';btn.style.fontWeight=active?'700':'400';btn.style.borderBottom=active?'3px solid var(--gold)':'3px solid transparent';}
-    if(pan)pan.style.display=active?'block':'none';
-  });
-  if(tab!=='audio')zAudioStop();
-}
-
-/* ── Compteur ── */
-var _zCount=0,_zTarget=100,_zSessions=0;
-var _zCurrentAr='لَا إِلَهَ إِلَّا اللهُ',_zCurrentLat='Lā ilāha illa-llāh';
-var _zTotalToday=parseInt(localStorage.getItem('zikr_today')||'0');
-var _zTotalAll=parseInt(localStorage.getItem('zikr_all')||'0');
-var _zStreak=parseInt(localStorage.getItem('zikr_streak')||'0');
-var _zLastDate=localStorage.getItem('zikr_date')||'';
-
-document.addEventListener('DOMContentLoaded',function(){
-  var el;
-  if((el=document.getElementById('zTotalToday')))el.textContent=_zTotalToday;
-  if((el=document.getElementById('zTotalAll')))el.textContent=_zTotalAll;
-  if((el=document.getElementById('zStreak')))el.textContent=_zStreak;
-  // Logo Zikr = même photo que l'app
-  var src=document.querySelector('.sp-logo')?document.querySelector('.sp-logo').src:'';
-  var zl=document.getElementById('zikrLogo');
-  if(zl&&src)zl.src=src;
-});
-
-function selectZikr(btn,ar,lat,target){
-  document.querySelectorAll('.zikr-choice').forEach(function(b){b.classList.remove('active');});
-  btn.classList.add('active');
-  _zCurrentAr=ar;_zCurrentLat=lat;_zTarget=target;_zCount=0;_zSessions=0;
-  var e;
-  if((e=document.getElementById('zCurrentAr')))e.textContent=ar;
-  if((e=document.getElementById('zCurrentLat')))e.textContent=lat;
-  if((e=document.getElementById('zTarget')))e.textContent='/ '+target;
-  if((e=document.getElementById('zSessionCount')))e.textContent='0';
-  if((e=document.getElementById('zCount')))e.textContent='0';
-  _zUpdateCircle();
-}
-
-function zTap(){
-  _zCount++;
-  var btn=document.getElementById('zTapBtn');
-  if(btn){btn.style.transform='scale(.92)';setTimeout(function(){btn.style.transform='';},100);}
-  if(navigator.vibrate)navigator.vibrate(25);
-  var e=document.getElementById('zCount');if(e)e.textContent=_zCount;
-  _zUpdateCircle();
-  _zTotalToday++;_zTotalAll++;_zSaveStats();
-  if(_zCount>=_zTarget){
-    _zSessions++;_zCount=0;
-    var s=document.getElementById('zSessionCount');if(s)s.textContent=_zSessions;
-    var c=document.getElementById('zCount');if(c)c.textContent='0';
-    _zUpdateCircle();
-    showToast('✅ Session complète ! الحمد لله');
-    if(navigator.vibrate)navigator.vibrate([60,30,60,30,120]);
-  }
-}
-
-function _zUpdateCircle(){
-  var circle=document.getElementById('zProgressCircle');
-  if(!circle)return;
-  var pct=Math.min(_zCount/_zTarget,1);
-  circle.style.strokeDashoffset=439.8*(1-pct);
-}
-
-function zReset(){
-  _zCount=0;_zSessions=0;
-  var e;
-  if((e=document.getElementById('zCount')))e.textContent='0';
-  if((e=document.getElementById('zSessionCount')))e.textContent='0';
-  _zUpdateCircle();
-  showToast('↺ Réinitialisé');
-}
-
-function zCustomTarget(){
-  var v=prompt('Objectif de répétitions :',_zTarget);
-  if(v&&!isNaN(parseInt(v))&&parseInt(v)>0){
-    _zTarget=parseInt(v);
-    var e=document.getElementById('zTarget');if(e)e.textContent='/ '+_zTarget;
-    _zCount=0;
-    var c=document.getElementById('zCount');if(c)c.textContent='0';
-    _zUpdateCircle();
-    showToast('✏ Objectif : '+_zTarget);
-  }
-}
-
-function _zSaveStats(){
-  var today=new Date().toDateString();
-  if(_zLastDate!==today){
-    _zStreak=(_zLastDate===new Date(Date.now()-86400000).toDateString())?_zStreak+1:1;
-    _zTotalToday=1;_zLastDate=today;
-  }
-  try{ localStorage.setItem('zikr_today',_zTotalToday); }catch(e){}
-  try{ localStorage.setItem('zikr_all',_zTotalAll); }catch(e){}
-  try{ localStorage.setItem('zikr_streak',_zStreak); }catch(e){}
-  try{ localStorage.setItem('zikr_date',_zLastDate); }catch(e){}
-  var e;
-  if((e=document.getElementById('zTotalToday')))e.textContent=_zTotalToday;
-  if((e=document.getElementById('zTotalAll')))e.textContent=_zTotalAll;
-  if((e=document.getElementById('zStreak')))e.textContent=_zStreak;
-}
-
-/* ════════════════════════════════════════
-   FIREBASE — ZIKR GROUPE TEMPS RÉEL
-════════════════════════════════════════ */
-var _fbApp=null, _fbDb=null, _fbInited=false;
-var _zGroupRef=null, _zMyRef=null, _zGroupListeners=[];
-var _zIsFounder=false, _zMyName='', _zMyId='', _zGroupKey='', _zMyPersonalCount=0;
-
-var _zDhikrTexts={
-  lahila:{ar:'لَا إِلَهَ إِلَّا اللهُ',target:100},
-  astagh:{ar:'أَسْتَغْفِرُ اللهَ',target:100},
-  salat: {ar:'صَلِّ عَلَى مُحَمَّدٍ',target:100},
-  subhan:{ar:'سُبْحَانَ اللهِ',target:33}
-};
-
-function _fbSetStatus(connected, msg){
-  var dot=document.getElementById('zFbDot');
-  var txt=document.getElementById('zFbStatusTxt');
-  if(dot)dot.style.background=connected?'#4CAF50':'#e74c3c';
-  if(txt)txt.textContent=msg;
-  var bar=document.getElementById('zFbStatus');
-  if(bar)bar.style.background=connected?'rgba(76,175,80,.08)':'rgba(192,57,43,.08)';
-}
-
-function _fbInit(cb){
-  /* Firebase chargé statiquement — vérification directe */
-  if(typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length){
-    if(!_fbInited){ _fbInited=true; _fbDb=firebase.database(); _fbSetStatus(true,'Firebase connecté ✅'); }
-    if(cb)cb();
-    return;
-  }
-  /* Fallback polling 200ms max 20 essais (4s) */
-  var tries=0;
-  var _t=setInterval(function(){
-    tries++;
-    if(typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length){
-      clearInterval(_t);
-      if(!_fbInited){ _fbInited=true; _fbDb=firebase.database(); _fbSetStatus(true,'Firebase connecté ✅'); }
-      if(cb)cb();
-    } else if(tries>=20){
-      clearInterval(_t);
-      _fbSetStatus(false,'Firebase non disponible — vérifiez votre connexion');
-    }
-  },200);
-}
-
-function _zbGenCode(){
-  var chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  var code='BNW-';
-  for(var i=0;i<4;i++)code+=chars[Math.floor(Math.random()*chars.length)];
-  return code;
-}
-
-function _zbGenId(){
-  return Math.random().toString(36).slice(2,10);
-}
-
-/* ── Charger groupes actifs ── */
-function _zLoadActiveGroups(){
-  if(!_fbInited||!_fbDb)return;
-  var ref=firebase.database().ref('zikr_groups');
-  ref.orderByChild('active').equalTo(true).once('value',function(snap){
-    var el=document.getElementById('zActiveGroups');
-    if(!el)return;
-    var groups=[];
-    snap.forEach(function(child){groups.push({key:child.key,val:child.val()});});
-    if(!groups.length){el.innerHTML='<span>Aucun groupe actif pour le moment.</span>';return;}
-    el.innerHTML='';
-    groups.slice(0,5).forEach(function(g){
-      var d=_zDhikrTexts[g.val.dhikr]||{ar:'Dhikr'};
-      var div=document.createElement('div');
-      div.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:.35rem .6rem;background:var(--white);border:1px solid var(--gold3);border-radius:8px;margin-bottom:.3rem;cursor:pointer';
-      div.innerHTML='<div><div style="font-family:\'Amiri\',serif;font-size:14px;color:var(--g1)">'+escH(g.val.name||'Groupe')+'</div><div style="font-size:12px;color:var(--text3)">'+escH(d.ar)+' · '+Object.keys(g.val.members||{}).length+' membre(s)</div></div><div style="font-family:monospace;font-size:12px;color:var(--gold);font-weight:700">'+escH(g.key)+'</div>';
-      div.onclick=(function(code){return function(){
-        var inp=document.getElementById('zJoinCodeInput');
-        if(inp)inp.value=code;
-        showToast('Code copié : '+code);
-      };})(g.key);
-      el.appendChild(div);
-    });
-  });
-}
-
-/* ── Créer un groupe (fondateur) ── */
-function zCreateGroup(){
-  var name=(document.getElementById('zCreateName')||{}).value.trim();
-  var dhikrKey=(document.getElementById('zCreateDhikr')||{}).value||'lahila';
-  var target=parseInt((document.getElementById('zCreateTarget')||{}).value)||100;
-  if(!name){showToast('⚠️ Entre ton prénom');return;}
-  _fbSetStatus(false,'Connexion…');
-  _fbInit(function(){
-    var code=_zbGenCode();
-    _zMyId=_zbGenId();
-    _zMyName=name;
-    _zGroupKey=code;
-    _zIsFounder=true;
-    _zMyPersonalCount=0;
-    var groupData={
-      name:name+' (fondateur)',
-      dhikr:dhikrKey,
-      target:target,
-      globalTotal:0,
-      active:true,
-      founder:_zMyId,
-      createdAt:firebase.database.ServerValue.TIMESTAMP,
-      members:{}
-    };
+;
     groupData.members[_zMyId]={name:name,count:0,isFounder:true,online:true,joinedAt:firebase.database.ServerValue.TIMESTAMP};
     firebase.database().ref('zikr_groups/'+code).set(groupData,function(err){
       if(err){showToast('⚠️ Erreur création : '+err.message);return;}
@@ -10666,12 +8588,12 @@ function calDayClick(g,h,hm){ hijriDayClick(hm+'-'+h); }
 /* ── switchPratiqueTab — bascule entre Wird / Zikr / Calendrier / Qibla ── */
 function switchPratiqueTab(tab) {
   /* Onglets */
-  ['wird','zikr','cal','qibla'].forEach(function(t) {
+  ['zikr','cal','qibla'].forEach(function(t) {
     var btn = document.getElementById('pratique-tab-' + t);
     if (btn) btn.classList.toggle('active', t === tab);
   });
   /* Panels */
-  ['wird','zikr','cal','qibla'].forEach(function(t) {
+  ['zikr','cal','qibla'].forEach(function(t) {
     var pan = document.getElementById('pratique-panel-' + t);
     if (pan) pan.classList.toggle('active', t === tab);
   });
@@ -12677,376 +10599,359 @@ function moonCitySearch(){moonGo();}
 /* ──────────────────────────────────────────
    MODE SOMMEIL
 ────────────────────────────────────────── */
-var sleepTimer = null;
-var sleepEnd   = null;
-var sleepTick  = null;
+var _sleepTick = null;
+var _sleepEnd  = null;
 
 window.setSleep = function(minutes) {
-  cancelSleep();
-  sleepEnd = Date.now() + minutes * 60000;
-  document.querySelectorAll('.sleep-btn').forEach(function(b){ b.classList.remove('active'); });
+  window.cancelSleep();
+  _sleepEnd = Date.now() + minutes * 60000;
+  document.querySelectorAll('.sleep-btn:not(#sleepCancelBtn)').forEach(function(b){ b.classList.remove('active'); });
   var cd = document.getElementById('sleepCountdown');
   var cb = document.getElementById('sleepCancelBtn');
-  if (cd) { cd.style.display = 'block'; }
-  if (cb) { cb.style.display = 'inline-flex'; }
+  if (cd) cd.style.display = 'block';
+  if (cb) cb.style.display = 'inline-flex';
 
   function tick() {
-    var rem = sleepEnd - Date.now();
+    var rem = _sleepEnd - Date.now();
     if (rem <= 0) {
-      // Fondu progressif puis arrêt
-      var rpAudio = document.getElementById('rpAudio');
-      if (rpAudio && !rpAudio.paused) {
-        var fade = setInterval(function() {
-          if (rpAudio.volume > 0.05) {
-            rpAudio.volume = Math.max(0, rpAudio.volume - 0.05);
-          } else {
+      var audio = document.getElementById('rpAudio');
+      if (audio && !audio.paused) {
+        var vol = audio.volume;
+        var fade = setInterval(function(){
+          vol = Math.max(0, vol - 0.06);
+          try { audio.volume = vol; } catch(e){}
+          if (vol <= 0) {
             clearInterval(fade);
-            rpAudio.volume = 0;
-            if (typeof rpToggle === 'function' && window._rpPlaying) rpToggle();
-            else { rpAudio.pause(); rpAudio.src = ''; }
+            if (typeof rpToggle === 'function') rpToggle();
+            else { try{ audio.pause(); audio.src=''; }catch(e){} }
           }
-        }, 100);
+        }, 120);
       }
-      cancelSleep();
-      if (typeof showToast === 'function') showToast('😴 Radio arrêtée — bonne nuit');
+      window.cancelSleep();
+      if (typeof showToast === 'function') showToast('\uD83D\uDE34 Radio arr\u00eat\u00e9e \u2014 bonne nuit');
       return;
     }
     var secs = Math.ceil(rem / 1000);
-    var m = Math.floor(secs / 60);
-    var s = secs % 60;
-    if (cd) cd.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+    var m = Math.floor(secs / 60), s = secs % 60;
+    var cd2 = document.getElementById('sleepCountdown');
+    if (cd2) cd2.textContent = m + ':' + (s < 10 ? '0' : '') + s;
   }
   tick();
-  sleepTick = setInterval(tick, 500);
-
-  if (typeof showToast === 'function') showToast('😴 Arrêt dans ' + minutes + ' min');
+  _sleepTick = setInterval(tick, 500);
+  if (typeof showToast === 'function') showToast('\uD83D\uDE34 Arr\u00eat dans ' + minutes + ' min');
 };
 
 window.cancelSleep = function() {
-  clearInterval(sleepTick);
-  clearTimeout(sleepTimer);
-  sleepEnd = null;
+  clearInterval(_sleepTick);
+  _sleepEnd = null;
   var cd = document.getElementById('sleepCountdown');
   var cb = document.getElementById('sleepCancelBtn');
   if (cd) { cd.style.display = 'none'; cd.textContent = ''; }
-  if (cb) { cb.style.display = 'none'; }
+  if (cb) cb.style.display = 'none';
   document.querySelectorAll('.sleep-btn:not(#sleepCancelBtn)').forEach(function(b){ b.classList.remove('active'); });
 };
 
 /* ──────────────────────────────────────────
-   VISUALISEUR WAVEFORM RADIO (WebAudio)
+   VISUALISEUR WAVEFORM RADIO
 ────────────────────────────────────────── */
-var rpWaveCtx   = null;
-var rpAnalyser  = null;
-var rpWaveFrame = null;
-var rpWaveRunning = false;
+var _rpAC = null, _rpAnalyser = null, _rpWaveFrame = null, _rpSrcCreated = false;
 
-function rpWaveInit() {
-  var audio = document.getElementById('rpAudio');
+function _rpWaveInit() {
+  var audio  = document.getElementById('rpAudio');
   var canvas = document.getElementById('rpWaveCanvas');
   if (!audio || !canvas) return;
   try {
     var AC = window.AudioContext || window.webkitAudioContext;
-    if (!rpWaveCtx) {
-      rpWaveCtx = new AC();
-      var src = rpWaveCtx.createMediaElementSource(audio);
-      rpAnalyser = rpWaveCtx.createAnalyser();
-      rpAnalyser.fftSize = 256;
-      rpAnalyser.smoothingTimeConstant = 0.82;
-      src.connect(rpAnalyser);
-      rpAnalyser.connect(rpWaveCtx.destination);
+    if (!_rpAC) {
+      _rpAC = new AC();
+      _rpAnalyser = _rpAC.createAnalyser();
+      _rpAnalyser.fftSize = 256;
+      _rpAnalyser.smoothingTimeConstant = 0.82;
     }
-    if (rpWaveCtx.state === 'suspended') rpWaveCtx.resume();
-    rpWaveDraw();
-  } catch(e) {
-    console.warn('Waveform radio:', e);
-  }
+    if (!_rpSrcCreated) {
+      var src = _rpAC.createMediaElementSource(audio);
+      src.connect(_rpAnalyser);
+      _rpAnalyser.connect(_rpAC.destination);
+      _rpSrcCreated = true;
+    }
+    if (_rpAC.state === 'suspended') _rpAC.resume();
+    _rpWaveDraw();
+  } catch(e) { console.warn('Wave:', e); }
 }
 
-function rpWaveDraw() {
+function _rpWaveDraw() {
   var canvas = document.getElementById('rpWaveCanvas');
-  if (!canvas || !rpAnalyser) return;
-  rpWaveFrame = requestAnimationFrame(rpWaveDraw);
-
-  var W = canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
-  var H = canvas.height = 28 * (window.devicePixelRatio || 1);
+  if (!canvas || !_rpAnalyser) return;
+  _rpWaveFrame = requestAnimationFrame(_rpWaveDraw);
+  var dpr = window.devicePixelRatio || 1;
+  var W = canvas.width  = canvas.offsetWidth  * dpr;
+  var H = canvas.height = 28 * dpr;
   var ctx = canvas.getContext('2d');
-  var bufLen = rpAnalyser.frequencyBinCount;
-  var data = new Uint8Array(bufLen);
-  rpAnalyser.getByteFrequencyData(data);
-
+  var data = new Uint8Array(_rpAnalyser.frequencyBinCount);
+  _rpAnalyser.getByteFrequencyData(data);
   ctx.clearRect(0, 0, W, H);
-
-  var barW = (W / bufLen) * 2;
-  var gap = 1.5;
-  var x = 0;
-  for (var i = 0; i < bufLen; i++) {
-    var val = data[i] / 255;
-    var bh = Math.max(2, val * H * 0.9);
-    var green = Math.round(100 + val * 122);
-    ctx.fillStyle = 'rgba(74,' + green + ',128,' + (0.4 + val * 0.6) + ')';
-    ctx.beginPath();
-    ctx.roundRect ? ctx.roundRect(x, (H - bh) / 2, barW - gap, bh, 1) :
-      ctx.rect(x, (H - bh) / 2, barW - gap, bh);
-    ctx.fill();
-    x += barW;
-    if (x > W) break;
+  var bw = Math.max(2, (W / data.length) * 2);
+  for (var i = 0, x = 0; i < data.length && x < W; i++, x += bw) {
+    var v = data[i] / 255;
+    var h = Math.max(2, v * H * 0.88);
+    var g = Math.round(100 + v * 122);
+    ctx.fillStyle = 'rgba(74,' + g + ',128,' + (0.35 + v * 0.65) + ')';
+    ctx.fillRect(x, (H - h) / 2, bw - 1.5, h);
   }
 }
 
-function rpWaveStop() {
-  cancelAnimationFrame(rpWaveFrame);
+function _rpWaveIdle() {
+  cancelAnimationFrame(_rpWaveFrame);
   var canvas = document.getElementById('rpWaveCanvas');
-  if (canvas) {
-    var ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    // Dessiner ligne au repos
-    canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
-    canvas.height = 28 * (window.devicePixelRatio || 1);
-    ctx = canvas.getContext('2d');
-    ctx.strokeStyle = 'rgba(74,222,128,.15)';
-    ctx.lineWidth = 1;
-    ctx.setLineDash([4, 4]);
-    ctx.beginPath();
-    ctx.moveTo(0, canvas.height / 2);
-    ctx.lineTo(canvas.width, canvas.height / 2);
-    ctx.stroke();
-    ctx.setLineDash([]);
-  }
+  if (!canvas) return;
+  var dpr = window.devicePixelRatio || 1;
+  canvas.width  = canvas.offsetWidth * dpr;
+  canvas.height = 28 * dpr;
+  var ctx = canvas.getContext('2d');
+  ctx.strokeStyle = 'rgba(74,222,128,.15)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([3, 5]);
+  ctx.beginPath();
+  ctx.moveTo(0, canvas.height / 2);
+  ctx.lineTo(canvas.width, canvas.height / 2);
+  ctx.stroke();
+  ctx.setLineDash([]);
 }
 
-/* Hooker sur les événements audio radio */
-(function hookRadioWave() {
+(function() {
   var tries = 0;
   var iv = setInterval(function() {
     var audio = document.getElementById('rpAudio');
-    if (audio || tries++ > 20) {
+    if (audio || ++tries > 30) {
       clearInterval(iv);
       if (!audio) return;
-      audio.addEventListener('playing', function() {
-        rpWaveInit();
-        window._rpPlaying = true;
-      });
-      audio.addEventListener('pause', function() {
-        rpWaveStop();
-        window._rpPlaying = false;
-      });
-      audio.addEventListener('ended', function() {
-        rpWaveStop();
-        window._rpPlaying = false;
-      });
-      rpWaveStop(); // dessin repos initial
+      audio.addEventListener('playing', function() { _rpWaveInit(); });
+      audio.addEventListener('pause',   function() { _rpWaveIdle(); });
+      audio.addEventListener('ended',   function() { _rpWaveIdle(); });
+      _rpWaveIdle();
     }
   }, 300);
 })();
 
 /* ──────────────────────────────────────────
-   TRANSCRIPTION VOIX → TEXTE (Web Speech API)
+   TRANSCRIPTION — Web Speech API
+   Fonctionne INDÉPENDAMMENT de l'enregistrement
 ────────────────────────────────────────── */
-var recognition = null;
-var transcriptFull = '';
-var isTranscribing = false;
+var _recognition = null;
+var _transcriptFull = '';
+var _isTranscribing = false;
 
 window.studioTranscribe = function() {
-  var btn = document.getElementById('transcribeBtn');
+  var btn    = document.getElementById('transcribeBtn');
   var status = document.getElementById('transcribeStatus');
-  var box = document.getElementById('transcribeBox');
+  var box    = document.getElementById('transcribeBox');
   var textEl = document.getElementById('transcribeText');
 
-  if (isTranscribing) {
-    // Arrêter
-    if (recognition) recognition.stop();
-    isTranscribing = false;
-    if (btn) { btn.style.background = 'rgba(139,92,246,.12)'; btn.innerHTML = '<span style="font-size:13px">📝</span> Transcrire'; }
-    if (status) status.textContent = 'Transcription terminée';
+  /* STOP si en cours */
+  if (_isTranscribing) {
+    if (_recognition) { try { _recognition.stop(); } catch(e){} }
+    _isTranscribing = false;
+    if (btn) { btn.style.background = 'rgba(139,92,246,.12)'; btn.innerHTML = '<span style="font-size:13px">\uD83D\uDCDD</span> Transcrire'; }
+    if (status) status.textContent = 'Transcription arr\u00eat\u00e9e';
     return;
   }
 
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) {
-    if (status) status.textContent = 'Non supporté sur cet appareil';
-    if (typeof showToast === 'function') showToast('⚠️ Transcription non disponible');
+    if (status) status.textContent = 'Non support\u00e9 sur cet appareil (Chrome/Edge requis)';
+    if (typeof showToast === 'function') showToast('\u26A0\uFE0F Chrome ou Edge requis');
     return;
   }
 
-  // Vérifier qu'un enregistrement est actif
-  if (!window._studioRecording && !isRecording) {
-    if (status) status.textContent = 'Démarrez l'enregistrement d'abord';
-    if (typeof showToast === 'function') showToast('⏺ Lancez d'abord l'enregistrement');
-    return;
-  }
+  _transcriptFull = '';
+  _recognition = new SR();
+  _recognition.continuous     = true;
+  _recognition.interimResults = true;
+  _recognition.maxAlternatives = 1;
 
-  transcriptFull = '';
-  recognition = new SR();
-  recognition.continuous = true;
-  recognition.interimResults = true;
-  recognition.lang = 'ar-SA'; // Arabe par défaut — détection auto si multilingue
+  /* D\u00e9tection langue auto : arabe si studio, sinon FR */
+  var isRec = typeof window._studioIsRecording === 'function' && window._studioIsRecording();
+  _recognition.lang = 'ar-SA';
 
-  recognition.onstart = function() {
-    isTranscribing = true;
-    if (btn) { btn.style.background = 'rgba(139,92,246,.25)'; btn.innerHTML = '<span style="font-size:13px">⏹</span> Arrêter'; }
-    if (status) status.textContent = '🔴 Transcription active...';
+  _recognition.onstart = function() {
+    _isTranscribing = true;
+    if (btn) { btn.style.background = 'rgba(139,92,246,.3)'; btn.innerHTML = '<span style="font-size:13px">\u23F9</span> Arr\u00eater'; }
+    if (status) status.textContent = '\uD83D\uDD34 Transcription active... (parlez)';
     if (box) box.style.display = 'block';
   };
 
-  recognition.onresult = function(e) {
+  _recognition.onresult = function(e) {
     var interim = '';
     for (var i = e.resultIndex; i < e.results.length; i++) {
       var t = e.results[i][0].transcript;
-      if (e.results[i].isFinal) { transcriptFull += t + ' '; }
+      if (e.results[i].isFinal) { _transcriptFull += t + ' '; }
       else { interim = t; }
     }
     if (textEl) {
       textEl.innerHTML =
-        '<span style="color:rgba(255,255,255,.8)">' + transcriptFull + '</span>' +
-        '<span style="color:rgba(255,255,255,.35);font-style:italic">' + interim + '</span>';
+        '<span style="color:rgba(255,255,255,.85);direction:auto">' + _transcriptFull + '</span>' +
+        '<span style="color:rgba(255,255,255,.3);font-style:italic;direction:auto"> ' + interim + '</span>';
       textEl.scrollTop = textEl.scrollHeight;
     }
   };
 
-  recognition.onerror = function(e) {
-    if (e.error === 'no-speech') return;
-    if (status) status.textContent = 'Erreur: ' + e.error;
-    isTranscribing = false;
-    if (btn) { btn.style.background = 'rgba(139,92,246,.12)'; btn.innerHTML = '<span style="font-size:13px">📝</span> Transcrire'; }
+  _recognition.onerror = function(e) {
+    if (e.error === 'no-speech' || e.error === 'aborted') return;
+    if (e.error === 'not-allowed') {
+      if (status) status.textContent = 'Micro refus\u00e9 — autorisez dans les r\u00e9glages';
+    } else {
+      if (status) status.textContent = 'Erreur: ' + e.error;
+    }
+    _isTranscribing = false;
+    if (btn) { btn.style.background = 'rgba(139,92,246,.12)'; btn.innerHTML = '<span style="font-size:13px">\uD83D\uDCDD</span> Transcrire'; }
   };
 
-  recognition.onend = function() {
-    if (isTranscribing) recognition.start(); // relancer en continu
+  _recognition.onend = function() {
+    /* Relancer automatiquement si toujours actif */
+    if (_isTranscribing) {
+      try { _recognition.start(); } catch(e){}
+    }
   };
 
-  recognition.start();
+  try {
+    _recognition.start();
+  } catch(e) {
+    if (status) status.textContent = 'Impossible de d\u00e9marrer: ' + e.message;
+  }
 };
 
 window.copyTranscript = function() {
-  if (!transcriptFull) return;
-  navigator.clipboard.writeText(transcriptFull.trim()).then(function() {
-    if (typeof showToast === 'function') showToast('✅ Transcription copiée');
-  }).catch(function() {
-    if (typeof showToast === 'function') showToast('Sélectionnez le texte manuellement');
-  });
+  var txt = _transcriptFull.trim();
+  if (!txt) { if (typeof showToast === 'function') showToast('Rien \u00e0 copier'); return; }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(function() {
+      if (typeof showToast === 'function') showToast('\u2705 Transcription copi\u00e9e');
+    });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = txt; ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    if (typeof showToast === 'function') showToast('\u2705 Copi\u00e9');
+  }
 };
 
 /* ──────────────────────────────────────────
-   NORMALISATION / AMPLIFICATION (Web Audio API offline)
+   NORMALISATION — OfflineAudioContext
+   Analyse le DERNIER enregistrement dans IndexedDB
 ────────────────────────────────────────── */
 window.studioNormalize = function() {
-  var btn = document.getElementById('normalizeBtn');
+  var btn    = document.getElementById('normalizeBtn');
   var status = document.getElementById('transcribeStatus');
 
-  // Trouver le dernier enregistrement dans la lib
-  if (typeof dbGetAll !== 'function') {
-    if (typeof showToast === 'function') showToast('Aucun enregistrement à normaliser');
+  /* Utiliser le pont exposé depuis l'IIFE studio */
+  var getAll = window._studioGetDb || (typeof dbGetAll !== 'undefined' ? dbGetAll : null);
+  var save   = window._studioSaveDb || (typeof dbSave !== 'undefined' ? dbSave : null);
+  var render = window._studioRenderLib || (typeof studioRenderLib !== 'undefined' ? studioRenderLib : null);
+
+  if (!getAll) {
+    if (status) status.textContent = 'Aucun enregistrement accessible';
+    if (typeof showToast === 'function') showToast('\u26A0\uFE0F Pas d'enregistrement');
     return;
   }
 
-  dbGetAll(function(recs) {
+  if (btn) { btn.style.opacity = '.5'; btn.style.pointerEvents = 'none'; }
+  if (status) status.textContent = 'Analyse en cours...';
+
+  getAll(function(recs) {
     if (!recs || !recs.length) {
-      if (typeof showToast === 'function') showToast('Aucun enregistrement à normaliser');
+      if (status) status.textContent = 'Aucun enregistrement dans la biblioth\u00e8que';
+      if (typeof showToast === 'function') showToast('\u26A0\uFE0F Enregistrez d'abord un audio');
+      if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = ''; }
       return;
     }
 
-    // Prendre le plus récent
-    recs.sort(function(a,b){ return b.date - a.date; });
+    recs.sort(function(a, b){ return b.date - a.date; });
     var rec = recs[0];
-    if (status) status.textContent = 'Normalisation en cours...';
-    if (btn) btn.style.opacity = '.5';
+    if (status) status.textContent = 'Normalisation de \"' + rec.name + '\"...';
 
     var reader = new FileReader();
+    reader.onerror = function() {
+      if (status) status.textContent = 'Erreur lecture fichier';
+      if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = ''; }
+    };
     reader.onload = function(e) {
       var AC = window.AudioContext || window.webkitAudioContext;
       var tmpCtx = new AC();
-      tmpCtx.decodeAudioData(e.target.result, function(buffer) {
-        // Analyser le peak
-        var peak = 0;
-        for (var ch = 0; ch < buffer.numberOfChannels; ch++) {
-          var data = buffer.getChannelData(ch);
-          for (var i = 0; i < data.length; i++) {
-            var abs = Math.abs(data[i]);
-            if (abs > peak) peak = abs;
+      tmpCtx.decodeAudioData(
+        e.target.result.slice(0),
+        function(buffer) {
+          /* Trouver le peak */
+          var peak = 0;
+          for (var ch = 0; ch < buffer.numberOfChannels; ch++) {
+            var d = buffer.getChannelData(ch);
+            for (var i = 0; i < d.length; i++) {
+              var a = Math.abs(d[i]);
+              if (a > peak) peak = a;
+            }
           }
-        }
-        if (peak === 0) {
-          if (status) status.textContent = 'Signal vide';
-          if (btn) btn.style.opacity = '1';
-          return;
-        }
-
-        // Normaliser à 0.95 (éviter clipping)
-        var gain = 0.95 / peak;
-        var offCtx = new OfflineAudioContext(
-          buffer.numberOfChannels,
-          buffer.length,
-          buffer.sampleRate
-        );
-        var src2 = offCtx.createBufferSource();
-        src2.buffer = buffer;
-        var gainNode2 = offCtx.createGain();
-        gainNode2.gain.value = gain;
-        src2.connect(gainNode2);
-        gainNode2.connect(offCtx.destination);
-        src2.start(0);
-
-        offCtx.startRendering().then(function(normBuf) {
-          // Encoder en WAV
-          var wavBlob = bufferToWav(normBuf);
-          var newName = rec.name.replace(/\.[^.]+$/, '') + '_norm.wav';
-          if (typeof dbSave === 'function') {
-            dbSave(wavBlob, newName, rec.duration, rec.quality, function() {
-              if (status) status.textContent = 'Gain appliqué: ×' + gain.toFixed(2);
-              if (btn) btn.style.opacity = '1';
-              if (typeof studioRenderLib === 'function') studioRenderLib();
-              if (typeof showToast === 'function') showToast('✅ Normalisé — gain ×' + gain.toFixed(2));
-            });
+          if (peak < 0.001) {
+            if (status) status.textContent = 'Signal trop faible ou vide';
+            if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = ''; }
+            return;
           }
-        }).catch(function(err) {
-          if (status) status.textContent = 'Erreur normalisation';
-          if (btn) btn.style.opacity = '1';
-          console.error(err);
-        });
+          var gainVal = Math.min(4.0, 0.95 / peak);
+          if (status) status.textContent = 'Application gain \u00d7' + gainVal.toFixed(2) + '...';
 
-      }, function() {
-        if (status) status.textContent = 'Décodage impossible';
-        if (btn) btn.style.opacity = '1';
-      });
+          var offCtx = new OfflineAudioContext(
+            buffer.numberOfChannels, buffer.length, buffer.sampleRate
+          );
+          var src2 = offCtx.createBufferSource();
+          src2.buffer = buffer;
+          var gn = offCtx.createGain();
+          gn.gain.value = gainVal;
+          src2.connect(gn);
+          gn.connect(offCtx.destination);
+          src2.start(0);
+
+          offCtx.startRendering().then(function(normBuf) {
+            var wavBlob = _encodeWav(normBuf);
+            var newName = rec.name.replace(/\.[^.]+$/, '') + '_norm.wav';
+            if (save) {
+              save(wavBlob, newName, rec.duration, rec.quality || 'hifi', function() {
+                if (status) status.textContent = '\u2705 Gain \u00d7' + gainVal.toFixed(2) + ' appliqu\u00e9 \u2014 ' + newName;
+                if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = ''; }
+                if (render) render();
+                if (typeof showToast === 'function') showToast('\u2705 Normalis\u00e9 \u00d7' + gainVal.toFixed(2));
+              });
+            }
+          }).catch(function(err) {
+            if (status) status.textContent = 'Erreur rendu: ' + err.message;
+            if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = ''; }
+          });
+        },
+        function(err) {
+          if (status) status.textContent = 'Format non support\u00e9 par le navigateur';
+          if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = ''; }
+        }
+      );
     };
     reader.readAsArrayBuffer(rec.blob);
   });
 };
 
-/* Encodeur WAV minimal */
-function bufferToWav(buffer) {
-  var numCh = buffer.numberOfChannels;
-  var sampleRate = buffer.sampleRate;
-  var numSamples = buffer.length;
-  var bytesPerSample = 2;
-  var blockAlign = numCh * bytesPerSample;
-  var byteRate = sampleRate * blockAlign;
-  var dataSize = numSamples * blockAlign;
-  var ab = new ArrayBuffer(44 + dataSize);
-  var view = new DataView(ab);
-  function ws(off, str) { for (var i=0;i<str.length;i++) view.setUint8(off+i, str.charCodeAt(i)); }
-  function wu32(off, v) { view.setUint32(off, v, true); }
-  function wu16(off, v) { view.setUint16(off, v, true); }
-  ws(0,'RIFF'); wu32(4, 36+dataSize); ws(8,'WAVE');
-  ws(12,'fmt '); wu32(16,16); wu16(20,1); wu16(22,numCh);
-  wu32(24,sampleRate); wu32(28,byteRate); wu16(32,blockAlign); wu16(34,16);
-  ws(36,'data'); wu32(40,dataSize);
-  var off = 44;
-  for (var i=0; i<numSamples; i++) {
-    for (var ch=0; ch<numCh; ch++) {
-      var s = Math.max(-1, Math.min(1, buffer.getChannelData(ch)[i]));
-      view.setInt16(off, s < 0 ? s*32768 : s*32767, true);
-      off += 2;
-    }
+/* Encodeur WAV */
+function _encodeWav(buffer) {
+  var nc = buffer.numberOfChannels, sr = buffer.sampleRate, nl = buffer.length;
+  var ba = nc * 2, br = sr * ba, ds = nl * ba;
+  var ab = new ArrayBuffer(44 + ds), v = new DataView(ab);
+  var ws = function(o,s){ for(var i=0;i<s.length;i++) v.setUint8(o+i,s.charCodeAt(i)); };
+  ws(0,'RIFF'); v.setUint32(4,36+ds,true); ws(8,'WAVE');
+  ws(12,'fmt '); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,nc,true);
+  v.setUint32(24,sr,true); v.setUint32(28,br,true); v.setUint16(32,ba,true); v.setUint16(34,16,true);
+  ws(36,'data'); v.setUint32(40,ds,true);
+  for(var i=0,off=44;i<nl;i++) for(var ch=0;ch<nc;ch++){
+    var s=Math.max(-1,Math.min(1,buffer.getChannelData(ch)[i]));
+    v.setInt16(off,s<0?s*32768:s*32767,true); off+=2;
   }
-  return new Blob([ab], { type: 'audio/wav' });
+  return new Blob([ab],{type:'audio/wav'});
 }
-
-/* Exposer isRecording pour la transcription */
-Object.defineProperty(window, '_studioRecording', {
-  get: function() { return typeof isRecording !== 'undefined' && isRecording; }
-});
 
 </script>
 
