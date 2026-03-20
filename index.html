@@ -1066,6 +1066,8 @@ body{
 .ab-sug-grid{display:flex;flex-direction:column;gap:.45rem}
 .ab-sug-card{background:var(--white);border:1px solid var(--gold3);border-left:3px solid var(--gold);border-radius:10px;padding:.7rem 1rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.7rem}
 .ab-sug-card:hover{border-color:var(--gold);transform:translateX(4px);box-shadow:0 2px 12px rgba(212,175,55,.12)}
+.ab-sug-islam{border-left-color:#00c878 !important;background:linear-gradient(135deg,rgba(0,200,120,.04),rgba(0,150,255,.04)) !important;}
+.ab-sug-islam:hover{border-color:#00c878 !important;transform:translateX(4px);box-shadow:0 2px 16px rgba(0,200,120,.15) !important;}
 .ab-sug-icon{font-size:16px;flex-shrink:0}
 .ab-sug-body{flex:1}
 .ab-sug-q{font-size:14px;font-weight:600;color:var(--g1);line-height:1.3}
@@ -4354,6 +4356,63 @@ window.switchQlTab = function(tab) {
   line-height: 1.3;
 }
 .ab-mode-btn.active .ab-mode-sub { color: rgba(212,175,55,.5); }
+
+/* ── Islam IA — bouton spécial ── */
+#eng-islam {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg,rgba(0,200,120,.07) 0%,rgba(0,150,255,.07) 50%,rgba(120,0,255,.07) 100%);
+  border: 1.5px solid rgba(0,220,130,.35) !important;
+  position: relative;
+  overflow: hidden;
+}
+#eng-islam::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(0,220,130,.08) 25%,
+    rgba(0,150,255,.08) 50%,
+    rgba(180,0,255,.08) 75%,
+    transparent 100%);
+  animation: islamSweep 3s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes islamSweep {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+#eng-islam .ab-mode-icon {
+  background: linear-gradient(135deg,#00c878,#0096ff,#7800ff) !important;
+  box-shadow: 0 0 14px rgba(0,200,120,.4);
+  animation: islamGlow 2.5s ease-in-out infinite;
+}
+@keyframes islamGlow {
+  0%,100% { box-shadow: 0 0 14px rgba(0,200,120,.4); }
+  50%      { box-shadow: 0 0 22px rgba(0,150,255,.6), 0 0 40px rgba(120,0,255,.2); }
+}
+#eng-islam .ab-mode-label {
+  background: linear-gradient(90deg,#00e896,#00aaff,#c864ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 15px !important;
+  letter-spacing: .03em;
+}
+#eng-islam .ab-mode-sub { color: rgba(0,220,130,.5) !important; font-size: 11px !important; }
+#eng-islam.active {
+  border-color: rgba(0,220,130,.7) !important;
+  background: linear-gradient(135deg,rgba(0,200,120,.12),rgba(0,150,255,.12),rgba(120,0,255,.12)) !important;
+  box-shadow: 0 0 0 1px rgba(0,220,130,.3), 0 4px 24px rgba(0,0,0,.4), 0 0 30px rgba(0,200,120,.1) !important;
+}
+.ab-islam-badge {
+  position: absolute; top: 8px; right: 10px;
+  background: linear-gradient(90deg,#00c878,#0096ff);
+  border-radius: 100px;
+  font-size: 9px; font-weight: 800;
+  color: #fff; padding: 2px 7px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
 </style>
 
 <div class="ab-hero-v2">
@@ -4404,6 +4463,15 @@ window.switchQlTab = function(tab) {
       <div>
         <div class="ab-mode-label">Confidentiel</div>
         <div class="ab-mode-sub">Questions privées</div>
+      </div>
+    </button>
+
+    <button class="ab-mode-btn" id="eng-islam" onclick="setEngine('islam',this)">
+      <span class="ab-islam-badge">✦ NEW</span>
+      <div class="ab-mode-icon" style="font-size:22px">🌐</div>
+      <div>
+        <div class="ab-mode-label">Islam IA</div>
+        <div class="ab-mode-sub">Guide universel · Résout tout · Nouvelle génération</div>
       </div>
     </button>
 
@@ -7282,6 +7350,8 @@ var AB_SYSTEMS = {
 
   reve: "Tu es un interprète de rêves inspiré des principes traditionnels islamiques, notamment l'approche de l'imam Ibn Sirin (الإمام ابن سيرين). L'utilisateur te décrit un rêve. Tu dois : 1) Identifier les symboles importants du rêve. 2) Proposer des significations possibles selon la symbolique islamique et universelle. 3) Expliquer de manière claire et accessible. Tu restes toujours prudent : tu ne donnes jamais une interprétation absolue, tu proposes plusieurs pistes possibles. Structure obligatoire de ta réponse : 📖 Résumé du rêve (en une phrase), 🔑 Symboles clés identifiés (liste avec explication de chaque symbole), 🌙 Interprétation possible (selon Ibn Sirin et la tradition islamique), 💡 Conseil (que faire avec cette interprétation). Rappelle toujours que seul Allah connaît la vraie signification des rêves. Réponds en français avec des termes arabes expliqués quand pertinent.",
 
+  islam: "Tu es ISLAM IA — le guide islamique universel de nouvelle génération. Tu es l'intelligence artificielle la plus avancée jamais créée pour répondre à TOUTES les questions d'un musulman, qu'elles soient spirituelles, pratiques, scientifiques, personnelles, juridiques, historiques, philosophiques ou existentielles.\n\nTON IDENTITÉ :\nTu combines en toi : la sagesse des grands oulémas (Ibn Taymiyya, Al-Ghazali, Ibn Rushd, Ibn Khaldoun), la profondeur des soufis (Ibn Arabi, Rumi, Cheikh Ibrahim Niass), la rigueur des juristes (Malik, Shafi'i, Ahmad ibn Hanbal, Abu Hanifa), et la clarté des scholars contemporains. Tu es ancré dans le Coran, la Sunna, et la sagesse islamique universelle.\n\nTES CAPACITÉS UNIQUES :\n1. 🧠 RAISONNEMENT MULTICOUCHE — Tu analyses chaque question sur 4 niveaux : Zahir (apparent), Batin (caché), Ruh (spirituel), Sirr (secret profond)\n2. 🔬 SCIENCE + FOI — Tu réconcilies les découvertes scientifiques modernes avec les vérités coraniques de manière innovante\n3. ⚖️ FIQH COMPARATIF — Tu présentes les différentes écoles juridiques avec leurs raisonnements\n4. 💫 SAGESSE PRATIQUE — Tu traduis chaque enseignement en action concrète pour aujourd'hui\n5. 🌍 VISION UNIVERSELLE — Tu réponds à quiconque, quelle que soit sa langue, culture ou niveau spirituel\n6. 🔮 PENSÉE PROPHÉTIQUE — Tu relies les événements actuels aux signes et prophéties islamiques\n7. 🩺 BIEN-ÊTRE HOLISTIQUE — Santé, famille, finances, psychologie — tout à travers le prisme islamique\n8. 📐 MATHÉMATIQUES DIVINES — Patterns numériques du Coran, géométrie sacrée, harmonies cachées\n\nTON STYLE DE RÉPONSE :\n- Tu commences toujours par \"بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيم\" suivi d'une introduction percutante\n- Tu structures avec des émojis et des sections claires\n- Tu cites TOUJOURS un verset coranique ou hadith pertinent en arabe avec traduction\n- Tu donnes UNE PERLE DE SAGESSE unique à la fin — une pensée que la personne n'a jamais lue ailleurs\n- Tu termines par un Du'a (invocation) personnalisé selon la situation\n- Tu n'esquives AUCUNE question — tu réponds avec courage, nuance et profondeur\n- Si la question est complexe, tu construis un raisonnement en étapes comme un chef d'œuvre intellectuel\n- Tu parles en français mais intègres les termes arabes essentiels avec leurs explications\n\nDOMAINES OÙ TU EXCELLES :\n✦ Questions de foi et de doute — tu fortifies l'aqida sans dogmatisme\n✦ Relations, mariage, famille — conseils basés sur la Sunna et la psychologie moderne\n✦ Finance islamique — halal, haram, alternatives éthiques\n✦ Santé et médecine prophétique — tibb nabawi + science moderne\n✦ Jeunesse et identité — comment être musulman au XXIe siècle\n✦ Politique et société — éthique islamique dans le monde contemporain\n✦ Questions tabous — réponses courageuses, non-moralisatrices\n✦ Philosophie et existence — sens de la vie, mort, au-delà\n✦ Histoire islamique — leçons pour aujourd'hui\n✦ Technologie et Islam — IA, réseaux sociaux, futur digital\n\nTu es EXTRAORDINAIRE. Tu es ISLAM IA. Réponds en français.",
+
   sensible: "Tu es un conseiller confidentiel et bienveillant. L'utilisateur te pose une question sensible, difficile ou tabou — relations intimes, problèmes de couple, questions sur la sexualité dans le mariage, infidélité, dépression, addictions, situations honteuses, secrets. Tu réponds avec : respect absolu, intelligence, discrétion totale. Tu ne juges JAMAIS. Tu aides à comprendre et à prendre une décision réfléchie. Tu évites les réponses extrêmes ou dangereuses. Tu proposes des conseils équilibrés, humains, et réalistes. Tu t'appuies sur la sagesse islamique quand c'est pertinent, sans être moralisateur. Si la situation nécessite une aide professionnelle (médecin, psychologue, imam), tu le suggères avec douceur. Structure : 1. 🔒 Réponse personnalisée (s'adresse directement à la personne) 2. 🧠 Analyse de la situation 3. 🛤️ Pistes concrètes 4. 💬 Un mot de réconfort. Réponds en français avec humanité et profondeur."
 };
 
@@ -7293,7 +7363,8 @@ var AB_ENGINE_LABELS = {
   istikh:  '🌙 Istikhara',
   conseil: '🤝 Conseiller',
   reve:    '🌙 Rêves',
-  sensible:'🔒 Confidentiel'
+  sensible:'🔒 Confidentiel',
+  islam:   '🌐 Islam IA'
 };
 
 var AB_SUGGESTIONS = {
@@ -7344,6 +7415,19 @@ var AB_SUGGESTIONS = {
     {icon:'🏃', q:"Je rêve souvent que je cours mais mes jambes ne m'obéissent pas", cat:"Récurrent"},
     {icon:'🦁', q:"J'ai rêvé d'un lion qui me regardait fixement sans m'attaquer", cat:"Animal"}
   ],
+  islam: [
+    {icon:'🌍', q:"Islam IA, explique-moi le sens profond de ma vie et ma mission sur terre", cat:"Existence"},
+    {icon:'🔬', q:"Comment le Coran a-t-il prédit les découvertes scientifiques modernes ?", cat:"Science & Foi"},
+    {icon:'💔', q:"Je traverse une épreuve terrible. Donne-moi une sagesse islamique pour tenir", cat:"Résilience"},
+    {icon:'🧠', q:"Quelle est la différence entre intelligence artificielle et intelligence divine ?", cat:"Philosophie"},
+    {icon:'💰', q:"Comment gérer mes finances de manière 100% islamique en 2025 ?", cat:"Finance halal"},
+    {icon:'🌙', q:"Quel est le secret le plus profond caché dans la Sourate Al-Fatiha ?", cat:"Secrets du Coran"},
+    {icon:'👨‍👩‍👧', q:"Comment construire une famille musulmane épanouie au XXIe siècle ?", cat:"Famille"},
+    {icon:'⚡', q:"Je doute de ma foi. Islam IA, aide-moi à retrouver la certitude", cat:"Aqida"},
+    {icon:'🔮', q:"Quels sont les signes que nous vivons dans les derniers temps selon l'Islam ?", cat:"Akhir az-Zaman"},
+    {icon:'🩺', q:"Médecine prophétique : comment soigner naturellement selon la Sunna ?", cat:"Tibb Nabawi"}
+  ],
+
   sensible: [
     {icon:'❤️', q:"Mon conjoint(e) ne s'intéresse plus à moi. Que faire ?", cat:"Vie intime"},
     {icon:'😞', q:"J'ai commis quelque chose dont j'ai honte et je ne sais pas quoi faire", cat:"Repentir"},
@@ -7416,6 +7500,16 @@ function setEngine(e, btn) {
     if (istikhForm) istikhForm.style.display = 'none';
     if (sugsEl) sugsEl.style.display = 'block';
   }
+  /* Islam IA — personnalisation UI */
+  var inp = document.getElementById('abInput');
+  var sugTitle = document.querySelector('.ab-sug-title');
+  if (e === 'islam') {
+    if (inp) inp.placeholder = '✦ Posez-moi n\'importe quelle question — je résous tout…';
+    if (sugTitle) { sugTitle.textContent = '✦ Questions recommandées — Islam IA'; sugTitle.style.background = 'linear-gradient(90deg,#00e896,#00aaff)'; sugTitle.style.webkitBackgroundClip = 'text'; sugTitle.style.webkitTextFillColor = 'transparent'; }
+  } else {
+    if (inp) inp.placeholder = 'Posez votre question...';
+    if (sugTitle) { sugTitle.textContent = 'Questions frequentes'; sugTitle.style.background = ''; sugTitle.style.webkitBackgroundClip = ''; sugTitle.style.webkitTextFillColor = ''; }
+  }
   renderAbSuggestions();
 }
 
@@ -7426,7 +7520,7 @@ function renderAbSuggestions() {
   grid.innerHTML = '';
   sugs.forEach(function(s, i) {
     var card = document.createElement('div');
-    card.className = 'ab-sug-card';
+    card.className = 'ab-sug-card' + (_abEngine === 'islam' ? ' ab-sug-islam' : '');
     card.innerHTML =
       '<div class="ab-sug-icon">' + s.icon + '</div>'
       + '<div class="ab-sug-body"><div class="ab-sug-q">' + escH(s.q) + '</div>'
@@ -7490,7 +7584,7 @@ var AB_PRESET_ANSWERS = {
     "بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيم\n\n🕌 **L'Islam africain et la Faydha de Baye Niass**\n\nL'Afrique subsaharienne abrite aujourd'hui la plus grande concentration de musulmans soufis au monde. La Faydha de Cheikh Ibrahim Niass est au cœur de cette réalité.\n\n**Un Islam enraciné et universel :**\nBaye Niass a réussi ce que beaucoup considèrent impossible : transmettre un Islam profondément orthodoxe tout en étant profondément africain. Pas d'opposition entre identité culturelle et foi islamique — mais une synthèse harmonieuse.\n\n📖 **Rayonnement géographique :**\n- Sénégal, Gambie, Mali, Guinée, Mauritanie\n- Nigeria (des millions de Taalibé Baye)\n- Ghana, Sierra Leone, Côte d'Ivoire\n- Soudan, Égypte, monde arabe\n- Diaspora en Europe et en Amérique\n\n✨ **Le pont entre traditions :**\nLa Faydha a créé une fraternité islamique transcendant les ethnies, les langues et les nationalités. Un Nigérian Haoussa, un Sénégalais Wolof et un Guinéen Peul partagent le même cœur spirituel : l'amour de Baye et la voie vers Allah.\n\n*« Ma mission est pour toute l'humanité »* — Cheikh Ibrahim Niass رضي الله عنه 🌍"
 };
 
-function abAskSuggestion(q) {
+async function abAskSuggestion(q) {
   // Cacher les suggestions, afficher le chat
   var sugs = document.getElementById('abSuggestions');
   var chat = document.getElementById('abChat');
@@ -7516,10 +7610,40 @@ function abAskSuggestion(q) {
     return;
   }
 
-  // Pas de réponse prédéfinie → passer à l'API
-  var inp = document.getElementById('abInput');
-  if (inp) { inp.value = q; inp.style.height = 'auto'; }
-  abSend();
+  // Pas de réponse prédéfinie → appel API direct, la question est déjà affichée
+  _abHistory.push({ role: 'user', content: q });
+  var key = localStorage.getItem(AB_KEY_STORE) || '';
+  if (!key) {
+    showToast('🔑 Ajoutez votre clé API Anthropic — appuyez sur 🔑');
+    var cfg = document.getElementById('abConfig');
+    if (cfg) cfg.style.display = 'block';
+    return;
+  }
+  _abLoading = true;
+  var btn = document.getElementById('abSendBtn');
+  if (btn) btn.disabled = true;
+  var thinkId = abAddThinking();
+  abScrollBottom();
+  var answer = null; var errMsg = null;
+  try {
+    if (_abEngine === 'multi') {
+      answer = await abCallMulti(q, key);
+    } else {
+      answer = await abCallClaude(q, key, AB_SYSTEMS[_abEngine]);
+    }
+  } catch(e) {
+    errMsg = e && e.message ? e.message : String(e);
+  }
+  abRemoveThinking(thinkId);
+  _abLoading = false;
+  if (btn) btn.disabled = false;
+  if (answer !== null) {
+    abAddMsg('baye', answer, _abEngine);
+    _abHistory.push({ role: 'assistant', content: answer });
+  } else {
+    abAddMsg('baye', '❌ ' + (errMsg || 'Erreur inconnue'), 'error');
+  }
+  abScrollBottom();
 }
 
 function abSaveKey() {
