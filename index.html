@@ -3360,47 +3360,54 @@ html { background: #0a0a0a; }
     </div>
 
     <div id="moonData" style="display:none;margin-top:.8rem;">
-      <!-- Phase lune animée -->
-      <div style="text-align:center;margin-bottom:.8rem;">
-        <div id="moonEmoji" style="font-size:52px;line-height:1;margin-bottom:.3rem;">🌑</div>
-        <div id="moonPhaseName" style="font-size:13px;font-weight:700;color:var(--g1)"></div>
-      </div>
 
-      <!-- Stats -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.8rem;">
-        <div style="background:var(--gold3);border-radius:10px;padding:.6rem;text-align:center;">
-          <div style="font-size:9.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em">Âge de la Lune</div>
-          <div id="moonAge" style="font-size:18px;font-weight:700;color:var(--g1)">—</div>
-          <div style="font-size:10px;color:var(--text3)">jours</div>
-        </div>
-        <div style="background:var(--gold3);border-radius:10px;padding:.6rem;text-align:center;">
-          <div style="font-size:9.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em">Illumination</div>
-          <div id="moonIllum" style="font-size:18px;font-weight:700;color:var(--g1)">—</div>
-          <div style="font-size:10px;color:var(--text3)">%</div>
-        </div>
-        <div style="background:var(--gold3);border-radius:10px;padding:.6rem;text-align:center;">
-          <div style="font-size:9.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em">Prochaine NL</div>
-          <div id="moonNextNew" style="font-size:13px;font-weight:700;color:var(--g1)">—</div>
-        </div>
-        <div style="background:var(--gold3);border-radius:10px;padding:.6rem;text-align:center;">
-          <div style="font-size:9.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em">Pleine Lune</div>
-          <div id="moonNextFull" style="font-size:13px;font-weight:700;color:var(--g1)">—</div>
-        </div>
-      </div>
+  <!-- RÉSULTAT PRINCIPAL -->
+  <div id="hilalVerdict" style="border-radius:16px;padding:1.1rem 1rem;text-align:center;margin-bottom:.7rem;">
+    <div id="hilalIcon" style="font-size:44px;margin-bottom:.35rem;line-height:1;">🌙</div>
+    <div id="hilalTitle" style="font-size:15px;font-weight:700;margin-bottom:.4rem;line-height:1.4;"></div>
+    <div id="hilalDesc" style="font-size:12.5px;line-height:1.7;"></div>
+  </div>
 
-      <!-- Verdict visibilité Hilal -->
-      <div id="hilalVerdict" style="border-radius:14px;padding:.9rem 1rem;text-align:center;margin-bottom:.5rem;">
-        <div id="hilalIcon" style="font-size:32px;margin-bottom:.3rem;">🌙</div>
-        <div id="hilalTitle" style="font-size:15px;font-weight:700;margin-bottom:.2rem;"></div>
-        <div id="hilalDesc" style="font-size:12px;line-height:1.6;"></div>
-      </div>
+  <!-- HEURE DE RECHERCHE -->
+  <div id="moonSunsetInfo" style="display:none;margin-bottom:.7rem;"></div>
 
-      <div id="moonLoc" style="font-size:11px;color:var(--text3);text-align:center;font-style:italic;"></div>
+  <!-- STATS -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;margin-bottom:.5rem;">
+    <div style="background:var(--gold3);border-radius:10px;padding:.5rem;text-align:center;">
+      <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;">Age</div>
+      <div id="moonAge" style="font-size:17px;font-weight:700;color:var(--g1);">—</div>
+      <div style="font-size:10px;color:var(--text3);">jours</div>
+    </div>
+    <div style="background:var(--gold3);border-radius:10px;padding:.5rem;text-align:center;">
+      <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;">Lumiere</div>
+      <div id="moonIllum" style="font-size:17px;font-weight:700;color:var(--g1);">—</div>
+      <div style="font-size:10px;color:var(--text3);">%</div>
+    </div>
+    <div style="background:var(--gold3);border-radius:10px;padding:.5rem;text-align:center;">
+      <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;">Phase</div>
+      <div id="moonEmoji" style="font-size:20px;line-height:1.5;">🌑</div>
+      <div id="moonPhaseName" style="font-size:9px;color:var(--text3);"></div>
     </div>
   </div>
 
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.6rem;">
+    <div style="background:#eef0ff;border-radius:10px;padding:.5rem;text-align:center;">
+      <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;">Prochaine NL</div>
+      <div id="moonNextNew" style="font-size:11px;font-weight:700;color:#0d1b3e;">—</div>
+    </div>
+    <div style="background:#eef0ff;border-radius:10px;padding:.5rem;text-align:center;">
+      <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;">Pleine Lune</div>
+      <div id="moonNextFull" style="font-size:11px;font-weight:700;color:#0d1b3e;">—</div>
+    </div>
+  </div>
+
+  <div id="moonLoc" style="font-size:11px;color:var(--text3);text-align:center;font-style:italic;"></div>
+</div>
+  </div>
+
   </div>
   </div>
+
 
 </section>
 <!-- SECTION RADIO AL-FAYDHA -->
@@ -10743,69 +10750,50 @@ function _qiblaRun(lat, lng, label) {
 
 /* Base de villes intégrée — aucune API externe */
 var _CITIES = {
-  /* Sénégal */
-  'dakar':[14.6937,-17.4441],'thies':[14.7910,-16.9359],'thiès':[14.7910,-16.9359],
-  'kaolack':[14.1520,-16.0765],'saint-louis':[16.0179,-16.4896],'ziguinchor':[12.5681,-16.2719],
-  'touba':[14.8528,-15.8800],'diourbel':[14.6553,-16.2333],'louga':[15.6173,-16.2247],
-  'tambacounda':[13.7707,-13.6673],'kolda':[12.8833,-14.9500],'matam':[15.6559,-13.2557],
-  'medina baye':[14.1520,-16.0765],'médina baye':[14.1520,-16.0765],
-  'rufisque':[14.7156,-17.2736],'mbour':[14.3682,-16.9644],'fatick':[14.3391,-16.4112],
-  'joal':[14.1667,-16.8333],'tivaouane':[14.9556,-16.8167],'kaffrine':[14.1056,-15.5500],
-  'kedougou':[12.5549,-12.1817],'sédhiou':[12.7040,-15.5570],
-  /* Mali */
-  'bamako':[12.6392,-8.0029],'segou':[13.4500,-6.2667],'kayes':[14.4469,-11.4427],
-  'mopti':[14.4974,-4.1825],'sikasso':[11.3167,-5.6667],'gao':[16.2667,-0.0500],
-  'tombouctou':[16.7735,-3.0074],'kidal':[18.4433,1.4078],
-  /* Mauritanie */
-  'nouakchott':[18.0858,-15.9785],'nouadhibou':[20.9309,-17.0347],
-  /* Guinée */
-  'conakry':[9.5370,-13.6729],'kankan':[10.3852,-9.3060],'labé':[11.3167,-12.2833],
-  /* Gambie */
-  'banjul':[13.4531,-16.5775],'serrekunda':[13.4333,-16.6667],
-  /* Côte d'Ivoire */
-  'abidjan':[5.3599,-4.0083],'yamoussoukro':[6.8276,-5.2893],'bouaké':[7.6906,-5.0310],
-  /* Ghana */
-  'accra':[5.5560,-0.1969],'kumasi':[6.6884,-1.6244],
-  /* Nigeria */
-  'lagos':[6.5244,3.3792],'abuja':[9.0579,7.4951],'kano':[12.0000,8.5167],'ibadan':[7.3776,3.9470],
-  'katsina':[12.9889,7.6008],'sokoto':[13.0622,5.2339],'zaria':[11.0667,7.7000],
-  /* Niger */
-  'niamey':[13.5137,2.1098],'zinder':[13.8000,8.9833],'maradi':[13.5000,7.1000],
-  /* Burkina Faso */
-  'ouagadougou':[12.3647,-1.5353],'bobo-dioulasso':[11.1770,-4.2979],
-  /* Cameroun */
-  'yaoundé':[3.8480,11.5021],'douala':[4.0483,9.7043],
-  /* Maroc */
-  'casablanca':[33.5731,-7.5898],'rabat':[34.0209,-6.8417],'fès':[34.0333,-5.0000],
-  'marrakech':[31.6295,-7.9811],'tanger':[35.7595,-5.8340],
-  /* Algérie */
-  'alger':[36.7372,3.0865],'oran':[35.6969,-0.6331],'constantine':[36.3650,6.6147],
-  /* Tunisie */
-  'tunis':[36.8190,10.1658],'sfax':[34.7400,10.7600],
-  /* Egypte */
-  'cairo':[30.0444,31.2357],'le caire':[30.0444,31.2357],'alexandrie':[31.2001,29.9187],
-  /* France */
-  'paris':[48.8566,2.3522],'lyon':[45.7640,4.8357],'marseille':[43.2965,5.3698],
-  /* Arabie */
-  'la mecque':[21.4225,39.8262],'mecca':[21.4225,39.8262],'medine':[24.5247,39.5692],
-  'jeddah':[21.4858,39.1925],'riyadh':[24.6877,46.7219],
-  /* Etats-Unis */
-  'new york':[40.7128,-74.0060],'chicago':[41.8781,-87.6298],
-  /* Autres */
-  'london':[51.5074,-0.1278],'dubai':[25.2048,55.2708],'istanbul':[41.0082,28.9784]
+  "dakar":[14.6937,-17.4441],"thies":[14.7910,-16.9359],"kaolack":[14.1520,-16.0765],
+  "saint-louis":[16.0179,-16.4896],"ziguinchor":[12.5681,-16.2719],"touba":[14.8528,-15.8800],
+  "diourbel":[14.6553,-16.2333],"louga":[15.6173,-16.2247],"tambacounda":[13.7707,-13.6673],
+  "kolda":[12.8833,-14.9500],"matam":[15.6559,-13.2557],"medina baye":[14.1520,-16.0765],
+  "rufisque":[14.7156,-17.2736],"mbour":[14.3682,-16.9644],"fatick":[14.3391,-16.4112],
+  "joal":[14.1667,-16.8333],"tivaouane":[14.9556,-16.8167],"kaffrine":[14.1056,-15.5500],
+  "kedougou":[12.5549,-12.1817],"sedhiou":[12.7040,-15.5570],"velingara":[13.1500,-14.1167],
+  "bambey":[14.7017,-16.4617],"mbacke":[14.7833,-15.9167],"gossas":[14.4833,-16.0667],
+  "bamako":[12.6392,-8.0029],"segou":[13.4500,-6.2667],"kayes":[14.4469,-11.4427],
+  "mopti":[14.4974,-4.1825],"sikasso":[11.3167,-5.6667],"gao":[16.2667,-0.0500],
+  "nouakchott":[18.0858,-15.9785],"nouadhibou":[20.9309,-17.0347],
+  "conakry":[9.5370,-13.6729],"kankan":[10.3852,-9.3060],"banjul":[13.4531,-16.5775],
+  "abidjan":[5.3599,-4.0083],"yamoussoukro":[6.8276,-5.2893],"bouake":[7.6906,-5.0310],
+  "accra":[5.5560,-0.1969],"kumasi":[6.6884,-1.6244],
+  "lagos":[6.5244,3.3792],"abuja":[9.0579,7.4951],"kano":[12.0000,8.5167],
+  "ibadan":[7.3776,3.9470],"sokoto":[13.0622,5.2339],"zaria":[11.0667,7.7000],
+  "niamey":[13.5137,2.1098],"zinder":[13.8000,8.9833],"maradi":[13.5000,7.1000],
+  "ouagadougou":[12.3647,-1.5353],"bobo-dioulasso":[11.1770,-4.2979],
+  "yaounde":[3.8480,11.5021],"douala":[4.0483,9.7043],
+  "casablanca":[33.5731,-7.5898],"rabat":[34.0209,-6.8417],"fes":[34.0333,-5.0000],
+  "marrakech":[31.6295,-7.9811],"tanger":[35.7595,-5.8340],
+  "alger":[36.7372,3.0865],"oran":[35.6969,-0.6331],"constantine":[36.3650,6.6147],
+  "tunis":[36.8190,10.1658],"sfax":[34.7400,10.7600],
+  "cairo":[30.0444,31.2357],"alexandrie":[31.2001,29.9187],"le caire":[30.0444,31.2357],
+  "paris":[48.8566,2.3522],"lyon":[45.7640,4.8357],"marseille":[43.2965,5.3698],
+  "la mecque":[21.4225,39.8262],"mecca":[21.4225,39.8262],"medine":[24.5247,39.5692],
+  "jeddah":[21.4858,39.1925],"riyadh":[24.6877,46.7219],
+  "new york":[40.7128,-74.0060],"chicago":[41.8781,-87.6298],
+  "london":[51.5074,-0.1278],"dubai":[25.2048,55.2708],"istanbul":[41.0082,28.9784]
 };
 
 function _cityFind(input) {
   var key = input.toLowerCase().trim()
-    .replace(/[àâä]/g,'a').replace(/[éèêë]/g,'e')
-    .replace(/[îï]/g,'i').replace(/[ôö]/g,'o').replace(/[ùûü]/g,'u')
-    .replace(/[ç]/g,'c');
+    .replace(/[\u00e0\u00e2\u00e4]/g,'a')
+    .replace(/[\u00e9\u00e8\u00ea\u00eb]/g,'e')
+    .replace(/[\u00ee\u00ef]/g,'i')
+    .replace(/[\u00f4\u00f6]/g,'o')
+    .replace(/[\u00f9\u00fb\u00fc]/g,'u')
+    .replace(/[\u00e7]/g,'c');
   if (_CITIES[key]) return {lat:_CITIES[key][0], lng:_CITIES[key][1], name:input};
-  /* Recherche partielle */
   var keys = Object.keys(_CITIES);
   for (var i=0; i<keys.length; i++) {
-    if (keys[i].indexOf(key) === 0 || key.indexOf(keys[i]) === 0) {
-      return {lat:_CITIES[keys[i]][0], lng:_CITIES[keys[i]][1], name:keys[i]};
+    if (keys[i].indexOf(key)===0 || key.indexOf(keys[i])===0) {
+      return {lat:_CITIES[keys[i]][0], lng:_CITIES[keys[i]][1], name:input};
     }
   }
   return null;
@@ -10850,72 +10838,146 @@ function qiblaSearchCity(){ qiblaGo(); }
    LUNE — Hilal
 ══════════════════════════════════ */
 function _moonRun(lat, lng, cityName) {
-  var now=new Date();
-  var SYNODIC=29.53058867;
-  var age=((now-new Date('2000-01-06T18:14:00Z'))/86400000/SYNODIC%1)*SYNODIC;
-  if(age<0) age+=SYNODIC;
-  var illum=Math.round((1-Math.cos(age/SYNODIC*2*Math.PI))/2*100);
-  var ageH=age*24;
-  var phases=[
+  var now = new Date();
+  var SYNODIC = 29.53058867;
+  var age = ((now - new Date('2000-01-06T18:14:00Z')) / 86400000 / SYNODIC % 1) * SYNODIC;
+  if(age < 0) age += SYNODIC;
+  var illum = Math.round((1 - Math.cos(age / SYNODIC * 2 * Math.PI)) / 2 * 100);
+  var ageH = age * 24;
+
+  /* ── Calcul coucher du soleil ── */
+  /* Formule NOAA simplifiée */
+  var useLat = lat || 14.15;
+  var useLng = lng || -16.08;
+  var JD = now.getTime() / 86400000 + 2440587.5;
+  var n = JD - 2451545.0;
+  var L = (280.460 + 0.9856474 * n) % 360;
+  var g = (357.528 + 0.9856003 * n) * Math.PI / 180;
+  var lambda = (L + 1.915 * Math.sin(g) + 0.020 * Math.sin(2*g)) * Math.PI / 180;
+  var sinDec = Math.sin(23.439 * Math.PI / 180) * Math.sin(lambda);
+  var dec = Math.asin(sinDec);
+  var cosH = (Math.sin(-0.8333 * Math.PI / 180) - Math.sin(useLat * Math.PI / 180) * sinDec)
+             / (Math.cos(useLat * Math.PI / 180) * Math.cos(dec));
+  var HA = cosH >= 1 ? 0 : cosH <= -1 ? 180 : Math.acos(cosH) * 180 / Math.PI;
+  /* Heure coucher soleil en UTC */
+  var EqT = (-7.655 * Math.sin(g) + 9.873 * Math.sin(2*lambda + 3.588) + 0.439 * Math.sin(4*lambda)) / 60;
+  var sunsetUTC = (360 - HA) / 15 - EqT - (useLng / 15);
+  /* Convertir en heure locale */
+  var tzOffset = now.getTimezoneOffset() / -60;
+  var sunsetLocal = sunsetUTC + tzOffset;
+  while(sunsetLocal < 0) sunsetLocal += 24;
+  while(sunsetLocal >= 24) sunsetLocal -= 24;
+  var sunsetH = Math.floor(sunsetLocal);
+  var sunsetM = Math.floor((sunsetLocal - sunsetH) * 60);
+  var sunsetStr = sunsetH + 'h' + (sunsetM < 10 ? '0' : '') + sunsetM;
+
+  /* Heure de visibilite = coucher soleil + 15-45 min selon age */
+  var visMin = age < 1.5 ? 20 : age < 2.5 ? 25 : 30;
+  var visLocal = sunsetLocal + visMin/60;
+  var visH = Math.floor(visLocal);
+  var visM = Math.floor((visLocal - visH) * 60);
+  var visStr = visH + 'h' + (visM < 10 ? '0' : '') + visM;
+
+  /* Heure prochaine NL exacte */
+  var phases = [
     {max:1.5,e:'🌑',n:'Nouvelle Lune'},{max:7.4,e:'🌒',n:'Croissant croissant'},
     {max:14.8,e:'🌓',n:'Premier Quartier'},{max:22.1,e:'🌔',n:'Gibbeuse croissante'},
-    {max:23.6,e:'🌕',n:'Pleine Lune'},{max:29.0,e:'🌖',n:'Gibbeuse décroissante'},
-    {max:99,e:'🌘',n:'Croissant décroissant'}
+    {max:23.6,e:'🌕',n:'Pleine Lune'},{max:29.0,e:'🌖',n:'Gibbeuse decroissante'},
+    {max:99,e:'🌘',n:'Croissant decroissant'}
   ];
-  var phase=phases.find(function(p){return age<p.max;})||phases[0];
-  var dNL=SYNODIC-age, dPL=(SYNODIC/2)-age; if(dPL<0)dPL+=SYNODIC;
-  var nextNew=new Date(now.getTime()+dNL*86400000);
-  var nextFull=new Date(now.getTime()+dPL*86400000);
-  function fd(d){return d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});}
+  var phase = phases.find(function(p){return age<p.max;}) || phases[0];
+  var dNL = SYNODIC - age;
+  var dPL = (SYNODIC/2) - age; if(dPL < 0) dPL += SYNODIC;
+  var nextNew = new Date(now.getTime() + dNL * 86400000);
+  var nextFull = new Date(now.getTime() + dPL * 86400000);
 
-  /* Verdict */
-  var v, reasons=[];
-  if(age<0.7){
-    v={icon:'🌑',title:'Nouvelle Lune — Hilal pas encore né',
-       desc:'Le croissant n'a que '+ageH.toFixed(0)+'h. Minimum 15h requis.',
+  function fd(d) {
+    return d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+  }
+  function fdt(d) {
+    return d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})
+      + ' a ' + d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  }
+
+  /* ── Verdict ── */
+  var v, reasons = [];
+  if(age < 0.7){
+    v={icon:'🌑',
+       title:'Nouvelle Lune — Hilal pas encore ne',
+       desc:'Le croissant a ' + ageH.toFixed(0) + 'h seulement. Minimum 15h requis. Prochaine NL : ' + fdt(nextNew) + '.',
        bg:'rgba(52,73,94,.12)',border:'rgba(52,73,94,.4)',color:'var(--text2)'};
-  } else if(age<1.0){
-    if(Math.abs(lat||14)>45) reasons.push('🌍 Haute latitude défavorable');
-    v={icon:'🌙⚠️',title:'Hilal naissance — très difficile à voir',
-       desc:'Croissant de '+ageH.toFixed(0)+'h. Conditions parfaites requises (horizon dégagé, bonne vue).',
+  } else if(age < 1.0){
+    if(Math.abs(useLat) > 45) reasons.push('Haute latitude defavorable');
+    v={icon:'🌙⚠️',
+       title:'Hilal naissance — tres difficile a voir',
+       desc:'Croissant de ' + ageH.toFixed(0) + 'h. Cherchez a ' + visStr + ' vers l'ouest, pres de l'horizon. Conditions parfaites requises.',
        bg:'rgba(243,156,18,.1)',border:'rgba(243,156,18,.4)',color:'#e67e22'};
-  } else if(age<=2.5){
-    v={icon:'🌙✅',title:'Hilal visible à l'œil nu'+(cityName?' à '+cityName:''),
-       desc:'Le croissant a '+age.toFixed(1)+' jours ('+ageH.toFixed(0)+'h). Cherchez à l'ouest juste après le coucher du soleil. Illumination : '+illum+'%.',
+  } else if(age <= 2.5){
+    v={icon:'🌙✅',
+       title:'Hilal visible' + (cityName ? ' a ' + cityName : ''),
+       desc:'Croissant de ' + age.toFixed(1) + ' jours. Ce soir a ' + visStr + ', regardez a l'ouest apres le coucher du soleil (' + sunsetStr + '). Illumination : ' + illum + '%.',
        bg:'rgba(39,174,96,.12)',border:'rgba(39,174,96,.45)',color:'#27AE60'};
-  } else if(age<=4.0){
-    v={icon:'🌒✅',title:'Croissant bien visible',
-       desc:'Lune de '+age.toFixed(1)+' jours — clairement visible à l'ouest après le coucher du soleil. Illumination : '+illum+'%.',
+  } else if(age <= 4.0){
+    v={icon:'🌒✅',
+       title:'Croissant bien visible',
+       desc:'Lune de ' + age.toFixed(1) + ' jours. Visible a l'ouest des ' + sunsetStr + '. Illumination : ' + illum + '%.',
        bg:'rgba(39,174,96,.08)',border:'rgba(39,174,96,.3)',color:'#27AE60'};
-  } else if(dNL<=2.5){
-    v={icon:'🌘⏳',title:'Fin de mois — Nouvelle Lune dans '+Math.round(dNL)+' jour(s)',
-       desc:'Prochaine nouvelle lune : '+fd(nextNew)+'. Le vieux croissant est visible à l'aube vers l'est.',
+  } else if(dNL <= 2.5){
+    v={icon:'🌘⏳',
+       title:'Fin de mois — NL dans ' + Math.round(dNL) + ' jour(s)',
+       desc:'Prochaine nouvelle lune le ' + fdt(nextNew) + '. Vieux croissant visible a l'aube vers l'est.',
        bg:'rgba(147,112,219,.1)',border:'rgba(147,112,219,.3)',color:'#9B59B6'};
   } else {
-    v={icon:'🌕❌',title:'Pas de Hilal — '+phase.n,
-       desc:'Lune de '+age.toFixed(1)+' jours ('+phase.n+'). Le Hilal n'est visible qu'en début de cycle (1-4 jours après NL).',
+    v={icon:'🌕❌',
+       title:'Pas de Hilal — ' + phase.n,
+       desc:'Lune de ' + age.toFixed(1) + ' jours (' + phase.n + '). Le Hilal n'est visible qu'en debut de cycle (1-4 jours apres NL).',
        bg:'rgba(192,57,43,.08)',border:'rgba(192,57,43,.3)',color:'var(--red)'};
   }
 
-  document.getElementById('moonEmoji').textContent=phase.e;
-  document.getElementById('moonPhaseName').textContent=phase.n;
-  document.getElementById('moonAge').textContent=age.toFixed(1);
-  document.getElementById('moonIllum').textContent=illum;
-  document.getElementById('moonNextNew').textContent=fd(nextNew);
-  document.getElementById('moonNextFull').textContent=fd(nextFull);
-  var vEl=document.getElementById('hilalVerdict');
-  vEl.style.background='linear-gradient(135deg,'+v.bg+',transparent)';
-  vEl.style.border='1.5px solid '+v.border;
-  document.getElementById('hilalIcon').textContent=v.icon;
-  document.getElementById('hilalTitle').style.color=v.color;
-  document.getElementById('hilalTitle').textContent=v.title;
-  var html=v.desc;
-  if(reasons.length) html+='<div style="margin-top:.5rem;font-size:11.5px;color:var(--text3);">'+reasons.map(function(r){return'• '+r;}).join('<br>')+'</div>';
-  document.getElementById('hilalDesc').innerHTML=html;
-  var loc='📍 '+(cityName||'Position approximative')+' — '+now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  document.getElementById('moonLoc').textContent=loc;
-  document.getElementById('moonData').style.display='block';
-  document.getElementById('moonMsg').textContent='';
+  /* ── Affichage ── */
+  document.getElementById('moonEmoji').textContent = phase.e;
+  document.getElementById('moonPhaseName').textContent = phase.n;
+  document.getElementById('moonAge').textContent = age.toFixed(1);
+  document.getElementById('moonIllum').textContent = illum;
+  document.getElementById('moonNextNew').textContent = fdt(nextNew);
+  document.getElementById('moonNextFull').textContent = fd(nextFull);
+
+  /* Ajouter heure de recherche si applicable */
+  var sunsetInfo = document.getElementById('moonSunsetInfo');
+  if(!sunsetInfo){
+    sunsetInfo = document.createElement('div');
+    sunsetInfo.id = 'moonSunsetInfo';
+    sunsetInfo.style.cssText = 'background:linear-gradient(135deg,#0a0e1a,#1a2d5a);border-radius:12px;padding:.8rem 1rem;text-align:center;margin:.5rem 0;';
+    var moonData = document.getElementById('moonData');
+    if(moonData) moonData.insertBefore(sunsetInfo, moonData.firstChild);
+  }
+  if(age >= 0.7 && age <= 4.0){
+    sunsetInfo.innerHTML = '<div style="color:rgba(212,175,55,.7);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem;">🌅 Chercher le Hilal ce soir</div>'
+      + '<div style="display:flex;justify-content:center;gap:1.2rem;">'
+      + '<div><div style="color:rgba(255,255,255,.5);font-size:10px;">Coucher soleil</div><div style="color:#fff;font-size:20px;font-weight:700;">' + sunsetStr + '</div></div>'
+      + '<div style="color:rgba(212,175,55,.4);font-size:24px;line-height:2;">→</div>'
+      + '<div><div style="color:rgba(255,255,255,.5);font-size:10px;">Cherchez la lune</div><div style="color:var(--gold);font-size:20px;font-weight:700;">' + visStr + '</div></div>'
+      + '</div>'
+      + '<div style="color:rgba(255,255,255,.5);font-size:11px;margin-top:.4rem;">Direction : Ouest 🌙 · Pres de l'horizon</div>';
+    sunsetInfo.style.display = 'block';
+  } else {
+    sunsetInfo.style.display = 'none';
+  }
+
+  var vEl = document.getElementById('hilalVerdict');
+  vEl.style.background = 'linear-gradient(135deg,' + v.bg + ',transparent)';
+  vEl.style.border = '1.5px solid ' + v.border;
+  document.getElementById('hilalIcon').textContent = v.icon;
+  document.getElementById('hilalTitle').style.color = v.color;
+  document.getElementById('hilalTitle').textContent = v.title;
+  var html = v.desc;
+  if(reasons.length) html += '<div style="margin-top:.5rem;font-size:11.5px;color:var(--text3);">' + reasons.map(function(r){return '• '+r;}).join('<br>') + '</div>';
+  document.getElementById('hilalDesc').innerHTML = html;
+
+  var loc = (cityName||'Senegal') + ' — ' + now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}) + ' a ' + now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('moonLoc').textContent = '📍 ' + loc;
+  document.getElementById('moonData').style.display = 'block';
+  document.getElementById('moonMsg').textContent = '';
 }
 
 function moonGo() {
