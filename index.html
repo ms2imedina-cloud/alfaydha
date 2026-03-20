@@ -9129,6 +9129,41 @@ function switchPratiqueTab(tab) {
       if (typeof zikrGroupInit === 'function') zikrGroupInit();
     }, 100);
   }
+  /* Auto-GPS pour Qibla et Lune */
+  if (tab === 'qibla') {
+    setTimeout(function() {
+      var msg = document.getElementById('qiblaMsg');
+      var result = document.getElementById('qiblaResult');
+      /* Lancer seulement si pas encore de résultat affiché */
+      if (result && result.style.display === 'none') {
+        if (msg) msg.textContent = 'Localisation automatique...';
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            function(p) { _qiblaRun(p.coords.latitude, p.coords.longitude, 'Ma position'); },
+            function() { if (msg) msg.textContent = 'GPS indisponible — entrez votre ville'; },
+            {timeout: 8000, enableHighAccuracy: true}
+          );
+        }
+      }
+    }, 200);
+  }
+  if (tab === 'qibla') {
+    setTimeout(function() {
+      var moonMsg = document.getElementById('moonMsg');
+      var moonData = document.getElementById('moonData');
+      if (moonData && moonData.style.display === 'none' || !moonData) {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            function(p) { if (typeof _moonRun === 'function') _moonRun(p.coords.latitude, p.coords.longitude, 'Ma position'); },
+            function() { if (typeof _moonRun === 'function') _moonRun(14.15, -16.08, 'Senegal'); },
+            {timeout: 8000, enableHighAccuracy: true}
+          );
+        } else {
+          if (typeof _moonRun === 'function') _moonRun(14.15, -16.08, 'Senegal');
+        }
+      }
+    }, 400);
+  }
 }
 
 /* ════════════════════════════════════════
@@ -10863,11 +10898,10 @@ function _qiblaBindOrientation() {
         heading = (360 - e.alpha) % 360;
       }
       if (heading === null) return;
-      var rotateCompass = (_qiblaTargetBearing - heading + 360) % 360;
+      /* L'aiguille seule tourne : bearing Qibla - cap actuel du téléphone */
+      var needleAngle = (_qiblaTargetBearing - heading + 360) % 360;
       var el = document.getElementById('qiblaCompass');
-      if (el) el.style.transform = 'rotate(' + rotateCompass + 'deg)';
-      var ed = document.getElementById('qiblaDeg');
-      if (ed) ed.textContent = Math.round(_qiblaTargetBearing) + 'deg';
+      if (el) el.style.transform = 'rotate(' + needleAngle + 'deg)';
     };
     window.addEventListener('deviceorientationabsolute', _qiblaOrientHandler, true);
     window.addEventListener('deviceorientation', _qiblaOrientHandler, true);
