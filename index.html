@@ -3365,15 +3365,17 @@ html { background: #0a0a0a; }
     <div class="rv" id="rViz"></div>
   </div>
 
-  <!-- CONTROLS NATIF — fonctionne PC + Mobile -->
-  <div class="rc">
-    <div class="rc-vol">
-      <span class="rc-vi" id="rVolIco">🔈</span>
-      <input type="range" class="rc-slider" id="rVol" min="0" max="100" value="80">
-      <span class="rc-vi">🔊</span>
+  <!-- PLAYER OFFICIEL FastCast4u — fonctionne PC + Mobile -->
+  <div style="margin:.8rem 1.2rem 1.2rem;border-radius:16px;overflow:hidden;border:1.5px solid rgba(212,175,55,.22);box-shadow:0 4px 20px rgba(0,0,0,.3);">
+    <div style="background:#0c1a10;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,175,55,.5);text-align:center;padding:.4rem 0;">
+      ▶ RADIO AL-FAYDHA — EN DIRECT
     </div>
-    <button class="rc-play" id="rPlayBtn" onclick="rToggle()">▶</button>
-    <div class="rc-status" id="rStatus">Appuyez pour écouter</div>
+    <iframe
+      src="https://webplayer.fastcast4u.com/lyartech/"
+      style="width:100%;height:130px;border:none;display:block;"
+      allow="autoplay"
+      scrolling="no">
+    </iframe>
   </div>
 
 
@@ -3389,11 +3391,11 @@ html { background: #0a0a0a; }
      FastCast4u username: lyartech
   ═══════════════════════════════════════════════════ */
   var STREAMS = [
+    'https://c7.radioboss.fm/stream/379',
+    'https://c7.radioboss.fm:8010/stream/379',
     'https://lyartech.fastcast4u.com/stream',
-    'https://lyartech.fastcast4u.com/',
     'https://stream.zeno.fm/OUE5xD8nztzuv',
-    'https://stream.zeno.fm/mhpQee8nztzuv',
-    'https://c7.radioboss.fm:8231/stream'
+    'https://stream.zeno.fm/mhpQee8nztzuv'
   ];
   var EXT_URL = 'https://webplayer.fastcast4u.com/lyartech/';
 
