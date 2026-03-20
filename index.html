@@ -6649,9 +6649,14 @@ function setEngine(e, btn) {
 
   /* Toujours vider le chat et montrer les nouvelles suggestions */
   if (msgsEl) msgsEl.innerHTML = '';
-  if (chatEl) { chatEl.innerHTML = ''; chatEl.style.display = 'none'; }
+  if (chatEl) chatEl.style.display = 'none';
   var inputEl = document.getElementById('abInput');
   if (inputEl) inputEl.value = '';
+  /* Réinitialiser l'historique de conversation */
+  _abHistory = [];
+  _abLoading = false;
+  var sendBtn = document.getElementById('abSendBtn');
+  if (sendBtn) sendBtn.disabled = false;
 
   if (e === 'istikh') {
     if (istikhForm) istikhForm.style.display = 'block';
