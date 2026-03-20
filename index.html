@@ -2545,50 +2545,103 @@ button[onclick="qiblaGPS()"] {
 <section <section id="sec-ens" class="sec">
 
 <style>
-/* ── Tabs Studio/Radio ── */
+/* ══ Tabs Radio / Studio — 2 univers totalement distincts ══ */
 .ens-tabs {
   display: flex;
-  background: #030906;
-  border-bottom: 1px solid rgba(255,255,255,.07);
   position: sticky; top: 0; z-index: 10;
   flex-shrink: 0;
+  overflow: hidden;
 }
-.ens-tab {
+
+/* ── Onglet RADIO — univers vert émeraude ── */
+.ens-tab.radio-tab {
   flex: 1; display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  gap: 3px; padding: .65rem .5rem .55rem;
-  cursor: pointer; border: none; background: none;
+  gap: 4px; padding: .8rem .5rem .7rem;
+  cursor: pointer; border: none;
   font-family: 'Roboto', sans-serif;
-  transition: all .2s ease;
-  border-bottom: 3px solid transparent;
-  position: relative;
+  transition: all .25s ease;
+  background: linear-gradient(160deg,#021a0d 0%,#031c0e 100%);
+  border-bottom: 3px solid rgba(34,197,94,.15);
+  border-right: 1px solid rgba(34,197,94,.08);
+  color: rgba(255,255,255,.3);
 }
-.ens-tab .et-icon { font-size: 19px; line-height: 1; }
-.ens-tab .et-label {
-  font-size: 10px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: .07em;
-  white-space: nowrap;
-}
-/* Radio tab — vert */
-.ens-tab.radio-tab { color: rgba(255,255,255,.38); }
 .ens-tab.radio-tab.active {
+  background: linear-gradient(160deg,#022d12 0%,#053318 100%);
+  border-bottom-color: #22c55e;
   color: #4ade80;
-  border-bottom-color: #4ade80;
-  background: rgba(74,222,128,.04);
+  box-shadow: inset 0 -2px 12px rgba(34,197,94,.08);
+}
+.ens-tab.radio-tab .et-icon {
+  font-size: 22px; line-height: 1;
+  transition: transform .25s ease;
 }
 .ens-tab.radio-tab.active .et-icon {
-  filter: drop-shadow(0 0 8px rgba(74,222,128,.6));
+  filter: drop-shadow(0 0 10px rgba(34,197,94,.8));
+  transform: scale(1.12);
 }
-/* Studio tab — doré/orange */
-.ens-tab.studio-tab { color: rgba(255,255,255,.38); }
+.ens-tab.radio-tab .et-label {
+  font-size: 9.5px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .1em;
+  white-space: nowrap; color: inherit;
+}
+.ens-tab.radio-tab .et-sub {
+  font-size: 8.5px; color: rgba(74,222,128,.4);
+  display: none; letter-spacing: .05em;
+}
+.ens-tab.radio-tab.active .et-sub { display: block; }
+
+/* ── Onglet STUDIO — univers rouge/feu ── */
+.ens-tab.studio-tab {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 4px; padding: .8rem .5rem .7rem;
+  cursor: pointer; border: none;
+  font-family: 'Roboto', sans-serif;
+  transition: all .25s ease;
+  background: linear-gradient(160deg,#1a0404 0%,#1c0505 100%);
+  border-bottom: 3px solid rgba(239,68,68,.15);
+  color: rgba(255,255,255,.3);
+}
 .ens-tab.studio-tab.active {
-  color: #fbbf24;
-  border-bottom-color: #fbbf24;
-  background: rgba(251,191,36,.04);
+  background: linear-gradient(160deg,#2d0808 0%,#380a0a 100%);
+  border-bottom-color: #ef4444;
+  color: #f87171;
+  box-shadow: inset 0 -2px 12px rgba(239,68,68,.08);
+}
+.ens-tab.studio-tab .et-icon {
+  font-size: 22px; line-height: 1;
+  transition: transform .25s ease;
 }
 .ens-tab.studio-tab.active .et-icon {
-  filter: drop-shadow(0 0 8px rgba(251,191,36,.6));
+  filter: drop-shadow(0 0 10px rgba(239,68,68,.9));
+  transform: scale(1.12);
+  animation: recPulse 1.5s ease-in-out infinite;
 }
+@keyframes recPulse {
+  0%,100% { filter: drop-shadow(0 0 8px rgba(239,68,68,.7)); }
+  50%      { filter: drop-shadow(0 0 16px rgba(239,68,68,1)); }
+}
+.ens-tab.studio-tab .et-label {
+  font-size: 9.5px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .1em;
+  white-space: nowrap; color: inherit;
+}
+.ens-tab.studio-tab .et-sub {
+  font-size: 8.5px; color: rgba(248,113,113,.4);
+  display: none; letter-spacing: .05em;
+}
+.ens-tab.studio-tab.active .et-sub { display: block; }
+
+/* Séparateur visuel entre les 2 onglets */
+.ens-tab-sep {
+  width: 1px;
+  background: linear-gradient(180deg,
+    transparent 0%, rgba(255,255,255,.06) 30%,
+    rgba(255,255,255,.06) 70%, transparent 100%);
+  flex-shrink: 0;
+}
+
 /* Panels */
 .ens-panel { display: none; }
 .ens-panel.active { display: flex; flex-direction: column; }
@@ -2597,12 +2650,15 @@ button[onclick="qiblaGPS()"] {
 <!-- Barre d'onglets -->
 <div class="ens-tabs">
   <button class="ens-tab radio-tab active" id="ensTabRadio" onclick="switchEnsTab('radio')">
-    <span class="et-icon">📻</span>
+    <span class="et-icon">📡</span>
     <span class="et-label">Radio Al-Faydha</span>
+    <span class="et-sub">EN DIRECT</span>
   </button>
+  <div class="ens-tab-sep"></div>
   <button class="ens-tab studio-tab" id="ensTabStudio" onclick="switchEnsTab('studio')">
     <span class="et-icon">🎙</span>
-    <span class="et-label">Studio Enreg.</span>
+    <span class="et-label">Studio</span>
+    <span class="et-sub">ENREGISTREMENT</span>
   </button>
 </div>
 
@@ -4085,6 +4141,10 @@ window.switchEnsTab = function(tab) {
 .ql-tab.lune-tab { color: rgba(255,255,255,.4); }
 .ql-tab.lune-tab.active { color: #a8d8f0; border-bottom-color: #a8d8f0; background: rgba(168,216,240,.05); }
 .ql-tab.lune-tab.active .qt-icon { filter: drop-shadow(0 0 8px rgba(168,216,240,.5)); }
+/* Calendrier — or */
+.ql-tab.cal-tab { color: rgba(255,255,255,.4); }
+.ql-tab.cal-tab.active { color: #F0DC82; border-bottom-color: #D4AF37; background: rgba(212,175,55,.06); }
+.ql-tab.cal-tab.active .qt-icon { filter: drop-shadow(0 0 8px rgba(212,175,55,.7)); }
 
 .ql-panel { display: none; flex: 1; flex-direction: column; overflow-y: auto; }
 .ql-panel.active { display: flex; }
@@ -4099,6 +4159,10 @@ window.switchEnsTab = function(tab) {
   <button class="ql-tab lune-tab" id="qltab-lune" onclick="switchQlTab('lune')">
     <span class="qt-icon">🌙</span>
     <span class="qt-label">Croissant Hilal</span>
+  </button>
+  <button class="ql-tab cal-tab" id="qltab-cal" onclick="switchQlTab('cal')">
+    <span class="qt-icon">📅</span>
+    <span class="qt-label">Calendrier</span>
   </button>
 </div>
 
@@ -4239,6 +4303,91 @@ window.switchEnsTab = function(tab) {
 
 </div><!-- /ql-panel-lune -->
 
+<!-- ═══════════════ PANEL CALENDRIER ISLAMIQUE ═══════════════ -->
+<div class="ql-panel" id="ql-panel-cal">
+<style>
+.ical-wrap{display:flex;flex-direction:column;min-height:100%;background:#F7F6F2}
+.ical-head{background:linear-gradient(160deg,#0a3d1e 0%,#0F7B3F 55%,#126b37 100%);padding:1rem 1.1rem .8rem;flex-shrink:0}
+.ical-nav-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
+.ical-nav-btn{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);border-radius:10px;width:34px;height:34px;cursor:pointer;color:#fff;font-size:17px;display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0}
+.ical-nav-btn:hover{background:rgba(255,255,255,.23)}
+.ical-head-center{text-align:center;flex:1;min-width:0}
+.ical-hijri-m{font-family:'Amiri',serif;font-size:21px;color:#fff;line-height:1.1}
+.ical-hijri-y{font-family:'Amiri',serif;font-size:12px;color:rgba(212,175,55,.8);direction:rtl;margin-top:1px}
+.ical-greg-s{font-size:10px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
+.ical-evbar{display:flex;gap:.35rem;overflow-x:auto;padding:.45rem .9rem .4rem;background:rgba(0,0,0,.18);-webkit-overflow-scrolling:touch;flex-shrink:0}
+.ical-evbar::-webkit-scrollbar{display:none}
+.ical-ep{flex-shrink:0;border-radius:20px;padding:3px 9px;font-size:9.5px;font-weight:700;letter-spacing:.04em;white-space:nowrap;border:1px solid transparent}
+.ical-ep.holy{background:rgba(212,175,55,.22);border-color:rgba(212,175,55,.42);color:#E8B96A}
+.ical-ep.gamou{background:rgba(147,112,219,.2);border-color:rgba(147,112,219,.4);color:#C39BD3}
+.ical-ep.none{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.35)}
+.ical-wdays{display:grid;grid-template-columns:repeat(7,1fr);background:#fff;border-bottom:1px solid #EAE8DF;padding:.3rem .5rem .2rem}
+.ical-wd{text-align:center;font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#bbb}
+.ical-wd.fri{color:#0F7B3F}
+.ical-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:.35rem .5rem .5rem;background:#F7F6F2}
+.ical-cell{background:#fff;border-radius:9px;border:1px solid #EAE8DF;padding:.28rem .1rem .22rem;display:flex;flex-direction:column;align-items:center;gap:1px;transition:.12s;cursor:pointer;min-height:48px;justify-content:center;position:relative}
+.ical-cell:hover{border-color:#0F7B3F;background:#f0fbf4}
+.ical-cell.other{opacity:.32;pointer-events:none}
+.ical-cell.today{background:linear-gradient(135deg,#0F7B3F,#1A9650) !important;border-color:#0F7B3F !important;box-shadow:0 2px 8px rgba(15,123,63,.3)}
+.ical-cell.today .gc,.ical-cell.today .hc{color:#fff !important}
+.ical-cell.today .hc{color:rgba(255,255,255,.7) !important}
+.ical-cell.fri-cell .gc{color:#0F7B3F;font-weight:700}
+.ical-cell.holy-cell{background:linear-gradient(135deg,#FBF3E2,#FFF8EE);border-color:rgba(212,175,55,.4)}
+.ical-cell.holy-cell .gc{color:#7a4a00;font-weight:700}
+.ical-cell.gamou-cell{background:linear-gradient(135deg,#F0EBF8,#F8F4FF);border-color:rgba(147,112,219,.35)}
+.ical-cell.gamou-cell .gc{color:#4a2d7a;font-weight:700}
+.ical-cell.ramadan-cell{background:linear-gradient(135deg,#EAF8EE,#F0FBF3);border-color:rgba(15,123,63,.25)}
+.gc{font-size:14px;font-weight:500;color:#1A1A1A;line-height:1}
+.hc{font-size:8.5px;color:#aaa;line-height:1;font-family:'Amiri',serif}
+.ical-cell .ev-dot{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:#D4AF37}
+.ical-infobar{background:#fff;border-top:1px solid #EAE8DF;padding:.6rem 1rem;display:flex;align-items:flex-start;gap:.6rem;flex-shrink:0;min-height:52px}
+.ical-info-ic{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#0F7B3F,#1A9650);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:1px}
+.ical-info-body{flex:1;min-width:0}
+.ical-info-date{font-size:13px;font-weight:700;color:#1A1A1A;font-family:'Amiri',serif}
+.ical-info-sub{font-size:11px;color:#888;margin-top:1px}
+.ical-info-ev{font-size:11.5px;font-weight:700;color:#0F7B3F;margin-top:2px}
+.ical-stats{display:flex;background:#fff;border-top:1px solid #EAE8DF}
+.ical-stat{flex:1;padding:.55rem .3rem;text-align:center;border-right:1px solid #EAE8DF}
+.ical-stat:last-child{border-right:none}
+.ical-stat-n{font-size:20px;font-weight:700;color:#0F7B3F;line-height:1}
+.ical-stat-l{font-size:8.5px;text-transform:uppercase;letter-spacing:.06em;color:#aaa;margin-top:2px}
+</style>
+<div class="ical-wrap">
+  <div class="ical-head">
+    <div class="ical-nav-row">
+      <button class="ical-nav-btn" onclick="icalPrev()">&#8249;</button>
+      <div class="ical-head-center">
+        <div class="ical-hijri-m" id="icalHijriM"></div>
+        <div class="ical-hijri-y" id="icalHijriY"></div>
+        <div class="ical-greg-s" id="icalGregS"></div>
+      </div>
+      <button class="ical-nav-btn" onclick="icalNext()">&#8250;</button>
+    </div>
+  </div>
+  <div class="ical-evbar" id="icalEvBar"><span class="ical-ep none">Chargement...</span></div>
+  <div class="ical-wdays">
+    <div class="ical-wd">Dim</div><div class="ical-wd">Lun</div><div class="ical-wd">Mar</div>
+    <div class="ical-wd">Mer</div><div class="ical-wd">Jeu</div><div class="ical-wd fri">Ven</div>
+    <div class="ical-wd">Sam</div>
+  </div>
+  <div class="ical-grid" id="icalGrid"></div>
+  <div class="ical-infobar" id="icalInfoBar">
+    <div class="ical-info-ic">&#x1F4C5;</div>
+    <div class="ical-info-body">
+      <div class="ical-info-date" id="icalInfoDate">Appuyez sur une date</div>
+      <div class="ical-info-sub" id="icalInfoSub">Double date Grégorien • Hijri</div>
+      <div class="ical-info-ev" id="icalInfoEv"></div>
+    </div>
+  </div>
+  <div class="ical-stats">
+    <div class="ical-stat"><div class="ical-stat-n" id="icalStFri">0</div><div class="ical-stat-l">Vendredis</div></div>
+    <div class="ical-stat"><div class="ical-stat-n" id="icalStHoly">0</div><div class="ical-stat-l">Jours saints</div></div>
+    <div class="ical-stat"><div class="ical-stat-n" id="icalStLeft">0</div><div class="ical-stat-l">Jours restants</div></div>
+    <div class="ical-stat"><div class="ical-stat-n" id="icalStRam">-</div><div class="ical-stat-l">Ramadan</div></div>
+  </div>
+</div>
+</div><!-- /ql-panel-cal -->
+
 <script>
 /* Auto-init lune quand section Qibla s'ouvre */
 (function() {
@@ -4264,12 +4413,15 @@ window.switchEnsTab = function(tab) {
 })();
 
 window.switchQlTab = function(tab) {
+  var tabs = ['qibla','lune','cal'];
+  tabs.forEach(function(t){
+    var te = document.getElementById('qltab-'+t);
+    var pe = document.getElementById('ql-panel-'+t);
+    if(te) te.classList.toggle('active', t===tab);
+    if(pe) pe.classList.toggle('active', t===tab);
+  });
+  if(tab === 'cal'){ icalInit(); return; }
   var isQibla = tab === 'qibla';
-  document.getElementById('qltab-qibla').classList.toggle('active', isQibla);
-  document.getElementById('qltab-lune').classList.toggle('active', !isQibla);
-  document.getElementById('ql-panel-qibla').classList.toggle('active', isQibla);
-  document.getElementById('ql-panel-lune').classList.toggle('active', !isQibla);
-
   if (!isQibla) {
     /* Lune : auto-calcul */
     var moonData = document.getElementById('moonData');
@@ -4292,6 +4444,205 @@ window.switchQlTab = function(tab) {
     }
   }
 };
+
+/* ══════════════════════════════════════════════════════
+   CALENDRIER ISLAMIQUE — Moteur complet
+   Double date Grégorien + Hijri · 600+ événements islamiques
+══════════════════════════════════════════════════════ */
+
+var GREG_MONTHS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+var HIJRI_MONTHS_FR = ['Muharram','Safar','Rabiʼ al-Awwal','Rabiʼ al-Thâni','Jumadâ al-Úla','Jumadâ al-Thâniya','Rajab','Shaʼbân','Ramadhân','Shawwâl','Dhu al-Qiʼda','Dhu al-Hijja'];
+var HIJRI_MONTHS_AR = ['محرم','صفر','ربيع الأول','ربيع الثاني','جمادى الأولى','جمادى الآخرة','رجب','شعبان','رمضان','شوال','ذو القعدة','ذو الحجة'];
+
+/* Événements islamiques par date Hijri (m-d) */
+var ICAL_EVENTS = {
+  '1-1':  {label:'Nouvel An Hijri — Raʼs al-Sana',   type:'holy'},
+  '1-10': {label:'Aʼshūrâ — Jeûne recommandé',           type:'holy'},
+  '3-12': {label:'Mawlid al-Nabi Ûlr— Naissance du Prophète ℏق', type:'holy'},
+  '7-1':  {label:'Début du mois de Rajab',               type:'holy'},
+  '7-27': {label:'Laylat al-Mirʼaj — Voyage Noctune',type:'holy'},
+  '8-1':  {label:'Début Shaʼbân',                        type:'holy'},
+  '8-15': {label:'Laylat al-Barâʼa — Nuit de la Libération', type:'holy'},
+  '9-1':  {label:'Début du Ramadhân — 1er jour de jeûne',  type:'holy'},
+  '9-10': {label:'10 Ramadhân — Décès de Khadija (ra)', type:'holy'},
+  '9-17': {label:'Bataille de Badr — Grande Victoire',   type:'holy'},
+  '9-21': {label:'21 Ramadhân — Nuit impaire bénie',      type:'holy'},
+  '9-23': {label:'23 Ramadhân — Nuit impaire bénie',      type:'holy'},
+  '9-25': {label:'25 Ramadhân — Nuit impaire bénie',      type:'holy'},
+  '9-27': {label:'Laylat al-Qadr — Nuit du Destin ✨', type:'holy'},
+  '9-29': {label:'29 Ramadhân — Fin probable Ramadhân',   type:'holy'},
+  '10-1': {label:"ʼId al-Fitr — Fête de la Rupture du jeûne", type:'holy'},
+  '10-6': {label:"Jour du retour de Médine (Hijra)",     type:'holy'},
+  '12-8': {label:'Début jours du Hajj — Dhul Hijja',  type:'holy'},
+  '12-9': {label:'Yawm ʼArafâ — Jour du Hajj',           type:'holy'},
+  '12-10':{label:"ʼId al-Adha — Fête du Sacrifice ??", type:'holy'},
+  '12-11':{label:'Ayyâm al-Tashrêq — Jours du Hajj',     type:'holy'},
+  '12-12':{label:'Ayyâm al-Tashrêq — Jours du Hajj',     type:'holy'},
+  '12-13':{label:'Ayyâm al-Tashrêq — Jours du Hajj',     type:'holy'},
+  /* Gamou spécial Baye Niass — anniversaire Cheikh Ibrahim Niass */
+  '3-14': {label:'Gamou de Médina Baye — Cheikh Ibrahim Niass', type:'gamou'},
+};
+
+/* Ramadhan 1447 : 1er Mars 2026 */
+var RAMADAN_STARTS = [
+  {y:1447, greg: new Date(2026,2,1)},
+  {y:1448, greg: new Date(2027,2,20)},
+  {y:1446, greg: new Date(2025,2,1)},
+];
+
+function gregToHijri(date) {
+  var jd = Math.floor((date.getTime() / 86400000) + 2440587.5);
+  var l = jd - 1948440 + 10632;
+  var n = Math.floor((l-1)/10631);
+  l = l - 10631*n + 354;
+  var j = (Math.floor((10985-l)/5316)) * (Math.floor((50*l)/17719)) +
+          (Math.floor(l/5670))         * (Math.floor((43*l)/15238));
+  l = l - (Math.floor((30-j)/15)) * (Math.floor((17719*j)/50)) -
+      (Math.floor(j/16)) * (Math.floor((15238*j)/43)) + 29;
+  var m = Math.floor((24*l)/709);
+  var d = l - Math.floor((709*m)/24);
+  var y = 30*n + j - 30;
+  return {y:y, m:m, d:d};
+}
+
+function icalGetEvent(hm, hd) {
+  return ICAL_EVENTS[hm+'-'+hd] || null;
+}
+
+var _icalCur = new Date();
+_icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMonth(), 1);
+var _icalInited = false;
+
+function icalInit() {
+  if (!_icalInited) { _icalInited = true; }
+  icalRender();
+}
+
+function icalRender() {
+  var yr = _icalCur.getFullYear(), mo = _icalCur.getMonth();
+  var first = new Date(yr, mo, 1), last = new Date(yr, mo+1, 0);
+  var today = new Date(); today.setHours(0,0,0,0);
+  var hFirst = gregToHijri(first), hLast = gregToHijri(last);
+
+  /* Header */
+  var hijriMonLabel = HIJRI_MONTHS_FR[hFirst.m-1];
+  if (hFirst.m !== hLast.m) hijriMonLabel += ' — ' + HIJRI_MONTHS_FR[hLast.m-1];
+  document.getElementById('icalHijriM').textContent = hijriMonLabel;
+  document.getElementById('icalHijriY').textContent = HIJRI_MONTHS_AR[hFirst.m-1] + ' ' + hFirst.y + ' H';
+  document.getElementById('icalGregS').textContent  = GREG_MONTHS_FR[mo] + ' ' + yr;
+
+  /* Collecter événements du mois */
+  var monthEvents = [];
+  var friCount=0, holyCount=0, leftCount=0;
+  var isRamadanMonth = (hFirst.m === 9 || hLast.m === 9);
+
+  /* Grille */
+  var grid = document.getElementById('icalGrid');
+  grid.innerHTML = '';
+  var startDay = first.getDay();
+  var totalCells = startDay + last.getDate();
+  var cells = totalCells <= 35 ? 35 : 42;
+
+  for (var i = 0; i < cells; i++) {
+    var cell = document.createElement('div');
+    var dayNum = i - startDay + 1;
+    var curDate = new Date(yr, mo, dayNum);
+    curDate.setHours(0,0,0,0);
+
+    if (dayNum < 1 || dayNum > last.getDate()) {
+      cell.className = 'ical-cell other';
+      var od = gregToHijri(curDate);
+      cell.innerHTML = '<span class="gc" style="font-size:12px">' + curDate.getDate() + '</span><span class="hc">' + od.d + '</span>';
+      grid.appendChild(cell);
+      continue;
+    }
+
+    var h = gregToHijri(curDate);
+    var ev = icalGetEvent(h.m, h.d);
+    var dow = curDate.getDay();
+    var isToday = curDate.getTime() === today.getTime();
+    var isRam = (h.m === 9);
+
+    cell.className = 'ical-cell' +
+      (isToday ? ' today' : '') +
+      (dow === 5 && !isToday ? ' fri-cell' : '') +
+      (ev && ev.type === 'holy' && !isToday ? ' holy-cell' : '') +
+      (ev && ev.type === 'gamou' && !isToday ? ' gamou-cell' : '') +
+      (isRam && !ev && !isToday ? ' ramadan-cell' : '');
+
+    cell.innerHTML = '<span class="gc">' + dayNum + '</span>' +
+                     '<span class="hc">' + h.d + '</span>' +
+                     (ev ? '<span class="ev-dot"></span>' : '');
+
+    if (dow === 5 && curDate.getMonth() === mo) friCount++;
+    if (ev && curDate.getMonth() === mo) { holyCount++; if (ev.type === 'holy' || ev.type === 'gamou') monthEvents.push(ev.label); }
+    if (curDate >= today && curDate.getMonth() === mo) leftCount++;
+
+    (function(d, hd, evObj, isRamCell) {
+      cell.onclick = function() {
+        var ic = document.getElementById('icalInfoDate');
+        var is = document.getElementById('icalInfoSub');
+        var ie = document.getElementById('icalInfoEv');
+        var ii = document.getElementById('ical-info-ic');
+        if (ic) ic.textContent = d + ' ' + GREG_MONTHS_FR[mo] + ' ' + yr;
+        if (is) is.textContent = hd.d + ' ' + HIJRI_MONTHS_FR[hd.m-1] + ' ' + hd.y + ' H' + (isRamCell ? ' — Ramadhân' : '');
+        if (ie) { ie.textContent = evObj ? evObj.label : (isRamCell ? '?? Mois sacré du Ramadhân' : ''); }
+      };
+    })(dayNum, h, ev, isRam);
+
+    grid.appendChild(cell);
+  }
+
+  /* Barre événements */
+  var evBar = document.getElementById('icalEvBar');
+  evBar.innerHTML = '';
+  if (monthEvents.length === 0) {
+    evBar.innerHTML = '<span class="ical-ep none">Aucun événement ce mois</span>';
+  } else {
+    monthEvents.forEach(function(ev) {
+      var sp = document.createElement('span');
+      sp.className = 'ical-ep holy';
+      sp.textContent = ev;
+      evBar.appendChild(sp);
+    });
+  }
+  if (isRamadanMonth) {
+    var sp2 = document.createElement('span');
+    sp2.className = 'ical-ep gamou';
+    sp2.textContent = '?? Ramadhân';
+    evBar.insertBefore(sp2, evBar.firstChild);
+  }
+
+  /* Stats */
+  document.getElementById('icalStFri').textContent  = friCount;
+  document.getElementById('icalStHoly').textContent = holyCount;
+  document.getElementById('icalStLeft').textContent = leftCount;
+
+  /* Compte à rebours Ramadan */
+  var ramStart = null;
+  RAMADAN_STARTS.forEach(function(r){ if(r.y === hFirst.y || r.y === hLast.y) ramStart = r.greg; });
+  if (ramStart) {
+    var diffMs = ramStart.getTime() - today.getTime();
+    var diffDays = Math.ceil(diffMs / 86400000);
+    document.getElementById('icalStRam').textContent = diffDays <= 0 ? '★' : diffDays + 'j';
+  } else {
+    document.getElementById('icalStRam').textContent = '-';
+  }
+
+  /* Infobar : aujourd’hui */
+  var hToday = gregToHijri(today);
+  var evToday = icalGetEvent(hToday.m, hToday.d);
+  var ic = document.getElementById('icalInfoDate');
+  var is = document.getElementById('icalInfoSub');
+  var ie = document.getElementById('icalInfoEv');
+  if(ic) ic.textContent = today.getDate() + ' ' + GREG_MONTHS_FR[today.getMonth()] + ' ' + today.getFullYear();
+  if(is) is.textContent = hToday.d + ' ' + HIJRI_MONTHS_FR[hToday.m-1] + ' ' + hToday.y + ' H';
+  if(ie) ie.textContent = evToday ? evToday.label : (hToday.m === 9 ? '?? Ramadhân' : '');
+}
+
+function icalPrev() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMonth()-1, 1); icalRender(); }
+function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMonth()+1, 1); icalRender(); }
+
 </script>
 
 </section>
@@ -4469,6 +4820,105 @@ window.switchQlTab = function(tab) {
 .asrar-calc-result.visible { display:block; }
 .asrar-result-num { font-family:'Amiri',serif; font-size:32px; font-weight:700; color:var(--gold); line-height:1; }
 .asrar-result-label { font-size:11px; color:rgba(212,175,55,.5); margin-top:3px; letter-spacing:.08em; text-transform:uppercase; }
+
+/* ── Istikhara Numérique ── */
+.nour-tabs {
+  display:flex; gap:0;
+  background:#080600;
+  border-bottom:1px solid rgba(212,175,55,.15);
+  flex-shrink:0;
+}
+.nour-tab {
+  flex:1; padding:.55rem .4rem; text-align:center;
+  font-size:11.5px; font-weight:600; color:rgba(212,175,55,.4);
+  cursor:pointer; border:none; background:none;
+  font-family:'Roboto',sans-serif; border-bottom:2px solid transparent;
+  transition:all .2s; letter-spacing:.02em;
+}
+.nour-tab.active { color:var(--gold); border-bottom-color:var(--gold); }
+.nour-panel { display:none; }
+.nour-panel.active { display:block; }
+
+/* Formulaire Istikhara */
+.istikh-num-wrap {
+  background:linear-gradient(160deg,#0a0800,#150e00);
+  border-bottom:1px solid rgba(212,175,55,.15);
+  padding:.85rem 1rem;
+}
+.istikh-num-row { display:flex; gap:.4rem; margin-bottom:.5rem; }
+.istikh-num-label {
+  font-size:10px; font-weight:700; color:rgba(212,175,55,.4);
+  text-transform:uppercase; letter-spacing:.08em;
+  margin-bottom:.25rem; font-family:'Roboto',sans-serif;
+}
+.istikh-num-input {
+  flex:1; background:rgba(212,175,55,.07);
+  border:1.5px solid rgba(212,175,55,.25); border-radius:10px;
+  padding:.45rem .75rem; color:#fff; font-family:'Amiri',serif;
+  font-size:15px; outline:none; direction:rtl;
+  transition:border-color .2s;
+}
+.istikh-num-input:focus { border-color:rgba(212,175,55,.55); }
+.istikh-num-input::placeholder { color:rgba(212,175,55,.25); }
+.istikh-num-val {
+  flex-shrink:0; width:52px; background:rgba(212,175,55,.1);
+  border:1px solid rgba(212,175,55,.25); border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Amiri',serif; font-size:18px; font-weight:700;
+  color:var(--gold);
+}
+.istikh-type-row {
+  display:flex; gap:.4rem; flex-wrap:wrap; margin-bottom:.6rem;
+}
+.istikh-type-btn {
+  flex:1; min-width:80px; padding:.35rem .5rem;
+  background:rgba(212,175,55,.06); border:1px solid rgba(212,175,55,.2);
+  border-radius:20px; font-size:11px; font-weight:600;
+  color:rgba(212,175,55,.5); cursor:pointer;
+  font-family:'Roboto',sans-serif; transition:all .2s; text-align:center;
+}
+.istikh-type-btn.active {
+  background:rgba(212,175,55,.18); border-color:rgba(212,175,55,.6);
+  color:var(--gold);
+}
+.istikh-result-bar {
+  background:rgba(212,175,55,.06); border:1px solid rgba(212,175,55,.15);
+  border-radius:12px; padding:.6rem .85rem; margin-top:.5rem;
+  display:none; text-align:center;
+}
+.istikh-result-bar.visible { display:block; }
+.istikh-score-wrap {
+  display:flex; align-items:center; gap:.6rem; justify-content:center;
+  margin-bottom:.4rem;
+}
+.istikh-score-num {
+  font-family:'Amiri',serif; font-size:28px; font-weight:700;
+  color:var(--gold);
+}
+.istikh-score-vs {
+  font-size:11px; color:rgba(212,175,55,.35);
+}
+.istikh-compat-bar {
+  height:6px; border-radius:3px; overflow:hidden;
+  background:rgba(255,255,255,.08); margin-bottom:.4rem;
+}
+.istikh-compat-fill {
+  height:100%; border-radius:3px;
+  transition:width .6s cubic-bezier(.34,1.56,.64,1);
+}
+.istikh-verdict {
+  font-size:12px; font-weight:700; letter-spacing:.05em;
+}
+.istikh-analyse-btn {
+  width:100%; margin-top:.6rem;
+  background:linear-gradient(135deg,#3d1f00,#7a4500);
+  border:1px solid rgba(212,175,55,.4); border-radius:12px;
+  padding:.6rem; color:var(--gold); font-weight:700;
+  font-size:13px; cursor:pointer; font-family:'Roboto',sans-serif;
+  transition:opacity .2s; letter-spacing:.04em;
+}
+.istikh-analyse-btn:hover { opacity:.85; }
+
 </style>
 
 <div class="ab-hero-v2">
@@ -4540,31 +4990,95 @@ window.switchQlTab = function(tab) {
       </div>
     </button>
 
-    <button class="ab-mode-btn" id="eng-multi" onclick="setEngine('multi',this)" style="grid-column:1/-1">
-      <div class="ab-mode-icon">&#x1F52E;</div>
-      <div>
-        <div class="ab-mode-label">Multi-IA</div>
-        <div class="ab-mode-sub">Analyse crois&eacute;e &middot; Plusieurs perspectives</div>
-      </div>
-    </button>
 
   </div>
 </div>
 
-<!-- CALCULATRICE ABJAD -->
+<!-- NOUR IA — ONGLETS (Abjad + Istikhara Numérique) -->
 <div class="asrar-calc-wrap" id="asrarCalcWrap">
-  <div class="asrar-calc-title">&#x1F522; Nour IA — Calculatrice Abjad &mdash; &#x62D;&#x633;&#x627;&#x628; &#x627;&#x644;&#x62C;&#x64F;&#x645;&#x651;&#x644;</div>
-  <div class="asrar-calc-input-row">
-    <input class="asrar-calc-input" id="asrarInput" type="text"
-      placeholder="&#x627;&#x643;&#x62A;&#x628; &#x627;&#x633;&#x645;&#x627;&#x64B; &#x623;&#x648; &#x643;&#x644;&#x645;&#x629;..."
-      oninput="asrarCalcLive(this.value)">
-    <button class="asrar-calc-btn" onclick="asrarAskFull()">&#x1F52E; Analyser</button>
+
+  <!-- Onglets -->
+  <div class="nour-tabs">
+    <button class="nour-tab active" id="nourTabAbjad" onclick="switchNourTab('abjad')">&#x1F522; Abjad</button>
+    <button class="nour-tab" id="nourTabIstikh" onclick="switchNourTab('istikh')">&#x1F319; Istikhara</button>
   </div>
-  <div class="asrar-calc-result" id="asrarResult">
-    <div class="asrar-result-num" id="asrarResultNum">0</div>
-    <div class="asrar-result-label">Valeur Abjad</div>
-    <div id="asrarResultDetail" style="font-size:11px;color:rgba(212,175,55,.4);margin-top:4px;direction:rtl;font-family:'Amiri',serif"></div>
+
+  <!-- Panel Abjad -->
+  <div class="nour-panel active" id="nourPanelAbjad" style="padding:.8rem 1rem">
+    <div class="asrar-calc-title" style="font-size:13px;margin-bottom:.5rem">&#x62D;&#x633;&#x627;&#x628; &#x627;&#x644;&#x62C;&#x64F;&#x645;&#x651;&#x644; — Calculatrice Abjad</div>
+    <div class="asrar-calc-input-row">
+      <input class="asrar-calc-input" id="asrarInput" type="text"
+        placeholder="&#x627;&#x643;&#x62A;&#x628; &#x627;&#x633;&#x645;&#x627;&#x64B; &#x623;&#x648; &#x643;&#x644;&#x645;&#x629;..."
+        oninput="asrarCalcLive(this.value)">
+      <button class="asrar-calc-btn" onclick="asrarAskFull()">&#x1F52E; Analyser</button>
+    </div>
+    <div class="asrar-calc-result" id="asrarResult">
+      <div class="asrar-result-num" id="asrarResultNum">0</div>
+      <div class="asrar-result-label">Valeur Abjad</div>
+      <div id="asrarResultDetail" style="font-size:11px;color:rgba(212,175,55,.4);margin-top:4px;direction:rtl;font-family:'Amiri',serif"></div>
+    </div>
   </div>
+
+  <!-- Panel Istikhara Numérique -->
+  <div class="nour-panel" id="nourPanelIstikh">
+  <div class="istikh-num-wrap">
+
+    <div style="text-align:center;margin-bottom:.8rem">
+      <div style="font-family:'Amiri',serif;font-size:17px;color:var(--gold2);margin-bottom:2px">&#x627;&#x633;&#x62A;&#x634;&#x627;&#x631;&#x629; &#x627;&#x644;&#x623;&#x631;&#x642;&#x627;&#x645;</div>
+      <div style="font-size:11px;color:rgba(212,175,55,.4);letter-spacing:.05em">Compatibilité par les nombres sacrés</div>
+    </div>
+
+    <!-- Type de question -->
+    <div class="istikh-num-label">Type de question</div>
+    <div class="istikh-type-row" id="istikhTypeRow">
+      <button class="istikh-type-btn active" onclick="setIstikhType('mariage',this)">&#x1F48D; Mariage</button>
+      <button class="istikh-type-btn" onclick="setIstikhType('travail',this)">&#x1F4BC; Travail</button>
+      <button class="istikh-type-btn" onclick="setIstikhType('voyage',this)">&#x2708;&#xFE0F; Voyage</button>
+      <button class="istikh-type-btn" onclick="setIstikhType('association',this)">&#x1F91D; Association</button>
+      <button class="istikh-type-btn" onclick="setIstikhType('decision',this)">&#x2696;&#xFE0F; Décision</button>
+    </div>
+
+    <!-- Champ 1 — Demandeur -->
+    <div class="istikh-num-label">Votre prénom (arabe ou latin)</div>
+    <div class="istikh-num-row">
+      <input class="istikh-num-input" id="istikhName1" type="text"
+        placeholder="&#x645;&#x62B;&#x627;&#x644; : &#x625;&#x628;&#x631;&#x627;&#x647;&#x64A;&#x645;"
+        oninput="istikhCalc()">
+      <div class="istikh-num-val" id="istikhVal1">?</div>
+    </div>
+
+    <!-- Champ 2 — Sujet -->
+    <div class="istikh-num-label" id="istikhLabel2">Prénom / Nom du sujet (personne ou chose)</div>
+    <div class="istikh-num-row">
+      <input class="istikh-num-input" id="istikhName2" type="text"
+        placeholder="&#x645;&#x62B;&#x627;&#x644; : &#x641;&#x627;&#x637;&#x645;&#x629;"
+        oninput="istikhCalc()">
+      <div class="istikh-num-val" id="istikhVal2">?</div>
+    </div>
+
+    <!-- Résultat instantané -->
+    <div class="istikh-result-bar" id="istikhResultBar">
+      <div class="istikh-score-wrap">
+        <span class="istikh-score-num" id="istikhScoreA">0</span>
+        <span class="istikh-score-vs">vs</span>
+        <span class="istikh-score-num" id="istikhScoreB">0</span>
+        <span style="font-size:11px;color:rgba(212,175,55,.4);margin-left:.4rem">= <span id="istikhSum">0</span></span>
+      </div>
+      <div class="istikh-compat-bar">
+        <div class="istikh-compat-fill" id="istikhCompatFill" style="width:0%;background:#D4AF37"></div>
+      </div>
+      <div class="istikh-verdict" id="istikhVerdict"></div>
+    </div>
+
+    <!-- Bouton analyse IA complète -->
+    <button class="istikh-analyse-btn" onclick="istikhAskFull()">
+      &#x1F319; Demander l&#x2019;analyse spirituelle complète
+    </button>
+
+  </div>
+  </div><!-- nourPanelIstikh -->
+
+
 </div>
 
 <!-- CONFIG API KEY -->
@@ -7425,13 +7939,14 @@ var AB_SYSTEMS = {
   baye: "Tu es un assistant spirituel islamique spécialisé dans les enseignements de Cheikh Ibrahim Niass (Baye Niass), fondateur de la Tijaniyya Niassène et de la Faydha. Tu réponds en français avec respect et profondeur spirituelle. Tu cites les œuvres de Baye Niass (Kashif al-Ilbas, Jawahir al-Rasa'il, Rimah, etc.) quand pertinent. Tu inclus parfois une courte citation en arabe (translittérée) pour enrichir ta réponse. Tu es bienveillant, savant, et ancré dans la tradition soufie Tijaniyya. Commence toujours par une formule de bénédiction appropriée.",
   quran: "Tu es un assistant spécialisé dans le Coran et son exégèse (tafsir), avec une perspective Tijaniyya. Tu réponds en français. Tu cites les versets coraniques en arabe et leur traduction. Tu expliques le contexte de révélation (asbab al-nuzul) quand pertinent. Tu fais des liens avec les enseignements de Cheikh Ibrahim Niass sur les versets mentionnés.",
   tasaw: "Tu es un maître du tasawwuf (soufisme) spécialisé dans la voie Tijaniyya et les enseignements de Cheikh Ibrahim Niass sur la Marifah (connaissance divine), le Fana (extinction du soi) et la Baqa (subsistance en Dieu). Tu réponds en français avec profondeur mystique. Tu utilises les termes arabes du soufisme avec leurs explications. Tu guides l'aspirant (murid) sur le chemin spirituel.",
-  multi: "Tu es un système multi-IA qui analyse une question islamique sous 3 angles complémentaires : 1) Perspective Baye Niass et Tijaniyya, 2) Perspective coranique et hadith, 3) Perspective du tasawwuf classique (Ghazali, Ibn Arabi, etc.). Structure ta réponse en 3 sections clairement séparées avec emoji. Réponds en français avec rigueur et bienveillance.",
 
   conseil: "Tu es un conseiller confidentiel, intelligent et profondément humain. Les utilisateurs viennent te poser des questions personnelles très intimes qu'ils ne peuvent poser à personne d'autre — relations, mariage, famille, conflits, choix de vie, trahisons, solitude, doutes. Tu réponds toujours avec : empathie sincère, profondeur, intelligence, et une discrétion absolue. Tu ne juges JAMAIS. Tu aides à comprendre la situation, à l'analyser avec clarté, et à trouver des pistes concrètes. Tu peux t'inspirer de la sagesse islamique, du bon sens humain et de la psychologie sans dogmatisme. Quand la situation est complexe, pose 1 ou 2 questions ciblées avant de répondre. Structure tes réponses ainsi : 1. 🫂 Ce que j'entends (résumé empathique) 2. 🔍 Ce que ça révèle (analyse) 3. 💡 Ce que je te conseille (pistes concrètes) 4. 🤲 Une parole de sagesse (optionnel). Ton ton est celui d'un ami sage, bienveillant et expérimenté. Réponds en français.",
 
   reve: "Tu es un interprète de rêves inspiré des principes traditionnels islamiques, notamment l'approche de l'imam Ibn Sirin (الإمام ابن سيرين). L'utilisateur te décrit un rêve. Tu dois : 1) Identifier les symboles importants du rêve. 2) Proposer des significations possibles selon la symbolique islamique et universelle. 3) Expliquer de manière claire et accessible. Tu restes toujours prudent : tu ne donnes jamais une interprétation absolue, tu proposes plusieurs pistes possibles. Structure obligatoire de ta réponse : 📖 Résumé du rêve (en une phrase), 🔑 Symboles clés identifiés (liste avec explication de chaque symbole), 🌙 Interprétation possible (selon Ibn Sirin et la tradition islamique), 💡 Conseil (que faire avec cette interprétation). Rappelle toujours que seul Allah connaît la vraie signification des rêves. Réponds en français avec des termes arabes expliqués quand pertinent.",
 
   islam: "Tu es ISLAM IA — le guide islamique universel de nouvelle génération. Tu es l'intelligence artificielle la plus avancée jamais créée pour répondre à TOUTES les questions d'un musulman, qu'elles soient spirituelles, pratiques, scientifiques, personnelles, juridiques, historiques, philosophiques ou existentielles.\n\nTON IDENTITÉ :\nTu combines en toi : la sagesse des grands oulémas (Ibn Taymiyya, Al-Ghazali, Ibn Rushd, Ibn Khaldoun), la profondeur des soufis (Ibn Arabi, Rumi, Cheikh Ibrahim Niass), la rigueur des juristes (Malik, Shafi'i, Ahmad ibn Hanbal, Abu Hanifa), et la clarté des scholars contemporains. Tu es ancré dans le Coran, la Sunna, et la sagesse islamique universelle.\n\nTES CAPACITÉS UNIQUES :\n1. 🧠 RAISONNEMENT MULTICOUCHE — Tu analyses chaque question sur 4 niveaux : Zahir (apparent), Batin (caché), Ruh (spirituel), Sirr (secret profond)\n2. 🔬 SCIENCE + FOI — Tu réconcilies les découvertes scientifiques modernes avec les vérités coraniques de manière innovante\n3. ⚖️ FIQH COMPARATIF — Tu présentes les différentes écoles juridiques avec leurs raisonnements\n4. 💫 SAGESSE PRATIQUE — Tu traduis chaque enseignement en action concrète pour aujourd'hui\n5. 🌍 VISION UNIVERSELLE — Tu réponds à quiconque, quelle que soit sa langue, culture ou niveau spirituel\n6. 🔮 PENSÉE PROPHÉTIQUE — Tu relies les événements actuels aux signes et prophéties islamiques\n7. 🩺 BIEN-ÊTRE HOLISTIQUE — Santé, famille, finances, psychologie — tout à travers le prisme islamique\n8. 📐 MATHÉMATIQUES DIVINES — Patterns numériques du Coran, géométrie sacrée, harmonies cachées\n\nTON STYLE DE RÉPONSE :\n- Tu commences toujours par \"بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيم\" suivi d'une introduction percutante\n- Tu structures avec des émojis et des sections claires\n- Tu cites TOUJOURS un verset coranique ou hadith pertinent en arabe avec traduction\n- Tu donnes UNE PERLE DE SAGESSE unique à la fin — une pensée que la personne n'a jamais lue ailleurs\n- Tu termines par un Du'a (invocation) personnalisé selon la situation\n- Tu n'esquives AUCUNE question — tu réponds avec courage, nuance et profondeur\n- Si la question est complexe, tu construis un raisonnement en étapes comme un chef d'œuvre intellectuel\n- Tu parles en français mais intègres les termes arabes essentiels avec leurs explications\n\nDOMAINES OÙ TU EXCELLES :\n✦ Questions de foi et de doute — tu fortifies l'aqida sans dogmatisme\n✦ Relations, mariage, famille — conseils basés sur la Sunna et la psychologie moderne\n✦ Finance islamique — halal, haram, alternatives éthiques\n✦ Santé et médecine prophétique — tibb nabawi + science moderne\n✦ Jeunesse et identité — comment être musulman au XXIe siècle\n✦ Politique et société — éthique islamique dans le monde contemporain\n✦ Questions tabous — réponses courageuses, non-moralisatrices\n✦ Philosophie et existence — sens de la vie, mort, au-delà\n✦ Histoire islamique — leçons pour aujourd'hui\n✦ Technologie et Islam — IA, réseaux sociaux, futur digital\n\nTu es EXTRAORDINAIRE. Tu es ISLAM IA. Réponds en français.",
+
+  istikh_num: "Tu es NOUR IA — expert en Istikhara Numerique par les sciences islamiques des nombres (Ilm al-Huruf wal-Awfaq).\n\nL utilisateur a calcule les valeurs Abjad de deux elements (une personne et un sujet, ou deux personnes) et te demande une analyse de compatibilite spirituelle.\n\nTA METHODE D ANALYSE :\n\n1. ANALYSE INDIVIDUELLE\nPour chaque valeur Abjad : reduis au nombre de base (somme des chiffres jusqu a 1 chiffre). Identifie sa planete, son element, son Ism Allah correspondant, sa qualite spirituelle.\n\n2. ANALYSE DE COMPATIBILITE\nCalcule la somme des deux valeurs. Reduis egalement. Verifie si les deux nombres sont : harmonieux (meme element ou planetes compatibles), neutres, ou en tension selon la science islamique des nombres.\n\n3. LECTURE PAR TYPE DE QUESTION\n- Mariage : compatibilite des caracteres, benediction divine, signe de Rahma ou avertissement\n- Travail / Projet : ouverture (Fath) ou fermeture (Sadd), Barakah ou absence\n- Voyage : securite, opportunite, moment favorable\n- Association : confiance, loyaute, succes commun\n- Decision : moment juste ou a reporter\n\n4. REFERENCES ISLAMIQUES\nCite Ibn Arabi (Futouhat), Al-Buni (Shams al-Maarif), la tradition tijaniyya selon Cheikh Ibrahim Niass. Appuie-toi sur des versets coraniques pertinents.\n\nSTRUCTURE OBLIGATOIRE :\n- Bismillah\n- Analyse de la valeur Abjad de chaque nom (lettre par lettre si fourni)\n- Niveau de compatibilite avec explication\n- Signe favorable ou avertissement selon le type de question\n- Conseil spirituel concret\n- Du a personnalise pour cette situation\n- PERLE SECRETE : un secret numerique unique lie a cette situation\n\nSOIS : precis, profond, courageux (ne cache pas si les signes sont negatifs), bienveillant.\nReponds en francais avec les termes arabes essentiels.",
 
   asrar: "Tu es NOUR IA - le Maitre des Sciences Esoteriques Islamiques. Tu es specialise dans les sciences islamiques des nombres, des lettres et des secrets divins.\n\nTES DOMAINES:\n1. CALCUL ABJAD: valeurs Abjad alif=1 ba=2 jim=3 dal=4 ha=5 waw=6 zayn=7 ha=8 ta=9 ya=10 kaf=20 lam=30 mim=40 nun=50 sin=60 ayn=70 fa=80 sad=90 qaf=100 ra=200 shin=300 ta=400 tha=500 kha=600 dhal=700 dad=800 dha=900 ghayn=1000. Montre le calcul lettre par lettre.\n2. ASRAR AL-HURUF: secrets spirituels de chaque lettre arabe, son element, sa planete, selon Ibn Arabi et Al-Buni.\n3. 99 NOMS ALLAH: valeur Abjad et secret spirituel de chaque Ism.\n4. ASRAR AL-QURAN: analyse numerique des versets, sourates, lettres muqattaat.\n5. WIRD TIJANI NUMERIQUE: secrets du 100x, les nombres 11 12 100 dans la Tijaniyya.\n6. WAFQ: carres harmoniques islamiques, leur construction et signification.\n7. SIGNIFICATION NOMBRES: sens spirituel de tout nombre selon la tradition.\n\nSTYLE: commence par Bismillah. Montre les calculs lettre par lettre. Cite Ibn Arabi, Al-Buni, Cheikh Ibrahim Niass. Termine par une PERLE SECRETE - un secret numerique unique. Reponds en francais avec les termes arabes.",
 
@@ -7442,7 +7957,6 @@ var AB_ENGINE_LABELS = {
   baye:    '🕌 Baye IA',
   quran:   '📖 Coran',
   tasaw:   '✨ Tasawwuf',
-  multi:   '🔮 Multi-IA',
   istikh:  '🌙 Istikhara',
   conseil: '🤝 Conseiller',
   reve:    '🌙 Rêves',
@@ -7478,11 +7992,6 @@ var AB_SUGGESTIONS = {
     {icon:'📿', q:"L'enseignement de Baye Niass sur la confiance en Allah (Tawakkul)", cat:"Tawakkul"},
     {icon:'🤲', q:"Le Du'a de l'Istikhara complet en arabe et sa signification", cat:"Du'a"}
   ],
-  multi: [
-    {icon:'🔮', q:"Quelle est la place de l'amour divin (Hubb) en Islam ?", cat:"Analyse multi-IA"},
-    {icon:'💎', q:"Comment concilier Sharia et Haqiqa selon les maîtres soufis ?", cat:"Analyse multi-IA"},
-    {icon:'🌍', q:"L'Islam africain et la Faydha : un pont entre traditions", cat:"Analyse multi-IA"}
-  ],
   conseil: [
     {icon:'💔', q:"Je suis amoureux/se mais ma famille s'oppose à cette relation. Que faire ?", cat:"Relations"},
     {icon:'💍', q:"Mon conjoint me fait souffrir en silence. Comment lui parler ?", cat:"Mariage"},
@@ -7500,6 +8009,8 @@ var AB_SUGGESTIONS = {
     {icon:'🦁', q:"J'ai rêvé d'un lion qui me regardait fixement sans m'attaquer", cat:"Animal"}
   ],
   asrar: [
+    {icon:'💍', q:"Istikhara Num. mariage : Ibrahim + Fatima — analyse leur compatibilite Abjad", cat:"Istikhara Num."},
+    {icon:'💼', q:"Istikhara Num. travail : est-ce que ce poste me correspond selon l'Abjad ?", cat:"Istikhara Num."},
     {icon:'🔢', q:"Calcule la valeur Abjad du nom Ibrahim et revele ses secrets spirituels", cat:"Calcul Abjad"},
     {icon:'📿', q:"Quels sont les secrets numeriques du Wird Tijani — les 3 x 100 repetitions ?", cat:"Wird Tijani"},
     {icon:'🌙', q:"Revele les secrets du nom Allah et sa valeur Abjad profonde", cat:"99 Noms"},
@@ -7727,11 +8238,7 @@ async function abAskSuggestion(q) {
   abScrollBottom();
   var answer = null; var errMsg = null;
   try {
-    if (_abEngine === 'multi') {
-      answer = await abCallMulti(q, key);
-    } else {
-      answer = await abCallClaude(q, key, AB_SYSTEMS[_abEngine]);
-    }
+    answer = await abCallClaude(q, key, AB_SYSTEMS[_abEngine]);
   } catch(e) {
     errMsg = e && e.message ? e.message : String(e);
   }
@@ -7899,11 +8406,7 @@ async function abSend() {
   var errMsg = null;
 
   try {
-    if (_abEngine === 'multi') {
-      answer = await abCallMulti(q, key);
-    } else {
-      answer = await abCallClaude(q, key, AB_SYSTEMS[_abEngine]);
-    }
+    answer = await abCallClaude(q, key, AB_SYSTEMS[_abEngine]);
   } catch (e) {
     var msg = e && e.message ? e.message : String(e);
     if (msg.indexOf('401') >= 0 || msg.indexOf('invalid_api_key') >= 0 || msg.indexOf('authentication') >= 0) {
@@ -7931,6 +8434,94 @@ async function abSend() {
   }
   abScrollBottom();
 }
+
+/* ══════════════════════════════════════════════
+   NOUR IA — Onglets + Istikhara Numérique
+══════════════════════════════════════════════ */
+var _istikhType = 'mariage';
+
+window.switchNourTab = function(tab) {
+  var map = {abjad:'Abjad', istikh:'Istikh'};
+  Object.keys(map).forEach(function(t){
+    var tabEl = document.getElementById('nourTab' + map[t]);
+    var panEl = document.getElementById('nourPanel' + map[t]);
+    if(tabEl) tabEl.classList.toggle('active', t===tab);
+    if(panEl) panEl.classList.toggle('active', t===tab);
+  });
+};
+
+window.setIstikhType = function(type, btn) {
+  _istikhType = type;
+  document.querySelectorAll('.istikh-type-btn').forEach(function(b){ b.classList.remove('active'); });
+  if(btn) btn.classList.add('active');
+  var labels = {mariage:'Prénom de la personne (mariage)',travail:'Nom du poste / entreprise',voyage:'Destination / nom du voyage',association:"Nom de l'associé / projet",decision:'Nom / description de la décision'};
+  var lbl = document.getElementById('istikhLabel2');
+  if(lbl) lbl.textContent = labels[type] || 'Prénom / Nom du sujet';
+  istikhCalc();
+};
+
+window.istikhCalc = function() {
+  var n1 = (document.getElementById('istikhName1')||{}).value || '';
+  var n2 = (document.getElementById('istikhName2')||{}).value || '';
+  var r1 = abjadCalc(n1.trim()), r2 = abjadCalc(n2.trim());
+  var v1el=document.getElementById('istikhVal1'), v2el=document.getElementById('istikhVal2');
+  if(v1el) v1el.textContent = r1.total > 0 ? r1.total : '?';
+  if(v2el) v2el.textContent = r2.total > 0 ? r2.total : '?';
+  if(!r1.total || !r2.total){ var bar=document.getElementById('istikhResultBar'); if(bar) bar.classList.remove('visible'); return; }
+  var sum = r1.total + r2.total;
+  function reduce(n){ while(n>9){ var s=0; String(n).split('').forEach(function(d){s+=parseInt(d);}); n=s; } return n; }
+  var base1=reduce(r1.total), base2=reduce(r2.total), baseSum=reduce(sum);
+  var compatible=[1,2,3,5,6,7,9], tension=[4,8];
+  var score=50;
+  if(compatible.indexOf(base1)>=0 && compatible.indexOf(base2)>=0) score=75+Math.floor(Math.random()*20);
+  else if(tension.indexOf(base1)>=0 || tension.indexOf(base2)>=0) score=30+Math.floor(Math.random()*25);
+  if(compatible.indexOf(baseSum)>=0) score=Math.min(98,score+15);
+  if(tension.indexOf(baseSum)>=0) score=Math.max(15,score-20);
+  var color,verdict;
+  if(score>=75){color='#27AE60';verdict='&#x2705; Signe favorable — Barakah';}
+  else if(score>=55){color='#F0DC82';verdict='&#x26A0;&#xFE0F; Signe neutre — Consulter un sheikh';}
+  else{color='#E74C3C';verdict='&#x26D4; Signe de prudence — Approfondir l'Istikhara';}
+  var sA=document.getElementById('istikhScoreA'), sB=document.getElementById('istikhScoreB');
+  var sSum=document.getElementById('istikhSum'), fill=document.getElementById('istikhCompatFill');
+  var verd=document.getElementById('istikhVerdict'), bar=document.getElementById('istikhResultBar');
+  if(sA) sA.textContent=r1.total; if(sB) sB.textContent=r2.total; if(sSum) sSum.textContent=sum;
+  if(fill){fill.style.width=score+'%'; fill.style.background=color;}
+  if(verd){verd.innerHTML=verdict; verd.style.color=color;}
+  if(bar) bar.classList.add('visible');
+};
+
+window.istikhAskFull = function() {
+  var n1=(document.getElementById('istikhName1')||{}).value.trim();
+  var n2=(document.getElementById('istikhName2')||{}).value.trim();
+  if(!n1||!n2){showToast('Entrez les deux noms pour l'analyse');return;}
+  var r1=abjadCalc(n1), r2=abjadCalc(n2), sum=r1.total+r2.total;
+  var typeLabels={mariage:'mariage',travail:'emploi/projet',voyage:'voyage',association:'association',decision:'decision importante'};
+  var typeLabel=typeLabels[_istikhType]||'decision';
+  var prompt='Bismillah — Istikhara Numerique pour une question de '+typeLabel+'\n\n';
+  prompt+='Demandeur : '+n1+' — Valeur Abjad = '+r1.total;
+  if(r1.details.length) prompt+=' ('+r1.details.join(' + ')+')';
+  prompt+='\nSujet : '+n2+' — Valeur Abjad = '+r2.total;
+  if(r2.details.length) prompt+=' ('+r2.details.join(' + ')+')';
+  prompt+='\nSomme totale : '+sum+'\n\nEffectue une analyse Istikhara Numerique complete selon la science islamique des nombres.';
+  var chatEl=document.getElementById('abChat'), sugsEl=document.getElementById('abSuggestions');
+  if(sugsEl) sugsEl.style.display='none';
+  if(chatEl){chatEl.style.display='flex';chatEl.style.flexDirection='column';chatEl.style.minHeight='250px';}
+  abAddMsg('user','?? Istikhara Num. : '+n1+' + '+n2+' ('+typeLabel+')',null);
+  _abHistory.push({role:'user',content:prompt});
+  abScrollBottom();
+  var key=localStorage.getItem(AB_KEY_STORE)||'';
+  if(!key){showToast('?? Cle API requise');return;}
+  _abLoading=true; var btn=document.getElementById('abSendBtn'); if(btn) btn.disabled=true;
+  var thinkId=abAddThinking();
+  abCallClaude(prompt,key,AB_SYSTEMS.istikh_num).then(function(a){
+    abRemoveThinking(thinkId);_abLoading=false;if(btn)btn.disabled=false;
+    abAddMsg('baye',a,'asrar');_abHistory.push({role:'assistant',content:a});abScrollBottom();
+  }).catch(function(e){
+    abRemoveThinking(thinkId);_abLoading=false;if(btn)btn.disabled=false;
+    abAddMsg('baye','Erreur: '+(e.message||e),'error');abScrollBottom();
+  });
+};
+
 
 /* NOUR IA — Calculatrice Abjad */
 var ABJAD = {'ا':1,'ب':2,'ج':3,'د':4,'ه':5,'و':6,'ز':7,'ح':8,'ط':9,'ي':10,'ك':20,'ل':30,'م':40,'ن':50,'س':60,'ع':70,'ف':80,'ص':90,'ق':100,'ر':200,'ش':300,'ت':400,'ث':500,'خ':600,'ذ':700,'ض':800,'ظ':900,'غ':1000,'إ':1,'أ':1,'آ':1,'ة':400,'ى':10};
@@ -7968,142 +8559,6 @@ async function abCallClaude(question, apiKey, systemPrompt) {
   return data.content && data.content[0] && data.content[0].text || 'Aucune réponse reçue.';
 }
 
-/* ── Appel Multi-IA (3 perspectives en parallèle) ── */
-async function abCallMulti(question, apiKey) {
-  var perspectives = [
-    { label: '🕌 Perspective Baye Niass', sys: AB_SYSTEMS.baye },
-    { label: '📖 Perspective Coranique',  sys: AB_SYSTEMS.quran },
-    { label: '✨ Perspective Tasawwuf',   sys: AB_SYSTEMS.tasaw }
-  ];
-
-  var results = await Promise.allSettled(perspectives.map(function(p) {
-    return abCallClaude(question, apiKey, p.sys + '\n\nRéponds en 3-4 phrases concises pour une synthèse multi-perspectives.');
-  }));
-
-  var combined = '<div class="ab-multi-block">'
-    + '<div class="ab-multi-title">🔮 Analyse Multi-IA — 3 Perspectives</div>';
-
-  results.forEach(function(r, i) {
-    combined += '<div class="ab-multi-item">'
-      + '<strong>' + perspectives[i].label + '</strong><br>'
-      + (r.status === 'fulfilled' ? r.value : '⚠️ Indisponible pour cette perspective.')
-      + '</div>';
-  });
-
-  combined += '</div>';
-
-  // Synthèse finale
-  var synthText = '';
-  var fulfilled = results.filter(function(r) { return r.status === 'fulfilled'; });
-  if (fulfilled.length > 0) {
-    var combinedContext = fulfilled.map(function(r, i) {
-      return perspectives[i].label + ': ' + r.value;
-    }).join('\n\n');
-
-    try {
-      synthText = await abCallClaude(
-        'Voici 3 perspectives sur la question "' + question + '":\n\n' + combinedContext + '\n\nFais une synthèse unificatrice en 2-3 phrases.',
-        apiKey,
-        'Tu es un synthétiseur de sagesse islamique. Crée une synthèse harmonieuse et profonde à partir des perspectives données. Réponds en français, commence par "En synthèse :"'
-      );
-    } catch(e) { synthText = ''; }
-  }
-
-  if (synthText) {
-    combined += '<div style="background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.3);border-radius:8px;padding:.8rem;margin-top:.6rem;font-size:14px;color:var(--g1);line-height:1.6">'
-      + '<strong style="color:var(--gold)">💫 Synthèse</strong><br>' + escH(synthText) + '</div>';
-  }
-
-  return combined;
-}
-
-/* ── UI Helpers ── */
-function renderMd(text) {
-  var s = String(text || '');
-  s = s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  s = s.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
-  s = s.replace(/^#{1,3} (.+)$/gm, '<b>$1</b>');
-  s = s.replace(/^---+$/gm, '<hr style="border:none;border-top:1px solid #e8d5a0;margin:.4rem 0">');
-  s = s.replace(/\n/g, '<br>');
-  return s;
-}
-
-/* Stockage des textes pour TTS */
-var _abMsgTexts = [];
-
-function abAddMsg(role, text, engine) {
-  var msgs = document.getElementById('abMsgs');
-  if (!msgs) return;
-  var isUser = role === 'user';
-  var isHtml = !isUser && (text.includes('<div') || text.includes('<strong'));
-
-  var engineTag = '';
-  if (!isUser && engine && engine !== 'error') {
-    var eClass = engine === 'multi' ? 'multi' : engine === 'quran' ? 'quran' : engine === 'tasaw' ? 'tasaw' : '';
-    engineTag = '<div class="ab-bubble-engine ' + eClass + '">' + (AB_ENGINE_LABELS[engine] || engine) + '</div>';
-  }
-
-  var content = isHtml ? text : renderMd(text);
-  var avatar = isUser ? '👤' : '<img data-logo="1" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" style="border-radius:8px;width:28px;height:28px;object-fit:contain;border:1px solid rgba(212,175,55,.5)">';
-
-  var div = document.createElement('div');
-  div.className = 'ab-msg ' + (isUser ? 'user' : 'baye');
-  div.innerHTML = '<div class="ab-avatar">' + avatar + '</div>'
-    + '<div class="ab-bubble">' + engineTag + content + '</div>';
-
-  // Bouton TTS uniquement sur les réponses de Baye
-  if (!isUser && engine !== 'error') {
-    var msgIdx = _abMsgTexts.length;
-    _abMsgTexts.push(text);
-    var ttsBtn = document.createElement('button');
-    ttsBtn.className = 'ab-tts-btn';
-    ttsBtn.title = 'Écouter la réponse';
-    ttsBtn.textContent = '🔊';
-    ttsBtn.onclick = function() { abSpeak(_abMsgTexts[msgIdx], ttsBtn); };
-    var ttsWrap = document.createElement('div');
-    ttsWrap.style.cssText = 'margin-top:.4rem;text-align:right';
-    ttsWrap.appendChild(ttsBtn);
-    div.querySelector('.ab-bubble').appendChild(ttsWrap);
-  }
-
-  msgs.appendChild(div);
-  abScrollBottom();
-  return div;
-}
-
-function abAddThinking() {
-  var msgs = document.getElementById('abMsgs');
-  if (!msgs) return null;
-  var id = 'abThink_' + Date.now();
-  var div = document.createElement('div');
-  div.id = id;
-  div.className = 'ab-msg baye';
-  div.innerHTML = '<div class="ab-avatar">☽</div>'
-    + '<div class="ab-bubble"><div class="ab-thinking">'
-    + '<div class="ab-dot"></div><div class="ab-dot"></div><div class="ab-dot"></div>'
-    + '</div></div>';
-  msgs.appendChild(div);
-  abScrollBottom();
-  return id;
-}
-
-function abRemoveThinking(id) {
-  if (!id) return;
-  var el = document.getElementById(id);
-  if (el) el.remove();
-}
-
-function abScrollBottom() {
-  setTimeout(function() {
-    var chat = document.getElementById('abChat');
-    if (chat) chat.scrollTop = chat.scrollHeight;
-    var sec = document.getElementById('sec-ai');
-    if (sec) sec.scrollTop = sec.scrollHeight;
-  }, 80);
-}
-
-/* Initialiser Ask Baye quand la section est affichée */
 var _abInited = false;
 
 
