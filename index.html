@@ -10741,18 +10741,85 @@ function _qiblaRun(lat, lng, label) {
   document.getElementById('qiblaMsg').textContent='';
 }
 
+/* Base de villes intégrée — aucune API externe */
+var _CITIES = {
+  /* Sénégal */
+  'dakar':[14.6937,-17.4441],'thies':[14.7910,-16.9359],'thiès':[14.7910,-16.9359],
+  'kaolack':[14.1520,-16.0765],'saint-louis':[16.0179,-16.4896],'ziguinchor':[12.5681,-16.2719],
+  'touba':[14.8528,-15.8800],'diourbel':[14.6553,-16.2333],'louga':[15.6173,-16.2247],
+  'tambacounda':[13.7707,-13.6673],'kolda':[12.8833,-14.9500],'matam':[15.6559,-13.2557],
+  'medina baye':[14.1520,-16.0765],'médina baye':[14.1520,-16.0765],
+  'rufisque':[14.7156,-17.2736],'mbour':[14.3682,-16.9644],'fatick':[14.3391,-16.4112],
+  'joal':[14.1667,-16.8333],'tivaouane':[14.9556,-16.8167],'kaffrine':[14.1056,-15.5500],
+  'kedougou':[12.5549,-12.1817],'sédhiou':[12.7040,-15.5570],
+  /* Mali */
+  'bamako':[12.6392,-8.0029],'segou':[13.4500,-6.2667],'kayes':[14.4469,-11.4427],
+  'mopti':[14.4974,-4.1825],'sikasso':[11.3167,-5.6667],'gao':[16.2667,-0.0500],
+  'tombouctou':[16.7735,-3.0074],'kidal':[18.4433,1.4078],
+  /* Mauritanie */
+  'nouakchott':[18.0858,-15.9785],'nouadhibou':[20.9309,-17.0347],
+  /* Guinée */
+  'conakry':[9.5370,-13.6729],'kankan':[10.3852,-9.3060],'labé':[11.3167,-12.2833],
+  /* Gambie */
+  'banjul':[13.4531,-16.5775],'serrekunda':[13.4333,-16.6667],
+  /* Côte d'Ivoire */
+  'abidjan':[5.3599,-4.0083],'yamoussoukro':[6.8276,-5.2893],'bouaké':[7.6906,-5.0310],
+  /* Ghana */
+  'accra':[5.5560,-0.1969],'kumasi':[6.6884,-1.6244],
+  /* Nigeria */
+  'lagos':[6.5244,3.3792],'abuja':[9.0579,7.4951],'kano':[12.0000,8.5167],'ibadan':[7.3776,3.9470],
+  'katsina':[12.9889,7.6008],'sokoto':[13.0622,5.2339],'zaria':[11.0667,7.7000],
+  /* Niger */
+  'niamey':[13.5137,2.1098],'zinder':[13.8000,8.9833],'maradi':[13.5000,7.1000],
+  /* Burkina Faso */
+  'ouagadougou':[12.3647,-1.5353],'bobo-dioulasso':[11.1770,-4.2979],
+  /* Cameroun */
+  'yaoundé':[3.8480,11.5021],'douala':[4.0483,9.7043],
+  /* Maroc */
+  'casablanca':[33.5731,-7.5898],'rabat':[34.0209,-6.8417],'fès':[34.0333,-5.0000],
+  'marrakech':[31.6295,-7.9811],'tanger':[35.7595,-5.8340],
+  /* Algérie */
+  'alger':[36.7372,3.0865],'oran':[35.6969,-0.6331],'constantine':[36.3650,6.6147],
+  /* Tunisie */
+  'tunis':[36.8190,10.1658],'sfax':[34.7400,10.7600],
+  /* Egypte */
+  'cairo':[30.0444,31.2357],'le caire':[30.0444,31.2357],'alexandrie':[31.2001,29.9187],
+  /* France */
+  'paris':[48.8566,2.3522],'lyon':[45.7640,4.8357],'marseille':[43.2965,5.3698],
+  /* Arabie */
+  'la mecque':[21.4225,39.8262],'mecca':[21.4225,39.8262],'medine':[24.5247,39.5692],
+  'jeddah':[21.4858,39.1925],'riyadh':[24.6877,46.7219],
+  /* Etats-Unis */
+  'new york':[40.7128,-74.0060],'chicago':[41.8781,-87.6298],
+  /* Autres */
+  'london':[51.5074,-0.1278],'dubai':[25.2048,55.2708],'istanbul':[41.0082,28.9784]
+};
+
+function _cityFind(input) {
+  var key = input.toLowerCase().trim()
+    .replace(/[àâä]/g,'a').replace(/[éèêë]/g,'e')
+    .replace(/[îï]/g,'i').replace(/[ôö]/g,'o').replace(/[ùûü]/g,'u')
+    .replace(/[ç]/g,'c');
+  if (_CITIES[key]) return {lat:_CITIES[key][0], lng:_CITIES[key][1], name:input};
+  /* Recherche partielle */
+  var keys = Object.keys(_CITIES);
+  for (var i=0; i<keys.length; i++) {
+    if (keys[i].indexOf(key) === 0 || key.indexOf(keys[i]) === 0) {
+      return {lat:_CITIES[keys[i]][0], lng:_CITIES[keys[i]][1], name:keys[i]};
+    }
+  }
+  return null;
+}
+
 function qiblaGo() {
   var city=(document.getElementById('qiblaCityIn').value||'').trim();
   if(!city){ document.getElementById('qiblaMsg').textContent='⚠️ Entrez une ville'; return; }
-  document.getElementById('qiblaMsg').textContent='Recherche...';
-  fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(city)+'&format=json&limit=1')
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      if(!d||!d.length){ document.getElementById('qiblaMsg').textContent='❌ Ville non trouvée'; return; }
-      var name=d[0].display_name.split(',').slice(0,2).join(',');
-      _qiblaRun(parseFloat(d[0].lat), parseFloat(d[0].lon), name);
-    })
-    .catch(function(){ document.getElementById('qiblaMsg').textContent='❌ Erreur réseau'; });
+  var found = _cityFind(city);
+  if(found){
+    _qiblaRun(found.lat, found.lng, found.name);
+  } else {
+    document.getElementById('qiblaMsg').textContent='❌ Ville inconnue — essayez: Dakar, Thiès, Kaolack, Touba...';
+  }
 }
 
 function qiblaGPS() {
@@ -10853,16 +10920,14 @@ function _moonRun(lat, lng, cityName) {
 
 function moonGo() {
   var city=(document.getElementById('moonCityIn').value||'').trim();
-  if(!city){ moonGoNow('',14.15,-16.08); return; }
-  document.getElementById('moonMsg').textContent='Recherche...';
-  fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(city)+'&format=json&limit=1')
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      if(!d||!d.length){ document.getElementById('moonMsg').textContent='❌ Ville non trouvée'; return; }
-      var name=d[0].display_name.split(',').slice(0,2).join(',');
-      _moonRun(parseFloat(d[0].lat), parseFloat(d[0].lon), name);
-    })
-    .catch(function(){ document.getElementById('moonMsg').textContent='❌ Erreur réseau'; });
+  if(!city){ moonGoNow('Sénégal',14.15,-16.08); return; }
+  var found = _cityFind(city);
+  if(found){
+    _moonRun(found.lat, found.lng, found.name);
+  } else {
+    document.getElementById('moonMsg').textContent='❌ Ville inconnue — essayez: Dakar, Thiès, Kaolack...';
+    _moonRun(14.15,-16.08, city+' (approximatif)');
+  }
 }
 
 function moonGoNow(label, lat, lng) {
@@ -10874,13 +10939,7 @@ function moonGPS() {
   document.getElementById('moonMsg').textContent='📍 Localisation GPS...';
   navigator.geolocation.getCurrentPosition(
     function(p){
-      fetch('https://nominatim.openstreetmap.org/reverse?lat='+p.coords.latitude+'&lon='+p.coords.longitude+'&format=json')
-        .then(function(r){ return r.json(); })
-        .then(function(d){
-          var a=d.address||{};
-          var n=(a.city||a.town||a.village||a.state||'')+(a.country?', '+a.country:'');
-          _moonRun(p.coords.latitude, p.coords.longitude, n||'GPS');
-        }).catch(function(){ _moonRun(p.coords.latitude, p.coords.longitude, 'GPS'); });
+      _moonRun(p.coords.latitude, p.coords.longitude, 'GPS ('+p.coords.latitude.toFixed(2)+'°, '+p.coords.longitude.toFixed(2)+'°)');
     },
     function(){ document.getElementById('moonMsg').textContent='❌ GPS refusé'; moonGoNow('Sénégal',14.15,-16.08); },
     {timeout:8000}
