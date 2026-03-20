@@ -2731,22 +2731,28 @@ button[onclick="qiblaGPS()"] {
   var API_BASE    = 'https://www.radio-senegal.com';
   var META_API    = 'https://metadata-api.mytuner.mobi/v2/' + RADIO_ID;
 
-  /* Fallbacks si l'API échoue */
-  /* ✅ STREAM OFFICIEL extrait du site radioalfayda.net
-     Source: MRP.insert url dans le widget sidebar officiel */
-  /* Streams à tester en ordre — mettre à jour si le stream change */
+  /* ✅ STREAMS RADIO AL-FAYDHA — mis à jour 2026
+     Source officielle : radioalfayda.net (MRP player widget)
+     Stream principal : usa5.fastcast4u.com/proxy/lyartech */
   var FALLBACK_STREAMS = [
-    'https://stream.zeno.fm/OUE5xD8nztzuv',
-    'https://cast2.hostrails.com/radio-alfayda',
+    /* 1. Stream officiel fastcast4u */
     'https://usa5.fastcast4u.com/proxy/lyartech?mp=/1',
-    'https://c7.radioboss.fm/stream/379',
-    'https://lyartech.fastcast4u.com/stream',
+    /* 2. Zeno.fm — CDN mondial haute disponibilité */
+    'https://stream.zeno.fm/OUE5xD8nztzuv',
+    /* 3. Hostrails */
+    'https://cast2.hostrails.com/radio-alfayda',
+    /* 4. RadioBoss avec port explicite */
+    'https://c7.radioboss.fm:8040/stream/379',
+    /* 5. Airtime relay */
+    'https://lyartech.out.airtime.pro/lyartech_a',
+    /* 6. Radio.co */
     'https://s3.radio.co/s3a2e15d1d/listen',
-    'https://radiostreamlive.com/radio-alfayda'
+    /* 7. Icecast relay */
+    'https://usa5.fastcast4u.com/lyartech'
   ];
-  
-  /* URL YouTube Live officielle Radio Al-Faydha (fallback si audio mort) */
-  var YT_LIVE_ID = 'UCxxxxxxxx'; /* À mettre à jour avec vrai ID chaîne */
+
+  /* URL YouTube Live officielle Radio Al-Faydha */
+  var YT_LIVE_ID = 'UCxxxxxxxx';
 
   var audio   = document.getElementById('rpAudio');
   var btn     = document.getElementById('rpBtn');
@@ -2886,10 +2892,15 @@ button[onclick="qiblaGPS()"] {
     div.id = 'rpYtFallback';
     div.style.cssText = 'background:#0a1a0e;border-top:1px solid rgba(212,175,55,.2);padding:.9rem 1.1rem;text-align:center';
     div.innerHTML = 
-      '<div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:.6rem">📡 Stream audio indisponible — Écouter sur YouTube</div>' +
+      '<div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:.6rem">📡 Stream audio indisponible</div>' +
+      '<div style="display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-bottom:.5rem">' +
+      '<a href="https://radioalfayda.net" target="_blank" rel="noopener" ' +
+      'style="display:inline-flex;align-items:center;gap:.4rem;background:#00315d;color:#fff;border-radius:20px;padding:.4rem .9rem;font-size:12px;font-weight:700;text-decoration:none">' +
+      '🌐 Site officiel</a>' +
       '<a href="https://www.youtube.com/@RadioAlFaydha" target="_blank" rel="noopener" ' +
-      'style="display:inline-flex;align-items:center;gap:.5rem;background:#FF0000;color:#fff;border-radius:20px;padding:.4rem 1.1rem;font-size:13px;font-weight:700;text-decoration:none">' +
-      '<span style="font-size:16px">▶</span> Radio Al-Faydha sur YouTube</a>' +
+      'style="display:inline-flex;align-items:center;gap:.4rem;background:#FF0000;color:#fff;border-radius:20px;padding:.4rem .9rem;font-size:12px;font-weight:700;text-decoration:none">' +
+      '<span>▶</span> YouTube Live</a>' +
+      '</div>' +
       '<div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:.5rem">ou entrez un stream URL ci-dessous</div>' +
       '<div style="display:flex;gap:.4rem;margin-top:.4rem">' +
       '<input id="rpCustomUrl" type="url" placeholder="https://... URL stream M3U8 ou MP3" ' +
