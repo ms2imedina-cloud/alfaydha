@@ -4493,6 +4493,513 @@ window.switchQlTab = function(tab) {
 ═══════════════════════════════════════ -->
 
 
+<!-- ═══════════════════════════════════════════════════════
+     SECTION HISTOIRE DE CHEIKH IBRAHIM NIASS (BAYE)
+═══════════════════════════════════════════════════════ -->
+<section id="sec-baye" class="sec">
+<style>
+/* ── Histoire Baye ── */
+.baye-wrap { background: var(--ivory); min-height: 100%; }
+
+.baye-hero {
+  position: relative;
+  background: linear-gradient(170deg, #041a0c 0%, #0a3018 60%, #071a0e 100%);
+  padding: 2rem 1.4rem 1.5rem;
+  text-align: center;
+  overflow: hidden;
+}
+.baye-hero-rings {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+.baye-hero-ring {
+  position: absolute; border-radius: 50%;
+  border: 1px solid rgba(212,175,55,.1);
+  animation: bayeRing 5s ease-in-out infinite;
+}
+.baye-hero-ring:nth-child(1){width:100px;height:100px;}
+.baye-hero-ring:nth-child(2){width:200px;height:200px;animation-delay:.8s;}
+.baye-hero-ring:nth-child(3){width:320px;height:320px;animation-delay:1.6s;}
+@keyframes bayeRing{0%,100%{opacity:.12;transform:scale(1)}50%{opacity:.4;transform:scale(1.04)}}
+
+.baye-photo-wrap {
+  width: 110px; height: 110px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  border: 3px solid var(--gold);
+  box-shadow: 0 0 30px rgba(212,175,55,.4);
+  overflow: hidden;
+  position: relative; z-index: 2;
+  background: linear-gradient(135deg,#0F7B3F,#1a9650);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 52px;
+}
+.baye-hero-name {
+  font-family: 'Amiri', serif;
+  font-size: 22px; color: #fff;
+  line-height: 1.2;
+  position: relative; z-index: 2;
+  margin-bottom: .2rem;
+}
+.baye-hero-ar {
+  font-family: 'Amiri', serif;
+  font-size: 18px; color: var(--gold2);
+  direction: rtl;
+  position: relative; z-index: 2;
+  margin-bottom: .4rem;
+}
+.baye-hero-dates {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: .12em; color: rgba(255,255,255,.4);
+  text-transform: uppercase;
+  position: relative; z-index: 2;
+}
+.baye-badge-row {
+  display: flex; gap: .5rem; justify-content: center; flex-wrap: wrap;
+  margin-top: .8rem; position: relative; z-index: 2;
+}
+.baye-badge {
+  background: rgba(212,175,55,.12);
+  border: 1px solid rgba(212,175,55,.3);
+  border-radius: 20px;
+  padding: .2rem .75rem;
+  font-size: 10.5px; font-weight: 700;
+  color: var(--gold2);
+  letter-spacing: .05em;
+}
+
+/* Chapitres */
+.baye-chapters {
+  display: flex; gap: .4rem;
+  padding: .7rem 1rem;
+  overflow-x: auto;
+  background: #fff;
+  border-bottom: 1px solid rgba(212,175,55,.15);
+  -webkit-overflow-scrolling: touch;
+}
+.baye-chapters::-webkit-scrollbar { display: none; }
+.baye-chap-btn {
+  flex-shrink: 0;
+  background: rgba(15,123,63,.06);
+  border: 1px solid rgba(15,123,63,.18);
+  border-radius: 20px;
+  padding: .3rem .85rem;
+  font-size: 11.5px; font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: 'Roboto', sans-serif;
+  transition: all .18s;
+}
+.baye-chap-btn.active {
+  background: var(--g1);
+  border-color: var(--g1);
+  color: #fff;
+}
+
+/* Panneaux chapitres */
+.baye-panel { display: none; padding: 1.1rem 1.1rem 2rem; }
+.baye-panel.active { display: block; }
+
+/* Carte info */
+.baye-card {
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid rgba(212,175,55,.2);
+  padding: 1rem 1.1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,.05);
+}
+.baye-card-title {
+  font-family: 'Amiri', serif;
+  font-size: 16px; font-weight: 700;
+  color: var(--g1);
+  margin-bottom: .55rem;
+  display: flex; align-items: center; gap: .5rem;
+}
+.baye-card-title .bci { font-size: 18px; }
+.baye-card p {
+  font-size: 13.5px; color: var(--text2);
+  line-height: 1.7;
+  margin-bottom: .6rem;
+}
+.baye-card p:last-child { margin-bottom: 0; }
+
+/* Citation */
+.baye-quote {
+  background: linear-gradient(135deg,#f0f9f3,#e8f5ec);
+  border-left: 4px solid var(--g1);
+  border-radius: 0 12px 12px 0;
+  padding: .9rem 1rem;
+  margin: .8rem 0;
+  font-family: 'Amiri', serif;
+  font-size: 15px;
+  color: var(--text1);
+  line-height: 1.7;
+  font-style: italic;
+}
+.baye-quote-ar {
+  font-family: 'Amiri', serif;
+  font-size: 17px; direction: rtl; text-align: right;
+  color: var(--g1); margin-bottom: .4rem;
+  font-style: normal; font-weight: 700;
+}
+.baye-quote-source {
+  font-size: 11px; color: var(--text3);
+  font-style: normal; margin-top: .4rem;
+}
+
+/* Timeline */
+.baye-timeline { list-style: none; padding: 0; margin: 0; }
+.baye-tl-item {
+  display: flex; gap: .8rem;
+  padding: .65rem 0;
+  border-bottom: 1px solid rgba(212,175,55,.1);
+}
+.baye-tl-item:last-child { border-bottom: none; }
+.baye-tl-year {
+  flex-shrink: 0;
+  width: 52px;
+  font-size: 12px; font-weight: 700;
+  color: var(--g1);
+  padding-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.baye-tl-dot {
+  flex-shrink: 0;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--gold);
+  margin-top: 4px;
+  box-shadow: 0 0 6px rgba(212,175,55,.5);
+}
+.baye-tl-text { font-size: 13px; color: var(--text2); line-height: 1.55; }
+
+/* Grille œuvres */
+.baye-books-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .7rem;
+}
+.baye-book-card {
+  background: #fff;
+  border: 1px solid rgba(15,123,63,.15);
+  border-radius: 12px;
+  padding: .75rem .8rem;
+  text-align: center;
+}
+.baye-book-icon { font-size: 26px; margin-bottom: .3rem; }
+.baye-book-title {
+  font-family: 'Amiri', serif;
+  font-size: 13px; font-weight: 700;
+  color: var(--text1); line-height: 1.3; margin-bottom: .25rem;
+}
+.baye-book-desc { font-size: 11px; color: var(--text3); line-height: 1.4; }
+
+/* Légendes / miracles */
+.baye-legend {
+  display: flex; gap: .8rem; align-items: flex-start;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid rgba(212,175,55,.15);
+  padding: .8rem .9rem;
+  margin-bottom: .7rem;
+}
+.baye-legend-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+.baye-legend-text { font-size: 13px; color: var(--text2); line-height: 1.6; }
+.baye-legend-title { font-weight: 700; color: var(--g1); margin-bottom: .2rem; font-size: 13.5px; }
+</style>
+
+<div class="baye-wrap">
+
+  <!-- Hero -->
+  <div class="baye-hero">
+    <div class="baye-hero-rings">
+      <div class="baye-hero-ring"></div>
+      <div class="baye-hero-ring"></div>
+      <div class="baye-hero-ring"></div>
+    </div>
+    <div class="baye-photo-wrap">🌙</div>
+    <div class="baye-hero-name">Cheikh Ibrahim Niass</div>
+    <div class="baye-hero-ar">الشيخ إبراهيم إنياس</div>
+    <div class="baye-hero-dates">1900 — 1975 · Médina Baye, Kaolack</div>
+    <div class="baye-badge-row">
+      <span class="baye-badge">Baye Niass</span>
+      <span class="baye-badge">Faydha Tidjaniyya</span>
+      <span class="baye-badge">Wali de l'Époque</span>
+    </div>
+  </div>
+
+  <!-- Onglets chapitres -->
+  <div class="baye-chapters" id="bayeChapters">
+    <button class="baye-chap-btn active" onclick="showBayeChap('vie',this)">📜 Vie</button>
+    <button class="baye-chap-btn" onclick="showBayeChap('fayda',this)">💧 La Fayda</button>
+    <button class="baye-chap-btn" onclick="showBayeChap('timeline',this)">🗓 Chronologie</button>
+    <button class="baye-chap-btn" onclick="showBayeChap('oeuvres',this)">📚 Œuvres</button>
+    <button class="baye-chap-btn" onclick="showBayeChap('karama',this)">✨ Karama</button>
+    <button class="baye-chap-btn" onclick="showBayeChap('heritage',this)">🌍 Héritage</button>
+  </div>
+
+  <!-- ─── CHAPITRE : VIE ─── -->
+  <div class="baye-panel active" id="baye-vie">
+
+    <div class="baye-card">
+      <div class="baye-card-title"><span class="bci">🌱</span>Naissance et origine</div>
+      <p>Cheikh Ibrahim Niass, surnommé affectueusement <strong>Baye</strong> (« Père » en wolof), est né le <strong>15 Rajab 1318 H</strong> (8 novembre 1900) à <strong>Léona Niassène</strong>, village fondé par son père Cheikh Abdoulaye Niass (Limamou).</p>
+      <p>Il est issu d'une illustre lignée de savants mourides de la Tidjaniyya. Son père Limamou était lui-même un pole spirituel reconnu dans toute l'Afrique de l'Ouest.</p>
+    </div>
+
+    <div class="baye-card">
+      <div class="baye-card-title"><span class="bci">📖</span>Formation spirituelle</div>
+      <p>Dès son plus jeune âge, Ibrahim Niass montre des dons intellectuels et spirituels exceptionnels. Il apprend le Coran par cœur avant l'adolescence et suit des études approfondies en sciences islamiques — Fiqh, Hadith, Tafsir et surtout le Tasawwuf (soufisme).</p>
+      <p>Il reçoit l'initiation à la Tidjaniyya directement dans la chaîne de transmission (silsila) reliée au fondateur Cheikh Ahmad Tidjane à travers son père et d'autres maîtres de l'époque.</p>
+      <div class="baye-quote">
+        <div class="baye-quote-ar">طلب العلم فريضة على كل مسلم</div>
+        « La quête du savoir est une obligation pour tout musulman »<br>
+        <span class="baye-quote-source">— Hadith du Prophète ﷺ, souvent cité par Baye</span>
+      </div>
+    </div>
+
+    <div class="baye-card">
+      <div class="baye-card-title"><span class="bci">🕌</span>Fondation de Médina Baye</div>
+      <p>En <strong>1930</strong>, Cheikh Ibrahim Niass fonde <strong>Médina Baye</strong> à Kaolack, qui devient le centre spirituel de la Fayda Tidjaniyya et l'un des plus grands foyers islamiques d'Afrique. La ville attire chaque année des millions de pèlerins du monde entier.</p>
+      <p>La Grande Mosquée de Médina Baye, construite sous sa direction, est un chef-d'œuvre architectural et un symbole de l'Islam africain rayonnant.</p>
+    </div>
+
+    <div class="baye-card">
+      <div class="baye-card-title"><span class="bci">✈️</span>Rayonnement mondial</div>
+      <p>Baye Niass voyage dans toute l'Afrique, le Moyen-Orient, l'Europe et l'Amérique. Il rencontre les grands savants et dirigeants de son époque, dont le roi <strong>Fayçal d'Arabie Saoudite</strong>, le président <strong>Nasser d'Égypte</strong> et participe à la Ligue Islamique Mondiale.</p>
+      <p>Il contribue à l'unité de l'Oumma islamique en prônant le dialogue et la tolérance entre les différentes tendances de l'Islam.</p>
+    </div>
+
+    <div class="baye-card">
+      <div class="baye-card-title"><span class="bci">🌙</span>Retour à Allah</div>
+      <p>Cheikh Ibrahim Niass retourne à la Miséricorde divine le <strong>26 Juillet 1975</strong> à <strong>Lagos, Nigéria</strong>, lors d'un voyage apostolique. Il avait 74 ans selon le calendrier hégirien.</p>
+      <p>Sa dépouille est ramenée à Médina Baye où il est inhumé. Son mausolée est aujourd'hui un lieu de visite (ziyara) pour des millions de fidèles à travers le monde.</p>
+    </div>
+
+  </div><!-- baye-vie -->
+
+  <!-- ─── CHAPITRE : FAYDA ─── -->
+  <div class="baye-panel" id="baye-fayda">
+
+    <div class="baye-card">
+      <div class="baye-card-title"><span class="bci">💧</span>Qu'est-ce que la Fayda ?</div>
+      <p>La <strong>Fayda</strong> (الفيضة) signifie en arabe le <em>débordement</em>, le <em>flot</em> ou l'<em>inondation spirituelle</em>. Cheikh Ibrahim Niass a annoncé avoir reçu la mission divine de répandre une inondation de grâce et de connaissance spirituelle (Ma'rifa) à travers la Tarbiyya (éducation spirituelle).</p>
+      <div class="baye-quote">
+        <div class="baye-quote-ar">جاءت الفيضة وجاء أوانها · وفاض بحر سيدي في زمانها</div>
+        « La Fayda est venue, son heure est arrivée · L'océan de mon maître a débordé en son temps »<br>
+        <span class="baye-quote-source">— Cheikh Ibrahim Niass, Kashf al-Ilbas</span>
+      </div>
+    </div>
+
+    <div class="baye-card">
+      <div class="baye-card-title"><span class="bci">🌊</span>Fondements de la Fayda</div>
+      <p><strong>1. La Tarbiyya rapide</strong> — Baye introduit une méthode d'éducation spirituelle intensive permettant d'atteindre la Fanaa (extinction de l'ego en Dieu) en un temps très court, parfois en quelques jours.</p>
+      <p><strong>2. La démocratisation du soufisme</strong> — Là où le soufisme était réservé à une élite, Baye l'ouvre à tous — hommes, femmes, lettrés et analphabètes, riches et pauvres.</p>
+      <p><strong>3. L'accent sur la connaissance de Dieu (Ma'rifa)</strong> — L'objectif final est la connaissance directe et intime de l'Être divin, au-delà des formes extérieures.</p>
+    </div>
+
+    <div class="baye-card">
+      <div class="baye-card-title"><span class="bci">🌍</span>Expansion de la Fayda</div>
+      <p>En quelques décennies, la Fayda de Baye Niass s'est répandue dans plus de <strong>40 pays</strong>. On estime que ses disciples (Taalibé Baye) sont entre <strong>50 et 100 millions</strong> de personnes à travers l'Afrique subsaharienne, le Maghreb, le Moyen-Orient, l'Europe et l'Amérique.</p>
+      <p>Au Nigeria seul, la confrérie compte des dizaines de millions de membres. Kano, Sokoto, Ilorin sont des centres majeurs de la Fayda en Afrique occidentale.</p>
+    </div>
+
+  </div><!-- baye-fayda -->
+
+  <!-- ─── CHAPITRE : CHRONOLOGIE ─── -->
+  <div class="baye-panel" id="baye-timeline">
+    <div class="baye-card">
+      <div class="baye-card-title"><span class="bci">🗓</span>Grandes étapes de sa vie</div>
+      <ul class="baye-timeline">
+        <li class="baye-tl-item">
+          <span class="baye-tl-year">1900</span>
+          <span class="baye-tl-dot"></span>
+          <span class="baye-tl-text">Naissance à Léona Niassène (15 Rajab 1318 H). Son père Limamou lui donne le nom Ibrahim.</span>
+        </li>
+        <li class="baye-tl-item">
+          <span class="baye-tl-year">1908</span>
+          <span class="baye-tl-dot"></span>
+          <span class="baye-tl-text">Mémorisation complète du Coran à l'âge de 8 ans. Début des études avancées en sciences islamiques.</span>
+        </li>
+        <li class="baye-tl-item">
+          <span class="baye-tl-year">1913</span>
+          <span class="baye-tl-dot"></span>
+          <span class="baye-tl-text">Décès de son père Limamou. Ibrahim, à 13 ans, hérite de la direction spirituelle.</span>
+        </li>
+        <li class="baye-tl-item">
+          <span class="baye-tl-year">1929</span>
+          <span class="baye-tl-dot"></span>
+          <span class="baye-tl-text">Révélation de la Fayda — Baye reçoit la vision prophétique lui confiant la mission de répandre la grâce spirituelle dans le monde.</span>
+        </li>
+        <li class="baye-tl-item">
+          <span class="baye-tl-year">1930</span>
+          <span class="baye-tl-dot"></span>
+          <span class="baye-tl-text">Fondation de Médina Baye à Kaolack, qui devient le centre mondial de la Fayda Tidjaniyya.</span>
+        </li>
+        <li class="baye-tl-item">
+          <span class="baye-tl-year">1937</span>
+          <span class="baye-tl-dot"></span>
+          <span class="baye-tl-text">Premier voyage au Nigéria — début de l'expansion massive de la Fayda en Afrique de l'Ouest.</span>
+        </li>
+        <li class="baye-tl-item">
+          <span class="baye-tl-year">1946</span>
+          <span class="baye-tl-dot"></span>
+          <span class="baye-tl-text">Premier pèlerinage à La Mecque. Rencontre des grands oulémas du monde arabe qui reconnaissent son rang spirituel.</span>
+        </li>
+        <li class="baye-tl-item">
+          <span class="baye-tl-year">1961</span>
+          <span class="baye-tl-dot"></span>
+          <span class="baye-tl-text">Participation à la fondation de la Ligue Islamique Mondiale à La Mecque. Représentant de l'Islam africain.</span>
+        </li>
+        <li class="baye-tl-item">
+          <span class="baye-tl-year">1964</span>
+          <span class="baye-tl-dot"></span>
+          <span class="baye-tl-text">Inauguration de la Grande Mosquée de Médina Baye — chef-d'œuvre de l'architecture islamique africaine.</span>
+        </li>
+        <li class="baye-tl-item">
+          <span class="baye-tl-year">1975</span>
+          <span class="baye-tl-dot"></span>
+          <span class="baye-tl-text">Retour à Allah le 26 juillet à Lagos (Nigéria). Inhumation à Médina Baye. La Oumma pleure un géant de l'Islam.</span>
+        </li>
+      </ul>
+    </div>
+  </div><!-- baye-timeline -->
+
+  <!-- ─── CHAPITRE : ŒUVRES ─── -->
+  <div class="baye-panel" id="baye-oeuvres">
+    <div class="baye-card">
+      <div class="baye-card-title"><span class="bci">📚</span>Principales œuvres</div>
+      <p>Cheikh Ibrahim Niass a laissé un corpus littéraire immense — plus de <strong>100 ouvrages</strong> en arabe couvrant le Tasawwuf, la Fiqh, la poésie, le Tafsir et la pensée islamique.</p>
+    </div>
+    <div class="baye-books-grid">
+      <div class="baye-book-card">
+        <div class="baye-book-icon">📜</div>
+        <div class="baye-book-title">Kashf al-Ilbas</div>
+        <div class="baye-book-desc">Son œuvre maîtresse sur la Fayda et la voie spirituelle. Référence incontournable.</div>
+      </div>
+      <div class="baye-book-card">
+        <div class="baye-book-icon">🌙</div>
+        <div class="baye-book-title">Rouhou l-Adab</div>
+        <div class="baye-book-desc">Traité sur l'éthique et la courtoisie islamique dans la vie quotidienne.</div>
+      </div>
+      <div class="baye-book-card">
+        <div class="baye-book-icon">📖</div>
+        <div class="baye-book-title">Jawahir ar-Rasail</div>
+        <div class="baye-book-desc">Recueil de lettres spirituelles adressées à ses disciples dans le monde.</div>
+      </div>
+      <div class="baye-book-card">
+        <div class="baye-book-icon">🎵</div>
+        <div class="baye-book-title">Diwane</div>
+        <div class="baye-book-desc">Recueil poétique en arabe — chants spirituels (Qasaid) célébrant le Prophète ﷺ.</div>
+      </div>
+      <div class="baye-book-card">
+        <div class="baye-book-icon">⚖️</div>
+        <div class="baye-book-title">Miftah as-Salama</div>
+        <div class="baye-book-desc">Traité de jurisprudence islamique malékite adapté au contexte africain.</div>
+      </div>
+      <div class="baye-book-card">
+        <div class="baye-book-icon">✨</div>
+        <div class="baye-book-title">Siraj al-Qulub</div>
+        <div class="baye-book-desc">« La Lampe des cœurs » — guide de l'éveil spirituel et de la Ma'rifa.</div>
+      </div>
+    </div>
+  </div><!-- baye-oeuvres -->
+
+  <!-- ─── CHAPITRE : KARAMA ─── -->
+  <div class="baye-panel" id="baye-karama">
+
+    <div class="baye-card">
+      <div class="baye-card-title"><span class="bci">✨</span>Karama et grâces divines</div>
+      <p>Les <strong>Karama</strong> (كرامات — grâces accordées aux saints) de Cheikh Ibrahim Niass sont nombreuses et rapportées par des milliers de témoins à travers l'Afrique et le monde. Elles manifestent sa proximité avec Allah et son rang de Wali (saint) de l'époque.</p>
+    </div>
+
+    <div class="baye-legend">
+      <span class="baye-legend-icon">💧</span>
+      <div class="baye-legend-text">
+        <div class="baye-legend-title">La Source de Médina Baye</div>
+        Des témoins rapportent que lors de la fondation de Médina Baye, une source d'eau douce jaillit à l'endroit où Baye posa le pied, malgré la sécheresse. Cette eau fut utilisée pour la construction de la première mosquée.
+      </div>
+    </div>
+
+    <div class="baye-legend">
+      <span class="baye-legend-icon">🦁</span>
+      <div class="baye-legend-text">
+        <div class="baye-legend-title">La Protection divine en voyage</div>
+        Lors de nombreux voyages en Afrique, ses convois furent protégés de manière inexplicable. Des lions qui menaçaient des villages s'éloignèrent à son passage, et des pluies tombèrent en région de sécheresse sur sa prière.
+      </div>
+    </div>
+
+    <div class="baye-legend">
+      <span class="baye-legend-icon">🌟</span>
+      <div class="baye-legend-text">
+        <div class="baye-legend-title">La Tarbiyya instantanée</div>
+        Des milliers de disciples attestent avoir atteint la Fanaa (illumination spirituelle) en quelques jours voire quelques heures sous sa guidance — phénomène rarissime dans l'histoire du soufisme, signe de son rang élevé auprès d'Allah.
+      </div>
+    </div>
+
+    <div class="baye-legend">
+      <span class="baye-legend-icon">📡</span>
+      <div class="baye-legend-text">
+        <div class="baye-legend-title">La Connaissance à distance</div>
+        Des murids rapportent qu'il connaissait leurs pensées et situations sans qu'ils lui aient rien dit, répondant à leurs questions intérieures avant même qu'ils les formulent à voix haute.
+      </div>
+    </div>
+
+    <div class="baye-quote">
+      <div class="baye-quote-ar">من عرف نفسه فقد عرف ربه</div>
+      « Celui qui se connaît lui-même connaît son Seigneur »<br>
+      <span class="baye-quote-source">— Parole souvent méditée par Baye dans son enseignement de la Ma'rifa</span>
+    </div>
+
+  </div><!-- baye-karama -->
+
+  <!-- ─── CHAPITRE : HÉRITAGE ─── -->
+  <div class="baye-panel" id="baye-heritage">
+
+    <div class="baye-card">
+      <div class="baye-card-title"><span class="bci">🌍</span>Un héritage mondial</div>
+      <p>Cinquante ans après son départ, l'héritage de Cheikh Ibrahim Niass est plus vivant que jamais. Médina Baye est devenue une ville sainte qui accueille lors du <strong>Gamou</strong> (Mawlid annuel) plusieurs millions de pèlerins des quatre coins du monde.</p>
+      <p>La direction spirituelle de la communauté est assurée par ses descendants — au premier rang desquels <strong>Cheikh Mahi Ibrahim Niass</strong>, actuel khalife général, qui perpétue l'enseignement de son père avec la même rigueur et la même ouverture.</p>
+    </div>
+
+    <div class="baye-card">
+      <div class="baye-card-title"><span class="bci">🕌</span>Médina Baye aujourd'hui</div>
+      <p>Médina Baye est aujourd'hui une ville-sanctuaire au cœur de Kaolack avec sa Grande Mosquée, ses daara (écoles coraniques), ses universités islamiques et ses centres de formation. Plus de <strong>20 000 étudiants</strong> y apprennent les sciences islamiques chaque année.</p>
+      <p>Le complexe de Médina Baye rayonne à travers des filiales (dahiras, zawaya) dans plus de <strong>40 pays</strong> sur 5 continents.</p>
+    </div>
+
+    <div class="baye-card">
+      <div class="baye-card-title"><span class="bci">📡</span>Baye Niass World</div>
+      <p>Cette application est dédiée aux <strong>Taalibé Baye</strong> du monde entier, pour maintenir le lien spirituel avec Médina Baye où qu'ils se trouvent — horaires de prières, zikr, direct live, et cet espace d'histoire pour connaître et faire connaître la vie du Cheikh.</p>
+      <div class="baye-quote">
+        <div class="baye-quote-ar">ولا تحزن إن الله معنا</div>
+        « Ne t'attriste pas, Allah est avec nous »<br>
+        <span class="baye-quote-source">— Coran 9:40 — verset aimé de Cheikh Ibrahim Niass</span>
+      </div>
+    </div>
+
+  </div><!-- baye-heritage -->
+
+</div><!-- .baye-wrap -->
+
+<script>
+function showBayeChap(id, btn) {
+  document.querySelectorAll('.baye-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.baye-chap-btn').forEach(function(b){ b.classList.remove('active'); });
+  var panel = document.getElementById('baye-' + id);
+  if(panel) panel.classList.add('active');
+  if(btn) btn.classList.add('active');
+  /* Scroll en haut du panel */
+  var wrap = document.querySelector('.baye-wrap');
+  if(wrap) wrap.scrollTo({top: 0, behavior: 'smooth'});
+}
+</script>
+
+</section><!-- #sec-baye -->
+
 <!-- NAV -->
 <nav class="nav" role="navigation" aria-label="Navigation principale">
   <button class="nav-btn active" id="nav-umma" onclick="showSec('umma',this)">
@@ -4515,6 +5022,10 @@ window.switchQlTab = function(tab) {
   <button class="nav-btn" id="nav-ai" onclick="showSec('ai',this)">
     <span class="nav-icon">🤲</span>
     <span class="nav-label">Baye IA</span>
+  </button>
+  <button class="nav-btn" id="nav-baye" onclick="showSec('baye',this)">
+    <span class="nav-icon">📖</span>
+    <span class="nav-label">Histoire</span>
   </button>
 </nav>
 
