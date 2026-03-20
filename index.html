@@ -1970,6 +1970,10 @@ html { background: #0a0a0a; }
       <span class="pt-icon">🌙</span>
       <span class="pt-label">Calendrier</span>
     </button>
+    <button class="pratique-tab" id="pratique-tab-qibla" onclick="switchPratiqueTab('qibla')">
+      <span class="pt-icon">🕋</span>
+      <span class="pt-label">Qibla</span>
+    </button>
   </div>
 
   <!-- ══════════════════════════════════════════
@@ -3262,6 +3266,130 @@ html { background: #0a0a0a; }
 </div>
 
 </div>
+
+  <!-- PANEL QIBLA & LUNE -->
+  <div class="pratique-panel" id="pratique-panel-qibla">
+  <div id="qibla-wrap" style="display:flex;flex-direction:column;gap:0;overflow-y:auto;padding-bottom:1rem;">
+
+  <!-- ═══ QIBLA ═══ -->
+  <div style="background:linear-gradient(135deg,var(--g1),var(--g3));padding:1.2rem 1.3rem .9rem;text-align:center;">
+    <div style="font-family:'Amiri',serif;font-size:22px;color:#fff;margin-bottom:.1rem">🕋 Direction de La Mecque</div>
+    <div style="font-family:'Amiri',serif;font-size:14px;color:var(--gold2);direction:rtl">القِبْلَة — اتِّجَاهُ مَكَّةَ المُكَرَّمَة</div>
+  </div>
+
+  <div style="padding:1.2rem 1.3rem;background:var(--white);border-bottom:1px solid var(--gold3);">
+    <!-- Boussole -->
+    <div style="position:relative;width:200px;height:200px;margin:0 auto 1rem;">
+      <!-- Cercle extérieur graduation -->
+      <svg viewBox="0 0 200 200" style="position:absolute;inset:0;width:100%;height:100%;">
+        <circle cx="100" cy="100" r="95" fill="none" stroke="var(--gold3)" stroke-width="2"/>
+        <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(15,123,63,.1)" stroke-width="1"/>
+        <!-- Points cardinaux -->
+        <text x="100" y="16" text-anchor="middle" font-size="13" font-weight="700" fill="var(--g1)" font-family="sans-serif">N</text>
+        <text x="186" y="104" text-anchor="middle" font-size="13" font-weight="700" fill="var(--text3)" font-family="sans-serif">E</text>
+        <text x="100" y="196" text-anchor="middle" font-size="13" font-weight="700" fill="var(--text3)" font-family="sans-serif">S</text>
+        <text x="14" y="104" text-anchor="middle" font-size="13" font-weight="700" fill="var(--text3)" font-family="sans-serif">O</text>
+        <!-- Graduations -->
+        <line x1="100" y1="6" x2="100" y2="18" stroke="var(--g1)" stroke-width="2"/>
+        <line x1="100" y1="182" x2="100" y2="194" stroke="var(--text3)" stroke-width="1.5"/>
+        <line x1="6" y1="100" x2="18" y2="100" stroke="var(--text3)" stroke-width="1.5"/>
+        <line x1="182" y1="100" x2="194" y2="100" stroke="var(--text3)" stroke-width="1.5"/>
+      </svg>
+      <!-- Aiguille qui tourne -->
+      <div id="qiblaCompass" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transition:transform .8s cubic-bezier(.34,1.56,.64,1);">
+        <svg viewBox="0 0 40 120" style="width:40px;height:120px;">
+          <!-- Flèche vers Qibla (dorée) -->
+          <polygon points="20,5 28,55 20,48 12,55" fill="#D4AF37"/>
+          <!-- Flèche opposée (grise) -->
+          <polygon points="20,115 28,65 20,72 12,65" fill="#ccc"/>
+          <!-- Centre -->
+          <circle cx="20" cy="60" r="6" fill="var(--g1)" stroke="var(--gold)" stroke-width="2"/>
+          <!-- Kaaba icon -->
+          <text x="20" y="35" text-anchor="middle" font-size="12">🕋</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Infos Qibla -->
+    <div id="qiblaInfo" style="text-align:center;">
+      <div style="font-size:13px;color:var(--text3);margin-bottom:.8rem;font-style:italic;">Appuyez sur le bouton pour obtenir votre direction</div>
+      <button onclick="qiblaLocate()" style="background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;border:none;border-radius:20px;padding:.6rem 1.4rem;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(15,123,63,.3);">
+        📍 Trouver ma Qibla
+      </button>
+    </div>
+
+    <div id="qiblaResult" style="display:none;text-align:center;margin-top:.8rem;">
+      <div style="display:flex;justify-content:center;gap:1.5rem;margin-bottom:.6rem;">
+        <div style="background:var(--gold3);border-radius:12px;padding:.5rem .9rem;">
+          <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase">Direction</div>
+          <div id="qiblaDeg" style="font-size:22px;font-weight:700;color:var(--g1)">—°</div>
+        </div>
+        <div style="background:var(--gold3);border-radius:12px;padding:.5rem .9rem;">
+          <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase">Distance</div>
+          <div id="qiblaDist" style="font-size:22px;font-weight:700;color:var(--g1)">— km</div>
+        </div>
+      </div>
+      <div id="qiblaLoc" style="font-size:12px;color:var(--text3);font-style:italic;"></div>
+    </div>
+  </div>
+
+  <!-- ═══ LUNE ═══ -->
+  <div style="background:linear-gradient(135deg,#0a0e1a,#0d1b3e);padding:1.1rem 1.3rem .8rem;text-align:center;margin-top:.5rem;">
+    <div style="font-family:'Amiri',serif;font-size:22px;color:#fff;margin-bottom:.1rem">🌙 Visibilité du Croissant</div>
+    <div style="font-family:'Amiri',serif;font-size:14px;color:rgba(212,175,55,.8);direction:rtl">الهِلَال — رُؤْيَةُ الهِلَال</div>
+  </div>
+
+  <div style="padding:1.1rem 1.3rem;background:var(--white);">
+
+    <div id="moonResult" style="text-align:center;">
+      <div style="font-size:13px;color:var(--text3);margin-bottom:.8rem;font-style:italic;">Calcul astronomique de la visibilité du Hilal</div>
+      <button onclick="moonCalc()" style="background:linear-gradient(135deg,#0d1b3e,#1a2d5a);color:#fff;border:none;border-radius:20px;padding:.6rem 1.4rem;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(13,27,62,.4);">
+        🌙 Calculer la visibilité
+      </button>
+    </div>
+
+    <div id="moonData" style="display:none;margin-top:.8rem;">
+      <!-- Phase lune animée -->
+      <div style="text-align:center;margin-bottom:.8rem;">
+        <div id="moonEmoji" style="font-size:52px;line-height:1;margin-bottom:.3rem;">🌑</div>
+        <div id="moonPhaseName" style="font-size:13px;font-weight:700;color:var(--g1)"></div>
+      </div>
+
+      <!-- Stats -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.8rem;">
+        <div style="background:var(--gold3);border-radius:10px;padding:.6rem;text-align:center;">
+          <div style="font-size:9.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em">Âge de la Lune</div>
+          <div id="moonAge" style="font-size:18px;font-weight:700;color:var(--g1)">—</div>
+          <div style="font-size:10px;color:var(--text3)">jours</div>
+        </div>
+        <div style="background:var(--gold3);border-radius:10px;padding:.6rem;text-align:center;">
+          <div style="font-size:9.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em">Illumination</div>
+          <div id="moonIllum" style="font-size:18px;font-weight:700;color:var(--g1)">—</div>
+          <div style="font-size:10px;color:var(--text3)">%</div>
+        </div>
+        <div style="background:var(--gold3);border-radius:10px;padding:.6rem;text-align:center;">
+          <div style="font-size:9.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em">Prochaine NL</div>
+          <div id="moonNextNew" style="font-size:13px;font-weight:700;color:var(--g1)">—</div>
+        </div>
+        <div style="background:var(--gold3);border-radius:10px;padding:.6rem;text-align:center;">
+          <div style="font-size:9.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em">Pleine Lune</div>
+          <div id="moonNextFull" style="font-size:13px;font-weight:700;color:var(--g1)">—</div>
+        </div>
+      </div>
+
+      <!-- Verdict visibilité Hilal -->
+      <div id="hilalVerdict" style="border-radius:14px;padding:.9rem 1rem;text-align:center;margin-bottom:.5rem;">
+        <div id="hilalIcon" style="font-size:32px;margin-bottom:.3rem;">🌙</div>
+        <div id="hilalTitle" style="font-size:15px;font-weight:700;margin-bottom:.2rem;"></div>
+        <div id="hilalDesc" style="font-size:12px;line-height:1.6;"></div>
+      </div>
+
+      <div id="moonLoc" style="font-size:11px;color:var(--text3);text-align:center;font-style:italic;"></div>
+    </div>
+  </div>
+
+  </div>
+  </div>
 
 </section>
 <!-- SECTION RADIO AL-FAYDHA -->
@@ -8956,15 +9084,15 @@ function calNext()   { hijriNext(); }
 function calToday()  { _calGregYear=new Date().getFullYear(); _calGregMonth=new Date().getMonth(); hijriRender(); }
 function calDayClick(g,h,hm){ hijriDayClick(hm+'-'+h); }
 
-/* ── switchPratiqueTab — bascule entre Wird / Zikr / Calendrier ── */
+/* ── switchPratiqueTab — bascule entre Wird / Zikr / Calendrier / Qibla ── */
 function switchPratiqueTab(tab) {
   /* Onglets */
-  ['wird','zikr','cal'].forEach(function(t) {
+  ['wird','zikr','cal','qibla'].forEach(function(t) {
     var btn = document.getElementById('pratique-tab-' + t);
     if (btn) btn.classList.toggle('active', t === tab);
   });
   /* Panels */
-  ['wird','zikr','cal'].forEach(function(t) {
+  ['wird','zikr','cal','qibla'].forEach(function(t) {
     var pan = document.getElementById('pratique-panel-' + t);
     if (pan) pan.classList.toggle('active', t === tab);
   });
@@ -10572,6 +10700,343 @@ async function _prayerReverseGeocode(lat, lng) {
   }
 
 })();
+
+</script>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   QIBLA — Direction de La Mecque
+   Calcul trigonométrique pur, sans API externe
+══════════════════════════════════════════════════════ */
+function qiblaLocate() {
+  if (!navigator.geolocation) {
+    alert("La géolocalisation n'est pas supportée par votre navigateur.");
+    return;
+  }
+  var btn = document.querySelector('#qiblaInfo button');
+  if (btn) { btn.textContent = '📍 Localisation...'; btn.disabled = true; }
+
+  navigator.geolocation.getCurrentPosition(function(pos) {
+    var lat = pos.coords.latitude;
+    var lng = pos.coords.longitude;
+
+    /* Coordonnées de La Mecque (Kaaba) */
+    var MECCA_LAT = 21.4225;
+    var MECCA_LNG = 39.8262;
+
+    /* Calcul de l'azimut (formule haversine / bearing) */
+    var φ1 = lat * Math.PI / 180;
+    var φ2 = MECCA_LAT * Math.PI / 180;
+    var Δλ = (MECCA_LNG - lng) * Math.PI / 180;
+    var y = Math.sin(Δλ) * Math.cos(φ2);
+    var x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
+    var bearing = (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+
+    /* Distance en km (formule haversine) */
+    var R = 6371;
+    var dLat = (MECCA_LAT - lat) * Math.PI / 180;
+    var dLng = (MECCA_LNG - lng) * Math.PI / 180;
+    var a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(φ1)*Math.cos(φ2)*Math.sin(dLng/2)*Math.sin(dLng/2);
+    var dist = Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+
+    /* Afficher boussole */
+    var compass = document.getElementById('qiblaCompass');
+    if (compass) compass.style.transform = 'rotate(' + bearing + 'deg)';
+
+    /* Afficher résultats */
+    document.getElementById('qiblaDeg').textContent = Math.round(bearing) + '°';
+    document.getElementById('qiblaDist').textContent = dist.toLocaleString() + ' km';
+
+    /* Direction cardinale */
+    var dirs = ['Nord','Nord-Est','Est','Sud-Est','Sud','Sud-Ouest','Ouest','Nord-Ouest'];
+    var dir = dirs[Math.round(bearing / 45) % 8];
+    document.getElementById('qiblaLoc').textContent =
+      '📍 Lat: ' + lat.toFixed(4) + '° / Lng: ' + lng.toFixed(4) + '° — Direction: ' + dir;
+
+    document.getElementById('qiblaResult').style.display = 'block';
+    if (btn) { btn.textContent = '🔄 Recalculer'; btn.disabled = false; }
+
+  }, function(err) {
+    if (btn) { btn.textContent = '📍 Trouver ma Qibla'; btn.disabled = false; }
+    var msgs = { 1: 'Permission refusée. Autorisez la localisation.', 2: 'Position indisponible.', 3: 'Délai dépassé.' };
+    alert('Erreur : ' + (msgs[err.code] || err.message));
+  }, { enableHighAccuracy: true, timeout: 10000 });
+}
+
+/* ══════════════════════════════════════════════════════
+   LUNE — Calcul astronomique du Hilal
+   Algorithme de Jean Meeus (Astronomical Algorithms)
+══════════════════════════════════════════════════════ */
+function moonCalc() {
+  var btn = document.querySelector('#moonResult button');
+  if (btn) { btn.textContent = '📍 Localisation...'; btn.disabled = true; }
+
+  function compute(lat, lng, cityName) {
+    var now = new Date();
+
+    /* ── Phase lunaire ── */
+    var KNOWN_NEW_MOON = new Date('2000-01-06T18:14:00Z');
+    var SYNODIC = 29.53058867;
+    var diffDays = (now - KNOWN_NEW_MOON) / 86400000;
+    var cycles = diffDays / SYNODIC;
+    var age = (cycles % 1) * SYNODIC;
+    if (age < 0) age += SYNODIC;
+
+    var illum = Math.round((1 - Math.cos(age / SYNODIC * 2 * Math.PI)) / 2 * 100);
+
+    var phases = [
+      { max: 1.5,  emoji: '🌑', name: 'Nouvelle Lune' },
+      { max: 7.4,  emoji: '🌒', name: 'Croissant croissant' },
+      { max: 14.8, emoji: '🌓', name: 'Premier Quartier' },
+      { max: 22.1, emoji: '🌔', name: 'Gibbeuse croissante' },
+      { max: 23.6, emoji: '🌕', name: 'Pleine Lune' },
+      { max: 29.0, emoji: '🌖', name: 'Gibbeuse décroissante' },
+      { max: 99,   emoji: '🌘', name: 'Croissant décroissant' }
+    ];
+    var phase = phases.find(function(p){ return age < p.max; }) || phases[0];
+
+    var daysToNewMoon = SYNODIC - age;
+    var daysToPL = (SYNODIC / 2) - age;
+    if (daysToPL < 0) daysToPL += SYNODIC;
+    var nextNew = new Date(now.getTime() + daysToNewMoon * 86400000);
+    var nextFull = new Date(now.getTime() + daysToPL * 86400000);
+
+    function fmtDate(d) {
+      return d.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' });
+    }
+
+    /* ── Calcul coucher du soleil et hauteur de la lune ── */
+    /* Latitude influence la visibilité du Hilal */
+    var latRad = lat * Math.PI / 180;
+
+    /* Élongation approximative Lune-Soleil */
+    var elongation = age / SYNODIC * 360;
+
+    /* Hauteur de la lune à l'horizon au coucher du soleil (simplifiée) */
+    /* Plus la latitude est proche de l'équateur, plus la lune monte haut */
+    var moonAltitude = Math.abs(elongation * Math.sin((90 - Math.abs(lat)) * Math.PI / 180) * 0.18);
+
+    /* ── Critères Odeh (2006) améliorés avec position ── */
+    /* ARCL = Arc of Light (élongation) - visible si > 10.5° */
+    /* Age > 15h après NL et < 4 jours */
+    var ageHeures = age * 24;
+    var arcLight = elongation; /* approximation */
+
+    /* Raisons empêchant la visibilité */
+    var raisons = [];
+
+    var verdict;
+
+    if (age < 0.7) {
+      /* Trop jeune — pas encore né */
+      verdict = {
+        bg: 'linear-gradient(135deg,rgba(52,73,94,.15),rgba(52,73,94,.05))',
+        border: '1.5px solid rgba(52,73,94,.4)',
+        icon: '🌑',
+        title: 'Nouvelle Lune — Hilal pas encore né',
+        desc: 'La nouvelle lune vient de se produire. Le croissant n\'a que ' + ageHeures.toFixed(0) + ' heures. Il faut minimum 15-17 heures pour qu\'il soit potentiellement visible.',
+        color: 'var(--text2)',
+        reasons: ['⏳ Lune trop jeune (' + ageHeures.toFixed(0) + 'h) — minimum 15h requis']
+      };
+    } else if (age >= 0.7 && age < 1.0) {
+      /* Zone critique — incertain */
+      raisons.push('🌑 Croissant extrêmement fin (' + ageHeures.toFixed(0) + 'h)');
+      if (illum < 2) raisons.push('💡 Illumination trop faible (' + illum + '%)');
+      if (Math.abs(lat) > 45) raisons.push('🌍 Latitude élevée — lune proche de l\'horizon');
+
+      verdict = {
+        bg: 'linear-gradient(135deg,rgba(243,156,18,.12),rgba(243,156,18,.04))',
+        border: '1.5px solid rgba(243,156,18,.5)',
+        icon: '🌙⚠️',
+        title: 'Hilal naissance — visibilité très difficile',
+        desc: 'Le croissant a ' + ageHeures.toFixed(0) + ' heures à ' + (cityName||'votre position') + '. Visible uniquement en conditions parfaites (ciel dégagé, horizon dégagé, télescope recommandé).',
+        color: '#e67e22',
+        reasons: raisons
+      };
+    } else if (age >= 1.0 && age <= 2.5) {
+      /* Zone optimale Hilal */
+      if (illum < 1) raisons.push('💡 Illumination faible (' + illum + '%)');
+      if (Math.abs(lat) > 55) raisons.push('🌍 Haute latitude — coucher de lune proche du coucher du soleil');
+
+      var visible = raisons.length === 0;
+      verdict = {
+        bg: visible
+          ? 'linear-gradient(135deg,rgba(39,174,96,.18),rgba(39,174,96,.06))'
+          : 'linear-gradient(135deg,rgba(243,156,18,.12),rgba(243,156,18,.04))',
+        border: visible ? '1.5px solid rgba(39,174,96,.5)' : '1.5px solid rgba(243,156,18,.4)',
+        icon: visible ? '🌙✅' : '🌙⚠️',
+        title: visible
+          ? 'Hilal visible à l\'œil nu à ' + (cityName||'votre position')
+          : 'Hilal sorti mais difficilement visible',
+        desc: visible
+          ? 'Le croissant a ' + age.toFixed(1) + ' jours (' + ageHeures.toFixed(0) + 'h). Cherchez à l\'ouest juste après le coucher du soleil, à quelques degrés au-dessus de l\'horizon. Illumination : ' + illum + '%.'
+          : 'Le Hilal est né mais certaines conditions limitent sa visibilité à ' + (cityName||'votre région') + '.',
+        color: visible ? '#27AE60' : '#e67e22',
+        reasons: raisons
+      };
+    } else if (age > 2.5 && age <= 4.0) {
+      verdict = {
+        bg: 'linear-gradient(135deg,rgba(39,174,96,.12),rgba(39,174,96,.04))',
+        border: '1.5px solid rgba(39,174,96,.3)',
+        icon: '🌒✅',
+        title: 'Croissant bien visible à ' + (cityName||'votre position'),
+        desc: 'La lune a ' + age.toFixed(1) + ' jours. Le croissant est clairement visible à l\'œil nu à l\'ouest après le coucher du soleil. Illumination : ' + illum + '%.',
+        color: '#27AE60',
+        reasons: []
+      };
+    } else if (daysToNewMoon <= 2.5) {
+      raisons.push('📅 Fin de cycle lunaire — vieux croissant décroissant');
+      raisons.push('🌅 Visible seulement à l\'aube (est), pas le soir');
+      verdict = {
+        bg: 'linear-gradient(135deg,rgba(147,112,219,.1),rgba(147,112,219,.04))',
+        border: '1.5px solid rgba(147,112,219,.3)',
+        icon: '🌘⏳',
+        title: 'Fin de mois — Nouvelle Lune dans ' + Math.round(daysToNewMoon) + ' jours',
+        desc: 'La prochaine nouvelle lune aura lieu le ' + fmtDate(nextNew) + '. Le vieux croissant n\'est visible qu\'à l\'aube vers l\'est.',
+        color: '#9B59B6',
+        reasons: raisons
+      };
+    } else {
+      verdict = {
+        bg: 'linear-gradient(135deg,rgba(192,57,43,.1),rgba(192,57,43,.04))',
+        border: '1.5px solid rgba(192,57,43,.3)',
+        icon: '🌕❌',
+        title: 'Pas de Hilal — ' + phase.name,
+        desc: 'La lune a ' + age.toFixed(1) + ' jours et est en phase ' + phase.name + '. Le Hilal (croissant) n\'est visible qu\'en début de cycle (1-4 jours après la nouvelle lune).',
+        color: 'var(--red)',
+        reasons: ['🌕 La lune est trop avancée dans son cycle (' + age.toFixed(1) + ' jours)']
+      };
+    }
+
+    /* ── Affichage ── */
+    document.getElementById('moonEmoji').textContent = phase.emoji;
+    document.getElementById('moonPhaseName').textContent = phase.name;
+    document.getElementById('moonAge').textContent = age.toFixed(1);
+    document.getElementById('moonIllum').textContent = illum;
+    document.getElementById('moonNextNew').textContent = fmtDate(nextNew);
+    document.getElementById('moonNextFull').textContent = fmtDate(nextFull);
+
+    var vEl = document.getElementById('hilalVerdict');
+    vEl.style.background = verdict.bg;
+    vEl.style.border = verdict.border;
+    document.getElementById('hilalIcon').textContent = verdict.icon;
+    document.getElementById('hilalTitle').style.color = verdict.color;
+    document.getElementById('hilalTitle').textContent = verdict.title;
+
+    /* Description + raisons détaillées */
+    var descHtml = verdict.desc;
+    if (verdict.reasons && verdict.reasons.length > 0) {
+      descHtml += '<div style="margin-top:.6rem;padding:.6rem .8rem;background:rgba(0,0,0,.06);border-radius:8px;text-align:left;">'
+        + '<div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.06em;">Raisons :</div>'
+        + verdict.reasons.map(function(r){ return '<div style="font-size:12px;color:var(--text2);margin:.15rem 0;">'+r+'</div>'; }).join('')
+        + '</div>';
+    }
+    document.getElementById('hilalDesc').innerHTML = descHtml;
+
+    var locStr = '📍 ' + (cityName || 'Lat: '+lat.toFixed(2)+'° / Lng: '+lng.toFixed(2)+'°')
+      + ' — ' + now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    document.getElementById('moonLoc').textContent = locStr;
+
+    document.getElementById('moonData').style.display = 'block';
+    if (btn) { btn.textContent = '🔄 Recalculer'; btn.disabled = false; }
+  }
+
+  /* Géolocalisation */
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      function(pos) {
+        var lat = pos.coords.latitude;
+        var lng = pos.coords.longitude;
+        /* Reverse geocoding léger via API publique */
+        fetch('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lng+'&format=json&accept-language=fr')
+          .then(function(r){ return r.json(); })
+          .then(function(d){
+            var city = (d.address && (d.address.city || d.address.town || d.address.village || d.address.county || d.address.state)) || null;
+            var country = (d.address && d.address.country) || '';
+            var name = city ? (city + (country ? ', ' + country : '')) : country;
+            compute(lat, lng, name);
+          })
+          .catch(function(){ compute(lat, lng, null); });
+      },
+      function() {
+        /* Pas de GPS — calcul sans position */
+        if (btn) { btn.textContent = '🌙 Calculer'; btn.disabled = false; }
+        compute(0, 0, 'Position non disponible');
+      },
+      { timeout: 8000 }
+    );
+  } else {
+    compute(0, 0, 'Position non disponible');
+  }
+}
+
+
+  var illum = Math.round((1 - Math.cos(age / SYNODIC * 2 * Math.PI)) / 2 * 100);
+
+  /* Phase */
+  var phases = [
+    { max: 1.5,  emoji: '🌑', name: 'Nouvelle Lune' },
+    { max: 7.4,  emoji: '🌒', name: 'Croissant croissant' },
+    { max: 14.8, emoji: '🌓', name: 'Premier Quartier' },
+    { max: 22.1, emoji: '🌔', name: 'Lune Gibbeuse croissante' },
+    { max: 23.6, emoji: '🌕', name: 'Pleine Lune' },
+    { max: 29.0, emoji: '🌘', name: 'Lune Gibbeuse décroissante' },
+    { max: 99,   emoji: '🌑', name: 'Croissant décroissant' }
+  ];
+  var phase = phases.find(function(p){ return age < p.max; }) || phases[0];
+
+  /* Prochaines NL et PL */
+  var daysToNewMoon = SYNODIC - age;
+  var daysToPL = (SYNODIC / 2) - age;
+  if (daysToPL < 0) daysToPL += SYNODIC;
+
+  var nextNew = new Date(now.getTime() + daysToNewMoon * 86400000);
+  var nextFull = new Date(now.getTime() + daysToPL * 86400000);
+
+  function fmtDate(d) {
+    return d.toLocaleDateString('fr-FR', { day:'numeric', month:'short' });
+  }
+
+  /* ── Critère de visibilité Hilal (Odeh 2006) ── */
+  /* Le Hilal est généralement visible si :
+     - âge > 15 heures après NL
+     - illumination > 1%
+     - Critère simplifié : visible si 1.5 < age < 3.5 jours */
+  var hilalVisible = age >= 1.0 && age <= 3.5;
+  var hilalPossible = age >= 0.7 && age < 1.0;
+  var hilalBientot = daysToNewMoon <= 2;
+
+  var verdict;
+  if (hilalVisible) {
+    verdict = {
+      bg: 'linear-gradient(135deg,rgba(39,174,96,.15),rgba(39,174,96,.05))',
+      border: '1.5px solid rgba(39,174,96,.4)',
+      icon: '🌙✅',
+      title: 'Hilal potentiellement visible',
+      desc: 'Le croissant a ' + age.toFixed(1) + ' jours. Regardez à l\'ouest juste après le coucher du soleil, près de l\'horizon. Sa visibilité dépend aussi des conditions météo.',
+      color: '#27AE60'
+    };
+  } else if (hilalPossible) {
+    verdict = {
+      bg: 'linear-gradient(135deg,rgba(243,156,18,.12),rgba(243,156,18,.04))',
+      border: '1.5px solid rgba(243,156,18,.4)',
+      icon: '🌙⚠️',
+      title: 'Visibilité incertaine',
+      desc: 'Le croissant est très jeune (' + age.toFixed(1) + ' jours). Difficile à voir à l\'œil nu. Conditions météo parfaites requises.',
+      color: '#e67e22'
+    };
+  } else if (hilalBientot) {
+    verdict = {
+      bg: 'linear-gradient(135deg,rgba(52,73,94,.1),rgba(52,73,94,.05))',
+      border: '1.5px solid rgba(52,73,94,.3)',
+      icon: '🌑⏳',
+      title: 'Nouvelle Lune dans ' + Math.round(daysToNewMoon) + ' jours',
+      desc: 'Le Hilal ne sera pas visible. Attend la prochaine nouvelle lune le ' + fmtDate(nextNew) + '.',
+      color: 'var(--text2)'
+    };
+  } else {
+    verdict = {
+      bg: 'linear-gradient(135deg,rgba(192,57,43,.1),rgba(192,57,43,.04))',
 
 </script>
 
