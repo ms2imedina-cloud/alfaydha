@@ -2734,13 +2734,19 @@ button[onclick="qiblaGPS()"] {
   /* Fallbacks si l'API échoue */
   /* ✅ STREAM OFFICIEL extrait du site radioalfayda.net
      Source: MRP.insert url dans le widget sidebar officiel */
+  /* Streams à tester en ordre — mettre à jour si le stream change */
   var FALLBACK_STREAMS = [
+    'https://stream.zeno.fm/OUE5xD8nztzuv',
+    'https://cast2.hostrails.com/radio-alfayda',
     'https://usa5.fastcast4u.com/proxy/lyartech?mp=/1',
-    'http://usa5.fastcast4u.com/proxy/lyartech?mp=/1',
     'https://c7.radioboss.fm/stream/379',
     'https://lyartech.fastcast4u.com/stream',
-    'https://stream.zeno.fm/OUE5xD8nztzuv'
+    'https://s3.radio.co/s3a2e15d1d/listen',
+    'https://radiostreamlive.com/radio-alfayda'
   ];
+  
+  /* URL YouTube Live officielle Radio Al-Faydha (fallback si audio mort) */
+  var YT_LIVE_ID = 'UCxxxxxxxx'; /* À mettre à jour avec vrai ID chaîne */
 
   var audio   = document.getElementById('rpAudio');
   var btn     = document.getElementById('rpBtn');
@@ -2847,15 +2853,63 @@ button[onclick="qiblaGPS()"] {
   }
 
   function tryFallbacks(idx){
-    if(idx >= FALLBACK_STREAMS.length){ setUI(false); setSt('Stream indisponible','err'); return; }
-    audio.src = FALLBACK_STREAMS[idx];
+    if(idx >= FALLBACK_STREAMS.length){
+      setUI(false);
+      setSt('Stream indisponible — voir solution ci-dessous','err');
+      showYtFallback();
+      return;
+    }
+    var url = FALLBACK_STREAMS[idx];
+    audio.src = url;
     audio.load();
-    setSt('Tentative '+(idx+1)+'/'+FALLBACK_STREAMS.length+'...','');
+    setSt('Connexion ' + (idx+1) + '/' + FALLBACK_STREAMS.length + '...','');
     clearTimeout(timer);
-    timer = setTimeout(function(){ if(!playing){ audio.pause(); tryFallbacks(idx+1); } }, 7000);
+    timer = setTimeout(function(){
+      if(!playing){ audio.pause(); tryFallbacks(idx+1); }
+    }, 6000);
     var p = audio.play();
-    if(p&&p.catch) p.catch(function(){ clearTimeout(timer); tryFallbacks(idx+1); });
+    if(p&&p.catch) p.catch(function(e){
+      clearTimeout(timer);
+      if(e && e.name === 'NotAllowedError'){
+        setSt('Appuyez sur ▶ pour démarrer','');
+        setUI(false);
+      } else {
+        tryFallbacks(idx+1);
+      }
+    });
   }
+  
+  function showYtFallback() {
+    var wrap = document.querySelector('.rp-wrap');
+    if (!wrap || document.getElementById('rpYtFallback')) return;
+    var div = document.createElement('div');
+    div.id = 'rpYtFallback';
+    div.style.cssText = 'background:#0a1a0e;border-top:1px solid rgba(212,175,55,.2);padding:.9rem 1.1rem;text-align:center';
+    div.innerHTML = 
+      '<div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:.6rem">📡 Stream audio indisponible — Écouter sur YouTube</div>' +
+      '<a href="https://www.youtube.com/@RadioAlFaydha" target="_blank" rel="noopener" ' +
+      'style="display:inline-flex;align-items:center;gap:.5rem;background:#FF0000;color:#fff;border-radius:20px;padding:.4rem 1.1rem;font-size:13px;font-weight:700;text-decoration:none">' +
+      '<span style="font-size:16px">▶</span> Radio Al-Faydha sur YouTube</a>' +
+      '<div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:.5rem">ou entrez un stream URL ci-dessous</div>' +
+      '<div style="display:flex;gap:.4rem;margin-top:.4rem">' +
+      '<input id="rpCustomUrl" type="url" placeholder="https://... URL stream M3U8 ou MP3" ' +
+      'style="flex:1;padding:.4rem .7rem;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-size:12px;outline:none">' +
+      '<button onclick="rpPlayCustom()" style="background:var(--g1);color:#fff;border:none;border-radius:8px;padding:.4rem .8rem;font-size:12px;cursor:pointer">▶</button>' +
+      '</div>';
+    wrap.appendChild(div);
+  }
+  
+  window.rpPlayCustom = function() {
+    var inp = document.getElementById('rpCustomUrl');
+    var url = inp ? inp.value.trim() : '';
+    if (!url) return;
+    audio.src = url;
+    audio.load();
+    setSt('Connexion...','');
+    userStopped = false;
+    var p = audio.play();
+    if(p&&p.catch) p.catch(function(){ setSt('URL invalide ou inaccessible','err'); });
+  };
 
   window.rpToggle = function(){
     if(playing){
@@ -2864,11 +2918,16 @@ button[onclick="qiblaGPS()"] {
       try { audio.pause(); } catch(e){}
       audio.src = '';
       setUI(false);
-      setSt('En pause — appuyez pour reprendre','');
+      setSt('En pause','');
+      /* Masquer le fallback YouTube si visible */
+      var yt = document.getElementById('rpYtFallback');
+      if(yt) yt.remove();
     } else {
       userStopped = false;
+      var yt = document.getElementById('rpYtFallback');
+      if(yt) yt.remove();
       btn.classList.add('loading');
-      setSt('Connexion en cours...','');
+      setSt('Recherche du stream...','');
       tryFallbacks(0);
     }
   };
@@ -4102,9 +4161,17 @@ window.switchEnsTab = function(tab) {
           onkeydown="if(event.key==='Enter') qiblaGo()">
         <button onclick="qiblaGo()" style="background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;border:none;border-radius:10px;padding:.55rem 1rem;font-size:14px;font-weight:700;cursor:pointer;">🔍</button>
       </div>
-      <div style="display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap">
-        <button onclick="qiblaGPS()" style="background:none;border:1px solid var(--g1);border-radius:20px;padding:.4rem 1rem;font-size:12px;color:var(--g1);cursor:pointer;">📍 GPS</button>
-        <button id="qiblaCompassBtn" onclick="qiblaCompassToggle()" style="background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;border:none;border-radius:20px;padding:.4rem 1rem;font-size:12px;font-weight:700;cursor:pointer;">🧭 Boussole auto</button>
+      <div style="display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap;margin-bottom:.5rem">
+        <button onclick="qiblaGPS()" style="background:none;border:1px solid var(--g1);border-radius:20px;padding:.4rem 1rem;font-size:12px;color:var(--g1);cursor:pointer;">📍 GPS auto</button>
+        <button id="qiblaCompassBtn" onclick="qiblaCompassToggle()" style="background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;border:none;border-radius:20px;padding:.4rem 1rem;font-size:12px;font-weight:700;cursor:pointer;">🧭 Boussole</button>
+      </div>
+      <!-- Villes rapides -->
+      <div style="display:flex;gap:.35rem;justify-content:center;flex-wrap:wrap">
+        <button onclick="_qiblaRun(14.152,-16.0765,'Kaolack')" style="background:rgba(15,123,63,.08);border:1px solid rgba(15,123,63,.2);border-radius:20px;padding:.25rem .65rem;font-size:11px;color:var(--g1);cursor:pointer;">Kaolack</button>
+        <button onclick="_qiblaRun(14.6937,-17.4441,'Dakar')" style="background:rgba(15,123,63,.08);border:1px solid rgba(15,123,63,.2);border-radius:20px;padding:.25rem .65rem;font-size:11px;color:var(--g1);cursor:pointer;">Dakar</button>
+        <button onclick="_qiblaRun(14.791,-16.9359,'Thiès')" style="background:rgba(15,123,63,.08);border:1px solid rgba(15,123,63,.2);border-radius:20px;padding:.25rem .65rem;font-size:11px;color:var(--g1);cursor:pointer;">Thiès</button>
+        <button onclick="_qiblaRun(14.8528,-15.88,'Touba')" style="background:rgba(15,123,63,.08);border:1px solid rgba(15,123,63,.2);border-radius:20px;padding:.25rem .65rem;font-size:11px;color:var(--g1);cursor:pointer;">Touba</button>
+        <button onclick="_qiblaRun(14.152,-16.0765,'Médina Baye')" style="background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.3);border-radius:20px;padding:.25rem .65rem;font-size:11px;color:var(--gold);cursor:pointer;font-weight:600;">🕌 Médina Baye</button>
       </div>
       <div id="qiblaCompassStatus" style="font-size:11px;color:var(--text3);margin-top:.3rem;min-height:15px;font-weight:600;"></div>
       <div id="qiblaMsg" style="font-size:12px;color:var(--red);margin-top:.2rem;min-height:16px;"></div>
@@ -4186,6 +4253,29 @@ window.switchEnsTab = function(tab) {
 </div><!-- /ql-panel-lune -->
 
 <script>
+/* Auto-init lune quand section Qibla s'ouvre */
+(function() {
+  var tries = 0;
+  var iv = setInterval(function() {
+    var sec = document.getElementById('sec-qibla');
+    if (!sec) { if(++tries > 30) clearInterval(iv); return; }
+    clearInterval(iv);
+    /* Observer activation */
+    var observer = new MutationObserver(function(muts) {
+      muts.forEach(function(m) {
+        if (m.target.classList.contains('active')) {
+          /* Section ouverte — auto-GPS Qibla */
+          setTimeout(function(){
+            var res = document.getElementById('qiblaResult');
+            if (res && res.style.display === 'none' && typeof qiblaGPS === 'function') qiblaGPS();
+          }, 400);
+        }
+      });
+    });
+    observer.observe(sec, { attributes: true, attributeFilter: ['class'] });
+  }, 200);
+})();
+
 window.switchQlTab = function(tab) {
   var isQibla = tab === 'qibla';
   document.getElementById('qltab-qibla').classList.toggle('active', isQibla);
@@ -4194,7 +4284,7 @@ window.switchQlTab = function(tab) {
   document.getElementById('ql-panel-lune').classList.toggle('active', !isQibla);
 
   if (!isQibla) {
-    /* Auto-calcul lune avec GPS */
+    /* Lune : auto-calcul */
     var moonData = document.getElementById('moonData');
     if (!moonData || moonData.style.display === 'none') {
       if (navigator.geolocation) {
@@ -4208,11 +4298,10 @@ window.switchQlTab = function(tab) {
       }
     }
   } else {
-    /* Qibla — message invite */
-    var status = document.getElementById('qiblaCompassStatus');
+    /* Qibla : auto-lancer GPS/IP */
     var result = document.getElementById('qiblaResult');
     if (result && result.style.display === 'none') {
-      if (status) { status.textContent = 'Appuyez sur GPS ou Boussole auto'; status.style.color = 'var(--g1)'; }
+      setTimeout(function(){ if(typeof qiblaGPS === 'function') qiblaGPS(); }, 300);
     }
   }
 };
@@ -4430,14 +4519,14 @@ window.switchQlTab = function(tab) {
     <span class="nav-icon">🕌</span>
     <span class="nav-label">Prières</span>
   </button>
+  <button class="nav-btn" id="nav-ens" onclick="showSec('ens',this)">
+    <span class="nav-icon">🎙</span>
+    <span class="nav-label">Studio</span>
+  </button>
   <button class="nav-btn" id="nav-live" onclick="showSec('live',this)">
     <span class="nav-icon">🔴</span>
     <span class="nav-label">Direct</span>
     <span class="nav-live-badge">LIVE</span>
-  </button>
-  <button class="nav-btn" id="nav-ens" onclick="showSec('ens',this)">
-    <span class="nav-icon">🎙</span>
-    <span class="nav-label">Studio</span>
   </button>
   <button class="nav-btn" id="nav-qibla" onclick="showSec('qibla',this)">
     <span class="nav-icon">🕋</span>
@@ -5741,7 +5830,7 @@ document.addEventListener('keydown', function(e){
   }
   /* Navigation Smart TV — touches fléchées */
   if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
-    var navBtns=['nav-umma','nav-live','nav-ens','nav-qibla','nav-ai'];
+    var navBtns=['nav-umma','nav-ens','nav-live','nav-qibla','nav-ai'];
     var cur=navBtns.findIndex(function(id){return document.getElementById(id)&&document.getElementById(id).classList.contains('active');});
     var next=e.key==='ArrowRight'?Math.min(cur+1,navBtns.length-1):Math.max(cur-1,0);
     var btn=document.getElementById(navBtns[next]);
@@ -10610,29 +10699,52 @@ function qiblaGo(){
 }
 
 function qiblaGPS(){
-  var msg = document.getElementById('qiblaMsg');
+  var msg    = document.getElementById('qiblaMsg');
   var status = document.getElementById('qiblaCompassStatus');
+  if(msg) msg.textContent = '';
+
   if(!navigator.geolocation){
-    if(msg) msg.textContent = 'GPS non disponible';
+    /* Fallback IP si pas de géoloc */
+    _qiblaGeoByIP(status);
     return;
   }
-  if(msg) msg.textContent = '';
+
   if(status){ status.textContent = 'Localisation GPS...'; status.style.color = 'var(--g1)'; }
+
   navigator.geolocation.getCurrentPosition(
     function(p){
       if(status) status.textContent = '';
       _qiblaRun(p.coords.latitude, p.coords.longitude, 'Ma position');
     },
     function(err){
-      var txt = 'GPS refuse';
-      if(err && err.code === 1) txt = 'Autorisez la localisation dans vos reglages';
-      else if(err && err.code === 2) txt = 'Position indisponible - entrez votre ville';
-      else if(err && err.code === 3) txt = 'GPS trop lent - entrez votre ville';
-      if(status){ status.textContent = txt; status.style.color = 'var(--red)'; }
-      if(msg) msg.textContent = '';
+      /* Si refusé → fallback IP silencieux */
+      if(status){ status.textContent = 'Localisation par réseau...'; status.style.color = 'var(--g1)'; }
+      _qiblaGeoByIP(status);
     },
-    { timeout: 12000, maximumAge: 60000, enableHighAccuracy: false }
+    { timeout: 8000, maximumAge: 120000, enableHighAccuracy: false }
   );
+}
+
+/* Géolocalisation par adresse IP (fallback) */
+function _qiblaGeoByIP(status) {
+  fetch('https://ipapi.co/json/')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d && d.latitude && d.longitude) {
+        if(status) status.textContent = '';
+        _qiblaRun(d.latitude, d.longitude, d.city || 'Ma position');
+        /* Aussi lancer lune */
+        if(typeof _moonRun === 'function') _moonRun(d.latitude, d.longitude, d.city || 'Ma position');
+      } else {
+        /* Fallback final : Sénégal */
+        _qiblaRun(14.152, -16.0765, 'Sénégal');
+        if(status){ status.textContent = 'Position approximative'; status.style.color = 'rgba(0,0,0,.4)'; }
+      }
+    })
+    .catch(function(){
+      _qiblaRun(14.152, -16.0765, 'Sénégal');
+      if(status){ status.textContent = 'Entrez votre ville pour plus de précision'; status.style.color = 'rgba(0,0,0,.4)'; }
+    });
 }
 
 function qiblaLocate(){qiblaGPS();}
@@ -10868,12 +10980,21 @@ function moonGoNow(label,lat,lng){_moonRun(lat||14.15,lng||-16.08,label||"Senega
 
 function moonGPS(){
   var msg=document.getElementById("moonMsg");
-  if(!navigator.geolocation){moonGoNow("Senegal",14.15,-16.08);return;}
   if(msg)msg.textContent="Localisation...";
+  if(!navigator.geolocation){
+    fetch('https://ipapi.co/json/').then(function(r){return r.json();})
+      .then(function(d){ if(d&&d.latitude) _moonRun(d.latitude,d.longitude,d.city||'Ma position'); else moonGoNow("Senegal",14.15,-16.08); })
+      .catch(function(){ moonGoNow("Senegal",14.15,-16.08); });
+    return;
+  }
   navigator.geolocation.getCurrentPosition(
-    function(p){_moonRun(p.coords.latitude,p.coords.longitude,"GPS");},
-    function(){moonGoNow("Senegal",14.15,-16.08);},
-    {timeout:8000}
+    function(p){if(msg)msg.textContent="";_moonRun(p.coords.latitude,p.coords.longitude,"Ma position");},
+    function(){
+      fetch('https://ipapi.co/json/').then(function(r){return r.json();})
+        .then(function(d){ if(d&&d.latitude) _moonRun(d.latitude,d.longitude,d.city||'Ma position'); else moonGoNow("Senegal",14.15,-16.08); })
+        .catch(function(){ moonGoNow("Senegal",14.15,-16.08); });
+    },
+    {timeout:6000,maximumAge:120000,enableHighAccuracy:false}
   );
 }
 
