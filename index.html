@@ -72,6 +72,22 @@ window._fbConfig={
 };
 window._fbReady=false;
 </script>
+<script>
+
+/* ── _fbInit — wrapper Firebase compatibility ── */
+function _fbInit(cb) {
+  if (typeof firebase === 'undefined') {
+    console.warn('[_fbInit] Firebase non disponible');
+    return;
+  }
+  if (!firebase.apps || !firebase.apps.length) {
+    try { firebase.initializeApp(window._fbConfig); } catch(e) {}
+  }
+  window._fbReady = true;
+  if (typeof cb === 'function') cb();
+}
+
+</script>
 <!-- Firebase SDKs — chargés en parallèle pour rapidité maximale -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -7462,81 +7478,26 @@ function abScrollBottom() {
 var _abInited = false;
 
 
-/* ════════════════════════════════════════
-   WIRD — BARRE DE PROGRESSION
-════════════════════════════════════════ */
 
-(function(){
-  var TOTAL = 8;
-  var _wpbInited = false;
-
-  function _wpbInit() {
-    if (_wpbInited) return;
-    _wpbInited = true;
-
-    // Générer les 8 points
-    var dots = document.getElementById('wpb-dots');
-    if (dots) {
-      dots.innerHTML = '';
-      for (var i = 1; i <= TOTAL; i++) {
-        var d = document.createElement('div');
-        d.className = 'wpb-dot';
-        d.id = 'wpb-dot-' + i;
-        dots.appendChild(d);
-      }
-    }
-
-    // Écouter le scroll du panel wird
-    var panel = document.getElementById('panel-wird-content');
-    var sec   = document.getElementById('sec-wird');
-    if (!sec) return;
-
-    sec.addEventListener('scroll', _wpbUpdate, {passive: true});
-    _wpbUpdate.call(sec);
-  }
-
-  function _wpbUpdate() {
-    var sec = document.getElementById('sec-wird');
-    if (!sec) return;
-    var scrollTop = sec.scrollTop;
-    var current = 1;
-
-    // Trouver l'étape la plus avancée visible
-    for (var i = TOTAL; i >= 1; i--) {
-      var el = document.getElementById('wird-step-' + i);
-      if (el) {
-        // Position relative au conteneur scrollable
-        var elTop = el.getBoundingClientRect().top - sec.getBoundingClientRect().top;
-        if (elTop <= 120) { current = i; break; }
-      }
-    }
-
-    // Mettre à jour le label
-    var lbl = document.getElementById('wpb-current');
-    if (lbl) lbl.textContent = current;
-
-    // Mettre à jour la barre
-    var pct = ((current - 1) / (TOTAL - 1)) * 100;
-    var fill = document.getElementById('wpb-fill');
-    if (fill) fill.style.width = Math.max(pct, 4) + '%';
-
-    // Mettre à jour les points
-    for (var j = 1; j <= TOTAL; j++) {
-      var dot = document.getElementById('wpb-dot-' + j);
-      if (!dot) continue;
-      dot.className = 'wpb-dot' + (j < current ? ' done' : j === current ? ' current' : '');
-    }
-  }
-
-  // Activer dès qu'on bascule sur l'onglet Wird
-  var _origSwitch = window.switchWirdTab;
-  function _hookedSwitch(tab) {
-    if (_origSwitch) _origSwitch(tab);
-;
+/* ── Créer un groupe ── */
+function zCreateGroup(){
+  var name=(document.getElementById('zCreateNameInput')||{}).value.trim();
+  var dhikrKey=(document.getElementById('zDhikrSelect')||{}).value||'lahila';
+  var target=parseInt((document.getElementById('zTargetInput')||{}).value)||100;
+  var code=_zbGenCode();
+  if(!name){showToast('\u26A0\uFE0F Entre ton pr\u00e9nom');return;}
+  _fbSetStatus(false,'Cr\u00e9ation du groupe\u2026');
+  _fbInit(function(){
+    var groupData={code:code,founder:name,dhikr:dhikrKey,target:target,active:true,createdAt:firebase.database.ServerValue.TIMESTAMP,members:{}};
+    _zMyId=_zbGenId();
+    _zMyName=name;
+    _zGroupKey=code;
+    _zIsFounder=true;
+    _zMyPersonalCount=0;
     groupData.members[_zMyId]={name:name,count:0,isFounder:true,online:true,joinedAt:firebase.database.ServerValue.TIMESTAMP};
     firebase.database().ref('zikr_groups/'+code).set(groupData,function(err){
-      if(err){showToast('⚠️ Erreur création : '+err.message);return;}
-      showToast('✅ Groupe créé : '+code);
+      if(err){showToast('\u26A0\uFE0F Erreur cr\u00e9ation : '+err.message);return;}
+      showToast('\u2705 Groupe cr\u00e9\u00e9 : '+code);
       _zStartSession(code,dhikrKey,target);
     });
   });
@@ -10852,7 +10813,7 @@ window.studioNormalize = function() {
 
   if (!getAll) {
     if (status) status.textContent = 'Aucun enregistrement accessible';
-    if (typeof showToast === 'function') showToast('\u26A0\uFE0F Pas d'enregistrement');
+    if (typeof showToast === 'function') showToast('\u26A0\uFE0F Pas d\'enregistrement');
     return;
   }
 
@@ -10862,7 +10823,7 @@ window.studioNormalize = function() {
   getAll(function(recs) {
     if (!recs || !recs.length) {
       if (status) status.textContent = 'Aucun enregistrement dans la biblioth\u00e8que';
-      if (typeof showToast === 'function') showToast('\u26A0\uFE0F Enregistrez d'abord un audio');
+      if (typeof showToast === 'function') showToast('\u26A0\uFE0F Enregistrez d\'abord un audio');
       if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = ''; }
       return;
     }
