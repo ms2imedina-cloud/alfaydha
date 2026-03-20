@@ -4095,7 +4095,8 @@ button[onclick="qiblaGPS()"] {
     <div class="rp-ar" style="font-size:16px">راديو الفيضة · مدينة باي</div>
     <div class="rp-freq" style="font-size:10px;letter-spacing:.15em;opacity:.5">90.1 FM · KAOLACK · MÉDINA BAYE</div>
     <div class="rp-live" style="margin:.6rem auto 0"><div class="rp-dot"></div>EN DIRECT</div>
-    <div class="rp-viz" id="rpViz"></div>
+    <div class="rp-viz" id="rpViz" style="display:none"></div>
+    <canvas id="rpWaveCanvas" style="width:100%;height:28px;display:block;border-radius:4px;opacity:.9"></canvas>
   </div>
 
   <!-- En cours de diffusion -->
@@ -4123,6 +4124,29 @@ button[onclick="qiblaGPS()"] {
     <div class="rp-status" id="rpStatus" style="min-height:20px">Appuyez ▶ pour écouter</div>
   </div>
 </div>
+
+<!-- ── MODE SOMMEIL ── -->
+<div id="sleepWrap" style="background:#060f08;border-top:1px solid rgba(74,222,128,.1);padding:.7rem 1.1rem;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+    <div style="display:flex;align-items:center;gap:.5rem">
+      <span style="font-size:16px">😴</span>
+      <span style="font-size:12px;font-weight:700;color:rgba(255,255,255,.7);letter-spacing:.04em">MODE SOMMEIL</span>
+    </div>
+    <div id="sleepCountdown" style="font-size:13px;font-weight:700;color:#4ade80;display:none;font-variant-numeric:tabular-nums"></div>
+  </div>
+  <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+    <button class="sleep-btn" onclick="setSleep(15)">15 min</button>
+    <button class="sleep-btn" onclick="setSleep(30)">30 min</button>
+    <button class="sleep-btn" onclick="setSleep(45)">45 min</button>
+    <button class="sleep-btn" onclick="setSleep(60)">1 heure</button>
+    <button class="sleep-btn" id="sleepCancelBtn" onclick="cancelSleep()" style="display:none;background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.3);color:#f87171">✕ Annuler</button>
+  </div>
+</div>
+<style>
+.sleep-btn{background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);color:rgba(74,222,128,.8);border-radius:20px;padding:.28rem .75rem;font-size:11.5px;font-weight:600;cursor:pointer;transition:all .18s;font-family:'Roboto',sans-serif;}
+.sleep-btn:hover{background:rgba(74,222,128,.15);border-color:rgba(74,222,128,.4);}
+.sleep-btn.active{background:rgba(74,222,128,.2);border-color:#4ade80;color:#4ade80;}
+</style>
 
 <audio id="rpAudio" preload="none" playsinline webkit-playsinline></audio>
 
@@ -4566,6 +4590,25 @@ button[onclick="qiblaGPS()"] {
     <button class="studio-q-btn" id="sqVoice" onclick="studioSetQuality('voice')">🎤 Voix</button>
     <button class="studio-q-btn active" id="sqHifi" onclick="studioSetQuality('hifi')">✨ Hi-Fi</button>
     <button class="studio-q-btn" id="sqStudio" onclick="studioSetQuality('studio')">🏆 Studio</button>
+  </div>
+
+  <!-- ── Transcription + Normalisation ── -->
+  <div style="background:#030a05;border-top:1px solid rgba(251,191,36,.1);padding:.6rem 1rem;display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
+    <button id="transcribeBtn" onclick="studioTranscribe()" style="display:flex;align-items:center;gap:.4rem;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.3);color:rgba(167,139,250,.9);border-radius:20px;padding:.3rem .8rem;font-size:11px;font-weight:700;cursor:pointer;font-family:'Roboto',sans-serif;transition:all .2s;letter-spacing:.03em">
+      <span style="font-size:13px">📝</span> Transcrire
+    </button>
+    <button id="normalizeBtn" onclick="studioNormalize()" style="display:flex;align-items:center;gap:.4rem;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);color:rgba(251,191,36,.85);border-radius:20px;padding:.3rem .8rem;font-size:11px;font-weight:700;cursor:pointer;font-family:'Roboto',sans-serif;transition:all .2s;letter-spacing:.03em">
+      <span style="font-size:13px">🔊</span> Normaliser
+    </button>
+    <div id="transcribeStatus" style="font-size:11px;color:rgba(255,255,255,.35);font-style:italic;flex:1;min-width:0"></div>
+  </div>
+  <!-- Zone transcription -->
+  <div id="transcribeBox" style="display:none;background:#020705;border-top:1px solid rgba(139,92,246,.15);padding:.7rem 1rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem">
+      <span style="font-size:10px;font-weight:700;color:rgba(167,139,250,.6);text-transform:uppercase;letter-spacing:.08em">Transcription</span>
+      <button onclick="copyTranscript()" style="font-size:10px;background:none;border:1px solid rgba(167,139,250,.2);color:rgba(167,139,250,.6);border-radius:10px;padding:.15rem .5rem;cursor:pointer;font-family:'Roboto',sans-serif">Copier</button>
+    </div>
+    <div id="transcribeText" style="font-size:13px;color:rgba(255,255,255,.75);line-height:1.7;direction:auto;min-height:40px;max-height:120px;overflow-y:auto"></div>
   </div>
 
   <!-- Contrôles -->
@@ -12624,6 +12667,388 @@ function moonCalc(){moonGoNow("Senegal",14.15,-16.08);}
 function moonCitySearch(){moonGo();}
 </script>
 
+
+
+<script>
+/* ════════════════════════════════════════════════════════
+   FONCTIONNALITÉS INNOVANTES — Sleep · Waveform · Transcription · Normalisation
+════════════════════════════════════════════════════════ */
+
+/* ──────────────────────────────────────────
+   MODE SOMMEIL
+────────────────────────────────────────── */
+var sleepTimer = null;
+var sleepEnd   = null;
+var sleepTick  = null;
+
+window.setSleep = function(minutes) {
+  cancelSleep();
+  sleepEnd = Date.now() + minutes * 60000;
+  document.querySelectorAll('.sleep-btn').forEach(function(b){ b.classList.remove('active'); });
+  var cd = document.getElementById('sleepCountdown');
+  var cb = document.getElementById('sleepCancelBtn');
+  if (cd) { cd.style.display = 'block'; }
+  if (cb) { cb.style.display = 'inline-flex'; }
+
+  function tick() {
+    var rem = sleepEnd - Date.now();
+    if (rem <= 0) {
+      // Fondu progressif puis arrêt
+      var rpAudio = document.getElementById('rpAudio');
+      if (rpAudio && !rpAudio.paused) {
+        var fade = setInterval(function() {
+          if (rpAudio.volume > 0.05) {
+            rpAudio.volume = Math.max(0, rpAudio.volume - 0.05);
+          } else {
+            clearInterval(fade);
+            rpAudio.volume = 0;
+            if (typeof rpToggle === 'function' && window._rpPlaying) rpToggle();
+            else { rpAudio.pause(); rpAudio.src = ''; }
+          }
+        }, 100);
+      }
+      cancelSleep();
+      if (typeof showToast === 'function') showToast('😴 Radio arrêtée — bonne nuit');
+      return;
+    }
+    var secs = Math.ceil(rem / 1000);
+    var m = Math.floor(secs / 60);
+    var s = secs % 60;
+    if (cd) cd.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+  }
+  tick();
+  sleepTick = setInterval(tick, 500);
+
+  if (typeof showToast === 'function') showToast('😴 Arrêt dans ' + minutes + ' min');
+};
+
+window.cancelSleep = function() {
+  clearInterval(sleepTick);
+  clearTimeout(sleepTimer);
+  sleepEnd = null;
+  var cd = document.getElementById('sleepCountdown');
+  var cb = document.getElementById('sleepCancelBtn');
+  if (cd) { cd.style.display = 'none'; cd.textContent = ''; }
+  if (cb) { cb.style.display = 'none'; }
+  document.querySelectorAll('.sleep-btn:not(#sleepCancelBtn)').forEach(function(b){ b.classList.remove('active'); });
+};
+
+/* ──────────────────────────────────────────
+   VISUALISEUR WAVEFORM RADIO (WebAudio)
+────────────────────────────────────────── */
+var rpWaveCtx   = null;
+var rpAnalyser  = null;
+var rpWaveFrame = null;
+var rpWaveRunning = false;
+
+function rpWaveInit() {
+  var audio = document.getElementById('rpAudio');
+  var canvas = document.getElementById('rpWaveCanvas');
+  if (!audio || !canvas) return;
+  try {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!rpWaveCtx) {
+      rpWaveCtx = new AC();
+      var src = rpWaveCtx.createMediaElementSource(audio);
+      rpAnalyser = rpWaveCtx.createAnalyser();
+      rpAnalyser.fftSize = 256;
+      rpAnalyser.smoothingTimeConstant = 0.82;
+      src.connect(rpAnalyser);
+      rpAnalyser.connect(rpWaveCtx.destination);
+    }
+    if (rpWaveCtx.state === 'suspended') rpWaveCtx.resume();
+    rpWaveDraw();
+  } catch(e) {
+    console.warn('Waveform radio:', e);
+  }
+}
+
+function rpWaveDraw() {
+  var canvas = document.getElementById('rpWaveCanvas');
+  if (!canvas || !rpAnalyser) return;
+  rpWaveFrame = requestAnimationFrame(rpWaveDraw);
+
+  var W = canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
+  var H = canvas.height = 28 * (window.devicePixelRatio || 1);
+  var ctx = canvas.getContext('2d');
+  var bufLen = rpAnalyser.frequencyBinCount;
+  var data = new Uint8Array(bufLen);
+  rpAnalyser.getByteFrequencyData(data);
+
+  ctx.clearRect(0, 0, W, H);
+
+  var barW = (W / bufLen) * 2;
+  var gap = 1.5;
+  var x = 0;
+  for (var i = 0; i < bufLen; i++) {
+    var val = data[i] / 255;
+    var bh = Math.max(2, val * H * 0.9);
+    var green = Math.round(100 + val * 122);
+    ctx.fillStyle = 'rgba(74,' + green + ',128,' + (0.4 + val * 0.6) + ')';
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(x, (H - bh) / 2, barW - gap, bh, 1) :
+      ctx.rect(x, (H - bh) / 2, barW - gap, bh);
+    ctx.fill();
+    x += barW;
+    if (x > W) break;
+  }
+}
+
+function rpWaveStop() {
+  cancelAnimationFrame(rpWaveFrame);
+  var canvas = document.getElementById('rpWaveCanvas');
+  if (canvas) {
+    var ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Dessiner ligne au repos
+    canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
+    canvas.height = 28 * (window.devicePixelRatio || 1);
+    ctx = canvas.getContext('2d');
+    ctx.strokeStyle = 'rgba(74,222,128,.15)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(0, canvas.height / 2);
+    ctx.lineTo(canvas.width, canvas.height / 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+}
+
+/* Hooker sur les événements audio radio */
+(function hookRadioWave() {
+  var tries = 0;
+  var iv = setInterval(function() {
+    var audio = document.getElementById('rpAudio');
+    if (audio || tries++ > 20) {
+      clearInterval(iv);
+      if (!audio) return;
+      audio.addEventListener('playing', function() {
+        rpWaveInit();
+        window._rpPlaying = true;
+      });
+      audio.addEventListener('pause', function() {
+        rpWaveStop();
+        window._rpPlaying = false;
+      });
+      audio.addEventListener('ended', function() {
+        rpWaveStop();
+        window._rpPlaying = false;
+      });
+      rpWaveStop(); // dessin repos initial
+    }
+  }, 300);
+})();
+
+/* ──────────────────────────────────────────
+   TRANSCRIPTION VOIX → TEXTE (Web Speech API)
+────────────────────────────────────────── */
+var recognition = null;
+var transcriptFull = '';
+var isTranscribing = false;
+
+window.studioTranscribe = function() {
+  var btn = document.getElementById('transcribeBtn');
+  var status = document.getElementById('transcribeStatus');
+  var box = document.getElementById('transcribeBox');
+  var textEl = document.getElementById('transcribeText');
+
+  if (isTranscribing) {
+    // Arrêter
+    if (recognition) recognition.stop();
+    isTranscribing = false;
+    if (btn) { btn.style.background = 'rgba(139,92,246,.12)'; btn.innerHTML = '<span style="font-size:13px">📝</span> Transcrire'; }
+    if (status) status.textContent = 'Transcription terminée';
+    return;
+  }
+
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    if (status) status.textContent = 'Non supporté sur cet appareil';
+    if (typeof showToast === 'function') showToast('⚠️ Transcription non disponible');
+    return;
+  }
+
+  // Vérifier qu'un enregistrement est actif
+  if (!window._studioRecording && !isRecording) {
+    if (status) status.textContent = 'Démarrez l'enregistrement d'abord';
+    if (typeof showToast === 'function') showToast('⏺ Lancez d'abord l'enregistrement');
+    return;
+  }
+
+  transcriptFull = '';
+  recognition = new SR();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = 'ar-SA'; // Arabe par défaut — détection auto si multilingue
+
+  recognition.onstart = function() {
+    isTranscribing = true;
+    if (btn) { btn.style.background = 'rgba(139,92,246,.25)'; btn.innerHTML = '<span style="font-size:13px">⏹</span> Arrêter'; }
+    if (status) status.textContent = '🔴 Transcription active...';
+    if (box) box.style.display = 'block';
+  };
+
+  recognition.onresult = function(e) {
+    var interim = '';
+    for (var i = e.resultIndex; i < e.results.length; i++) {
+      var t = e.results[i][0].transcript;
+      if (e.results[i].isFinal) { transcriptFull += t + ' '; }
+      else { interim = t; }
+    }
+    if (textEl) {
+      textEl.innerHTML =
+        '<span style="color:rgba(255,255,255,.8)">' + transcriptFull + '</span>' +
+        '<span style="color:rgba(255,255,255,.35);font-style:italic">' + interim + '</span>';
+      textEl.scrollTop = textEl.scrollHeight;
+    }
+  };
+
+  recognition.onerror = function(e) {
+    if (e.error === 'no-speech') return;
+    if (status) status.textContent = 'Erreur: ' + e.error;
+    isTranscribing = false;
+    if (btn) { btn.style.background = 'rgba(139,92,246,.12)'; btn.innerHTML = '<span style="font-size:13px">📝</span> Transcrire'; }
+  };
+
+  recognition.onend = function() {
+    if (isTranscribing) recognition.start(); // relancer en continu
+  };
+
+  recognition.start();
+};
+
+window.copyTranscript = function() {
+  if (!transcriptFull) return;
+  navigator.clipboard.writeText(transcriptFull.trim()).then(function() {
+    if (typeof showToast === 'function') showToast('✅ Transcription copiée');
+  }).catch(function() {
+    if (typeof showToast === 'function') showToast('Sélectionnez le texte manuellement');
+  });
+};
+
+/* ──────────────────────────────────────────
+   NORMALISATION / AMPLIFICATION (Web Audio API offline)
+────────────────────────────────────────── */
+window.studioNormalize = function() {
+  var btn = document.getElementById('normalizeBtn');
+  var status = document.getElementById('transcribeStatus');
+
+  // Trouver le dernier enregistrement dans la lib
+  if (typeof dbGetAll !== 'function') {
+    if (typeof showToast === 'function') showToast('Aucun enregistrement à normaliser');
+    return;
+  }
+
+  dbGetAll(function(recs) {
+    if (!recs || !recs.length) {
+      if (typeof showToast === 'function') showToast('Aucun enregistrement à normaliser');
+      return;
+    }
+
+    // Prendre le plus récent
+    recs.sort(function(a,b){ return b.date - a.date; });
+    var rec = recs[0];
+    if (status) status.textContent = 'Normalisation en cours...';
+    if (btn) btn.style.opacity = '.5';
+
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      var tmpCtx = new AC();
+      tmpCtx.decodeAudioData(e.target.result, function(buffer) {
+        // Analyser le peak
+        var peak = 0;
+        for (var ch = 0; ch < buffer.numberOfChannels; ch++) {
+          var data = buffer.getChannelData(ch);
+          for (var i = 0; i < data.length; i++) {
+            var abs = Math.abs(data[i]);
+            if (abs > peak) peak = abs;
+          }
+        }
+        if (peak === 0) {
+          if (status) status.textContent = 'Signal vide';
+          if (btn) btn.style.opacity = '1';
+          return;
+        }
+
+        // Normaliser à 0.95 (éviter clipping)
+        var gain = 0.95 / peak;
+        var offCtx = new OfflineAudioContext(
+          buffer.numberOfChannels,
+          buffer.length,
+          buffer.sampleRate
+        );
+        var src2 = offCtx.createBufferSource();
+        src2.buffer = buffer;
+        var gainNode2 = offCtx.createGain();
+        gainNode2.gain.value = gain;
+        src2.connect(gainNode2);
+        gainNode2.connect(offCtx.destination);
+        src2.start(0);
+
+        offCtx.startRendering().then(function(normBuf) {
+          // Encoder en WAV
+          var wavBlob = bufferToWav(normBuf);
+          var newName = rec.name.replace(/\.[^.]+$/, '') + '_norm.wav';
+          if (typeof dbSave === 'function') {
+            dbSave(wavBlob, newName, rec.duration, rec.quality, function() {
+              if (status) status.textContent = 'Gain appliqué: ×' + gain.toFixed(2);
+              if (btn) btn.style.opacity = '1';
+              if (typeof studioRenderLib === 'function') studioRenderLib();
+              if (typeof showToast === 'function') showToast('✅ Normalisé — gain ×' + gain.toFixed(2));
+            });
+          }
+        }).catch(function(err) {
+          if (status) status.textContent = 'Erreur normalisation';
+          if (btn) btn.style.opacity = '1';
+          console.error(err);
+        });
+
+      }, function() {
+        if (status) status.textContent = 'Décodage impossible';
+        if (btn) btn.style.opacity = '1';
+      });
+    };
+    reader.readAsArrayBuffer(rec.blob);
+  });
+};
+
+/* Encodeur WAV minimal */
+function bufferToWav(buffer) {
+  var numCh = buffer.numberOfChannels;
+  var sampleRate = buffer.sampleRate;
+  var numSamples = buffer.length;
+  var bytesPerSample = 2;
+  var blockAlign = numCh * bytesPerSample;
+  var byteRate = sampleRate * blockAlign;
+  var dataSize = numSamples * blockAlign;
+  var ab = new ArrayBuffer(44 + dataSize);
+  var view = new DataView(ab);
+  function ws(off, str) { for (var i=0;i<str.length;i++) view.setUint8(off+i, str.charCodeAt(i)); }
+  function wu32(off, v) { view.setUint32(off, v, true); }
+  function wu16(off, v) { view.setUint16(off, v, true); }
+  ws(0,'RIFF'); wu32(4, 36+dataSize); ws(8,'WAVE');
+  ws(12,'fmt '); wu32(16,16); wu16(20,1); wu16(22,numCh);
+  wu32(24,sampleRate); wu32(28,byteRate); wu16(32,blockAlign); wu16(34,16);
+  ws(36,'data'); wu32(40,dataSize);
+  var off = 44;
+  for (var i=0; i<numSamples; i++) {
+    for (var ch=0; ch<numCh; ch++) {
+      var s = Math.max(-1, Math.min(1, buffer.getChannelData(ch)[i]));
+      view.setInt16(off, s < 0 ? s*32768 : s*32767, true);
+      off += 2;
+    }
+  }
+  return new Blob([ab], { type: 'audio/wav' });
+}
+
+/* Exposer isRecording pour la transcription */
+Object.defineProperty(window, '_studioRecording', {
+  get: function() { return typeof isRecording !== 'undefined' && isRecording; }
+});
+
+</script>
 
 </body>
 </html>
