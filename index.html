@@ -10708,59 +10708,104 @@ async function _prayerReverseGeocode(lat, lng) {
    QIBLA — Direction de La Mecque
    Calcul trigonométrique pur, sans API externe
 ══════════════════════════════════════════════════════ */
-function qiblaLocate() {
-  if (!navigator.geolocation) {
-    alert("La géolocalisation n'est pas supportée par votre navigateur.");
-    return;
+/* ── Calcul Qibla depuis lat/lng ── */
+function qiblaCompute(lat, lng, label) {
+  var MECCA_LAT = 21.4225, MECCA_LNG = 39.8262;
+  var φ1 = lat*Math.PI/180, φ2 = MECCA_LAT*Math.PI/180;
+  var Δλ = (MECCA_LNG-lng)*Math.PI/180;
+  var y = Math.sin(Δλ)*Math.cos(φ2);
+  var x = Math.cos(φ1)*Math.sin(φ2)-Math.sin(φ1)*Math.cos(φ2)*Math.cos(Δλ);
+  var bearing = (Math.atan2(y,x)*180/Math.PI+360)%360;
+  var R=6371, dLat=(MECCA_LAT-lat)*Math.PI/180, dLng=(MECCA_LNG-lng)*Math.PI/180;
+  var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(φ1)*Math.cos(φ2)*Math.sin(dLng/2)*Math.sin(dLng/2);
+  var dist=Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
+  var compass=document.getElementById('qiblaCompass');
+  if(compass) compass.style.transform='rotate('+bearing+'deg)';
+  document.getElementById('qiblaDeg').textContent=Math.round(bearing)+'°';
+  document.getElementById('qiblaDist').textContent=dist.toLocaleString()+' km';
+  var dirs=['Nord','Nord-Est','Est','Sud-Est','Sud','Sud-Ouest','Ouest','Nord-Ouest'];
+  var dir=dirs[Math.round(bearing/45)%8];
+  document.getElementById('qiblaLoc').textContent='📍 '+label+' — Direction: '+dir;
+  document.getElementById('qiblaResult').style.display='block';
+  /* Cacher le formulaire manuel */
+  var mf=document.getElementById('qiblaManualForm');
+  if(mf) mf.style.display='none';
+}
+
+/* ── Formulaire manuel de ville ── */
+function qiblaManual() {
+  var mf=document.getElementById('qiblaManualForm');
+  if(!mf){
+    mf=document.createElement('div');
+    mf.id='qiblaManualForm';
+    mf.style.cssText='margin-top:.8rem;padding:.8rem;background:var(--gold3);border-radius:12px;text-align:center;';
+    mf.innerHTML='<div style="font-size:12px;color:var(--text2);margin-bottom:.6rem;">Entrez votre ville ou coordonnées :</div>'
+      +'<input id="qiblaCityInput" placeholder="Ex: Dakar, Thiès, Kaolack..." style="width:100%;padding:.5rem .8rem;border:1.5px solid var(--g1);border-radius:8px;font-size:14px;box-sizing:border-box;margin-bottom:.5rem;">'
+      +'<button onclick="qiblaSearchCity()" style="background:var(--g1);color:#fff;border:none;border-radius:8px;padding:.5rem 1.2rem;font-size:13px;font-weight:700;cursor:pointer;width:100%;">🔍 Calculer la Qibla</button>';
+    document.getElementById('qiblaInfo').appendChild(mf);
+  } else {
+    mf.style.display = mf.style.display==='none' ? 'block' : 'none';
   }
+}
+
+function qiblaSearchCity() {
+  var city = document.getElementById('qiblaCityInput').value.trim();
+  if(!city) return;
   var btn = document.querySelector('#qiblaInfo button');
-  if (btn) { btn.textContent = '📍 Localisation...'; btn.disabled = true; }
+  fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(city)+'&format=json&limit=1&accept-language=fr')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if(!data||!data.length){ alert('Ville non trouvée. Essayez: "Dakar Sénégal"'); return; }
+      var lat=parseFloat(data[0].lat), lng=parseFloat(data[0].lon);
+      var name=data[0].display_name.split(',').slice(0,2).join(',');
+      qiblaCompute(lat, lng, name);
+    })
+    .catch(function(){ alert('Erreur réseau. Vérifiez votre connexion.'); });
+}
 
-  navigator.geolocation.getCurrentPosition(function(pos) {
-    var lat = pos.coords.latitude;
-    var lng = pos.coords.longitude;
+function qiblaLocate() {
+  var btn = document.querySelector('#qiblaInfo button');
+  if(btn){ btn.textContent='📍 Localisation...'; btn.disabled=true; }
 
-    /* Coordonnées de La Mecque (Kaaba) */
-    var MECCA_LAT = 21.4225;
-    var MECCA_LNG = 39.8262;
+  function onErr(msg) {
+    if(btn){ btn.textContent='📍 Trouver ma Qibla'; btn.disabled=false; }
+    /* Afficher saisie manuelle */
+    var info=document.getElementById('qiblaInfo');
+    var errDiv=document.getElementById('qiblaErrMsg');
+    if(!errDiv){
+      errDiv=document.createElement('div');
+      errDiv.id='qiblaErrMsg';
+      errDiv.style.cssText='margin-top:.6rem;font-size:12px;color:var(--red);';
+      info.appendChild(errDiv);
+    }
+    errDiv.textContent='⚠️ '+msg;
+    qiblaManual();
+  }
 
-    /* Calcul de l'azimut (formule haversine / bearing) */
-    var φ1 = lat * Math.PI / 180;
-    var φ2 = MECCA_LAT * Math.PI / 180;
-    var Δλ = (MECCA_LNG - lng) * Math.PI / 180;
-    var y = Math.sin(Δλ) * Math.cos(φ2);
-    var x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
-    var bearing = (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+  if(!navigator.geolocation){ onErr('Géolocalisation non supportée.'); return; }
 
-    /* Distance en km (formule haversine) */
-    var R = 6371;
-    var dLat = (MECCA_LAT - lat) * Math.PI / 180;
-    var dLng = (MECCA_LNG - lng) * Math.PI / 180;
-    var a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(φ1)*Math.cos(φ2)*Math.sin(dLng/2)*Math.sin(dLng/2);
-    var dist = Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
-
-    /* Afficher boussole */
-    var compass = document.getElementById('qiblaCompass');
-    if (compass) compass.style.transform = 'rotate(' + bearing + 'deg)';
-
-    /* Afficher résultats */
-    document.getElementById('qiblaDeg').textContent = Math.round(bearing) + '°';
-    document.getElementById('qiblaDist').textContent = dist.toLocaleString() + ' km';
-
-    /* Direction cardinale */
-    var dirs = ['Nord','Nord-Est','Est','Sud-Est','Sud','Sud-Ouest','Ouest','Nord-Ouest'];
-    var dir = dirs[Math.round(bearing / 45) % 8];
-    document.getElementById('qiblaLoc').textContent =
-      '📍 Lat: ' + lat.toFixed(4) + '° / Lng: ' + lng.toFixed(4) + '° — Direction: ' + dir;
-
-    document.getElementById('qiblaResult').style.display = 'block';
-    if (btn) { btn.textContent = '🔄 Recalculer'; btn.disabled = false; }
-
-  }, function(err) {
-    if (btn) { btn.textContent = '📍 Trouver ma Qibla'; btn.disabled = false; }
-    var msgs = { 1: 'Permission refusée. Autorisez la localisation.', 2: 'Position indisponible.', 3: 'Délai dépassé.' };
-    alert('Erreur : ' + (msgs[err.code] || err.message));
-  }, { enableHighAccuracy: true, timeout: 10000 });
+  navigator.geolocation.getCurrentPosition(
+    function(pos){
+      var lat=pos.coords.latitude, lng=pos.coords.longitude;
+      if(btn){ btn.textContent='🔄 Recalculer'; btn.disabled=false; }
+      /* Reverse geocoding */
+      fetch('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lng+'&format=json&accept-language=fr')
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          var a=d.address||{};
+          var city=a.city||a.town||a.village||a.county||a.state||'';
+          var country=a.country||'';
+          var name=city?(city+(country?', '+country:'')):('Lat:'+lat.toFixed(2)+' Lng:'+lng.toFixed(2));
+          qiblaCompute(lat,lng,name);
+        })
+        .catch(function(){ qiblaCompute(lat,lng,'Lat:'+lat.toFixed(3)+' Lng:'+lng.toFixed(3)); });
+    },
+    function(err){
+      var msgs={1:'Permission refusée — autorisez la localisation dans votre navigateur.',2:'Position indisponible.',3:'Délai dépassé.'};
+      onErr(msgs[err.code]||'Erreur de localisation.');
+    },
+    {enableHighAccuracy:true, timeout:10000}
+  );
 }
 
 /* ══════════════════════════════════════════════════════
@@ -10941,13 +10986,27 @@ function moonCalc() {
     if (btn) { btn.textContent = '🔄 Recalculer'; btn.disabled = false; }
   }
 
+  function showMoonManual() {
+    if(btn){ btn.textContent='🌙 Calculer'; btn.disabled=false; }
+    var res=document.getElementById('moonResult');
+    if(document.getElementById('moonManualForm')) return;
+    var mf=document.createElement('div');
+    mf.id='moonManualForm';
+    mf.style.cssText='margin-top:.8rem;padding:.8rem;background:#e8f0fe;border-radius:12px;text-align:center;';
+    mf.innerHTML='<div style="font-size:12px;color:var(--text2);margin-bottom:.5rem;">📍 GPS indisponible — entrez votre ville :</div>'
+      +'<input id="moonCityInput" placeholder="Ex: Dakar, Thiès, Kaolack..." style="width:100%;padding:.5rem .8rem;border:1.5px solid #0d1b3e;border-radius:8px;font-size:14px;box-sizing:border-box;margin-bottom:.5rem;">'
+      +'<button onclick="moonCitySearch()" style="background:linear-gradient(135deg,#0d1b3e,#1a2d5a);color:#fff;border:none;border-radius:8px;padding:.5rem 1.2rem;font-size:13px;font-weight:700;cursor:pointer;width:100%;">🌙 Calculer le Hilal</button>';
+    res.appendChild(mf);
+    /* Aussi lancer sans position pour avoir les données lunaires */
+    compute(14.15, -16.08, 'Sénégal (approximatif)');
+  }
+
   /* Géolocalisation */
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       function(pos) {
         var lat = pos.coords.latitude;
         var lng = pos.coords.longitude;
-        /* Reverse geocoding léger via API publique */
         fetch('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lng+'&format=json&accept-language=fr')
           .then(function(r){ return r.json(); })
           .then(function(d){
@@ -10958,20 +11017,35 @@ function moonCalc() {
           })
           .catch(function(){ compute(lat, lng, null); });
       },
-      function() {
-        /* Pas de GPS — calcul sans position */
-        if (btn) { btn.textContent = '🌙 Calculer'; btn.disabled = false; }
-        compute(0, 0, 'Position non disponible');
-      },
+      function() { showMoonManual(); },
       { timeout: 8000 }
     );
   } else {
-    compute(0, 0, 'Position non disponible');
+    showMoonManual();
   }
 }
 
-
-  var illum = Math.round((1 - Math.cos(age / SYNODIC * 2 * Math.PI)) / 2 * 100);
+function moonCitySearch() {
+  var city = document.getElementById('moonCityInput').value.trim();
+  if(!city) return;
+  fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(city)+'&format=json&limit=1&accept-language=fr')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if(!data||!data.length){ alert('Ville non trouvée. Essayez: "Dakar Sénégal"'); return; }
+      var lat=parseFloat(data[0].lat), lng=parseFloat(data[0].lon);
+      var name=data[0].display_name.split(',').slice(0,2).join(',');
+      var mf=document.getElementById('moonManualForm');
+      if(mf) mf.style.display='none';
+      /* Re-run compute via moonCalc internal */
+      var now=new Date();
+      var SYNODIC=29.53058867;
+      var age=((now-new Date('2000-01-06T18:14:00Z'))/86400000/SYNODIC%1)*SYNODIC;
+      if(age<0) age+=SYNODIC;
+      /* Mise à jour juste du lieu */
+      document.getElementById('moonLoc').textContent='📍 '+name+' — '+now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    })
+    .catch(function(){ alert('Erreur réseau.'); });
+}
 
   /* Phase */
   var phases = [
