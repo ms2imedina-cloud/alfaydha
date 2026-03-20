@@ -2722,52 +2722,43 @@ button[onclick="qiblaGPS()"] {
 <script>
 (function(){
   /* ══════════════════════════════════════════════════════
-     RADIO AL-FAYDHA — Stream via API MyTuner/radio-senegal
-     L'API retourne l'URL déchiffrée en temps réel
+     RADIO AL-FAYDHA — Player corrigé
+     Source officielle : http://usa5.fastcast4u.com/proxy/lyartech?mp=/1
+     Stratégie : tester les streams HTTPS directs, puis proxy HTTPS,
+                 puis fallback iframe Muses (player officiel)
   ══════════════════════════════════════════════════════ */
 
-  var RADIO_SLUG  = 'radio-alfayda';
-  var RADIO_ID    = 439363;
-  var API_BASE    = 'https://www.radio-senegal.com';
-  var META_API    = 'https://metadata-api.mytuner.mobi/v2/' + RADIO_ID;
-
-  /* ✅ STREAMS RADIO AL-FAYDHA — mis à jour 2026
-     Source officielle : radioalfayda.net (MRP player widget)
-     Stream principal : usa5.fastcast4u.com/proxy/lyartech */
-  var FALLBACK_STREAMS = [
-    /* 1. Stream officiel fastcast4u */
-    'https://usa5.fastcast4u.com/proxy/lyartech?mp=/1',
-    /* 2. Zeno.fm — CDN mondial haute disponibilité */
+  /* ── Streams à tester dans l'ordre ── */
+  var STREAMS = [
+    /* 1. Zeno.fm — CDN HTTPS fiable, souvent le plus rapide */
     'https://stream.zeno.fm/OUE5xD8nztzuv',
-    /* 3. Hostrails */
+    /* 2. Stream officiel via proxy HTTPS allorigins */
+    'https://api.allorigins.win/raw?url=' + encodeURIComponent('http://usa5.fastcast4u.com/proxy/lyartech?mp=/1'),
+    /* 3. Hostrails HTTPS */
     'https://cast2.hostrails.com/radio-alfayda',
-    /* 4. RadioBoss avec port explicite */
-    'https://c7.radioboss.fm:8040/stream/379',
-    /* 5. Airtime relay */
-    'https://lyartech.out.airtime.pro/lyartech_a',
-    /* 6. Radio.co */
+    /* 4. Radio.co relay */
     'https://s3.radio.co/s3a2e15d1d/listen',
-    /* 7. Icecast relay */
-    'https://usa5.fastcast4u.com/lyartech'
+    /* 5. Stream direct HTTPS fastcast4u (fonctionne parfois) */
+    'https://usa5.fastcast4u.com/proxy/lyartech?mp=/1'
   ];
 
-  /* URL YouTube Live officielle Radio Al-Faydha */
-  var YT_LIVE_ID = 'UCxxxxxxxx';
+  var META_API = 'https://metadata-api.mytuner.mobi/v2/439363';
 
-  var audio   = document.getElementById('rpAudio');
-  var btn     = document.getElementById('rpBtn');
-  var stat    = document.getElementById('rpStatus');
-  var disc    = document.getElementById('rpDisc');
-  var needle  = document.getElementById('rpNeedle');
-  var volEl   = document.getElementById('rpVol');
-  var volIco  = document.getElementById('rpVolIco');
-  var bars    = [];
-  var playing = false;
-  var userStopped = false;
-  var timer   = null;
-  var metaTimer = null;
+  var audio      = document.getElementById('rpAudio');
+  var btn        = document.getElementById('rpBtn');
+  var stat       = document.getElementById('rpStatus');
+  var disc       = document.getElementById('rpDisc');
+  var needle     = document.getElementById('rpNeedle');
+  var volEl      = document.getElementById('rpVol');
+  var volIco     = document.getElementById('rpVolIco');
+  var bars       = [];
+  var playing    = false;
+  var userStopped= false;
+  var timer      = null;
+  var metaTimer  = null;
+  var streamIdx  = 0;
 
-  /* Visualizer */
+  /* Visualizer bars */
   var viz = document.getElementById('rpViz');
   for(var i=0;i<20;i++){
     var b=document.createElement('div'); b.className='rp-bar';
@@ -2776,200 +2767,152 @@ button[onclick="qiblaGPS()"] {
   }
 
   function vizOn(on){ bars.forEach(function(b){ on?b.classList.add('on'):(b.classList.remove('on'),b.style.height='3px'); }); }
+
   function setUI(on){
-    playing=on; btn.textContent=on?'⏸':'▶'; btn.classList.remove('loading');
-    disc.classList.toggle('spin',on); needle.classList.toggle('on',on); vizOn(on);
+    playing=on;
+    btn.textContent=on?'⏸':'▶';
+    btn.classList.remove('loading');
+    disc.classList.toggle('spin',on);
+    needle.classList.toggle('on',on);
+    vizOn(on);
     if(on) startMetaPolling(); else stopMetaPolling();
   }
+
   function setSt(msg,cls){ stat.className='rp-status'+(cls?' '+cls:''); stat.textContent=msg; }
 
-  /* ── Métadonnées en cours ── */
-  function startMetaPolling(){
-    fetchMeta();
-    metaTimer = setInterval(fetchMeta, 15000);
-  }
+  /* ── Métadonnées ── */
+  function startMetaPolling(){ fetchMeta(); metaTimer=setInterval(fetchMeta,15000); }
   function stopMetaPolling(){
     clearInterval(metaTimer);
     document.getElementById('rpNow').classList.remove('visible');
   }
   function fetchMeta(){
-    fetch(META_API, {headers:{'Accept':'application/json'}})
-      .then(function(r){ return r.json(); })
+    fetch(META_API,{headers:{'Accept':'application/json'}})
+      .then(function(r){return r.json();})
       .then(function(d){
-        var title  = (d&&d.title)  || '';
-        var artist = (d&&d.artist) || '';
-        var art    = (d&&d.image)  || '';
+        var title=d&&d.title||''; var artist=d&&d.artist||''; var art=d&&d.image||'';
         if(title){
-          document.getElementById('rpTrack').textContent  = title;
-          document.getElementById('rpArtist').textContent = artist || 'Radio Al-Faydha';
-          if(art) document.getElementById('rpArt').src = art;
+          document.getElementById('rpTrack').textContent=title;
+          document.getElementById('rpArtist').textContent=artist||'Radio Al-Faydha';
+          if(art) document.getElementById('rpArt').src=art;
           document.getElementById('rpNow').classList.add('visible');
         }
       }).catch(function(){});
   }
 
-  /* ── Récupérer le vrai stream URL via l'API radio-senegal ── */
-  function fetchStreamUrl(cb){
-    /* L'API MyTuner retourne le stream URL pour ce radio_id */
-    var endpoints = [
-      API_BASE + '/ajax/play/?radio_id=' + RADIO_ID,
-      API_BASE + '/ajax/streaming/?radio_id=' + RADIO_ID,
-      API_BASE + '/ajax/radio_stream/?slug=' + RADIO_SLUG,
-      'https://mytuner-radio.com/api/radios/' + RADIO_ID + '/?lang=fr'
-    ];
-    var idx = 0;
-    function tryEndpoint(){
-      if(idx >= endpoints.length){ cb(null); return; }
-      fetch(endpoints[idx++], {
-        headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'},
-        credentials:'omit'
-      })
-      .then(function(r){ return r.json(); })
-      .then(function(data){
-        /* Chercher l'URL dans différents formats de réponse */
-        var url = data.url || data.stream_url || data.streamURL
-               || data.radio_url || (data.streams&&data.streams[0])
-               || null;
-        if(url && (url.startsWith('http'))){
-          cb(url);
-        } else {
-          tryEndpoint();
-        }
-      })
-      .catch(function(){ tryEndpoint(); });
-    }
-    tryEndpoint();
-  }
-
-  /* ── Jouer une URL ── */
-  function playUrl(url){
-    audio.src = url;
-    audio.load();
-    setSt('Connexion...','');
-    clearTimeout(timer);
-    timer = setTimeout(function(){
-      if(!playing){ audio.pause(); tryFallbacks(0); }
-    }, 8000);
-    var p = audio.play();
-    if(p&&p.catch) p.catch(function(e){
-      clearTimeout(timer);
-      if(e&&e.name==='NotAllowedError'){ setSt('Appuyez ▶ pour démarrer',''); setUI(false); }
-      else { tryFallbacks(0); }
-    });
-  }
-
-  function tryFallbacks(idx){
-    if(idx >= FALLBACK_STREAMS.length){
+  /* ── Essayer un stream ── */
+  function tryStream(idx){
+    if(userStopped) return;
+    if(idx >= STREAMS.length){
+      /* Tous les streams ont échoué → afficher player iframe Muses officiel */
       setUI(false);
-      setSt('Stream indisponible — voir solution ci-dessous','err');
-      showYtFallback();
+      setSt('Ouverture du player officiel...','');
+      showMusesPlayer();
       return;
     }
-    var url = FALLBACK_STREAMS[idx];
+    streamIdx = idx;
+    var url = STREAMS[idx];
     audio.src = url;
     audio.load();
-    setSt('Connexion ' + (idx+1) + '/' + FALLBACK_STREAMS.length + '...','');
+    setSt('Connexion '+(idx+1)+'/'+STREAMS.length+'...','');
     clearTimeout(timer);
     timer = setTimeout(function(){
-      if(!playing){ audio.pause(); tryFallbacks(idx+1); }
-    }, 6000);
+      if(!playing){ audio.pause(); tryStream(idx+1); }
+    }, 7000);
     var p = audio.play();
     if(p&&p.catch) p.catch(function(e){
       clearTimeout(timer);
-      if(e && e.name === 'NotAllowedError'){
-        setSt('Appuyez sur ▶ pour démarrer','');
+      if(e&&e.name==='NotAllowedError'){
+        setSt('Appuyez ▶ pour démarrer','');
         setUI(false);
       } else {
-        tryFallbacks(idx+1);
+        tryStream(idx+1);
       }
     });
   }
-  
-  function showYtFallback() {
+
+  /* ── Fallback : player Muses officiel en iframe ── */
+  function showMusesPlayer(){
     var wrap = document.querySelector('.rp-wrap');
-    if (!wrap || document.getElementById('rpYtFallback')) return;
+    if(!wrap || document.getElementById('rpMusesFrame')) return;
     var div = document.createElement('div');
-    div.id = 'rpYtFallback';
-    div.style.cssText = 'background:#0a1a0e;border-top:1px solid rgba(212,175,55,.2);padding:.9rem 1.1rem;text-align:center';
-    div.innerHTML = 
-      '<div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:.6rem">📡 Stream audio indisponible</div>' +
-      '<div style="display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-bottom:.5rem">' +
-      '<a href="https://radioalfayda.net" target="_blank" rel="noopener" ' +
-      'style="display:inline-flex;align-items:center;gap:.4rem;background:#00315d;color:#fff;border-radius:20px;padding:.4rem .9rem;font-size:12px;font-weight:700;text-decoration:none">' +
-      '🌐 Site officiel</a>' +
-      '<a href="https://www.youtube.com/@RadioAlFaydha" target="_blank" rel="noopener" ' +
-      'style="display:inline-flex;align-items:center;gap:.4rem;background:#FF0000;color:#fff;border-radius:20px;padding:.4rem .9rem;font-size:12px;font-weight:700;text-decoration:none">' +
-      '<span>▶</span> YouTube Live</a>' +
+    div.id = 'rpMusesFrame';
+    div.style.cssText = 'background:#0a1a0e;border-top:1px solid rgba(212,175,55,.2);padding:.8rem 1rem;';
+    div.innerHTML =
+      '<div style="font-size:11px;color:rgba(255,255,255,.4);text-align:center;margin-bottom:.5rem">📡 Player officiel Radio Al-Faydha</div>' +
+      '<div style="display:flex;justify-content:center">' +
+      '<iframe src="https://hosted.muses.org/player.html?url=http%3A%2F%2Fusa5.fastcast4u.com%2Fproxy%2Flyartech%3Fmp%3D%2F1&codec=mp3&volume=80&autoplay=true&title=RADIO+AL+FAYDA+90.1+KAOLACK&skin=mcclean&width=280&height=60" ' +
+      'width="280" height="70" frameborder="0" scrolling="no" ' +
+      'allow="autoplay" style="border-radius:8px;overflow:hidden"></iframe>' +
       '</div>' +
-      '<div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:.5rem">ou entrez un stream URL ci-dessous</div>' +
+      '<div style="font-size:10px;color:rgba(255,255,255,.25);text-align:center;margin-top:.4rem">ou</div>' +
       '<div style="display:flex;gap:.4rem;margin-top:.4rem">' +
-      '<input id="rpCustomUrl" type="url" placeholder="https://... URL stream M3U8 ou MP3" ' +
-      'style="flex:1;padding:.4rem .7rem;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-size:12px;outline:none">' +
-      '<button onclick="rpPlayCustom()" style="background:var(--g1);color:#fff;border:none;border-radius:8px;padding:.4rem .8rem;font-size:12px;cursor:pointer">▶</button>' +
+      '<input id="rpCustomUrl" type="url" placeholder="URL stream personnalisée..." ' +
+      'style="flex:1;padding:.4rem .7rem;border-radius:8px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#fff;font-size:11px;outline:none">' +
+      '<button onclick="rpPlayCustom()" style="background:var(--g1);color:#fff;border:none;border-radius:8px;padding:.4rem .8rem;font-size:12px;cursor:pointer;white-space:nowrap">▶ Jouer</button>' +
       '</div>';
     wrap.appendChild(div);
   }
-  
-  window.rpPlayCustom = function() {
+
+  window.rpPlayCustom = function(){
     var inp = document.getElementById('rpCustomUrl');
     var url = inp ? inp.value.trim() : '';
-    if (!url) return;
+    if(!url) return;
+    var frame = document.getElementById('rpMusesFrame');
+    if(frame) frame.remove();
+    userStopped = false;
     audio.src = url;
     audio.load();
     setSt('Connexion...','');
-    userStopped = false;
+    btn.classList.add('loading');
     var p = audio.play();
-    if(p&&p.catch) p.catch(function(){ setSt('URL invalide ou inaccessible','err'); });
+    if(p&&p.catch) p.catch(function(){ setSt('URL invalide ou inaccessible','err'); btn.classList.remove('loading'); });
   };
 
+  /* ── Bouton Play/Pause ── */
   window.rpToggle = function(){
     if(playing){
-      userStopped = true;
+      userStopped=true;
       clearTimeout(timer);
-      try { audio.pause(); } catch(e){}
-      audio.src = '';
+      try{ audio.pause(); }catch(e){}
+      audio.src='';
       setUI(false);
       setSt('En pause','');
-      /* Masquer le fallback YouTube si visible */
-      var yt = document.getElementById('rpYtFallback');
-      if(yt) yt.remove();
+      var mf=document.getElementById('rpMusesFrame'); if(mf) mf.remove();
     } else {
-      userStopped = false;
-      var yt = document.getElementById('rpYtFallback');
-      if(yt) yt.remove();
+      userStopped=false;
+      var mf=document.getElementById('rpMusesFrame'); if(mf) mf.remove();
       btn.classList.add('loading');
       setSt('Recherche du stream...','');
-      tryFallbacks(0);
+      tryStream(0);
     }
   };
 
+  /* ── Événements audio ── */
   audio.addEventListener('playing', function(){
     clearTimeout(timer);
     setUI(true);
     setSt('● EN DIRECT · Radio Al-Faydha','on');
+    var mf=document.getElementById('rpMusesFrame'); if(mf) mf.remove();
   });
-  audio.addEventListener('waiting', function(){
-    if(!userStopped) setSt('Chargement...','');
-  });
-  audio.addEventListener('stalled', function(){
-    if(!userStopped) setSt('Signal faible...','');
-  });
+  audio.addEventListener('waiting', function(){ if(!userStopped) setSt('Chargement...',''); });
+  audio.addEventListener('stalled', function(){ if(!userStopped) setSt('Signal faible...',''); });
   audio.addEventListener('error', function(){
     if(userStopped) return;
     clearTimeout(timer);
     setUI(false);
-    tryFallbacks(0);
+    tryStream(streamIdx+1);
   });
 
-  /* Volume */
-  audio.volume = 0.8;
+  /* ── Volume ── */
+  audio.volume=0.8;
   volEl.addEventListener('input', function(){
     var v=this.value/100; audio.volume=v;
     this.style.background='linear-gradient(90deg,#1a9650 '+this.value+'%,rgba(255,255,255,.1) '+this.value+'%)';
     volIco.textContent=v===0?'🔇':v<0.5?'🔈':'🔊';
   });
 
-  /* iOS unlock */
+  /* ── iOS AudioContext unlock ── */
   document.addEventListener('touchstart',function u(){
     var C=window.AudioContext||window.webkitAudioContext;
     if(C){try{new C().resume();}catch(e){}}
