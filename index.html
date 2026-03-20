@@ -3320,7 +3320,9 @@ html { background: #0a0a0a; }
         <button onclick="qiblaGo()" style="background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;border:none;border-radius:10px;padding:.55rem 1rem;font-size:14px;font-weight:700;cursor:pointer;">🔍</button>
       </div>
       <button onclick="qiblaGPS()" style="background:none;border:1px solid var(--g1);border-radius:20px;padding:.4rem 1rem;font-size:12px;color:var(--g1);cursor:pointer;">📍 Utiliser mon GPS</button>
-      <div id="qiblaMsg" style="font-size:12px;color:var(--red);margin-top:.4rem;min-height:16px;"></div>
+      <button id="qiblaCompassBtn" onclick="qiblaCompassToggle()" style="background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;border:none;border-radius:20px;padding:.4rem 1rem;font-size:12px;font-weight:700;cursor:pointer;margin-left:.4rem;">🧭 Boussole auto</button>
+      <div id="qiblaCompassStatus" style="font-size:11px;color:var(--text3);margin-top:.3rem;min-height:15px;"></div>
+      <div id="qiblaMsg" style="font-size:12px;color:var(--red);margin-top:.2rem;min-height:16px;"></div>
     </div>
 
     <div id="qiblaResult" style="display:none;text-align:center;margin-top:.8rem;">
@@ -10804,6 +10806,105 @@ function qiblaGPS(){
 function qiblaLocate(){qiblaGPS();}
 function qiblaManual(){}
 function qiblaSearchCity(){qiblaGo();}
+
+/* ══ BOUSSOLE MAGNÉTIQUE AUTO (téléphone posé à plat) ══ */
+var _qiblaCompassActive = false;
+var _qiblaCompassLat = null;
+var _qiblaCompassLng = null;
+var _qiblaTargetBearing = null;
+var _qiblaOrientHandler = null;
+
+function _qiblaCalcBearing(lat, lng) {
+  var MLAT=21.4225, MLNG=39.8262;
+  var p1=lat*Math.PI/180, p2=MLAT*Math.PI/180, dl=(MLNG-lng)*Math.PI/180;
+  var y=Math.sin(dl)*Math.cos(p2);
+  var x=Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl);
+  return (Math.atan2(y,x)*180/Math.PI+360)%360;
+}
+
+function _qiblaSetStatus(msg, color) {
+  var s = document.getElementById('qiblaCompassStatus');
+  if (s) { s.textContent = msg; s.style.color = color || 'var(--text3)'; }
+}
+
+function _qiblaStartCompass() {
+  var btn = document.getElementById('qiblaCompassBtn');
+  if (typeof DeviceOrientationEvent !== 'undefined' &&
+      typeof DeviceOrientationEvent.requestPermission === 'function') {
+    DeviceOrientationEvent.requestPermission().then(function(perm) {
+      if (perm === 'granted') { _qiblaBindOrientation(); }
+      else { _qiblaSetStatus('Permission refusee pour le capteur', 'var(--red)'); _qiblaCompassActive = false; if(btn) btn.style.background=''; }
+    }).catch(function() {
+      _qiblaSetStatus('Erreur acces capteur', 'var(--red)'); _qiblaCompassActive = false; if(btn) btn.style.background='';
+    });
+  } else if (typeof DeviceOrientationEvent !== 'undefined') {
+    _qiblaBindOrientation();
+  } else {
+    _qiblaSetStatus('Boussole non disponible sur cet appareil', 'var(--red)');
+    _qiblaCompassActive = false;
+    if(btn) btn.style.background='linear-gradient(135deg,var(--g1),var(--g2))';
+  }
+}
+
+function _qiblaBindOrientation() {
+  _qiblaSetStatus('Localisation...', 'var(--g1)');
+  navigator.geolocation.getCurrentPosition(function(pos) {
+    _qiblaCompassLat = pos.coords.latitude;
+    _qiblaCompassLng = pos.coords.longitude;
+    _qiblaTargetBearing = _qiblaCalcBearing(_qiblaCompassLat, _qiblaCompassLng);
+    _qiblaRun(_qiblaCompassLat, _qiblaCompassLng, 'GPS');
+    _qiblaSetStatus('Boussole active - posez le telephone a plat', 'var(--g1)');
+    _qiblaOrientHandler = function(e) {
+      if (!_qiblaCompassActive) return;
+      var heading = null;
+      if (e.webkitCompassHeading !== undefined && e.webkitCompassHeading !== null) {
+        heading = e.webkitCompassHeading;
+      } else if (e.alpha !== null && e.alpha !== undefined) {
+        heading = (360 - e.alpha) % 360;
+      }
+      if (heading === null) return;
+      var rotateCompass = (_qiblaTargetBearing - heading + 360) % 360;
+      var el = document.getElementById('qiblaCompass');
+      if (el) el.style.transform = 'rotate(' + rotateCompass + 'deg)';
+      var ed = document.getElementById('qiblaDeg');
+      if (ed) ed.textContent = Math.round(_qiblaTargetBearing) + 'deg';
+    };
+    window.addEventListener('deviceorientationabsolute', _qiblaOrientHandler, true);
+    window.addEventListener('deviceorientation', _qiblaOrientHandler, true);
+  }, function() {
+    _qiblaSetStatus('GPS necessaire - autorisez la localisation', 'var(--red)');
+    _qiblaCompassActive = false;
+    var btn = document.getElementById('qiblaCompassBtn');
+    if(btn) btn.style.background='linear-gradient(135deg,var(--g1),var(--g2))';
+  }, {timeout:10000, enableHighAccuracy:true});
+}
+
+function _qiblaStopCompass() {
+  if (_qiblaOrientHandler) {
+    window.removeEventListener('deviceorientationabsolute', _qiblaOrientHandler, true);
+    window.removeEventListener('deviceorientation', _qiblaOrientHandler, true);
+    _qiblaOrientHandler = null;
+  }
+  _qiblaSetStatus('', '');
+  var el = document.getElementById('qiblaCompass');
+  if (el) el.style.transition = 'transform .8s cubic-bezier(.34,1.56,.64,1)';
+  var btn = document.getElementById('qiblaCompassBtn');
+  if (btn) { btn.textContent = 'Boussole auto'; btn.style.background='linear-gradient(135deg,var(--g1),var(--g2))'; }
+}
+
+function qiblaCompassToggle() {
+  var btn = document.getElementById('qiblaCompassBtn');
+  if (_qiblaCompassActive) {
+    _qiblaCompassActive = false;
+    _qiblaStopCompass();
+  } else {
+    _qiblaCompassActive = true;
+    if (btn) { btn.textContent = 'Arreter'; btn.style.background='linear-gradient(135deg,#c0392b,#e74c3c)'; }
+    var el = document.getElementById('qiblaCompass');
+    if (el) el.style.transition = 'transform .15s ease-out';
+    _qiblaStartCompass();
+  }
+}
 
 /* ══ LUNE ══ */
 function _sunsetTime(lat,lng){
