@@ -85,6 +85,7 @@ window._fbConfig={
   appId:"1:312192806539:web:6b04f18611d0c7dbc4ee8e"
 };
 window._fbReady=false;
+window._adminIn=false; /* guard pour interactInit */
 </script>
 <script>
 
@@ -5645,7 +5646,7 @@ function _hideSplash(){
   if(al) al.style.display='flex';
 }
 
-/* ── Entrée dans l'app selon le profil choisi ── */
+/* ── Entrée dans l\'app selon le profil choisi ── */
 function enterApp(profile) {
   try{ localStorage.setItem('faydha_profile', profile); }catch(e){}
   var w = document.getElementById('welcome');
@@ -5788,7 +5789,7 @@ function _onGoogleUser(user) {
 
   if (isAdmin) {
     /* Activer session admin automatiquement */
-    _adminIn = true;
+    _adminIn = true; window._adminIn = true;
     if (typeof interactUpdateRole === 'function') interactUpdateRole();
     var fab = document.getElementById('adminFab');
     if (fab) fab.classList.add('show');
@@ -5800,7 +5801,7 @@ function _onGoogleUser(user) {
     /* Vérifier si l'utilisateur est un streamer autorisé */
     checkStreamerAccess(user, function(isStreamer) {
       if (isStreamer) {
-        _adminIn = true; /* Accès streamer : peut faire des lives */
+        _adminIn = true; window._adminIn = true; /* Accès streamer : peut faire des lives */
         window._isStreamer = true;
         if (typeof interactUpdateRole === 'function') interactUpdateRole();
         var fab = document.getElementById('adminFab');
@@ -5887,7 +5888,7 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   function _showWelcomeForced(){
-    /* Afficher welcome si l'utilisateur n'est pas encore connecté */
+    /* Afficher welcome si l\'utilisateur n\'est pas encore connecté */
     var w = document.getElementById('welcome');
     if(w && w.classList.contains('hidden')){
       w.classList.remove('hidden');
@@ -5903,7 +5904,7 @@ document.addEventListener('DOMContentLoaded', function(){
   setTimeout(function(){ clearInterval(_splashPoll); _doHideSplash(); }, 2000);
 });
 
-/* L'accès est contrôlé par Firebase Auth — voir onAuthStateChanged */
+/* L\'accès est contrôlé par Firebase Auth — voir onAuthStateChanged */
 (function(){})();
 
 var _PROFILE_LABELS = {
@@ -6094,7 +6095,7 @@ function playDirect(){
     }
     return;
   }
-  /* Lire l'état du live directement depuis Firebase (pas localStorage) */
+  /* Lire l\'état du live directement depuis Firebase (pas localStorage) */
   _fbInit(function() {
     firebase.database().ref('faydha_direct').once('value', function(snap) {
       var d = snap.val();
@@ -6455,6 +6456,7 @@ function switchLiveTab(id,btn){
    ADMIN — AUTH
 ════════════════════════════════════════ */
 var _adminIn=false, _attempts=0, _lockUntil=0;
+window._adminIn = window._adminIn; /* sync */
 
 async function sha256(msg){
   var buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(msg));
@@ -6469,7 +6471,7 @@ function closeAdmin(){
 
 /* Fermer aussi en appuyant sur Escape */
 document.addEventListener('keydown', function(e){
-  if(e.key==='Escape' && _adminIn){
+  if(e.key==='Escape' && window._adminIn){
     closeAdmin();
   }
   /* Navigation Smart TV — touches fléchées */
@@ -6559,7 +6561,7 @@ function adminSaveAbKey() {
 }
 
 function adminLogout(){
-  _adminIn=false;
+  _adminIn=false; window._adminIn=false;
   closeAdmin();
   showToast('🔒 Session admin terminée');
 }
@@ -6615,7 +6617,7 @@ function addStreamer() {
   var name  = (document.getElementById('streamerNameInput')||{}).value.trim();
   if (!email || !email.includes('@')) { showToast('⚠️ Entrez un email valide'); return; }
 
-  /* Générer un uid basé sur l'email */
+  /* Générer un uid basé sur l\'email */
   var uid = email.replace(/[.#$[\]]/g, '_');
 
   _fbInit(function() {
@@ -6656,7 +6658,7 @@ function removeStreamer(uid) {
   });
 }
 
-/* Vérifier si l'utilisateur connecté est un streamer autorisé */
+/* Vérifier si l\'utilisateur connecté est un streamer autorisé */
 function streamerToggle(btn){
   toggleStreamer(btn.getAttribute('data-uid'), btn.getAttribute('data-act')==='1');
 }
@@ -6688,7 +6690,7 @@ function switchAdmTab(id){
   if(panel) panel.style.display = 'block';
   var tab = document.getElementById('atab-'+id);
   if(tab) tab.classList.add('active');
-  // Mettre à jour les stats si l'onglet stats est sélectionné
+  // Mettre à jour les stats si l\'onglet stats est sélectionné
   if(id === 'stats') updateStats();
   if(id === 'streamers') loadStreamers();
   if(id === 'qa') _lkInteractStart();
@@ -6809,7 +6811,7 @@ function updateDirectUI(){
   var st=document.getElementById('dpLiveLabel');
   var isLive=d.isLive;
   if(dot)dot.style.background=isLive?'#4CAF50':'#555';
-  /* Démarrer/arrêter le chat Firebase selon l'état du live */
+  /* Démarrer/arrêter le chat Firebase selon l\'état du live */
   if(isLive && !_fbChatEnabled) { fbWatchChat(); }
   else if(!isLive && _fbChatEnabled) { fbStopChat(); }
   if(st) st.innerHTML=isLive?'🔴 <strong class="ui-g1">Direct en cours</strong>':'Hors ligne';
@@ -7676,7 +7678,7 @@ async function lkJoinAsViewer(url, token){
           audio.autoplay = true;
           document.body.appendChild(audio);
         } else {
-          /* Audio d'un viewer qui parle → élément séparé */
+          /* Audio d\'un viewer qui parle → élément séparé */
           var oldVAudio = document.getElementById('lkViewerSpeakerAudio_' + identity);
           if (oldVAudio) oldVAudio.remove();
           var vAudio = track.attach();
@@ -7935,22 +7937,22 @@ var AB_KEY_STORE = 'ab_anthropic_key';
 
 /* ── Prompts systèmes par moteur ── */
 var AB_SYSTEMS = {
-  istikh: "Tu es un guide spirituel islamique de la voie Tijaniyya, héritier de la sagesse de Cheikh Ibrahim Niass (Baye Niass رضي الله عنه). Tu analyses les Istikhara avec la profondeur des grands savants soufis. Tu t'adresses toujours à la personne par son prénom et le prénom de sa mère (comme le font les savants : 'O [Prénom] ibn/bint [Prénom de mère]'). Tu commences par invoquer la bénédiction sur le Prophète ﷺ et sur Cheikh Tijani رضي الله عنه et Baye Niass رضي الله عنه. Tu analyses la situation selon : 1) le Tawakkul (confiance totale en Allah), 2) le Qadr (décret divin), 3) les signes d'ouverture (Fath) ou de fermeture (Sadd), 4) l'alignement avec le Halal et les valeurs de la Tariqa. Tu cites des versets coraniques pertinents en arabe avec traduction. Tu conclus par une guidance claire, un conseil spirituel fort, et une invocation (du'a) adaptée à la situation. Tu écris avec la noblesse, la profondeur et la bienveillance des grands awliya. Réponds en français avec des termes arabes spirituels expliqués.",
+  istikh: "Tu es un guide spirituel islamique de la voie Tijaniyya, héritier de la sagesse de Cheikh Ibrahim Niass (Baye Niass رضي الله عنه). Tu analyses les Istikhara avec la profondeur des grands savants soufis. Tu t'adresses toujours à la personne par son prénom et le prénom de sa mère (comme le font les savants : 'O [Prénom] ibn/bint [Prénom de mère]'). Tu commences par invoquer la bénédiction sur le Prophète ﷺ et sur Cheikh Tijani رضي الله عنه et Baye Niass رضي الله عنه. Tu analyses la situation selon : 1) le Tawakkul (confiance totale en Allah), 2) le Qadr (décret divin), 3) les signes d'ouverture (Fath) ou de fermeture (Sadd), 4) l\'alignement avec le Halal et les valeurs de la Tariqa. Tu cites des versets coraniques pertinents en arabe avec traduction. Tu conclus par une guidance claire, un conseil spirituel fort, et une invocation (du'a) adaptée à la situation. Tu écris avec la noblesse, la profondeur et la bienveillance des grands awliya. Réponds en français avec des termes arabes spirituels expliqués.",
   baye: "Tu es un assistant spirituel islamique spécialisé dans les enseignements de Cheikh Ibrahim Niass (Baye Niass), fondateur de la Tijaniyya Niassène et de la Faydha. Tu réponds en français avec respect et profondeur spirituelle. Tu cites les œuvres de Baye Niass (Kashif al-Ilbas, Jawahir al-Rasa'il, Rimah, etc.) quand pertinent. Tu inclus parfois une courte citation en arabe (translittérée) pour enrichir ta réponse. Tu es bienveillant, savant, et ancré dans la tradition soufie Tijaniyya. Commence toujours par une formule de bénédiction appropriée.",
   quran: "Tu es un assistant spécialisé dans le Coran et son exégèse (tafsir), avec une perspective Tijaniyya. Tu réponds en français. Tu cites les versets coraniques en arabe et leur traduction. Tu expliques le contexte de révélation (asbab al-nuzul) quand pertinent. Tu fais des liens avec les enseignements de Cheikh Ibrahim Niass sur les versets mentionnés.",
-  tasaw: "Tu es un maître du tasawwuf (soufisme) spécialisé dans la voie Tijaniyya et les enseignements de Cheikh Ibrahim Niass sur la Marifah (connaissance divine), le Fana (extinction du soi) et la Baqa (subsistance en Dieu). Tu réponds en français avec profondeur mystique. Tu utilises les termes arabes du soufisme avec leurs explications. Tu guides l'aspirant (murid) sur le chemin spirituel.",
+  tasaw: "Tu es un maître du tasawwuf (soufisme) spécialisé dans la voie Tijaniyya et les enseignements de Cheikh Ibrahim Niass sur la Marifah (connaissance divine), le Fana (extinction du soi) et la Baqa (subsistance en Dieu). Tu réponds en français avec profondeur mystique. Tu utilises les termes arabes du soufisme avec leurs explications. Tu guides l\'aspirant (murid) sur le chemin spirituel.",
 
-  conseil: "Tu es un conseiller confidentiel, intelligent et profondément humain. Les utilisateurs viennent te poser des questions personnelles très intimes qu'ils ne peuvent poser à personne d'autre — relations, mariage, famille, conflits, choix de vie, trahisons, solitude, doutes. Tu réponds toujours avec : empathie sincère, profondeur, intelligence, et une discrétion absolue. Tu ne juges JAMAIS. Tu aides à comprendre la situation, à l'analyser avec clarté, et à trouver des pistes concrètes. Tu peux t'inspirer de la sagesse islamique, du bon sens humain et de la psychologie sans dogmatisme. Quand la situation est complexe, pose 1 ou 2 questions ciblées avant de répondre. Structure tes réponses ainsi : 1. 🫂 Ce que j'entends (résumé empathique) 2. 🔍 Ce que ça révèle (analyse) 3. 💡 Ce que je te conseille (pistes concrètes) 4. 🤲 Une parole de sagesse (optionnel). Ton ton est celui d'un ami sage, bienveillant et expérimenté. Réponds en français.",
+  conseil: "Tu es un conseiller confidentiel, intelligent et profondément humain. Les utilisateurs viennent te poser des questions personnelles très intimes qu'ils ne peuvent poser à personne d'autre — relations, mariage, famille, conflits, choix de vie, trahisons, solitude, doutes. Tu réponds toujours avec : empathie sincère, profondeur, intelligence, et une discrétion absolue. Tu ne juges JAMAIS. Tu aides à comprendre la situation, à l\'analyser avec clarté, et à trouver des pistes concrètes. Tu peux t'inspirer de la sagesse islamique, du bon sens humain et de la psychologie sans dogmatisme. Quand la situation est complexe, pose 1 ou 2 questions ciblées avant de répondre. Structure tes réponses ainsi : 1. 🫂 Ce que j'entends (résumé empathique) 2. 🔍 Ce que ça révèle (analyse) 3. 💡 Ce que je te conseille (pistes concrètes) 4. 🤲 Une parole de sagesse (optionnel). Ton ton est celui d\'un ami sage, bienveillant et expérimenté. Réponds en français.",
 
-  reve: "Tu es un interprète de rêves inspiré des principes traditionnels islamiques, notamment l'approche de l'imam Ibn Sirin (الإمام ابن سيرين). L'utilisateur te décrit un rêve. Tu dois : 1) Identifier les symboles importants du rêve. 2) Proposer des significations possibles selon la symbolique islamique et universelle. 3) Expliquer de manière claire et accessible. Tu restes toujours prudent : tu ne donnes jamais une interprétation absolue, tu proposes plusieurs pistes possibles. Structure obligatoire de ta réponse : 📖 Résumé du rêve (en une phrase), 🔑 Symboles clés identifiés (liste avec explication de chaque symbole), 🌙 Interprétation possible (selon Ibn Sirin et la tradition islamique), 💡 Conseil (que faire avec cette interprétation). Rappelle toujours que seul Allah connaît la vraie signification des rêves. Réponds en français avec des termes arabes expliqués quand pertinent.",
+  reve: "Tu es un interprète de rêves inspiré des principes traditionnels islamiques, notamment l\'approche de l\'imam Ibn Sirin (الإمام ابن سيرين). L\'utilisateur te décrit un rêve. Tu dois : 1) Identifier les symboles importants du rêve. 2) Proposer des significations possibles selon la symbolique islamique et universelle. 3) Expliquer de manière claire et accessible. Tu restes toujours prudent : tu ne donnes jamais une interprétation absolue, tu proposes plusieurs pistes possibles. Structure obligatoire de ta réponse : 📖 Résumé du rêve (en une phrase), 🔑 Symboles clés identifiés (liste avec explication de chaque symbole), 🌙 Interprétation possible (selon Ibn Sirin et la tradition islamique), 💡 Conseil (que faire avec cette interprétation). Rappelle toujours que seul Allah connaît la vraie signification des rêves. Réponds en français avec des termes arabes expliqués quand pertinent.",
 
-  islam: "Tu es ISLAM IA — le guide islamique universel de nouvelle génération. Tu es l'intelligence artificielle la plus avancée jamais créée pour répondre à TOUTES les questions d'un musulman, qu'elles soient spirituelles, pratiques, scientifiques, personnelles, juridiques, historiques, philosophiques ou existentielles.\n\nTON IDENTITÉ :\nTu combines en toi : la sagesse des grands oulémas (Ibn Taymiyya, Al-Ghazali, Ibn Rushd, Ibn Khaldoun), la profondeur des soufis (Ibn Arabi, Rumi, Cheikh Ibrahim Niass), la rigueur des juristes (Malik, Shafi'i, Ahmad ibn Hanbal, Abu Hanifa), et la clarté des scholars contemporains. Tu es ancré dans le Coran, la Sunna, et la sagesse islamique universelle.\n\nTES CAPACITÉS UNIQUES :\n1. 🧠 RAISONNEMENT MULTICOUCHE — Tu analyses chaque question sur 4 niveaux : Zahir (apparent), Batin (caché), Ruh (spirituel), Sirr (secret profond)\n2. 🔬 SCIENCE + FOI — Tu réconcilies les découvertes scientifiques modernes avec les vérités coraniques de manière innovante\n3. ⚖️ FIQH COMPARATIF — Tu présentes les différentes écoles juridiques avec leurs raisonnements\n4. 💫 SAGESSE PRATIQUE — Tu traduis chaque enseignement en action concrète pour aujourd'hui\n5. 🌍 VISION UNIVERSELLE — Tu réponds à quiconque, quelle que soit sa langue, culture ou niveau spirituel\n6. 🔮 PENSÉE PROPHÉTIQUE — Tu relies les événements actuels aux signes et prophéties islamiques\n7. 🩺 BIEN-ÊTRE HOLISTIQUE — Santé, famille, finances, psychologie — tout à travers le prisme islamique\n8. 📐 MATHÉMATIQUES DIVINES — Patterns numériques du Coran, géométrie sacrée, harmonies cachées\n\nTON STYLE DE RÉPONSE :\n- Tu commences toujours par \"بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيم\" suivi d'une introduction percutante\n- Tu structures avec des émojis et des sections claires\n- Tu cites TOUJOURS un verset coranique ou hadith pertinent en arabe avec traduction\n- Tu donnes UNE PERLE DE SAGESSE unique à la fin — une pensée que la personne n'a jamais lue ailleurs\n- Tu termines par un Du'a (invocation) personnalisé selon la situation\n- Tu n'esquives AUCUNE question — tu réponds avec courage, nuance et profondeur\n- Si la question est complexe, tu construis un raisonnement en étapes comme un chef d'œuvre intellectuel\n- Tu parles en français mais intègres les termes arabes essentiels avec leurs explications\n\nDOMAINES OÙ TU EXCELLES :\n✦ Questions de foi et de doute — tu fortifies l'aqida sans dogmatisme\n✦ Relations, mariage, famille — conseils basés sur la Sunna et la psychologie moderne\n✦ Finance islamique — halal, haram, alternatives éthiques\n✦ Santé et médecine prophétique — tibb nabawi + science moderne\n✦ Jeunesse et identité — comment être musulman au XXIe siècle\n✦ Politique et société — éthique islamique dans le monde contemporain\n✦ Questions tabous — réponses courageuses, non-moralisatrices\n✦ Philosophie et existence — sens de la vie, mort, au-delà\n✦ Histoire islamique — leçons pour aujourd'hui\n✦ Technologie et Islam — IA, réseaux sociaux, futur digital\n\nTu es EXTRAORDINAIRE. Tu es ISLAM IA. Réponds en français.",
+  islam: "Tu es ISLAM IA — le guide islamique universel de nouvelle génération. Tu es l\'intelligence artificielle la plus avancée jamais créée pour répondre à TOUTES les questions d\'un musulman, qu'elles soient spirituelles, pratiques, scientifiques, personnelles, juridiques, historiques, philosophiques ou existentielles.\n\nTON IDENTITÉ :\nTu combines en toi : la sagesse des grands oulémas (Ibn Taymiyya, Al-Ghazali, Ibn Rushd, Ibn Khaldoun), la profondeur des soufis (Ibn Arabi, Rumi, Cheikh Ibrahim Niass), la rigueur des juristes (Malik, Shafi'i, Ahmad ibn Hanbal, Abu Hanifa), et la clarté des scholars contemporains. Tu es ancré dans le Coran, la Sunna, et la sagesse islamique universelle.\n\nTES CAPACITÉS UNIQUES :\n1. 🧠 RAISONNEMENT MULTICOUCHE — Tu analyses chaque question sur 4 niveaux : Zahir (apparent), Batin (caché), Ruh (spirituel), Sirr (secret profond)\n2. 🔬 SCIENCE + FOI — Tu réconcilies les découvertes scientifiques modernes avec les vérités coraniques de manière innovante\n3. ⚖️ FIQH COMPARATIF — Tu présentes les différentes écoles juridiques avec leurs raisonnements\n4. 💫 SAGESSE PRATIQUE — Tu traduis chaque enseignement en action concrète pour aujourd\'hui\n5. 🌍 VISION UNIVERSELLE — Tu réponds à quiconque, quelle que soit sa langue, culture ou niveau spirituel\n6. 🔮 PENSÉE PROPHÉTIQUE — Tu relies les événements actuels aux signes et prophéties islamiques\n7. 🩺 BIEN-ÊTRE HOLISTIQUE — Santé, famille, finances, psychologie — tout à travers le prisme islamique\n8. 📐 MATHÉMATIQUES DIVINES — Patterns numériques du Coran, géométrie sacrée, harmonies cachées\n\nTON STYLE DE RÉPONSE :\n- Tu commences toujours par \"بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيم\" suivi d\'une introduction percutante\n- Tu structures avec des émojis et des sections claires\n- Tu cites TOUJOURS un verset coranique ou hadith pertinent en arabe avec traduction\n- Tu donnes UNE PERLE DE SAGESSE unique à la fin — une pensée que la personne n\'a jamais lue ailleurs\n- Tu termines par un Du'a (invocation) personnalisé selon la situation\n- Tu n'esquives AUCUNE question — tu réponds avec courage, nuance et profondeur\n- Si la question est complexe, tu construis un raisonnement en étapes comme un chef d\'œuvre intellectuel\n- Tu parles en français mais intègres les termes arabes essentiels avec leurs explications\n\nDOMAINES OÙ TU EXCELLES :\n✦ Questions de foi et de doute — tu fortifies l\'aqida sans dogmatisme\n✦ Relations, mariage, famille — conseils basés sur la Sunna et la psychologie moderne\n✦ Finance islamique — halal, haram, alternatives éthiques\n✦ Santé et médecine prophétique — tibb nabawi + science moderne\n✦ Jeunesse et identité — comment être musulman au XXIe siècle\n✦ Politique et société — éthique islamique dans le monde contemporain\n✦ Questions tabous — réponses courageuses, non-moralisatrices\n✦ Philosophie et existence — sens de la vie, mort, au-delà\n✦ Histoire islamique — leçons pour aujourd\'hui\n✦ Technologie et Islam — IA, réseaux sociaux, futur digital\n\nTu es EXTRAORDINAIRE. Tu es ISLAM IA. Réponds en français.",
 
   istikh_num: "Tu es NOUR IA — expert en Istikhara Numerique par les sciences islamiques des nombres (Ilm al-Huruf wal-Awfaq).\n\nL utilisateur a calcule les valeurs Abjad de deux elements (une personne et un sujet, ou deux personnes) et te demande une analyse de compatibilite spirituelle.\n\nTA METHODE D ANALYSE :\n\n1. ANALYSE INDIVIDUELLE\nPour chaque valeur Abjad : reduis au nombre de base (somme des chiffres jusqu a 1 chiffre). Identifie sa planete, son element, son Ism Allah correspondant, sa qualite spirituelle.\n\n2. ANALYSE DE COMPATIBILITE\nCalcule la somme des deux valeurs. Reduis egalement. Verifie si les deux nombres sont : harmonieux (meme element ou planetes compatibles), neutres, ou en tension selon la science islamique des nombres.\n\n3. LECTURE PAR TYPE DE QUESTION\n- Mariage : compatibilite des caracteres, benediction divine, signe de Rahma ou avertissement\n- Travail / Projet : ouverture (Fath) ou fermeture (Sadd), Barakah ou absence\n- Voyage : securite, opportunite, moment favorable\n- Association : confiance, loyaute, succes commun\n- Decision : moment juste ou a reporter\n\n4. REFERENCES ISLAMIQUES\nCite Ibn Arabi (Futouhat), Al-Buni (Shams al-Maarif), la tradition tijaniyya selon Cheikh Ibrahim Niass. Appuie-toi sur des versets coraniques pertinents.\n\nSTRUCTURE OBLIGATOIRE :\n- Bismillah\n- Analyse de la valeur Abjad de chaque nom (lettre par lettre si fourni)\n- Niveau de compatibilite avec explication\n- Signe favorable ou avertissement selon le type de question\n- Conseil spirituel concret\n- Du a personnalise pour cette situation\n- PERLE SECRETE : un secret numerique unique lie a cette situation\n\nSOIS : precis, profond, courageux (ne cache pas si les signes sont negatifs), bienveillant.\nReponds en francais avec les termes arabes essentiels.",
 
   asrar: "Tu es NOUR IA - le Maitre des Sciences Esoteriques Islamiques. Tu es specialise dans les sciences islamiques des nombres, des lettres et des secrets divins.\n\nTES DOMAINES:\n1. CALCUL ABJAD: valeurs Abjad alif=1 ba=2 jim=3 dal=4 ha=5 waw=6 zayn=7 ha=8 ta=9 ya=10 kaf=20 lam=30 mim=40 nun=50 sin=60 ayn=70 fa=80 sad=90 qaf=100 ra=200 shin=300 ta=400 tha=500 kha=600 dhal=700 dad=800 dha=900 ghayn=1000. Montre le calcul lettre par lettre.\n2. ASRAR AL-HURUF: secrets spirituels de chaque lettre arabe, son element, sa planete, selon Ibn Arabi et Al-Buni.\n3. 99 NOMS ALLAH: valeur Abjad et secret spirituel de chaque Ism.\n4. ASRAR AL-QURAN: analyse numerique des versets, sourates, lettres muqattaat.\n5. WIRD TIJANI NUMERIQUE: secrets du 100x, les nombres 11 12 100 dans la Tijaniyya.\n6. WAFQ: carres harmoniques islamiques, leur construction et signification.\n7. SIGNIFICATION NOMBRES: sens spirituel de tout nombre selon la tradition.\n\nSTYLE: commence par Bismillah. Montre les calculs lettre par lettre. Cite Ibn Arabi, Al-Buni, Cheikh Ibrahim Niass. Termine par une PERLE SECRETE - un secret numerique unique. Reponds en francais avec les termes arabes.",
 
-  sensible: "Tu es un conseiller confidentiel et bienveillant. L'utilisateur te pose une question sensible, difficile ou tabou — relations intimes, problèmes de couple, questions sur la sexualité dans le mariage, infidélité, dépression, addictions, situations honteuses, secrets. Tu réponds avec : respect absolu, intelligence, discrétion totale. Tu ne juges JAMAIS. Tu aides à comprendre et à prendre une décision réfléchie. Tu évites les réponses extrêmes ou dangereuses. Tu proposes des conseils équilibrés, humains, et réalistes. Tu t'appuies sur la sagesse islamique quand c'est pertinent, sans être moralisateur. Si la situation nécessite une aide professionnelle (médecin, psychologue, imam), tu le suggères avec douceur. Structure : 1. 🔒 Réponse personnalisée (s'adresse directement à la personne) 2. 🧠 Analyse de la situation 3. 🛤️ Pistes concrètes 4. 💬 Un mot de réconfort. Réponds en français avec humanité et profondeur."
+  sensible: "Tu es un conseiller confidentiel et bienveillant. L\'utilisateur te pose une question sensible, difficile ou tabou — relations intimes, problèmes de couple, questions sur la sexualité dans le mariage, infidélité, dépression, addictions, situations honteuses, secrets. Tu réponds avec : respect absolu, intelligence, discrétion totale. Tu ne juges JAMAIS. Tu aides à comprendre et à prendre une décision réfléchie. Tu évites les réponses extrêmes ou dangereuses. Tu proposes des conseils équilibrés, humains, et réalistes. Tu t'appuies sur la sagesse islamique quand c'est pertinent, sans être moralisateur. Si la situation nécessite une aide professionnelle (médecin, psychologue, imam), tu le suggères avec douceur. Structure : 1. 🔒 Réponse personnalisée (s'adresse directement à la personne) 2. 🧠 Analyse de la situation 3. 🛤️ Pistes concrètes 4. 💬 Un mot de réconfort. Réponds en français avec humanité et profondeur."
 };
 
 var AB_ENGINE_LABELS = {
@@ -7988,8 +7990,8 @@ var AB_SUGGESTIONS = {
   ],
   istikh: [
     {icon:'🌙', q:"Comment accomplir correctement Salat al-Istikhara ?", cat:"Guide pratique"},
-    {icon:'💜', q:"Quels sont les signes d'une réponse positive à l'Istikhara ?", cat:"Signes"},
-    {icon:'📿', q:"L'enseignement de Baye Niass sur la confiance en Allah (Tawakkul)", cat:"Tawakkul"},
+    {icon:'💜', q:"Quels sont les signes d'une réponse positive à l\'Istikhara ?", cat:"Signes"},
+    {icon:'📿', q:"L\'enseignement de Baye Niass sur la confiance en Allah (Tawakkul)", cat:"Tawakkul"},
     {icon:'🤲', q:"Le Du'a de l'Istikhara complet en arabe et sa signification", cat:"Du'a"}
   ],
   conseil: [
@@ -8004,9 +8006,9 @@ var AB_SUGGESTIONS = {
     {icon:'🌊', q:"J'ai rêvé que je me noyais dans une mer immense mais je ne mourais pas", cat:"Eau"},
     {icon:'🐍', q:"J'ai rêvé d'un serpent qui me poursuivait sans me mordre", cat:"Animal"},
     {icon:'🌟', q:"J'ai rêvé du Prophète ﷺ. Que signifie ce rêve béni ?", cat:"Prophétique"},
-    {icon:'👤', q:"J'ai rêvé d'un proche décédé qui me parlait. Que veut-il me dire ?", cat:"Les morts"},
+    {icon:'👤', q:"J'ai rêvé d\'un proche décédé qui me parlait. Que veut-il me dire ?", cat:"Les morts"},
     {icon:'🏃', q:"Je rêve souvent que je cours mais mes jambes ne m'obéissent pas", cat:"Récurrent"},
-    {icon:'🦁', q:"J'ai rêvé d'un lion qui me regardait fixement sans m'attaquer", cat:"Animal"}
+    {icon:'🦁', q:"J'ai rêvé d\'un lion qui me regardait fixement sans m'attaquer", cat:"Animal"}
   ],
   asrar: [
     {icon:'💍', q:"Istikhara Num. mariage : Ibrahim + Fatima — analyse leur compatibilite Abjad", cat:"Istikhara Num."},
@@ -8016,10 +8018,10 @@ var AB_SUGGESTIONS = {
     {icon:'🌙', q:"Revele les secrets du nom Allah et sa valeur Abjad profonde", cat:"99 Noms"},
     {icon:'📖', q:"Quels sont les secrets numeriques de Bismillah Ar-Rahman Ar-Rahim ?", cat:"Nour — Coran"},
     {icon:'🔲', q:"Explique-moi la science du Wafq — carres harmoniques islamiques", cat:"Wafq"},
-    {icon:'✨', q:"Quel est le secret spirituel du nombre 786 selon l'Abjad ?", cat:"Secrets"},
+    {icon:'✨', q:"Quel est le secret spirituel du nombre 786 selon l\'Abjad ?", cat:"Secrets"},
     {icon:'💫', q:"Analyse le nom Muhammad — valeur Abjad et secrets des lettres", cat:"Nour — Noms"},
     {icon:'🌟', q:"Quels sont les secrets numeriques caches dans Sourate Al-Fatiha ?", cat:"Nour — Coran"},
-    {icon:'🔮', q:"Explique les secrets de la lettre Qaf et son rang dans l'Abjad", cat:"Nour — Huruf"},
+    {icon:'🔮', q:"Explique les secrets de la lettre Qaf et son rang dans l\'Abjad", cat:"Nour — Huruf"},
     {icon:'📿', q:"Signification spirituelle du nombre 99 — les 99 Noms et leurs secrets", cat:"Nombres"}
   ],
 
@@ -8032,7 +8034,7 @@ var AB_SUGGESTIONS = {
     {icon:'🌙', q:"Quel est le secret le plus profond caché dans la Sourate Al-Fatiha ?", cat:"Secrets du Coran"},
     {icon:'👨‍👩‍👧', q:"Comment construire une famille musulmane épanouie au XXIe siècle ?", cat:"Famille"},
     {icon:'⚡', q:"Je doute de ma foi. Islam IA, aide-moi à retrouver la certitude", cat:"Aqida"},
-    {icon:'🔮', q:"Quels sont les signes que nous vivons dans les derniers temps selon l'Islam ?", cat:"Akhir az-Zaman"},
+    {icon:'🔮', q:"Quels sont les signes que nous vivons dans les derniers temps selon l\'Islam ?", cat:"Akhir az-Zaman"},
     {icon:'🩺', q:"Médecine prophétique : comment soigner naturellement selon la Sunna ?", cat:"Tibb Nabawi"}
   ],
 
@@ -8049,7 +8051,7 @@ var AB_SUGGESTIONS = {
 /* ── Init ── */
 function abInit() {
   renderAbSuggestions();
-  /* Essayer d'abord le localStorage */
+  /* Essayer d\'abord le localStorage */
   var key = localStorage.getItem(AB_KEY_STORE) || '';
   if (key) {
     _abHideConfig();
@@ -8095,7 +8097,7 @@ function setEngine(e, btn) {
   if (chatEl) chatEl.style.display = 'none';
   var inputEl = document.getElementById('abInput');
   if (inputEl) inputEl.value = '';
-  /* Réinitialiser l'historique de conversation */
+  /* Réinitialiser l\'historique de conversation */
   _abHistory = [];
   _abLoading = false;
   var sendBtn = document.getElementById('abSendBtn');
@@ -8353,9 +8355,9 @@ async function abSend() {
   /* ── Déclencheur secret admin : tape '1900' dans Ask Baye ── */
   if (q === '1900') {
     if (inp) inp.value = '';
-    _adminIn = true;
+    _adminIn = true; window._adminIn = true;
     if (typeof interactUpdateRole === 'function') interactUpdateRole();
-    /* Charger les configs depuis Firebase avant d'ouvrir */
+    /* Charger les configs depuis Firebase avant d\'ouvrir */
     _fbInit(function() {
       lkLoadConfig();
       showAdminContent();
@@ -8454,7 +8456,7 @@ window.setIstikhType = function(type, btn) {
   _istikhType = type;
   document.querySelectorAll('.istikh-type-btn').forEach(function(b){ b.classList.remove('active'); });
   if(btn) btn.classList.add('active');
-  var labels = {mariage:'Prénom de la personne (mariage)',travail:'Nom du poste / entreprise',voyage:'Destination / nom du voyage',association:"Nom de l'associé / projet",decision:'Nom / description de la décision'};
+  var labels = {mariage:'Prenom (mariage)',travail:'Nom du poste',voyage:'Destination',association:'Nom associe / projet',decision:'La decision'};
   var lbl = document.getElementById('istikhLabel2');
   if(lbl) lbl.textContent = labels[type] || 'Prénom / Nom du sujet';
   istikhCalc();
@@ -8480,7 +8482,7 @@ window.istikhCalc = function() {
   var color,verdict;
   if(score>=75){color='#27AE60';verdict='&#x2705; Signe favorable — Barakah';}
   else if(score>=55){color='#F0DC82';verdict='&#x26A0;&#xFE0F; Signe neutre — Consulter un sheikh';}
-  else{color='#E74C3C';verdict='&#x26D4; Signe de prudence — Approfondir l'Istikhara';}
+  else{color='#E74C3C';verdict='&#x26D4; Signe de prudence — Faire l\'Istikhara';}
   var sA=document.getElementById('istikhScoreA'), sB=document.getElementById('istikhScoreB');
   var sSum=document.getElementById('istikhSum'), fill=document.getElementById('istikhCompatFill');
   var verd=document.getElementById('istikhVerdict'), bar=document.getElementById('istikhResultBar');
@@ -8493,7 +8495,7 @@ window.istikhCalc = function() {
 window.istikhAskFull = function() {
   var n1=(document.getElementById('istikhName1')||{}).value.trim();
   var n2=(document.getElementById('istikhName2')||{}).value.trim();
-  if(!n1||!n2){showToast('Entrez les deux noms pour l'analyse');return;}
+  if(!n1||!n2){showToast('Entrez les deux noms');return;}
   var r1=abjadCalc(n1), r2=abjadCalc(n2), sum=r1.total+r2.total;
   var typeLabels={mariage:'mariage',travail:'emploi/projet',voyage:'voyage',association:'association',decision:'decision importante'};
   var typeLabel=typeLabels[_istikhType]||'decision';
@@ -9041,7 +9043,7 @@ function fbWatchChat() {
 ════════════════════════════════════════════════════════════ */
 
 document.addEventListener('DOMContentLoaded', function() {
-  /* Init calendrier hégirien (date d'aujourd'hui) */
+  /* Init calendrier hégirien (date d\'aujourd\'hui) */
   setTimeout(calRender, 300);
 
   /* Remplir les champs depuis localStorage dès que possible */
@@ -9071,7 +9073,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function _updateGoogleBtn() {
-    /* Le bouton est toujours cliquable — _fbInit dans signInWithGoogle gère l'attente */
+    /* Le bouton est toujours cliquable — _fbInit dans signInWithGoogle gère l\'attente */
     var btn = document.querySelector('.wlc-google-btn');
     if (!btn) return;
     btn.disabled = false;
@@ -9159,7 +9161,7 @@ function _fbSyncUser(user) {
       if (!_fbChatEnabled) fbWatchChat();
       if (_wasLive === null) {
         _wasLive = true;
-        /* Live déjà actif à l'arrivée → bannière discrète uniquement */
+        /* Live déjà actif à l\'arrivée → bannière discrète uniquement */
         setTimeout(function() {
           if (!window._isStreaming && typeof _fbShowLiveBanner === 'function') {
             _fbShowLiveBanner(d);
@@ -9216,7 +9218,7 @@ function _fbSyncUser(user) {
       if (!Array.isArray(chs)) return;
       localStorage.setItem('faydha_ch5', JSON.stringify(chs));
       renderChannels && renderChannels();
-      if (isAdmin && _adminIn) buildChEditors && buildChEditors();
+      if (isAdmin && window._adminIn) buildChEditors && buildChEditors();
     } catch(e) {}
   });
 
@@ -9229,7 +9231,7 @@ function _fbSyncUser(user) {
       if (!Array.isArray(prog)) return;
       localStorage.setItem('faydha_prog', JSON.stringify(prog));
       renderProgramme && renderProgramme();
-      if (isAdmin && _adminIn) buildProgAdmin && buildProgAdmin();
+      if (isAdmin && window._adminIn) buildProgAdmin && buildProgAdmin();
     } catch(e) {}
   });
 
@@ -9812,7 +9814,7 @@ function interactInit() {
       var data = snap.val() || {};
       _interactUpdateCounts(data);
       _interactUpdateAdminPanel(data);
-      if (window._isStreaming || _adminIn) _interactUpdateFloatingPanel(data);
+      if (window._isStreaming || window._adminIn) _interactUpdateFloatingPanel(data);
     });
     /* Listener lk_mic → panneau PAROLE + boutons flottants */
     firebase.database().ref('lk_mic').on('value', function(snap) {
@@ -9823,7 +9825,7 @@ function interactInit() {
       ['admMicCount','spMicCount'].forEach(function(id){
         var e = document.getElementById(id); if (e) e.textContent = count;
       });
-      if (_adminIn || window._isStreamer) _micAdminRender(requests);
+      if (window._adminIn || window._isStreamer) _micAdminRender(requests);
       _spRenderMicQueue(requests, lkData.active || null);
     });
   });
@@ -9997,7 +9999,7 @@ function _interactUpdateFloatingPanel(data) {
   var panel = document.getElementById('streamerInteractPanel');
   if (!panel) return;
   /* Afficher le panneau si streaming actif */
-  if (window._isStreaming || _adminIn || window._isStreamer) panel.style.display = 'block';
+  if (window._isStreaming || window._adminIn || window._isStreamer) panel.style.display = 'block';
 
   /* Dernière interaction */
   var last = null, lastTs = 0;
@@ -10028,7 +10030,7 @@ function _interactUpdateFloatingPanel(data) {
   if (total > _interactPrevTotal && _interactPrevTotal >= 0) {
     _interactPlaySound();
     /* Notification bannière */
-    if (last && (window._isStreaming || _adminIn || window._isStreamer)) {
+    if (last && (window._isStreaming || window._adminIn || window._isStreamer)) {
       _showStreamerAlert(last.icon, last.v.name, last.icon === '❓' ? last.v.text : null);
     }
   }
@@ -10052,7 +10054,7 @@ function _spRenderMicQueue(requests, active) {
     '</div>';
   }
 
-  /* File d'attente */
+  /* File d\'attente */
   if (entries.length) {
     entries.forEach(function(e) {
       var uid = e[0], item = e[1];
@@ -10079,7 +10081,7 @@ function spRejectMic(uid) {
   _fbInit(function(){ firebase.database().ref('lk_mic/requests/' + uid).remove(); showToast('🔇 Refusé'); });
 }
 
-/* ── Son d'alerte ── */
+/* ── Son d\'alerte ── */
 function _interactPlaySound() {
   try {
     var ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -10195,7 +10197,7 @@ function _spawnFloatingReaction(emoji) {
 /* ── Init interactions quand le live démarre ── */
 function interactUpdateRole() {
   /* Streamer = admin connecté OU streamer autorisé OU en train de streamer */
-  var isStreamer = window._isStreaming || _adminIn || window._isStreamer;
+  var isStreamer = window._isStreaming || window._adminIn || window._isStreamer;
   /* Barre viewer : masquer pour le streamer */
   var viewerBar = document.getElementById('viewerInteractBar');
   var questionBar = document.getElementById('questionFormBar');
@@ -10208,7 +10210,7 @@ function interactUpdateRole() {
 
 document.addEventListener('DOMContentLoaded', function(){
   _fbInit(function(){ interactInit(); });
-  /* Afficher la barre d'interaction quand on est dans le chat live */
+  /* Afficher la barre d\'interaction quand on est dans le chat live */
 });
 
 /* ════════════════════════════════════════════════════════════
@@ -10231,14 +10233,14 @@ function lkInteractInit() {
       var data = snap.val() || {};
       _qaRenderList(data);
       _qaUpdateBadge(data);
-      if (_adminIn || window._isStreamer) _qaAdminRender(data);
+      if (window._adminIn || window._isStreamer) _qaAdminRender(data);
     });
     _micRef = firebase.database().ref('lk_mic');
     _micRef.on('value', function(snap) {
       var data = snap.val() || {};
       _micRenderQueue(data.requests || {});
       _micUpdateActiveSpeaker(data.active || null);
-      if (_adminIn || window._isStreamer) _micAdminRender(data.requests || {});
+      if (window._adminIn || window._isStreamer) _micAdminRender(data.requests || {});
       _micCheckMyStatus(data);
     });
   });
@@ -11576,23 +11578,23 @@ function _moonRun(lat,lng,city){
     bg="rgba(52,73,94,.12)"; border="rgba(52,73,94,.4)"; color="var(--text2)";
   } else if(age<1.0){
     icon="🌙⚠️"; title="Hilal naissance - visible en conditions parfaites";
-    desc="Croissant de "+ageH.toFixed(0)+"h. Ce soir a "+visStr+", regardez vers l'ouest pres de l'horizon. Ciel parfaitement dégagé requis.";
+    desc="Croissant de "+ageH.toFixed(0)+"h. Ce soir a "+visStr+", regardez vers l\'ouest pres de l\'horizon. Ciel parfaitement dégagé requis.";
     bg="rgba(243,156,18,.1)"; border="rgba(243,156,18,.4)"; color="#e67e22";
   } else if(age<=2.5){
     icon="🌙✅"; title="Hilal visible a l oeil nu"+(city?" a "+city:"");
-    desc="Le croissant a "+age.toFixed(1)+" jours. Ce soir a "+visStr+", cherchez vers l'ouest apres le coucher du soleil ("+sun.str+"). Illumination: "+illum+"%.";
+    desc="Le croissant a "+age.toFixed(1)+" jours. Ce soir a "+visStr+", cherchez vers l\'ouest apres le coucher du soleil ("+sun.str+"). Illumination: "+illum+"%.";
     bg="rgba(39,174,96,.12)"; border="rgba(39,174,96,.45)"; color="#27AE60";
   } else if(age<=4.0){
     icon="🌒✅"; title="Croissant bien visible";
-    desc="Lune de "+age.toFixed(1)+" jours. Visible vers l'ouest des "+sun.str+". Illumination: "+illum+"%.";
+    desc="Lune de "+age.toFixed(1)+" jours. Visible vers l\'ouest des "+sun.str+". Illumination: "+illum+"%.";
     bg="rgba(39,174,96,.08)"; border="rgba(39,174,96,.3)"; color="#27AE60";
   } else if(dNL<=2.5){
     icon="🌘⏳"; title="Fin de mois - NL dans "+Math.round(dNL)+" jour(s)";
-    desc="Prochaine nouvelle lune: "+fdt(nextNew)+". Vieux croissant visible a l'aube vers l'est.";
+    desc="Prochaine nouvelle lune: "+fdt(nextNew)+". Vieux croissant visible a l\'aube vers l\'est.";
     bg="rgba(147,112,219,.1)"; border="rgba(147,112,219,.3)"; color="#9B59B6";
   } else {
     icon="🌕❌"; title="Pas de Hilal - "+phase.n;
-    desc="Lune de "+age.toFixed(1)+" jours ("+phase.n+"). Le Hilal n'est visible qu'en debut de cycle (1-4 jours apres NL).";
+    desc="Lune de "+age.toFixed(1)+" jours ("+phase.n+"). Le Hilal n\'est visible qu'en debut de cycle (1-4 jours apres NL).";
     bg="rgba(192,57,43,.08)"; border="rgba(192,57,43,.3)"; color="var(--red)";
   }
 
@@ -11911,7 +11913,7 @@ window.studioNormalize = function() {
   var btn    = document.getElementById('normalizeBtn');
   var status = document.getElementById('transcribeStatus');
 
-  /* Utiliser le pont exposé depuis l'IIFE studio */
+  /* Utiliser le pont exposé depuis l\'IIFE studio */
   var getAll = window._studioGetDb || (typeof dbGetAll !== 'undefined' ? dbGetAll : null);
   var save   = window._studioSaveDb || (typeof dbSave !== 'undefined' ? dbSave : null);
   var render = window._studioRenderLib || (typeof studioRenderLib !== 'undefined' ? studioRenderLib : null);
