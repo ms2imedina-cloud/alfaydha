@@ -3365,23 +3365,33 @@ html { background: #0a0a0a; }
     <div class="rv" id="rViz"></div>
   </div>
 
-  <!-- PLAYER INTÉGRÉ — radio-senegal.com widget officiel -->
-  <div style="margin:1rem 1.2rem .4rem;border-radius:16px;overflow:hidden;border:1.5px solid rgba(212,175,55,.2);background:#0c1a10;">
-    <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,175,55,.45);text-align:center;padding:.45rem 0 .25rem;">▶ PLAYER EN DIRECT</div>
+  <!-- PLAYER OFFICIEL FastCast4u — hébergeur direct de Radio Alfayda -->
+  <div style="margin:.8rem 1.2rem .3rem;border-radius:16px;overflow:hidden;border:1.5px solid rgba(212,175,55,.22);box-shadow:0 4px 20px rgba(0,0,0,.3);">
+    <div style="background:#0c1a10;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,175,55,.5);text-align:center;padding:.4rem 0;">
+      ▶ RADIO AL-FAYDHA — EN DIRECT
+    </div>
     <iframe
-      src="https://www.radio-senegal.com/player/radio-alfayda"
-      style="width:100%;height:100px;border:none;display:block;border-radius:0 0 14px 14px;"
+      src="https://fastcast4u.com/player/lyartech/"
+      style="width:100%;height:130px;border:none;display:block;"
       allow="autoplay"
-      loading="lazy"
-      scrolling="no">
+      scrolling="no"
+      loading="lazy">
     </iframe>
   </div>
 
-  <!-- Lien direct fallback -->
-  <div style="margin:0 1.2rem .5rem;text-align:center;">
+  <!-- Liens alternatifs -->
+  <div style="display:flex;gap:.5rem;margin:.3rem 1.2rem .8rem;justify-content:center;">
     <a href="https://www.radio-senegal.com/radio-alfayda" target="_blank"
-       style="display:inline-flex;align-items:center;gap:.4rem;background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.25);border-radius:20px;padding:.35rem .9rem;color:var(--gold2);font-size:12px;font-weight:700;text-decoration:none;">
-      🔗 Ouvrir sur Radio-Sénégal.com
+       style="flex:1;display:flex;align-items:center;justify-content:center;gap:.3rem;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.2);border-radius:10px;padding:.5rem .6rem;color:var(--gold2);font-size:11px;font-weight:700;text-decoration:none;">
+      🌐 Radio Sénégal
+    </a>
+    <a href="https://zeno.fm/radio/radio-alfayda-90-1/" target="_blank"
+       style="flex:1;display:flex;align-items:center;justify-content:center;gap:.3rem;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.2);border-radius:10px;padding:.5rem .6rem;color:var(--gold2);font-size:11px;font-weight:700;text-decoration:none;">
+      📻 Zeno.FM
+    </a>
+    <a href="https://radioalfayda.net" target="_blank"
+       style="flex:1;display:flex;align-items:center;justify-content:center;gap:.3rem;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.2);border-radius:10px;padding:.5rem .6rem;color:var(--gold2);font-size:11px;font-weight:700;text-decoration:none;">
+      🔗 Site officiel
     </a>
   </div>
 
@@ -3432,23 +3442,39 @@ html { background: #0a0a0a; }
      Retourne url_resolved = vrai stream MP3
   ═══════════════════════════════════════════ */
 
+  /* ═══════════════════════════════════════════════════
+     Stream URL confirmé depuis le code source HTML
+     du player officiel FastCast4u (username: lyartech)
+     Format FastCast4u: https://[user].fastcast4u.com/[stream]
+     + fallbacks Zeno.FM et Radio Browser API
+  ═══════════════════════════════════════════════════ */
   var CH = [
     {
       name: 'Radio Al-Faydha 90.1 FM',
       search: 'Radio Alfayda',
       country: 'SN',
-      ext: 'https://www.radio-senegal.com/radio-alfayda'
+      /* Streams FastCast4u format standard */
+      streams: [
+        'https://lyartech.fastcast4u.com/stream',
+        'https://lyartech.fastcast4u.com/',
+        'https://s7.streamingpulse.com/lyartech',
+        'https://stream.zeno.fm/OUE5xD8nztzuv',
+        'https://stream.zeno.fm/mhpQee8nztzuv'
+      ],
+      ext: 'https://webplayer.fastcast4u.com/lyartech/'
     },
     {
       name: 'Radio Faydatidianiya',
       search: 'Faydatidianiya',
       country: 'SN',
+      streams: ['https://stream.zeno.fm/faydatidianiya'],
       ext: 'https://zeno.fm/radio/faydatidianiya/'
     },
     {
       name: 'Xassida Online',
       search: 'Xassida',
       country: 'SN',
+      streams: ['https://stream.zeno.fm/xassida-online'],
       ext: 'https://zeno.fm/radio/xassida-online/'
     }
   ];
@@ -3516,27 +3542,35 @@ html { background: #0a0a0a; }
       .catch(function(){ cb(null); });
   }
 
-  function tryPlay(url){
-    if(!url){ setSt('Lien direct disponible ci-dessous','err'); showExt(); setUI(false); return; }
-    audio.src = url;
+  function tryStreams(urls, idx){
+    if(idx >= urls.length){
+      setUI(false);
+      setSt('Lien direct disponible ci-dessous', 'err');
+      showExt();
+      return;
+    }
+    audio.src = urls[idx];
     audio.load();
-    setSt('Connexion en cours...','');
+    setSt('Tentative ' + (idx+1) + '/' + urls.length + '...', '');
     clearTimeout(streamTimer);
     streamTimer = setTimeout(function(){
-      if(!isPlaying){ audio.pause(); setSt('Délai dépassé — lien direct ci-dessous','err'); showExt(); setUI(false); }
-    }, 10000);
+      if(!isPlaying){ audio.pause(); tryStreams(urls, idx+1); }
+    }, 7000);
     var p = audio.play();
-    if(p&&p.catch) p.catch(function(){ clearTimeout(streamTimer); setSt('Lien direct disponible ci-dessous','err'); showExt(); setUI(false); });
+    if(p && p.catch) p.catch(function(){
+      clearTimeout(streamTimer);
+      tryStreams(urls, idx+1);
+    });
   }
+
+  function tryPlay(url){ tryStreams([url], 0); }
 
   function rPlay(){
     rmExt(); playBtn.classList.add('loading');
     var ch = CH[curCh];
-    setSt('Recherche du stream via Radio Browser...','');
-    fetchRBStream(ch, function(url){
-      if(url){ tryPlay(url); }
-      else { setSt('Lien direct disponible ci-dessous','err'); showExt(); setUI(false); }
-    });
+    var urls = ch.streams ? ch.streams.slice() : [];
+    setSt('Connexion à ' + ch.name + '...', '');
+    tryStreams(urls, 0);
   }
 
   window.rToggle = function(){
