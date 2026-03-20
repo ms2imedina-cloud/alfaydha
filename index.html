@@ -3375,7 +3375,11 @@ html { background: #0a0a0a; }
   var META_API    = 'https://metadata-api.mytuner.mobi/v2/' + RADIO_ID;
 
   /* Fallbacks si l'API échoue */
+  /* ✅ STREAM OFFICIEL extrait du site radioalfayda.net
+     Source: MRP.insert url dans le widget sidebar officiel */
   var FALLBACK_STREAMS = [
+    'https://usa5.fastcast4u.com/proxy/lyartech?mp=/1',
+    'http://usa5.fastcast4u.com/proxy/lyartech?mp=/1',
     'https://c7.radioboss.fm/stream/379',
     'https://lyartech.fastcast4u.com/stream',
     'https://stream.zeno.fm/OUE5xD8nztzuv'
@@ -3502,12 +3506,9 @@ html { background: #0a0a0a; }
       clearTimeout(timer);
     } else {
       btn.classList.add('loading');
-      setSt('Récupération du stream...','');
-      /* 1. Essayer l'API pour avoir le vrai URL */
-      fetchStreamUrl(function(url){
-        if(url){ playUrl(url); }
-        else { tryFallbacks(0); }
-      });
+      setSt('Connexion à Radio Al-Faydha...','');
+      /* Stream officiel radioalfayda.net en premier */
+      tryFallbacks(0);
     }
   };
 
