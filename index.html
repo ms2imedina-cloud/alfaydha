@@ -3845,7 +3845,7 @@ html { background: #0a0a0a; }
   <button class="nav-btn active" id="nav-umma" onclick="showSec('umma',this)"><span class="nav-icon">🌍</span><span class="nav-label">Umma</span></button>
   <button class="nav-btn" id="nav-wird"  onclick="showSec('wird',this)"><span class="nav-icon">📿</span><span class="nav-label">Pratique</span></button>
   <button class="nav-btn" id="nav-live"  onclick="showSec('live',this)"><span class="nav-icon">📡</span><span class="nav-label">Live</span><span class="nav-live-badge">LIVE</span></button>
-  <button class="nav-btn" id="nav-ens"   onclick="showSec('ens',this)"><span class="nav-icon">📻</span><span class="nav-label">Radio</span></button>
+  <button class="nav-btn" id="nav-ens"   onclick="showSec('ens',this)"><span class="nav-icon">📻</span><span class="nav-label" style="font-size:9px;letter-spacing:0">Al-Faydha</span></button>
   <button class="nav-btn" id="nav-ai"    onclick="showSec('ai',this)"><span class="nav-icon">✨</span><span class="nav-label">Ask Baye</span></button>
 </nav>
 
@@ -6642,21 +6642,23 @@ function setEngine(e, btn) {
   if (btn) btn.classList.add('active');
   var lbl = document.getElementById('abEngLabel');
   if (lbl) lbl.textContent = AB_ENGINE_LABELS[e] || e;
-  /* Istikhara : afficher formulaire au lieu des suggestions */
   var istikhForm = document.getElementById('abIstikhForm');
   var sugsEl = document.getElementById('abSuggestions');
   var chatEl = document.getElementById('abChat');
+  var msgsEl = document.getElementById('abMsgs');
+
+  /* Toujours vider le chat et montrer les nouvelles suggestions */
+  if (msgsEl) msgsEl.innerHTML = '';
+  if (chatEl) { chatEl.innerHTML = ''; chatEl.style.display = 'none'; }
+  var inputEl = document.getElementById('abInput');
+  if (inputEl) inputEl.value = '';
+
   if (e === 'istikh') {
     if (istikhForm) istikhForm.style.display = 'block';
     if (sugsEl) sugsEl.style.display = 'none';
-    if (chatEl) chatEl.style.display = 'none';
   } else {
     if (istikhForm) istikhForm.style.display = 'none';
-    if (chatEl && chatEl.innerHTML.trim()) {
-      /* garder le chat si déjà ouvert */
-    } else {
-      if (sugsEl) sugsEl.style.display = 'block';
-    }
+    if (sugsEl) sugsEl.style.display = 'block';
   }
   renderAbSuggestions();
 }
