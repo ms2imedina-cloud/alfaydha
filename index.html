@@ -3267,648 +3267,313 @@ html { background: #0a0a0a; }
 </section>
 <!-- SECTION RADIO AL-FAYDHA -->
 <section id="sec-ens" class="sec">
-
 <style>
-/* ══ RADIO AL-FAYDHA PLAYER ══ */
-.radio-wrap {
-  display: flex;
-  flex-direction: column;
-  min-height: 100%;
-  background: #0a0f0c;
-}
+.radio-page { display:flex; flex-direction:column; min-height:100%; background:#07100a; }
 
-/* HERO VISUEL */
-.radio-hero {
-  position: relative;
-  background: linear-gradient(180deg, #0a1a10 0%, #0d2318 100%);
-  padding: 2rem 1.4rem 1.5rem;
-  text-align: center;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-.radio-hero-rings {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-.radio-ring {
-  position: absolute;
-  border-radius: 50%;
-  border: 1px solid rgba(212,175,55,.12);
-  animation: radioRingPulse 3s ease-in-out infinite;
-}
-.radio-ring:nth-child(1) { width: 120px; height: 120px; animation-delay: 0s; }
-.radio-ring:nth-child(2) { width: 200px; height: 200px; animation-delay: .5s; }
-.radio-ring:nth-child(3) { width: 300px; height: 300px; animation-delay: 1s; }
-.radio-ring:nth-child(4) { width: 420px; height: 420px; animation-delay: 1.5s; }
-@keyframes radioRingPulse {
-  0%, 100% { transform: scale(1); opacity: .3; }
-  50% { transform: scale(1.05); opacity: .7; }
-}
+/* HERO */
+.rh { position:relative; background:linear-gradient(170deg,#071410 0%,#0d2318 55%,#0a1a10 100%); padding:1.8rem 1.4rem 1.1rem; text-align:center; overflow:hidden; }
+.rh-rings { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; }
+.rh-ring { position:absolute; border-radius:50%; border:1px solid rgba(212,175,55,.1); animation:rhRing 4s ease-in-out infinite; }
+.rh-ring:nth-child(1){width:90px;height:90px;}
+.rh-ring:nth-child(2){width:170px;height:170px;animation-delay:.7s;}
+.rh-ring:nth-child(3){width:270px;height:270px;animation-delay:1.4s;}
+.rh-ring:nth-child(4){width:390px;height:390px;animation-delay:2.1s;}
+@keyframes rhRing{0%,100%{transform:scale(1);opacity:.18}50%{transform:scale(1.05);opacity:.55}}
 
-/* VINYL / DISC */
-.radio-disc-wrap {
-  position: relative;
-  width: 130px;
-  height: 130px;
-  margin: 0 auto 1.2rem;
-  z-index: 2;
-}
-.radio-disc {
-  width: 130px;
-  height: 130px;
-  border-radius: 50%;
-  background: conic-gradient(
-    from 0deg,
-    #0F7B3F 0%, #1a9650 15%,
-    #D4AF37 15%, #c8a200 30%,
-    #0F7B3F 30%, #145a32 45%,
-    #D4AF37 45%, #f0dc82 60%,
-    #0F7B3F 60%, #0a5c2e 75%,
-    #D4AF37 75%, #b8962e 90%,
-    #0F7B3F 90%, #1a9650 100%
-  );
-  box-shadow: 0 0 40px rgba(15,123,63,.5), 0 0 80px rgba(212,175,55,.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: animation .3s;
-}
-.radio-disc.playing {
-  animation: radioSpin 4s linear infinite;
-}
-@keyframes radioSpin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-.radio-disc-center {
-  width: 38px;
-  height: 38px;
-  background: #0a0f0c;
-  border-radius: 50%;
-  border: 3px solid rgba(212,175,55,.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  z-index: 3;
-}
-.radio-needle {
-  position: absolute;
-  top: 8px;
-  right: -8px;
-  width: 50px;
-  height: 3px;
-  background: linear-gradient(90deg, var(--gold), rgba(212,175,55,.3));
-  border-radius: 2px;
-  transform-origin: right center;
-  transform: rotate(-25deg);
-  transition: transform .5s ease;
-  z-index: 4;
-}
-.radio-needle.playing { transform: rotate(-5deg); }
-.radio-needle::after {
-  content: '';
-  position: absolute;
-  right: -4px;
-  top: -4px;
-  width: 11px;
-  height: 11px;
-  background: var(--gold);
-  border-radius: 50%;
-  box-shadow: 0 0 8px rgba(212,175,55,.6);
-}
+/* Disc */
+.rd-wrap{position:relative;width:110px;height:110px;margin:0 auto .9rem;z-index:2;}
+.rd{width:110px;height:110px;border-radius:50%;
+  background:conic-gradient(from 0deg,#0F7B3F 0%,#1a9650 12%,#D4AF37 12%,#b8962e 25%,#0F7B3F 25%,#145a32 38%,#D4AF37 38%,#f0dc82 50%,#0F7B3F 50%,#0a5c2e 62%,#D4AF37 62%,#c8a200 75%,#0F7B3F 75%,#1a9650 88%,#D4AF37 88%,#b8962e 100%);
+  box-shadow:0 0 28px rgba(15,123,63,.5),0 0 55px rgba(212,175,55,.1);
+  display:flex;align-items:center;justify-content:center;}
+.rd.spin{animation:rdSpin 5s linear infinite;}
+@keyframes rdSpin{to{transform:rotate(360deg)}}
+.rd-center{width:32px;height:32px;border-radius:50%;background:#07100a;border:2px solid rgba(212,175,55,.4);display:flex;align-items:center;justify-content:center;font-size:13px;}
+.rd-needle{position:absolute;top:5px;right:-8px;width:44px;height:3px;background:linear-gradient(90deg,var(--gold),rgba(212,175,55,.15));border-radius:2px;transform-origin:right center;transform:rotate(-28deg);transition:transform .6s cubic-bezier(.34,1.56,.64,1);z-index:4;}
+.rd-needle.on{transform:rotate(-6deg);}
+.rd-needle::after{content:'';position:absolute;right:-4px;top:-4px;width:11px;height:11px;background:var(--gold);border-radius:50%;box-shadow:0 0 8px rgba(212,175,55,.65);}
 
-/* STATION INFO */
-.radio-station-name {
-  font-family: 'Amiri', serif;
-  font-size: 24px;
-  color: #fff;
-  margin-bottom: .2rem;
-  letter-spacing: .02em;
-  position: relative; z-index: 2;
-}
-.radio-station-ar {
-  font-family: 'Amiri', serif;
-  font-size: 18px;
-  color: var(--gold2);
-  direction: rtl;
-  margin-bottom: .25rem;
-  position: relative; z-index: 2;
-}
-.radio-station-freq {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: .12em;
-  color: rgba(255,255,255,.45);
-  text-transform: uppercase;
-  position: relative; z-index: 2;
-}
-.radio-live-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: .35rem;
-  background: rgba(39,174,96,.2);
-  border: 1px solid rgba(39,174,96,.4);
-  border-radius: 20px;
-  padding: .22rem .7rem;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .08em;
-  color: #27AE60;
-  margin: .6rem auto 0;
-  position: relative; z-index: 2;
-}
-.radio-live-dot {
-  width: 6px; height: 6px;
-  background: #27AE60;
-  border-radius: 50%;
-  animation: radioBlink 1.2s ease-in-out infinite;
-}
-@keyframes radioBlink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: .2; }
-}
+.rh-name{font-family:'Amiri',serif;font-size:21px;color:#fff;margin-bottom:.12rem;position:relative;z-index:2;}
+.rh-ar{font-family:'Amiri',serif;font-size:15px;color:var(--gold2);direction:rtl;margin-bottom:.18rem;position:relative;z-index:2;}
+.rh-freq{font-size:11px;font-weight:700;letter-spacing:.11em;color:rgba(255,255,255,.35);text-transform:uppercase;position:relative;z-index:2;}
+.rh-badge{display:inline-flex;align-items:center;gap:.3rem;background:rgba(39,174,96,.15);border:1px solid rgba(39,174,96,.3);border-radius:20px;padding:.18rem .6rem;font-size:10.5px;font-weight:700;letter-spacing:.07em;color:#27AE60;margin:.5rem auto 0;position:relative;z-index:2;}
+.rh-dot{width:5px;height:5px;background:#27AE60;border-radius:50%;animation:rhBlink 1.3s ease-in-out infinite;}
+@keyframes rhBlink{0%,100%{opacity:1}50%{opacity:.12}}
 
-/* VISUALIZER BARS */
-.radio-visualizer {
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 3px;
-  height: 36px;
-  margin: 1rem 0 0;
-  position: relative; z-index: 2;
-}
-.radio-bar {
-  width: 3px;
-  background: linear-gradient(180deg, var(--gold) 0%, var(--g2) 100%);
-  border-radius: 2px;
-  min-height: 3px;
-  transition: height .1s ease;
-}
-.radio-bar.active {
-  animation: radioBar var(--dur, .8s) ease-in-out infinite alternate;
-}
-@keyframes radioBar {
-  from { height: 3px; }
-  to { height: var(--max-h, 20px); }
-}
+/* Visualizer */
+.rv{display:flex;align-items:flex-end;justify-content:center;gap:2.5px;height:28px;margin:.8rem 0 0;position:relative;z-index:2;}
+.rv-bar{width:3px;background:linear-gradient(180deg,var(--gold) 0%,var(--g2) 100%);border-radius:2px;min-height:3px;}
+.rv-bar.on{animation:rvAnim var(--d,.8s) ease-in-out infinite alternate;}
+@keyframes rvAnim{from{height:3px}to{height:var(--h,14px)}}
 
-/* CONTROLS */
-.radio-controls {
-  background: #111a14;
-  padding: 1.4rem 1.4rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  flex-shrink: 0;
-}
+/* STREAM BLOCK */
+.rs-block{margin:1rem 1.2rem .5rem;border-radius:16px;overflow:hidden;border:1.5px solid rgba(212,175,55,.18);background:#0c1a10;}
+.rs-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,175,55,.45);text-align:center;padding:.45rem 0 .3rem;}
 
-/* Volume */
-.radio-vol-row {
-  display: flex;
-  align-items: center;
-  gap: .8rem;
-}
-.radio-vol-icon { font-size: 16px; color: rgba(255,255,255,.5); flex-shrink: 0; }
-.radio-vol-slider {
-  flex: 1;
-  -webkit-appearance: none;
-  height: 4px;
-  border-radius: 2px;
-  background: linear-gradient(90deg, var(--g2) var(--val, 80%), rgba(255,255,255,.15) var(--val, 80%));
-  outline: none;
-  cursor: pointer;
-}
-.radio-vol-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 16px; height: 16px;
-  border-radius: 50%;
-  background: var(--gold);
-  box-shadow: 0 0 8px rgba(212,175,55,.5);
-  cursor: pointer;
-}
+/* Controls */
+.rc{background:#0c1810;padding:1rem 1.4rem .8rem;display:flex;flex-direction:column;gap:.75rem;}
+.rc-vol{display:flex;align-items:center;gap:.7rem;}
+.rc-vi{font-size:14px;color:rgba(255,255,255,.35);flex-shrink:0;}
+.rc-slider{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;outline:none;cursor:pointer;background:linear-gradient(90deg,var(--g2) 80%,rgba(255,255,255,.1) 80%);}
+.rc-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--gold);box-shadow:0 0 7px rgba(212,175,55,.5);cursor:pointer;}
+.rc-play{width:62px;height:62px;border-radius:50%;background:linear-gradient(135deg,var(--g1),var(--g2));border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;align-self:center;font-size:22px;color:#fff;box-shadow:0 4px 20px rgba(15,123,63,.5),0 0 0 6px rgba(15,123,63,.12);transition:all .2s;flex-shrink:0;}
+.rc-play:hover{transform:scale(1.08);box-shadow:0 6px 26px rgba(15,123,63,.7),0 0 0 10px rgba(15,123,63,.1);}
+.rc-play:active{transform:scale(.96);}
+.rc-play.loading{animation:rcPulse 1s ease-in-out infinite;}
+@keyframes rcPulse{0%,100%{box-shadow:0 4px 20px rgba(15,123,63,.5),0 0 0 6px rgba(15,123,63,.12)}50%{box-shadow:0 4px 20px rgba(15,123,63,.8),0 0 0 14px rgba(15,123,63,.05)}}
+.rc-status{text-align:center;font-size:12px;color:rgba(255,255,255,.35);letter-spacing:.04em;min-height:16px;transition:color .3s;}
+.rc-status.on{color:#27AE60;font-weight:600;}
+.rc-status.err{color:#e67e22;}
 
-/* Play button */
-.radio-play-btn {
-  width: 68px; height: 68px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--g1) 0%, var(--g2) 100%);
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 24px rgba(15,123,63,.5), 0 0 0 6px rgba(15,123,63,.15);
-  transition: all .2s ease;
-  align-self: center;
-  font-size: 26px;
-  color: #fff;
-  flex-shrink: 0;
-}
-.radio-play-btn:hover {
-  transform: scale(1.07);
-  box-shadow: 0 6px 32px rgba(15,123,63,.7), 0 0 0 10px rgba(15,123,63,.12);
-}
-.radio-play-btn:active { transform: scale(.97); }
+/* Lien externe fallback */
+.rc-ext{background:rgba(212,175,55,.1);border:1.5px solid rgba(212,175,55,.25);border-radius:13px;padding:.8rem 1rem;text-align:center;margin:.2rem 0;}
+.rc-ext a{display:inline-flex;align-items:center;gap:.4rem;background:var(--g1);border:1px solid rgba(212,175,55,.35);border-radius:18px;padding:.42rem 1rem;color:var(--gold2);font-size:13px;font-weight:700;text-decoration:none;transition:background .2s;}
+.rc-ext a:hover{background:var(--g2);}
+.rc-ext-sub{font-size:10.5px;color:rgba(255,255,255,.28);margin-top:.4rem;}
 
-/* STATUS */
-.radio-status {
-  text-align: center;
-  font-size: 12px;
-  color: rgba(255,255,255,.45);
-  letter-spacing: .04em;
-  min-height: 18px;
-  transition: color .3s;
-}
-.radio-status.on { color: #27AE60; }
-.radio-status.err { color: #e74c3c; }
-
-/* CHANNELS LIST */
-.radio-channels-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,.3);
-  padding: .8rem 1.4rem .4rem;
-}
-.radio-channels {
-  display: flex;
-  flex-direction: column;
-  gap: .5rem;
-  padding: 0 1.2rem 1.5rem;
-}
-.radio-ch {
-  display: flex;
-  align-items: center;
-  gap: .9rem;
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.07);
-  border-radius: 14px;
-  padding: .85rem 1rem;
-  cursor: pointer;
-  transition: all .2s ease;
-}
-.radio-ch:hover, .radio-ch.active {
-  background: rgba(15,123,63,.2);
-  border-color: rgba(15,123,63,.4);
-}
-.radio-ch.active { border-color: var(--g2); }
-.radio-ch-icon {
-  width: 40px; height: 40px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--g1), var(--g3));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px;
-  flex-shrink: 0;
-}
-.radio-ch.active .radio-ch-icon {
-  background: linear-gradient(135deg, var(--g2), var(--gold));
-  box-shadow: 0 2px 12px rgba(212,175,55,.3);
-}
-.radio-ch-info { flex: 1; min-width: 0; }
-.radio-ch-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: #fff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.radio-ch-desc {
-  font-size: 11.5px;
-  color: rgba(255,255,255,.45);
-  margin-top: .1rem;
-}
-.radio-ch-live {
-  font-size: 10px;
-  font-weight: 700;
-  color: #27AE60;
-  letter-spacing: .07em;
-  flex-shrink: 0;
-}
-.radio-ch-playing {
-  display: none;
-  gap: 2px;
-  align-items: flex-end;
-  flex-shrink: 0;
-}
-.radio-ch.active .radio-ch-playing { display: flex; }
-.radio-ch.active .radio-ch-live { display: none; }
-.radio-mini-bar {
-  width: 2.5px;
-  border-radius: 1px;
-  background: var(--gold);
-  min-height: 2px;
-}
+/* Channels */
+.rch-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.22);padding:.55rem 1.4rem .3rem;}
+.rch-list{display:flex;flex-direction:column;gap:.4rem;padding:0 1.1rem 1.3rem;}
+.rch{display:flex;align-items:center;gap:.75rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:.7rem .85rem;cursor:pointer;transition:all .2s;}
+.rch:hover,.rch.active{background:rgba(15,123,63,.18);border-color:rgba(15,123,63,.38);}
+.rch.active{border-color:var(--g2);}
+.rch-ico{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--g1),var(--g3));display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;transition:background .2s;}
+.rch.active .rch-ico{background:linear-gradient(135deg,var(--g2),#b8962e);box-shadow:0 2px 9px rgba(212,175,55,.22);}
+.rch-info{flex:1;min-width:0;}
+.rch-name{font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rch-desc{font-size:10.5px;color:rgba(255,255,255,.35);margin-top:.08rem;}
+.rch-live{font-size:9.5px;font-weight:700;color:#27AE60;letter-spacing:.06em;flex-shrink:0;}
+.rch.active .rch-live{display:none;}
+.rch-anim{display:none;gap:2px;align-items:flex-end;flex-shrink:0;}
+.rch.active .rch-anim{display:flex;}
+.rch-mb{width:2.5px;border-radius:1px;background:var(--gold);}
 </style>
 
-<div class="radio-wrap">
+<div class="radio-page">
 
   <!-- HERO -->
-  <div class="radio-hero">
-    <div class="radio-hero-rings">
-      <div class="radio-ring"></div>
-      <div class="radio-ring"></div>
-      <div class="radio-ring"></div>
-      <div class="radio-ring"></div>
+  <div class="rh">
+    <div class="rh-rings"><div class="rh-ring"></div><div class="rh-ring"></div><div class="rh-ring"></div><div class="rh-ring"></div></div>
+    <div class="rd-wrap">
+      <div class="rd" id="rDisc"><div class="rd-center">📻</div></div>
+      <div class="rd-needle" id="rNeedle"></div>
     </div>
-
-    <!-- Vinyl disc -->
-    <div class="radio-disc-wrap">
-      <div class="radio-disc" id="radioDisc">
-        <div class="radio-disc-center">📻</div>
-      </div>
-      <div class="radio-needle" id="radioNeedle"></div>
-    </div>
-
-    <div class="radio-station-name">Radio Al-Faydha</div>
-    <div class="radio-station-ar">راديو الفيضة</div>
-    <div class="radio-station-freq">90.1 FM · Médina Baye · Kaolack</div>
-
-    <div class="radio-live-badge">
-      <div class="radio-live-dot"></div>
-      EN DIRECT
-    </div>
-
-    <!-- Visualizer -->
-    <div class="radio-visualizer" id="radioViz">
-    </div>
+    <div class="rh-name" id="rName">Radio Al-Faydha 90.1 FM</div>
+    <div class="rh-ar">راديو الفيضة · مدينة باي</div>
+    <div class="rh-freq">90.1 FM · Kaolack · Médina Baye</div>
+    <div class="rh-badge"><div class="rh-dot"></div>EN DIRECT</div>
+    <div class="rv" id="rViz"></div>
   </div>
 
-  <!-- CONTROLS -->
-  <div class="radio-controls">
+  <!-- PLAYER INTÉGRÉ — radio-senegal.com widget officiel -->
+  <div style="margin:1rem 1.2rem .4rem;border-radius:16px;overflow:hidden;border:1.5px solid rgba(212,175,55,.2);background:#0c1a10;">
+    <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,175,55,.45);text-align:center;padding:.45rem 0 .25rem;">▶ PLAYER EN DIRECT</div>
+    <iframe
+      src="https://www.radio-senegal.com/player/radio-alfayda"
+      style="width:100%;height:100px;border:none;display:block;border-radius:0 0 14px 14px;"
+      allow="autoplay"
+      loading="lazy"
+      scrolling="no">
+    </iframe>
+  </div>
 
-    <!-- Volume -->
-    <div class="radio-vol-row">
-      <span class="radio-vol-icon" id="radioVolIcon">🔈</span>
-      <input type="range" class="radio-vol-slider" id="radioVol" min="0" max="100" value="80">
-      <span class="radio-vol-icon">🔊</span>
-    </div>
-
-    <!-- Play button -->
-    <button class="radio-play-btn" id="radioPlayBtn" onclick="radioToggle()">▶</button>
-
-    <!-- Status -->
-    <div class="radio-status" id="radioStatus">Appuyez pour écouter</div>
+  <!-- Lien direct fallback -->
+  <div style="margin:0 1.2rem .5rem;text-align:center;">
+    <a href="https://www.radio-senegal.com/radio-alfayda" target="_blank"
+       style="display:inline-flex;align-items:center;gap:.4rem;background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.25);border-radius:20px;padding:.35rem .9rem;color:var(--gold2);font-size:12px;font-weight:700;text-decoration:none;">
+      🔗 Ouvrir sur Radio-Sénégal.com
+    </a>
   </div>
 
   <!-- CHANNELS -->
-  <div class="radio-channels-label">📡 Chaînes disponibles</div>
-  <div class="radio-channels" id="radioChannels">
-
-    <div class="radio-ch active" id="rch-0" onclick="radioSelectChannel(0)">
-      <div class="radio-ch-icon">🌊</div>
-      <div class="radio-ch-info">
-        <div class="radio-ch-name">Radio Al-Faydha 90.1 FM</div>
-        <div class="radio-ch-desc">La Voix de la Faydha · Médina Baye</div>
-      </div>
-      <span class="radio-ch-live">LIVE</span>
-      <div class="radio-ch-playing" id="rch-play-0">
-        <div class="radio-mini-bar" style="height:8px;animation:radioBar .6s ease-in-out infinite alternate;--max-h:14px;--dur:.6s"></div>
-        <div class="radio-mini-bar" style="height:14px;animation:radioBar .8s ease-in-out infinite alternate;--max-h:18px;--dur:.8s;animation-delay:.15s"></div>
-        <div class="radio-mini-bar" style="height:6px;animation:radioBar .5s ease-in-out infinite alternate;--max-h:12px;--dur:.5s;animation-delay:.3s"></div>
+  <div class="rch-label">📡 Chaînes disponibles</div>
+  <div class="rch-list">
+    <div class="rch active" id="rch0" onclick="rSelect(0)">
+      <div class="rch-ico">🌊</div>
+      <div class="rch-info"><div class="rch-name">Radio Al-Faydha 90.1 FM</div><div class="rch-desc">La Voix de la Faydha · Kaolack</div></div>
+      <span class="rch-live">LIVE</span>
+      <div class="rch-anim">
+        <div class="rch-mb" style="height:8px;animation:rvAnim .6s ease-in-out infinite alternate;--h:14px;--d:.6s"></div>
+        <div class="rch-mb" style="height:13px;animation:rvAnim .8s ease-in-out infinite alternate;--h:18px;--d:.8s;animation-delay:.15s"></div>
+        <div class="rch-mb" style="height:6px;animation:rvAnim .5s ease-in-out infinite alternate;--h:11px;--d:.5s;animation-delay:.3s"></div>
       </div>
     </div>
-
-    <div class="radio-ch" id="rch-1" onclick="radioSelectChannel(1)">
-      <div class="radio-ch-icon">🕌</div>
-      <div class="radio-ch-info">
-        <div class="radio-ch-name">Média Médina Baye</div>
-        <div class="radio-ch-desc">Zeno FM · Khassidas & Enseignements</div>
-      </div>
-      <span class="radio-ch-live">LIVE</span>
-      <div class="radio-ch-playing" id="rch-play-1">
-        <div class="radio-mini-bar" style="height:8px;animation:radioBar .7s ease-in-out infinite alternate;--max-h:14px;--dur:.7s"></div>
-        <div class="radio-mini-bar" style="height:12px;animation:radioBar .9s ease-in-out infinite alternate;--max-h:18px;--dur:.9s;animation-delay:.2s"></div>
-        <div class="radio-mini-bar" style="height:5px;animation:radioBar .6s ease-in-out infinite alternate;--max-h:12px;--dur:.6s;animation-delay:.35s"></div>
+    <div class="rch" id="rch1" onclick="rSelect(1)">
+      <div class="rch-ico">🕌</div>
+      <div class="rch-info"><div class="rch-name">Radio Faydatidianiya</div><div class="rch-desc">Tijaniyya · Enseignements & Zikr</div></div>
+      <span class="rch-live">LIVE</span>
+      <div class="rch-anim">
+        <div class="rch-mb" style="height:10px;animation:rvAnim .7s ease-in-out infinite alternate;--h:16px;--d:.7s"></div>
+        <div class="rch-mb" style="height:14px;animation:rvAnim .9s ease-in-out infinite alternate;--h:20px;--d:.9s;animation-delay:.2s"></div>
+        <div class="rch-mb" style="height:6px;animation:rvAnim .55s ease-in-out infinite alternate;--h:12px;--d:.55s;animation-delay:.35s"></div>
       </div>
     </div>
-
-    <div class="radio-ch" id="rch-2" onclick="radioSelectChannel(2)">
-      <div class="radio-ch-icon">📿</div>
-      <div class="radio-ch-info">
-        <div class="radio-ch-name">Xassida Online</div>
-        <div class="radio-ch-desc">Khassidas Tijaniyya en continu</div>
-      </div>
-      <span class="radio-ch-live">LIVE</span>
-      <div class="radio-ch-playing" id="rch-play-2">
-        <div class="radio-mini-bar" style="height:10px;animation:radioBar .55s ease-in-out infinite alternate;--max-h:16px;--dur:.55s"></div>
-        <div class="radio-mini-bar" style="height:14px;animation:radioBar .75s ease-in-out infinite alternate;--max-h:20px;--dur:.75s;animation-delay:.18s"></div>
-        <div class="radio-mini-bar" style="height:7px;animation:radioBar .65s ease-in-out infinite alternate;--max-h:13px;--dur:.65s;animation-delay:.32s"></div>
+    <div class="rch" id="rch2" onclick="rSelect(2)">
+      <div class="rch-ico">📿</div>
+      <div class="rch-info"><div class="rch-name">Xassida Online</div><div class="rch-desc">Khassidas Tijaniyya · Continu</div></div>
+      <span class="rch-live">LIVE</span>
+      <div class="rch-anim">
+        <div class="rch-mb" style="height:11px;animation:rvAnim .65s ease-in-out infinite alternate;--h:17px;--d:.65s"></div>
+        <div class="rch-mb" style="height:8px;animation:rvAnim .75s ease-in-out infinite alternate;--h:14px;--d:.75s;animation-delay:.2s"></div>
+        <div class="rch-mb" style="height:15px;animation:rvAnim .6s ease-in-out infinite alternate;--h:19px;--d:.6s;animation-delay:.35s"></div>
       </div>
     </div>
-
   </div>
 
 </div>
 
-<audio id="radioAudio" preload="none"></audio>
+<audio id="rAudio" preload="none"></audio>
 
 <script>
 (function(){
-  var CHANNELS = [
+  /* ── Chaînes : stream MyTuner API (id) + fallbacks ── */
+  var CH = [
     {
       name: 'Radio Al-Faydha 90.1 FM',
-      ar: 'راديو الفيضة',
-      freq: '90.1 FM · Kaolack · Médina Baye',
-      // Stream FastCast4u officiel (CORS ouvert)
-      url: 'https://stream.zeno.fm/OUE5xD8nztzuv',
-      fallback: 'https://c7.radioboss.fm:8231/stream',
-      embed: 'https://zeno.fm/radio/radio-alfayda-90-1/',
-      icon: '🌊'
+      id: '439363',   // MyTuner ID
+      streams: [
+        'https://stream.zeno.fm/OUE5xD8nztzuv',
+        'https://stream.zeno.fm/mhpQee8nztzuv',
+        'https://c7.radioboss.fm:8231/stream'
+      ],
+      ext: 'https://mytuner-radio.com/fr/radio/radio-alfayda-439363/'
     },
     {
       name: 'Radio Faydatidianiya',
-      ar: 'راديو فيضة التجانية',
-      freq: 'Zeno FM · Tijaniyya',
-      url: 'https://stream.zeno.fm/faydatidianiya',
-      embed: 'https://zeno.fm/radio/faydatidianiya/',
-      icon: '🕌'
+      id: null,
+      streams: ['https://stream.zeno.fm/faydatidianiya'],
+      ext: 'https://zeno.fm/radio/faydatidianiya/'
     },
     {
       name: 'Xassida Online',
-      ar: 'خصائد أونلاين',
-      freq: 'Sénégal · Khassidas Tijaniyya',
-      url: 'https://stream.zeno.fm/xassida-online',
-      embed: 'https://zeno.fm/radio/xassida-online/',
-      icon: '📿'
+      id: null,
+      streams: ['https://stream.zeno.fm/xassida-online'],
+      ext: 'https://zeno.fm/radio/xassida-online/'
     }
   ];
 
-  var audio = document.getElementById('radioAudio');
-  var playBtn = document.getElementById('radioPlayBtn');
-  var status = document.getElementById('radioStatus');
-  var disc = document.getElementById('radioDisc');
-  var needle = document.getElementById('radioNeedle');
-  var volSlider = document.getElementById('radioVol');
-  var volIcon = document.getElementById('radioVolIcon');
-
+  var audio = document.getElementById('rAudio');
+  var playBtn = document.getElementById('rPlayBtn');
+  var status = document.getElementById('rStatus');
+  var disc = document.getElementById('rDisc');
+  var needle = document.getElementById('rNeedle');
+  var volSlider = document.getElementById('rVol');
+  var volIcon = document.getElementById('rVolIco');
   var isPlaying = false;
-  var currentCh = 0;
-  var vizBars = [];
+  var curCh = 0;
+  var streamTimer = null;
+  var streamIdx = 0;
+  var bars = [];
 
-  // Build visualizer bars
-  var viz = document.getElementById('radioViz');
-  var barCount = 22;
-  for(var i=0; i<barCount; i++){
-    var bar = document.createElement('div');
-    bar.className = 'radio-bar';
-    var maxH = Math.round(8 + Math.random()*22);
-    var dur = (0.4 + Math.random()*0.7).toFixed(2);
-    bar.style.cssText = '--max-h:'+maxH+'px;--dur:'+dur+'s;animation-delay:'+(i*0.045).toFixed(2)+'s';
-    viz.appendChild(bar);
-    vizBars.push(bar);
+  /* Visualizer */
+  var viz = document.getElementById('rViz');
+  for(var i=0;i<20;i++){
+    var b=document.createElement('div');
+    b.className='rv-bar';
+    var h=Math.round(7+Math.random()*20);
+    var d=(0.4+Math.random()*0.65).toFixed(2);
+    b.style.cssText='--h:'+h+'px;--d:'+d+'s;animation-delay:'+(i*.05).toFixed(2)+'s';
+    viz.appendChild(b); bars.push(b);
   }
 
-  function setVizActive(on){
-    vizBars.forEach(function(b){ 
-      if(on) b.classList.add('active');
-      else { b.classList.remove('active'); b.style.height='3px'; }
-    });
+  function setViz(on){ bars.forEach(function(b){ if(on) b.classList.add('on'); else{ b.classList.remove('on'); b.style.height='3px'; }}); }
+  function setStatus(msg,cls){ status.className='rc-status'+(cls?' '+cls:''); status.textContent=msg; }
+
+  function setUI(playing){
+    isPlaying=playing;
+    playBtn.textContent=playing?'⏸':'▶';
+    playBtn.classList.remove('loading');
+    if(playing){ disc.classList.add('spin'); needle.classList.add('on'); setViz(true); }
+    else { disc.classList.remove('spin'); needle.classList.remove('on'); setViz(false); }
   }
 
-  function setStatus(msg, cls){
-    status.className = 'radio-status' + (cls ? ' '+cls : '');
-    status.textContent = msg;
+  function removeExtLink(){ var el=document.getElementById('rExtLink'); if(el) el.remove(); }
+
+  function showExtLink(){
+    if(document.getElementById('rExtLink')) return;
+    var ch=CH[curCh];
+    var box=document.createElement('div');
+    box.id='rExtLink'; box.className='rc-ext';
+    box.innerHTML='<a href="'+ch.ext+'" target="_blank">📻 Écouter Radio Al-Faydha</a>'
+      +'<div class="rc-ext-sub">Ouvre dans le navigateur · En direct</div>';
+    var rc=document.querySelector('.rc');
+    var st=document.getElementById('rStatus');
+    if(rc&&st) rc.insertBefore(box,st);
   }
 
-  function updateUI(playing){
-    isPlaying = playing;
-    playBtn.textContent = playing ? '⏸' : '▶';
-    if(playing){
-      disc.classList.add('playing');
-      needle.classList.add('playing');
-      setVizActive(true);
-    } else {
-      disc.classList.remove('playing');
-      needle.classList.remove('playing');
-      setVizActive(false);
-    }
+  /* Fetch stream URL depuis l API MyTuner */
+  function fetchMyTunerStream(id, cb){
+    fetch('https://mytuner-radio.com/api/radios/'+id+'/?lang=fr')
+      .then(function(r){ return r.json(); })
+      .then(function(d){ cb((d&&d.streamURL)||null); })
+      .catch(function(){ cb(null); });
   }
 
-  function updateChannelUI(idx){
-    for(var i=0;i<CHANNELS.length;i++){
-      var el = document.getElementById('rch-'+i);
-      if(el) el.classList.toggle('active', i===idx);
-    }
-    var ch = CHANNELS[idx];
-    document.querySelector('.radio-station-name').textContent = ch.name;
-    document.querySelector('.radio-station-ar').textContent = ch.ar;
-    document.querySelector('.radio-station-freq').textContent = ch.freq;
-  }
-
-  window.radioSelectChannel = function(idx){
-    if(idx === currentCh && isPlaying) return;
-    currentCh = idx;
-    updateChannelUI(idx);
-    audio.pause();
-    audio.src = '';
-    updateUI(false);
-    setStatus('Chargement...', '');
-    setTimeout(function(){ radioPlay(); }, 200);
-  };
-
-  var streamTimeout = null;
-
-  // Stream URLs à essayer dans l'ordre (CORS-friendly)
-  var STREAM_URLS = [
-    'https://stream.zeno.fm/OUE5xD8nztzuv',   // Zeno slug 2
-    'https://stream.zeno.fm/mhpQee8nztzuv',    // Zeno slug 1
-    'https://c7.radioboss.fm:8231/stream',       // FastCast4u
-    'https://listen.radioking.com/radio/alfayda' // Fallback
-  ];
-  var streamIndex = 0;
-
-  function showExternalLink(){
-    var ch = CHANNELS[currentCh];
-    var existing = document.getElementById('radioExtLink');
-    if(existing) return;
-    var box = document.createElement('div');
-    box.id = 'radioExtLink';
-    box.style.cssText = 'background:rgba(212,175,55,.12);border:1.5px solid rgba(212,175,55,.3);border-radius:14px;padding:.85rem 1.1rem;margin:.3rem 0;text-align:center;';
-    box.innerHTML = '<div style="font-size:11.5px;color:rgba(255,255,255,.55);margin-bottom:.5rem">Écouter directement :</div>'
-      + '<a href="' + ch.embed + '" target="_blank" style="display:inline-flex;align-items:center;gap:.4rem;background:var(--g1);border:1px solid rgba(212,175,55,.4);border-radius:20px;padding:.45rem 1.1rem;color:var(--gold2);font-size:13px;font-weight:700;text-decoration:none;">📻 Ouvrir Radio Al-Faydha</a>'
-      + '<div style="font-size:10.5px;color:rgba(255,255,255,.3);margin-top:.45rem">Zeno.FM · En direct</div>';
-    var ctrl = document.querySelector('.radio-controls');
-    var statusEl = document.getElementById('radioStatus');
-    if(ctrl && statusEl) ctrl.insertBefore(box, statusEl);
-  }
-
-  function removeExternalLink(){
-    var el = document.getElementById('radioExtLink');
-    if(el) el.remove();
-  }
-
-  function tryStream(urls, idx){
-    if(idx >= urls.length){
-      updateUI(false);
-      setStatus('Stream indisponible — utilisez le lien ci-dessous', 'err');
-      showExternalLink();
+  function tryStreams(urls, idx){
+    if(idx>=urls.length){
+      setUI(false);
+      setStatus('Lien direct disponible ci-dessous','err');
+      showExtLink();
       return;
     }
-    audio.src = urls[idx];
+    audio.src=urls[idx];
     audio.load();
-    setStatus('Connexion ' + (idx+1) + '/' + urls.length + '...', '');
-    clearTimeout(streamTimeout);
-    streamTimeout = setTimeout(function(){
-      if(!isPlaying){ audio.pause(); tryStream(urls, idx+1); }
-    }, 6000);
-    var p = audio.play();
-    if(p && p.catch) p.catch(function(){ clearTimeout(streamTimeout); tryStream(urls, idx+1); });
+    setStatus('Connexion '+(idx+1)+'/'+urls.length+'...','');
+    clearTimeout(streamTimer);
+    streamTimer=setTimeout(function(){ if(!isPlaying){ audio.pause(); tryStreams(urls,idx+1); } },7000);
+    var p=audio.play();
+    if(p&&p.catch) p.catch(function(){ clearTimeout(streamTimer); tryStreams(urls,idx+1); });
   }
 
-  function radioPlay(){
-    removeExternalLink();
-    var ch = CHANNELS[currentCh];
-    var urls = [ch.url];
-    if(ch.fallback) urls.push(ch.fallback);
-    // Ajouter les URLs globales
-    STREAM_URLS.forEach(function(u){ if(urls.indexOf(u)<0) urls.push(u); });
-    tryStream(urls, 0);
-  }
-
-  window.radioToggle = function(){
-    if(isPlaying){
-      audio.pause();
-      audio.src = '';
-      updateUI(false);
-      setStatus('En pause', '');
-      clearTimeout(streamTimeout);
-      removeExternalLink();
+  function rPlay(){
+    removeExtLink();
+    playBtn.classList.add('loading');
+    var ch=CH[curCh];
+    /* Essayer d abord l API MyTuner si on a un id */
+    if(ch.id){
+      setStatus('Récupération du stream...','');
+      fetchMyTunerStream(ch.id, function(apiUrl){
+        var urls=apiUrl?[apiUrl].concat(ch.streams):ch.streams.slice();
+        tryStreams(urls,0);
+      });
     } else {
-      radioPlay();
+      tryStreams(ch.streams.slice(),0);
     }
+  }
+
+  window.rToggle=function(){
+    if(isPlaying){ audio.pause(); audio.src=''; setUI(false); setStatus('En pause',''); clearTimeout(streamTimer); removeExtLink(); }
+    else { rPlay(); }
   };
 
-  audio.addEventListener('playing', function(){
-    clearTimeout(streamTimeout);
-    updateUI(true);
-    removeExternalLink();
-    setStatus('● En direct — ' + CHANNELS[currentCh].name, 'on');
-  });
-  audio.addEventListener('waiting', function(){ setStatus('Mise en mémoire tampon...', ''); });
-  audio.addEventListener('error', function(){
-    clearTimeout(streamTimeout);
-    updateUI(false);
-    setStatus('Stream indisponible — utilisez le lien ci-dessous', 'err');
-    showExternalLink();
-  });
-  audio.addEventListener('stalled', function(){ setStatus('Signal faible...', ''); });
+  window.rSelect=function(idx){
+    if(idx===curCh&&isPlaying) return;
+    curCh=idx;
+    for(var i=0;i<CH.length;i++) document.getElementById('rch'+i).classList.toggle('active',i===idx);
+    document.getElementById('rName').textContent=CH[idx].name;
+    audio.pause(); audio.src='';
+    setUI(false); removeExtLink();
+    setStatus('Appuyez pour écouter','');
+  };
 
-  // Volume
-  audio.volume = 0.8;
-  volSlider.addEventListener('input', function(){
-    var v = this.value / 100;
-    audio.volume = v;
-    var pct = this.value + '%';
-    this.style.background = 'linear-gradient(90deg, #1a9650 ' + pct + ', rgba(255,255,255,.15) ' + pct + ')';
-    volIcon.textContent = v === 0 ? '🔇' : v < 0.5 ? '🔈' : '🔊';
+  audio.addEventListener('playing',function(){
+    clearTimeout(streamTimer); setUI(true); removeExtLink();
+    setStatus('● En direct — '+CH[curCh].name,'on');
+  });
+  audio.addEventListener('waiting',function(){ setStatus('Mise en mémoire tampon...',''); });
+  audio.addEventListener('stalled',function(){ setStatus('Signal faible...',''); });
+  audio.addEventListener('error',function(){
+    clearTimeout(streamTimer); setUI(false);
+    showExtLink(); setStatus('Lien direct disponible ci-dessous','err');
+  });
+
+  /* Volume */
+  audio.volume=0.8;
+  volSlider.addEventListener('input',function(){
+    var v=this.value/100; audio.volume=v;
+    var p=this.value+'%';
+    this.style.background='linear-gradient(90deg,#1a9650 '+p+',rgba(255,255,255,.1) '+p+')';
+    volIcon.textContent=v===0?'🔇':v<0.5?'🔈':'🔊';
   });
 
 })();
