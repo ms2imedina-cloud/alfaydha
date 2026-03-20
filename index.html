@@ -76,11 +76,22 @@ window._fbReady=false;
 
 /* ── _fbInit — wrapper Firebase compatibility ── */
 function _fbInit(cb) {
-  if (typeof firebase === 'undefined') {
-    console.warn('[_fbInit] Firebase non disponible');
+  /* Firebase pas encore chargé — retry jusqu'à 3s */
+  if (typeof firebase === 'undefined' || !firebase.apps) {
+    var tries = 0;
+    var iv = setInterval(function() {
+      tries++;
+      if (typeof firebase !== 'undefined' && firebase.apps !== undefined) {
+        clearInterval(iv);
+        _fbInit(cb);
+      } else if (tries > 30) {
+        clearInterval(iv);
+        console.warn('[_fbInit] Firebase indisponible après 3s');
+      }
+    }, 100);
     return;
   }
-  if (!firebase.apps || !firebase.apps.length) {
+  if (!firebase.apps.length) {
     try { firebase.initializeApp(window._fbConfig); } catch(e) {}
   }
   window._fbReady = true;
@@ -2315,7 +2326,7 @@ button[onclick="qiblaGPS()"] {
     <div style="width:100%;display:flex;flex-direction:column;gap:.5rem;margin-top:.3rem">
       <div style="display:flex;align-items:center;gap:.7rem;background:rgba(255,255,255,.05);border:1px solid rgba(212,175,55,.15);border-radius:10px;padding:.6rem .9rem">
         <span style="font-size:18px">📿</span>
-        <span style="font-size:13px;color:rgba(251,248,232,.7)">Sauvegarde de votre progression Wird & Zikr</span>
+        <span style="font-size:13px;color:rgba(251,248,232,.7)">Accès à la communauté mondiale Taalibé Baye</span>
       </div>
       <div style="display:flex;align-items:center;gap:.7rem;background:rgba(255,255,255,.05);border:1px solid rgba(212,175,55,.15);border-radius:10px;padding:.6rem .9rem">
         <span style="font-size:18px">🌍</span>
@@ -7645,20 +7656,23 @@ function zLeaveGroup(){
   setTimeout(_zLoadActiveGroups,500);
 }
 
-/* ── Init au chargement de l'onglet groupe ── */
-var _zGroupTabInited=false;
-var _origSwitchZikrTab=switchZikrTab;
-switchZikrTab=function(tab){
-  _origSwitchZikrTab(tab);
-  if(tab==='group'&&!_zGroupTabInited){
-    _zGroupTabInited=true;
-    _fbInit(function(){
-      _zLoadActiveGroups();
-      // Rafraîchir groupes actifs toutes les 30s
-      _zGroupsTimer=setInterval(_zLoadActiveGroups,30000);
-    });
-  }
-};
+/* ── Init groupes zikr au démarrage ── */
+var _zGroupTabInited = false;
+function _zInitGroupTab() {
+  if (_zGroupTabInited) return;
+  _zGroupTabInited = true;
+  _fbInit(function(){
+    _zLoadActiveGroups();
+    _zGroupsTimer = setInterval(_zLoadActiveGroups, 30000);
+  });
+}
+
+/* ── zikrGroupInit — stub (anciennement dans sec-wird) ── */
+function zikrGroupInit() {
+  _fbInit(function(){
+    if (typeof _zLoadActiveGroups === 'function') _zLoadActiveGroups();
+  });
+}
 
 
 /* ════════════════════════════════════════════════════════════
