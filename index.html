@@ -3268,128 +3268,92 @@ html { background: #0a0a0a; }
 <!-- SECTION RADIO AL-FAYDHA -->
 <section id="sec-ens" class="sec">
 <style>
-.radio-page { display:flex; flex-direction:column; min-height:100%; background:#07100a; }
+.rp-wrap{display:flex;flex-direction:column;min-height:100%;background:#07100a;}
 
 /* HERO */
-.rh { position:relative; background:linear-gradient(170deg,#071410 0%,#0d2318 55%,#0a1a10 100%); padding:1.8rem 1.4rem 1.1rem; text-align:center; overflow:hidden; }
-.rh-rings { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; }
-.rh-ring { position:absolute; border-radius:50%; border:1px solid rgba(212,175,55,.1); animation:rhRing 4s ease-in-out infinite; }
-.rh-ring:nth-child(1){width:90px;height:90px;}
-.rh-ring:nth-child(2){width:170px;height:170px;animation-delay:.7s;}
-.rh-ring:nth-child(3){width:270px;height:270px;animation-delay:1.4s;}
-.rh-ring:nth-child(4){width:390px;height:390px;animation-delay:2.1s;}
-@keyframes rhRing{0%,100%{transform:scale(1);opacity:.18}50%{transform:scale(1.05);opacity:.55}}
+.rp-hero{position:relative;background:linear-gradient(170deg,#071410 0%,#0d2318 55%,#0a1a10 100%);padding:1.8rem 1.4rem 1.1rem;text-align:center;overflow:hidden;}
+.rp-rings{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
+.rp-ring{position:absolute;border-radius:50%;border:1px solid rgba(212,175,55,.1);animation:rpRing 4s ease-in-out infinite;}
+.rp-ring:nth-child(1){width:90px;height:90px;}
+.rp-ring:nth-child(2){width:170px;height:170px;animation-delay:.7s;}
+.rp-ring:nth-child(3){width:270px;height:270px;animation-delay:1.4s;}
+.rp-ring:nth-child(4){width:390px;height:390px;animation-delay:2.1s;}
+@keyframes rpRing{0%,100%{transform:scale(1);opacity:.18}50%{transform:scale(1.05);opacity:.55}}
 
-/* Disc */
-.rd-wrap{position:relative;width:110px;height:110px;margin:0 auto .9rem;z-index:2;}
-.rd{width:110px;height:110px;border-radius:50%;
+.rp-disc-wrap{position:relative;width:110px;height:110px;margin:0 auto .9rem;z-index:2;}
+.rp-disc{width:110px;height:110px;border-radius:50%;
   background:conic-gradient(from 0deg,#0F7B3F 0%,#1a9650 12%,#D4AF37 12%,#b8962e 25%,#0F7B3F 25%,#145a32 38%,#D4AF37 38%,#f0dc82 50%,#0F7B3F 50%,#0a5c2e 62%,#D4AF37 62%,#c8a200 75%,#0F7B3F 75%,#1a9650 88%,#D4AF37 88%,#b8962e 100%);
-  box-shadow:0 0 28px rgba(15,123,63,.5),0 0 55px rgba(212,175,55,.1);
-  display:flex;align-items:center;justify-content:center;}
-.rd.spin{animation:rdSpin 5s linear infinite;}
-@keyframes rdSpin{to{transform:rotate(360deg)}}
-.rd-center{width:32px;height:32px;border-radius:50%;background:#07100a;border:2px solid rgba(212,175,55,.4);display:flex;align-items:center;justify-content:center;font-size:13px;}
-.rd-needle{position:absolute;top:5px;right:-8px;width:44px;height:3px;background:linear-gradient(90deg,var(--gold),rgba(212,175,55,.15));border-radius:2px;transform-origin:right center;transform:rotate(-28deg);transition:transform .6s cubic-bezier(.34,1.56,.64,1);z-index:4;}
-.rd-needle.on{transform:rotate(-6deg);}
-.rd-needle::after{content:'';position:absolute;right:-4px;top:-4px;width:11px;height:11px;background:var(--gold);border-radius:50%;box-shadow:0 0 8px rgba(212,175,55,.65);}
+  box-shadow:0 0 28px rgba(15,123,63,.5);display:flex;align-items:center;justify-content:center;}
+.rp-disc.spin{animation:rpSpin 5s linear infinite;}
+@keyframes rpSpin{to{transform:rotate(360deg)}}
+.rp-disc-c{width:32px;height:32px;border-radius:50%;background:#07100a;border:2px solid rgba(212,175,55,.4);display:flex;align-items:center;justify-content:center;font-size:13px;}
+.rp-needle{position:absolute;top:5px;right:-8px;width:44px;height:3px;background:linear-gradient(90deg,var(--gold),rgba(212,175,55,.15));border-radius:2px;transform-origin:right center;transform:rotate(-28deg);transition:transform .6s cubic-bezier(.34,1.56,.64,1);z-index:4;}
+.rp-needle.on{transform:rotate(-6deg);}
+.rp-needle::after{content:'';position:absolute;right:-4px;top:-4px;width:11px;height:11px;background:var(--gold);border-radius:50%;box-shadow:0 0 8px rgba(212,175,55,.65);}
 
-.rh-name{font-family:'Amiri',serif;font-size:21px;color:#fff;margin-bottom:.12rem;position:relative;z-index:2;}
-.rh-ar{font-family:'Amiri',serif;font-size:15px;color:var(--gold2);direction:rtl;margin-bottom:.18rem;position:relative;z-index:2;}
-.rh-freq{font-size:11px;font-weight:700;letter-spacing:.11em;color:rgba(255,255,255,.35);text-transform:uppercase;position:relative;z-index:2;}
-.rh-badge{display:inline-flex;align-items:center;gap:.3rem;background:rgba(39,174,96,.15);border:1px solid rgba(39,174,96,.3);border-radius:20px;padding:.18rem .6rem;font-size:10.5px;font-weight:700;letter-spacing:.07em;color:#27AE60;margin:.5rem auto 0;position:relative;z-index:2;}
-.rh-dot{width:5px;height:5px;background:#27AE60;border-radius:50%;animation:rhBlink 1.3s ease-in-out infinite;}
-@keyframes rhBlink{0%,100%{opacity:1}50%{opacity:.12}}
+.rp-name{font-family:'Amiri',serif;font-size:21px;color:#fff;margin-bottom:.12rem;position:relative;z-index:2;}
+.rp-ar{font-family:'Amiri',serif;font-size:15px;color:var(--gold2);direction:rtl;margin-bottom:.18rem;position:relative;z-index:2;}
+.rp-freq{font-size:11px;font-weight:700;letter-spacing:.11em;color:rgba(255,255,255,.35);text-transform:uppercase;position:relative;z-index:2;}
+.rp-live{display:inline-flex;align-items:center;gap:.3rem;background:rgba(39,174,96,.15);border:1px solid rgba(39,174,96,.3);border-radius:20px;padding:.18rem .6rem;font-size:10.5px;font-weight:700;color:#27AE60;margin:.5rem auto 0;position:relative;z-index:2;}
+.rp-dot{width:5px;height:5px;background:#27AE60;border-radius:50%;animation:rpBlink 1.3s ease-in-out infinite;}
+@keyframes rpBlink{0%,100%{opacity:1}50%{opacity:.12}}
 
-/* Visualizer */
-.rv{display:flex;align-items:flex-end;justify-content:center;gap:2.5px;height:28px;margin:.8rem 0 0;position:relative;z-index:2;}
-.rv-bar{width:3px;background:linear-gradient(180deg,var(--gold) 0%,var(--g2) 100%);border-radius:2px;min-height:3px;}
-.rv-bar.on{animation:rvAnim var(--d,.8s) ease-in-out infinite alternate;}
-@keyframes rvAnim{from{height:3px}to{height:var(--h,14px)}}
+.rp-viz{display:flex;align-items:flex-end;justify-content:center;gap:2.5px;height:28px;margin:.8rem 0 0;position:relative;z-index:2;}
+.rp-bar{width:3px;background:linear-gradient(180deg,var(--gold) 0%,var(--g2) 100%);border-radius:2px;min-height:3px;}
+.rp-bar.on{animation:rpBar var(--d,.8s) ease-in-out infinite alternate;}
+@keyframes rpBar{from{height:3px}to{height:var(--h,14px)}}
 
-/* STREAM BLOCK */
-.rs-block{margin:1rem 1.2rem .5rem;border-radius:16px;overflow:hidden;border:1.5px solid rgba(212,175,55,.18);background:#0c1a10;}
-.rs-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,175,55,.45);text-align:center;padding:.45rem 0 .3rem;}
+/* CONTROLS */
+.rp-ctrl{background:#0c1810;padding:1.2rem 1.4rem 1rem;display:flex;flex-direction:column;align-items:center;gap:.8rem;}
 
-/* Controls */
-.rc{background:#0c1810;padding:1rem 1.4rem .8rem;display:flex;flex-direction:column;gap:.75rem;}
-.rc-vol{display:flex;align-items:center;gap:.7rem;}
-.rc-vi{font-size:14px;color:rgba(255,255,255,.35);flex-shrink:0;}
-.rc-slider{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;outline:none;cursor:pointer;background:linear-gradient(90deg,var(--g2) 80%,rgba(255,255,255,.1) 80%);}
-.rc-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--gold);box-shadow:0 0 7px rgba(212,175,55,.5);cursor:pointer;}
-.rc-play{width:62px;height:62px;border-radius:50%;background:linear-gradient(135deg,var(--g1),var(--g2));border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;align-self:center;font-size:22px;color:#fff;box-shadow:0 4px 20px rgba(15,123,63,.5),0 0 0 6px rgba(15,123,63,.12);transition:all .2s;flex-shrink:0;}
-.rc-play:hover{transform:scale(1.08);box-shadow:0 6px 26px rgba(15,123,63,.7),0 0 0 10px rgba(15,123,63,.1);}
-.rc-play:active{transform:scale(.96);}
-.rc-play.loading{animation:rcPulse 1s ease-in-out infinite;}
-@keyframes rcPulse{0%,100%{box-shadow:0 4px 20px rgba(15,123,63,.5),0 0 0 6px rgba(15,123,63,.12)}50%{box-shadow:0 4px 20px rgba(15,123,63,.8),0 0 0 14px rgba(15,123,63,.05)}}
-.rc-status{text-align:center;font-size:12px;color:rgba(255,255,255,.35);letter-spacing:.04em;min-height:16px;transition:color .3s;}
-.rc-status.on{color:#27AE60;font-weight:600;}
-.rc-status.err{color:#e67e22;}
+.rp-vol-row{display:flex;align-items:center;gap:.7rem;width:100%;}
+.rp-vol-ico{font-size:14px;color:rgba(255,255,255,.4);flex-shrink:0;}
+.rp-vol{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;outline:none;cursor:pointer;background:linear-gradient(90deg,var(--g2) 80%,rgba(255,255,255,.1) 80%);}
+.rp-vol::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--gold);box-shadow:0 0 7px rgba(212,175,55,.5);cursor:pointer;}
 
-/* Lien externe fallback */
-.rc-ext{background:rgba(212,175,55,.1);border:1.5px solid rgba(212,175,55,.25);border-radius:13px;padding:.8rem 1rem;text-align:center;margin:.2rem 0;}
-.rc-ext a{display:inline-flex;align-items:center;gap:.4rem;background:var(--g1);border:1px solid rgba(212,175,55,.35);border-radius:18px;padding:.42rem 1rem;color:var(--gold2);font-size:13px;font-weight:700;text-decoration:none;transition:background .2s;}
-.rc-ext a:hover{background:var(--g2);}
-.rc-ext-sub{font-size:10.5px;color:rgba(255,255,255,.28);margin-top:.4rem;}
+.rp-btn{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--g1),var(--g2));border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:24px;color:#fff;box-shadow:0 4px 22px rgba(15,123,63,.5),0 0 0 6px rgba(15,123,63,.12);transition:all .2s;}
+.rp-btn:hover{transform:scale(1.08);}
+.rp-btn:active{transform:scale(.96);}
+.rp-btn.loading{animation:rpBtnPulse 1s ease-in-out infinite;}
+@keyframes rpBtnPulse{0%,100%{box-shadow:0 4px 22px rgba(15,123,63,.5),0 0 0 6px rgba(15,123,63,.12)}50%{box-shadow:0 4px 22px rgba(15,123,63,.8),0 0 0 14px rgba(15,123,63,.05)}}
 
-/* Channels */
-.rch-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.22);padding:.55rem 1.4rem .3rem;}
-.rch-list{display:flex;flex-direction:column;gap:.4rem;padding:0 1.1rem 1.3rem;}
-.rch{display:flex;align-items:center;gap:.75rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:.7rem .85rem;cursor:pointer;transition:all .2s;}
-.rch:hover,.rch.active{background:rgba(15,123,63,.18);border-color:rgba(15,123,63,.38);}
-.rch.active{border-color:var(--g2);}
-.rch-ico{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--g1),var(--g3));display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;transition:background .2s;}
-.rch.active .rch-ico{background:linear-gradient(135deg,var(--g2),#b8962e);box-shadow:0 2px 9px rgba(212,175,55,.22);}
-.rch-info{flex:1;min-width:0;}
-.rch-name{font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.rch-desc{font-size:10.5px;color:rgba(255,255,255,.35);margin-top:.08rem;}
-.rch-live{font-size:9.5px;font-weight:700;color:#27AE60;letter-spacing:.06em;flex-shrink:0;}
-.rch.active .rch-live{display:none;}
-.rch-anim{display:none;gap:2px;align-items:flex-end;flex-shrink:0;}
-.rch.active .rch-anim{display:flex;}
-.rch-mb{width:2.5px;border-radius:1px;background:var(--gold);}
+.rp-status{font-size:12px;color:rgba(255,255,255,.38);letter-spacing:.04em;min-height:16px;text-align:center;}
+.rp-status.on{color:#27AE60;font-weight:600;}
+.rp-status.err{color:#e67e22;}
 </style>
 
-<div class="radio-page">
+<div class="rp-wrap">
 
-  <!-- HERO -->
-  <div class="rh">
-    <div class="rh-rings"><div class="rh-ring"></div><div class="rh-ring"></div><div class="rh-ring"></div><div class="rh-ring"></div></div>
-    <div class="rd-wrap">
-      <div class="rd" id="rDisc"><div class="rd-center">📻</div></div>
-      <div class="rd-needle" id="rNeedle"></div>
+  <div class="rp-hero">
+    <div class="rp-rings"><div class="rp-ring"></div><div class="rp-ring"></div><div class="rp-ring"></div><div class="rp-ring"></div></div>
+    <div class="rp-disc-wrap">
+      <div class="rp-disc" id="rpDisc"><div class="rp-disc-c">📻</div></div>
+      <div class="rp-needle" id="rpNeedle"></div>
     </div>
-    <div class="rh-name" id="rName">Radio Al-Faydha 90.1 FM</div>
-    <div class="rh-ar">راديو الفيضة · مدينة باي</div>
-    <div class="rh-freq">90.1 FM · Kaolack · Médina Baye</div>
-    <div class="rh-badge"><div class="rh-dot"></div>EN DIRECT</div>
-    <div class="rv" id="rViz"></div>
+    <div class="rp-name">Radio Al-Faydha 90.1 FM</div>
+    <div class="rp-ar">راديو الفيضة · مدينة باي</div>
+    <div class="rp-freq">90.1 FM · Kaolack · Médina Baye</div>
+    <div class="rp-live"><div class="rp-dot"></div>EN DIRECT</div>
+    <div class="rp-viz" id="rpViz"></div>
   </div>
 
-  <!-- PLAYER OFFICIEL FastCast4u — fonctionne PC + Mobile -->
-  <div style="margin:.8rem 1.2rem 1.2rem;border-radius:16px;overflow:hidden;border:1.5px solid rgba(212,175,55,.22);box-shadow:0 4px 20px rgba(0,0,0,.3);">
-    <div style="background:#0c1a10;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,175,55,.5);text-align:center;padding:.4rem 0;">
-      ▶ RADIO AL-FAYDHA — EN DIRECT
+  <div class="rp-ctrl">
+    <div class="rp-vol-row">
+      <span class="rp-vol-ico" id="rpVolIco">🔈</span>
+      <input type="range" class="rp-vol" id="rpVol" min="0" max="100" value="80">
+      <span class="rp-vol-ico">🔊</span>
     </div>
-    <iframe
-      src="https://webplayer.fastcast4u.com/lyartech/"
-      style="width:100%;height:130px;border:none;display:block;"
-      allow="autoplay"
-      scrolling="no">
-    </iframe>
+    <button class="rp-btn" id="rpBtn" onclick="rpToggle()">▶</button>
+    <div class="rp-status" id="rpStatus">Appuyez ▶ pour écouter</div>
   </div>
-
-
 
 </div>
 
-<audio id="rAudio" preload="none" playsinline webkit-playsinline x-webkit-airplay="allow"></audio>
+<audio id="rpAudio" preload="none" playsinline webkit-playsinline></audio>
 
 <script>
 (function(){
-  /* ═══════════════════════════════════════════════════
-     RADIO AL-FAYDHA — Player natif PC + Mobile
-     FastCast4u username: lyartech
-  ═══════════════════════════════════════════════════ */
+  /* ══ RADIO AL-FAYDHA — Player unifié PC + Mobile ══ */
   var STREAMS = [
     'https://c7.radioboss.fm/stream/379',
     'https://c7.radioboss.fm:8010/stream/379',
@@ -3397,95 +3361,93 @@ html { background: #0a0a0a; }
     'https://stream.zeno.fm/OUE5xD8nztzuv',
     'https://stream.zeno.fm/mhpQee8nztzuv'
   ];
-  var EXT_URL = 'https://webplayer.fastcast4u.com/lyartech/';
 
-  var audio   = document.getElementById('rAudio');
-  var playBtn = document.getElementById('rPlayBtn');
-  var status  = document.getElementById('rStatus');
-  var disc    = document.getElementById('rDisc');
-  var needle  = document.getElementById('rNeedle');
-  var vol     = document.getElementById('rVol');
-  var volIco  = document.getElementById('rVolIco');
-  var isPlaying = false;
-  var streamTimer = null;
-  var bars = [];
+  var audio  = document.getElementById('rpAudio');
+  var btn    = document.getElementById('rpBtn');
+  var stat   = document.getElementById('rpStatus');
+  var disc   = document.getElementById('rpDisc');
+  var needle = document.getElementById('rpNeedle');
+  var volEl  = document.getElementById('rpVol');
+  var volIco = document.getElementById('rpVolIco');
+  var bars   = [];
+  var playing = false;
+  var timer   = null;
 
   /* Visualizer */
-  var viz = document.getElementById('rViz');
-  if(viz){ for(var i=0;i<20;i++){
-    var b=document.createElement('div'); b.className='rv-bar';
-    var h=Math.round(7+Math.random()*20), d=(0.4+Math.random()*.65).toFixed(2);
-    b.style.cssText='--h:'+h+'px;--d:'+d+'s;animation-delay:'+(i*.05).toFixed(2)+'s';
+  var viz = document.getElementById('rpViz');
+  for(var i=0;i<20;i++){
+    var b=document.createElement('div'); b.className='rp-bar';
+    b.style.cssText='--h:'+(7+Math.round(Math.random()*20))+'px;--d:'+(0.4+Math.random()*.65).toFixed(2)+'s;animation-delay:'+(i*.05).toFixed(2)+'s';
     viz.appendChild(b); bars.push(b);
-  }}
+  }
 
-  function setViz(on){ bars.forEach(function(b){ on?b.classList.add('on'):(b.classList.remove('on'),b.style.height='3px'); }); }
-  function setSt(msg,cls){ status.className='rc-status'+(cls?' '+cls:''); status.textContent=msg; }
+  function vizOn(on){ bars.forEach(function(b){ on?b.classList.add('on'):(b.classList.remove('on'),b.style.height='3px'); }); }
   function setUI(on){
-    isPlaying=on;
-    playBtn.textContent=on?'⏸':'▶';
-    playBtn.classList.remove('loading');
-    on?(disc.classList.add('spin'),needle.classList.add('on'),setViz(true))
-      :(disc.classList.remove('spin'),needle.classList.remove('on'),setViz(false));
+    playing=on; btn.textContent=on?'⏸':'▶'; btn.classList.remove('loading');
+    disc.classList.toggle('spin',on); needle.classList.toggle('on',on); vizOn(on);
   }
+  function setSt(msg,cls){ stat.className='rp-status'+(cls?' '+cls:''); stat.textContent=msg; }
 
-  function rmExt(){ var e=document.getElementById('rExtLink'); if(e) e.remove(); }
-  function showExt(){
-    if(document.getElementById('rExtLink')) return;
-    var box=document.createElement('div');
-    box.id='rExtLink';
-    box.style.cssText='background:rgba(212,175,55,.1);border:1.5px solid rgba(212,175,55,.25);border-radius:13px;padding:.8rem 1rem;text-align:center;margin:.3rem 0;';
-    box.innerHTML='<a href="'+EXT_URL+'" target="_blank" style="display:inline-flex;align-items:center;gap:.4rem;background:var(--g1);border:1px solid rgba(212,175,55,.4);border-radius:18px;padding:.45rem 1.1rem;color:var(--gold2);font-size:13px;font-weight:700;text-decoration:none;">📻 Ouvrir Radio Al-Faydha</a>'
-      +'<div style="font-size:10.5px;color:rgba(255,255,255,.3);margin-top:.4rem;">Ouvre le player officiel</div>';
-    var rc=document.querySelector('.rc'), st=document.getElementById('rStatus');
-    if(rc&&st) rc.insertBefore(box,st);
-  }
-
-  function tryStreams(idx){
-    if(idx >= STREAMS.length){ setUI(false); setSt('Lien disponible ci-dessous','err'); showExt(); return; }
-    audio.src = STREAMS[idx];
+  function tryStream(idx){
+    if(idx>=STREAMS.length){
+      setUI(false);
+      setSt('Stream indisponible — réessayez plus tard','err');
+      return;
+    }
+    audio.src=STREAMS[idx];
     audio.load();
     setSt('Connexion '+(idx+1)+'/'+STREAMS.length+'...','');
-    clearTimeout(streamTimer);
-    streamTimer = setTimeout(function(){
-      if(!isPlaying){ audio.pause(); tryStreams(idx+1); }
-    }, 7000);
-    var p = audio.play();
-    if(p && p.catch) p.catch(function(){ clearTimeout(streamTimer); tryStreams(idx+1); });
+    clearTimeout(timer);
+    timer=setTimeout(function(){ if(!playing){ audio.pause(); tryStream(idx+1); } },7000);
+    var p=audio.play();
+    if(p&&p.catch) p.catch(function(e){
+      clearTimeout(timer);
+      // NotAllowedError = besoin interaction utilisateur, pas CORS
+      if(e&&e.name==='NotAllowedError'){
+        setSt('Appuyez ▶ pour démarrer','');
+        setUI(false);
+      } else {
+        tryStream(idx+1);
+      }
+    });
   }
 
-  window.rToggle = function(){
-    if(isPlaying){
+  window.rpToggle=function(){
+    if(playing){
       audio.pause(); audio.src='';
       setUI(false); setSt('En pause','');
-      clearTimeout(streamTimer); rmExt();
+      clearTimeout(timer);
     } else {
-      rmExt(); playBtn.classList.add('loading');
+      btn.classList.add('loading');
       setSt('Connexion...','');
-      tryStreams(0);
+      tryStream(0);
     }
   };
 
-  audio.addEventListener('playing', function(){ clearTimeout(streamTimer); setUI(true); rmExt(); setSt('● En direct · Radio Al-Faydha 90.1 FM','on'); });
-  audio.addEventListener('waiting', function(){ setSt('Mise en mémoire tampon...',''); });
-  audio.addEventListener('stalled', function(){ setSt('Signal faible...',''); });
-  audio.addEventListener('error',   function(){ clearTimeout(streamTimer); setUI(false); showExt(); setSt('Lien disponible ci-dessous','err'); });
+  audio.addEventListener('playing',function(){
+    clearTimeout(timer); setUI(true);
+    setSt('● En direct · Radio Al-Faydha 90.1 FM','on');
+  });
+  audio.addEventListener('waiting',function(){ setSt('Mise en mémoire tampon...',''); });
+  audio.addEventListener('stalled',function(){ setSt('Signal faible...',''); });
+  audio.addEventListener('error',function(){
+    clearTimeout(timer); setUI(false); tryStream((STREAMS.indexOf(audio.src)+1)||1);
+  });
 
   /* Volume */
-  audio.volume = 0.8;
-  vol.addEventListener('input', function(){
+  audio.volume=0.8;
+  volEl.addEventListener('input',function(){
     var v=this.value/100; audio.volume=v;
-    var p=this.value+'%';
-    this.style.background='linear-gradient(90deg,#1a9650 '+p+',rgba(255,255,255,.1) '+p+')';
+    this.style.background='linear-gradient(90deg,#1a9650 '+this.value+'%,rgba(255,255,255,.1) '+this.value+'%)';
     volIco.textContent=v===0?'🔇':v<0.5?'🔈':'🔊';
   });
 
-  /* iOS Safari : déverrouiller audio au premier touch */
-  document.addEventListener('touchstart', function _unlock(){
-    var ctx = window.AudioContext || window.webkitAudioContext;
-    if(ctx){ try{ new ctx().resume(); }catch(e){} }
-    document.removeEventListener('touchstart', _unlock);
-  }, {once:true, passive:true});
+  /* Déverrouiller AudioContext sur iOS au premier touch */
+  document.addEventListener('touchstart',function u(){
+    var C=window.AudioContext||window.webkitAudioContext;
+    if(C){try{new C().resume();}catch(e){}}
+    document.removeEventListener('touchstart',u);
+  },{once:true,passive:true});
 
 })();
 </script>
