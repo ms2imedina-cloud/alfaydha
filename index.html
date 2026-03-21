@@ -52,29 +52,24 @@
 <meta property="og:title" content="Faydha — Médina Baye">
 <meta property="og:description" content="L'application mondiale des Taalibé Baye">
 <meta property="og:type" content="website">
+<meta property="og:image" content="https://ms2imedina-cloud.github.io/alfaydha/icon.png">
 <meta property="og:url" content="https://ms2imedina-cloud.github.io/alfaydha/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://www.gstatic.com">
 <link rel="dns-prefetch" href="https://faydha-app-default-rtdb.firebaseio.com">
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<style>
-.adm-role-btn{background:rgba(255,255,255,.05);border:1.5px solid var(--gold3);border-radius:10px;padding:.45rem .5rem;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;transition:all .2s;font-family:'Roboto',sans-serif;text-align:center}
-.adm-role-btn.active{background:var(--g1);border-color:var(--g1);color:var(--gold2)}
-.adm-user-row{display:flex;align-items:center;gap:.6rem;padding:.55rem .7rem;background:var(--white);border:1px solid var(--gold3);border-radius:12px;cursor:pointer;transition:all .18s}
-.adm-user-row:hover{border-color:var(--g1);background:rgba(15,123,63,.04)}
-.adm-user-avatar{width:36px;height:36px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;flex-shrink:0}
-.adm-user-name{font-size:13px;font-weight:600;color:var(--text1)}
-.adm-user-meta{font-size:11px;color:var(--text3)}
-.adm-role-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;flex-shrink:0}
-.adm-role-badge.admin{background:rgba(212,175,55,.15);color:#b8962e}
-.adm-role-badge.streamer{background:rgba(41,128,185,.12);color:#2471a3}
-.adm-role-badge.banned{background:rgba(192,57,43,.12);color:var(--red)}
-.adm-role-badge.user{background:rgba(136,135,128,.1);color:var(--text3)}
-</style>
+
 <!-- Firebase config -->
 <script>
+
+/* ── localStorage sécurisé ── */
+function lsGet(k,def){try{var v=localStorage.getItem(k);return v===null?def:v;}catch(e){return def;}}
+function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function lsRemove(k){try{localStorage.removeItem(k);}catch(e){}}
+
 window._fbConfig={
   apiKey:"AIzaSyDKEVkWM5c2HD5YamSEmYQO1dpeDA4NzKE",
   authDomain:"faydha-app.firebaseapp.com",
@@ -134,17 +129,40 @@ document.addEventListener('DOMContentLoaded', function(){
   }catch(e){ console.error('[Firebase]',e); }
 });
 </script>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-<style>/* ════════════════════════════════════════════════════════════
-   FAYDHA — Feuille de styles principale
-   Organisée : Variables → Reset → Layout → Nav → Sections
-               → Live → Zikr → AI → Animations
-════════════════════════════════════════════════════════════ */
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+
+
+<style>
+
+.adm-role-btn{background:rgba(255,255,255,.05);border:1.5px solid var(--gold3);border-radius:10px;padding:.45rem .5rem;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;transition:all .2s;font-family:'Roboto',sans-serif;text-align:center}
+.adm-role-btn.active{background:var(--g1);border-color:var(--g1);color:var(--gold2)}
+.adm-user-row{display:flex;align-items:center;gap:.6rem;padding:.55rem .7rem;background:var(--white);border:1px solid var(--gold3);border-radius:12px;cursor:pointer;transition:all .18s}
+.adm-user-row:hover{border-color:var(--g1);background:rgba(15,123,63,.04)}
+.adm-user-avatar{width:36px;height:36px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;flex-shrink:0}
+.adm-user-name{font-size:13px;font-weight:600;color:var(--text1)}
+.adm-user-meta{font-size:11px;color:var(--text3)}
+.adm-role-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;flex-shrink:0}
+.adm-role-badge.admin{background:rgba(212,175,55,.15);color:#b8962e}
+.adm-role-badge.streamer{background:rgba(41,128,185,.12);color:#2471a3}
+.adm-role-badge.banned{background:rgba(192,57,43,.12);color:var(--red)}
+.adm-role-badge.user{background:rgba(136,135,128,.1);color:var(--text3)}
+
+
 
 
 /* Ajustements globaux */
 html { font-size: 16px; -webkit-text-size-adjust: 100%; }
 * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+
+/* ── Utility classes — évite répétition inline ── */
+.u-flex-between{display:flex;align-items:center;justify-content:space-between}
+.u-flex-center{display:flex;align-items:center;justify-content:center}
+.u-flex-col{display:flex;flex-direction:column}
+.u-text-muted{font-size:12px;color:var(--text3);font-style:italic}
+.u-text-muted-sm{font-size:11px;color:var(--text3)}
+.u-empty{text-align:center;padding:1.5rem;color:var(--text3);font-style:italic}
+.u-error{font-size:12px;background:rgba(192,57,43,.1);color:var(--red);border:1px solid rgba(192,57,43,.2);border-radius:8px;padding:.4rem .7rem}
 
 /* Line-height par défaut sur body */
 p, div, span, li { line-height: 1.5; }
@@ -173,7 +191,7 @@ body{
   transition:max-width .3s ease;
 }
 
-#splash{
+#splash{will-change:opacity;
   position:fixed;inset:0;z-index:9999;
   background:linear-gradient(160deg,#063d1e 0%,#0F7B3F 55%,#0a5c2e 100%);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9rem;
@@ -374,7 +392,7 @@ body{
 #zTapBtn:active{transform:scale(.94);box-shadow:0 4px 16px rgba(15,123,63,.4)}
 .zvbar{transition:height .15s ease}
 .zvbar.active{background:var(--gold) !important}
-@keyframes zvPulse{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.4)}}
+/* @keyframes zvPulse supprimé */50%{transform:scaleY(1.4)}}
 
 /* ══ UMMA — Verset & Citation ══ */
 #umma-verset-block{
@@ -562,9 +580,7 @@ body{
 }
 #langSwitchBtn:hover { background: rgba(212,175,55,.2); }
 
-/* ═══════════════════════════════════════
-   LIVE TV — SECTION UTILISATEUR
-═══════════════════════════════════════ */
+
 
 .live-hero{
   background:linear-gradient(170deg,#030f06 0%,#084d24 60%,#0a5c2e 100%);
@@ -832,9 +848,7 @@ body{
   font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;
 }
 
-/* ═══════════════════════════════════════
-   ADMIN — MODAL
-═══════════════════════════════════════ */
+
 .admin-overlay{
   position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.7);
   display:none;align-items:flex-end;justify-content:center;
@@ -863,8 +877,7 @@ body{
 }
 
 /* Gate */
-@keyframes adminShake{
-  0%,100%{transform:translateX(0)}
+/* @keyframes adminShake supprimé */
   25%{transform:translateX(-6px)}
   75%{transform:translateX(6px)}
 }
@@ -1189,7 +1202,7 @@ body{
 .ab-multi-item:last-child{border-bottom:none}
 .ab-multi-src{font-size:12px;color:rgba(212,175,55,.6);font-style:italic;margin-top:.2rem}
 
-/* ── Classes utilitaires (remplacent inline styles répétés) ── */
+
 .u-amiri-sm{font-family:'Amiri',serif;font-size:16px;color:var(--text1)}
 .u-lbl-xs{font-size:12px;color:var(--gold3)}
 .u-sep{border-bottom:1px solid var(--gold3)}
@@ -1216,10 +1229,7 @@ body{
 .wlc-card, .channel-card, .zikr-choice { touch-action: manipulation; }
 .sec { -webkit-overflow-scrolling: touch; }
 
-/* ══════════════════════════════════════════════════
-   CLASSES UTILITAIRES — remplacent les inline styles
-   répétés (économie DOM + parse CSS)
-══════════════════════════════════════════════════ */
+
 .ui-lbl{font-size:12px;color:var(--gold3)}
 .ui-amiri-gold{font-family:'Amiri',serif;font-size:16px;color:var(--gold2)}
 .ui-sep{border-bottom:1px solid var(--gold3)}
@@ -1301,9 +1311,7 @@ body{
 .notif-hist-dot.dua   {background:var(--g2)}
 .notif-hist-dot.urgent{background:#e67e22}
 
-/* ══════════════════════════════════════════════════════════
-   SECTION PRATIQUE SPIRITUELLE — Design Expert
-══════════════════════════════════════════════════════════ */
+
 
 /* Tab bar pill style */
 .pratique-tabs {
@@ -1556,16 +1564,7 @@ body{
 }
 
 
-/* ══════════════════════════════════════════════════════
-   RESPONSIVE — Tous écrans : mobile → Smart TV 105"
-   Breakpoints :
-   < 480px   : petit smartphone
-   480-768px : grand smartphone / petite tablette
-   768-1024px: tablette (iPad, 10-13")
-   1024-1440px: PC 13-17"
-   1440-1920px: grand écran / TV 24-42"
-   > 1920px  : TV 55-105"
-══════════════════════════════════════════════════════ */
+
 
 /* ── Base : centré comme une app mobile ── */
 html { background: #0a0a0a; }
@@ -1780,10 +1779,7 @@ html { background: #0a0a0a; }
 }
 
 
-/* ═══════════════════════════════════════════════════
-   FAYDHA — Design System Amélioré v2
-   Glassmorphism · Gold accent · Arabic elegance
-═══════════════════════════════════════════════════ */
+
 
 /* ── HERO UMMA amélioré ── */
 #umma-prayer-hero {
@@ -1989,8 +1985,8 @@ button[onclick="qiblaGPS()"]:hover {
   box-shadow: 0 4px 20px rgba(15,123,63,.2) !important;
   border-left: 3px solid var(--gold) !important;
 }
-</style>
-<style>
+
+
 /* ═══ DESIGN SYSTEM v3 — Faydha ═══ */
 
 /* ── Variables enrichies ── */
@@ -2321,78 +2317,16 @@ button[onclick="qiblaGPS()"] {
   letter-spacing: .06em !important;
   backdrop-filter: blur(4px) !important;
 }
-</style>
-</head>
-<body>
 
-<!-- SPLASH -->
-<div id="splash" onclick="_hideSplash()" style="cursor:pointer">
-  <div class="sp-logo-wrap">
-    <img class="sp-logo" id="splashLogoImg" data-logo="1" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Cheikh Ibrahim Niass رضي الله عنه" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-    <span class="sp-logo-emoji" style="display:none">🕌</span>
-  </div>
-  <div class="sp-name">Faydha</div>
-  <div class="sp-ar">عَالَمُ بَايِ نِيَاسٍ</div>
-  <div class="sp-divider"></div>
-  <div class="sp-bar"><div class="sp-fill"></div></div>
-  <div class="sp-sub">L'application mondiale des Taalibé Baye</div>
-</div>
 
-<div id="toast"></div>
-<button id="langSwitchBtn" onclick="_showLangSelector()" title="Change language">🌐 FR</button>
-<div id="pushNotifBanner" style="display:none"></div>
-
-<!-- ══ PANNEAU FLOTTANT INTERACTIONS (visible streamer uniquement) ══ -->
-<div id="streamerInteractPanel" style="display:none;position:fixed;bottom:calc(var(--nav-h) + var(--safe-b) + 12px);right:12px;z-index:800;width:220px;background:rgba(15,123,63,.96);border:1.5px solid rgba(212,175,55,.5);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.4);backdrop-filter:blur(8px);overflow:hidden">
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem .8rem .4rem;border-bottom:1px solid rgba(212,175,55,.2)">
-    <span style="font-family:'Amiri',serif;font-size:14px;color:var(--gold2)">🎙 Interactions live</span>
-    <button onclick="document.getElementById('streamerInteractPanel').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:16px;cursor:pointer;padding:0;line-height:1">×</button>
-  </div>
-  <!-- Compteurs -->
-  <div style="display:flex;gap:4px;padding:.4rem .6rem;border-bottom:1px solid rgba(212,175,55,.15)">
-    <div style="flex:1;text-align:center">
-      <div style="font-size:18px;font-weight:700;color:#fff" id="spHandCount">0</div>
-      <div style="font-size:10px;color:rgba(212,175,55,.7)">🙋 Mains</div>
-    </div>
-    <div style="flex:1;text-align:center">
-      <div style="font-size:18px;font-weight:700;color:var(--gold)" id="spQCount">0</div>
-      <div style="font-size:10px;color:rgba(212,175,55,.7)">❓ Quest.</div>
-    </div>
-    <div style="flex:1;text-align:center">
-      <div style="font-size:18px;font-weight:700;color:#74b9ff" id="spMicCount">0</div>
-      <div style="font-size:10px;color:rgba(212,175,55,.7)">🎤 Parole</div>
-    </div>
-  </div>
-  <!-- Dernière interaction -->
-  <div id="spLastInteract" style="padding:.45rem .8rem;font-size:12px;color:rgba(251,248,232,.75);line-height:1.4;min-height:36px">En attente d'interactions…</div>
-  <!-- Zone demandes de parole (visible seulement si demandes en attente) -->
-  <div id="spMicQueue" style="display:none;border-top:1px solid rgba(212,175,55,.2);padding:.4rem .6rem;max-height:160px;overflow-y:auto"></div>
-  <!-- Actions rapides -->
-  <div style="display:flex;gap:4px;padding:.4rem .6rem">
-    <button onclick="switchAdmTab('interact');document.getElementById('adminOverlay').classList.add('open');showAdminContent()" style="flex:1;background:rgba(212,175,55,.2);border:1px solid rgba(212,175,55,.4);border-radius:8px;color:var(--gold2);font-size:11px;padding:.3rem .4rem;cursor:pointer;font-family:'Roboto',sans-serif">📋 Voir tout</button>
-    <button onclick="interactClearAll()" style="flex:1;background:rgba(192,57,43,.2);border:1px solid rgba(192,57,43,.4);border-radius:8px;color:#ff7675;font-size:11px;padding:.3rem .4rem;cursor:pointer;font-family:'Roboto',sans-serif">🗑 Effacer</button>
-  </div>
-</div>
-
-<!-- ══ OVERLAY RÉACTIONS FLOTTANTES ══ -->
-<div id="reactionsOverlay" style="position:fixed;inset:0;pointer-events:none;z-index:600;overflow:hidden"></div>
-
-<!-- Écran chargement auth — affiché pendant vérification session -->
-<style>
 @keyframes spin{to{transform:rotate(360deg)}}
 #authLoading>div:nth-child(3){will-change:transform;}
 #authLoading{pointer-events:none!important;display:none!important;opacity:0!important;visibility:hidden!important;}
 /* Fallback CSS : force disparition du loading si JS/Firebase bloqué après 7s */
 /* authLoading géré uniquement par JS — pas d'animation CSS qui bloque */
 #authLoading{transition:opacity .4s ease;}
-</style>
-<div id="authLoading" style="display:none;opacity:0;pointer-events:none;visibility:hidden"></div>
 
 
-<!-- ═══════════════════════════════════════════════════
-     SÉLECTEUR DE LANGUE — Affiché à la première visite
-═══════════════════════════════════════════════════ -->
-<style>
 #langSelectorOverlay {
   position: fixed; inset: 0; z-index: 10000;
   background: linear-gradient(160deg, #0a3d1e 0%, #0F7B3F 55%, #126b37 100%);
@@ -2463,7 +2397,768 @@ button[onclick="qiblaGPS()"] {
   width: 60px; height: 1px; background: rgba(212,175,55,.25);
   margin: .8rem auto;
 }
+
+
+/* ══ Layout vertical — Radio en haut, Studio en bas ══ */
+
+/* Bouton accordéon Studio */
+.studio-toggle-btn {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; padding: .85rem 1.2rem;
+  background: linear-gradient(135deg,#1a1608 0%,#221c0a 100%);
+  border: none; border-top: 2px solid rgba(212,175,55,.35);
+  cursor: pointer; font-family: 'Roboto', sans-serif;
+  transition: all .25s ease;
+}
+.studio-toggle-btn:hover {
+  background: linear-gradient(135deg,#221d0a 0%,#2a240d 100%);
+}
+.studio-toggle-left {
+  display: flex; align-items: center; gap: .75rem;
+}
+.studio-toggle-icon {
+  font-size: 22px; line-height: 1;
+  filter: grayscale(.4) sepia(.6);
+  transition: transform .3s ease;
+}
+.studio-toggle-btn.open .studio-toggle-icon {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 8px rgba(212,175,55,.6)) sepia(.3);
+}
+.studio-toggle-texts {}
+.studio-toggle-label {
+  font-size: 11px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .1em;
+  color: rgba(212,175,55,.75);
+  display: block;
+}
+.studio-toggle-sub {
+  font-size: 9px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .08em;
+  color: rgba(180,160,80,.45);
+  display: block; margin-top: 1px;
+}
+.studio-toggle-arrow {
+  font-size: 14px; color: rgba(212,175,55,.4);
+  transition: transform .3s ease;
+}
+.studio-toggle-btn.open .studio-toggle-arrow {
+  transform: rotate(180deg);
+  color: rgba(212,175,55,.7);
+}
+
+/* Panel Studio — caché par défaut, s'ouvre sous Radio */
+#ensPanelStudio {
+  display: none;
+  border-top: 1px solid rgba(212,175,55,.12);
+}
+#ensPanelStudio.open { display: flex; flex-direction: column; }
+
+/* Panels — Radio toujours visible */
+#ensPanelRadio { display: flex; flex-direction: column; }
+
+
+.rp-wrap{display:flex;flex-direction:column;min-height:100%;background:#07100a;}
+.rp-hero{position:relative;background:linear-gradient(170deg,#071410 0%,#0d2318 55%,#0a1a10 100%);padding:1.8rem 1.4rem 1.1rem;text-align:center;overflow:hidden;}
+.rp-rings{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
+.rp-ring{position:absolute;border-radius:50%;border:1px solid rgba(212,175,55,.1);animation:rpRing 4s ease-in-out infinite;}
+.rp-ring:nth-child(1){width:90px;height:90px;}
+.rp-ring:nth-child(2){width:170px;height:170px;animation-delay:.7s;}
+.rp-ring:nth-child(3){width:270px;height:270px;animation-delay:1.4s;}
+.rp-ring:nth-child(4){width:390px;height:390px;animation-delay:2.1s;}
+@keyframes rpRing{0%,100%{transform:scale(1);opacity:.18}50%{transform:scale(1.05);opacity:.55}}
+.rp-disc-wrap{position:relative;width:110px;height:110px;margin:0 auto .9rem;z-index:2;}
+.rp-disc{width:110px;height:110px;border-radius:50%;
+  background:conic-gradient(from 0deg,#0F7B3F 0%,#1a9650 12%,#D4AF37 12%,#b8962e 25%,#0F7B3F 25%,#145a32 38%,#D4AF37 38%,#f0dc82 50%,#0F7B3F 50%,#0a5c2e 62%,#D4AF37 62%,#c8a200 75%,#0F7B3F 75%,#1a9650 88%,#D4AF37 88%,#b8962e 100%);
+  box-shadow:0 0 28px rgba(15,123,63,.5);display:flex;align-items:center;justify-content:center;}
+.rp-disc.spin{animation:rpSpin 5s linear infinite;}
+@keyframes rpSpin{to{transform:rotate(360deg)}}
+.rp-disc-c{width:32px;height:32px;border-radius:50%;background:#07100a;border:2px solid rgba(212,175,55,.4);display:flex;align-items:center;justify-content:center;font-size:13px;}
+.rp-needle{position:absolute;top:5px;right:-8px;width:44px;height:3px;background:linear-gradient(90deg,var(--gold),rgba(212,175,55,.15));border-radius:2px;transform-origin:right center;transform:rotate(-28deg);transition:transform .6s cubic-bezier(.34,1.56,.64,1);z-index:4;}
+.rp-needle.on{transform:rotate(-6deg);}
+.rp-needle::after{content:'';position:absolute;right:-4px;top:-4px;width:11px;height:11px;background:var(--gold);border-radius:50%;box-shadow:0 0 8px rgba(212,175,55,.65);}
+.rp-name{font-family:'Amiri',serif;font-size:21px;color:#fff;margin-bottom:.12rem;position:relative;z-index:2;}
+.rp-ar{font-family:'Amiri',serif;font-size:15px;color:var(--gold2);direction:rtl;margin-bottom:.18rem;position:relative;z-index:2;}
+.rp-freq{font-size:11px;font-weight:700;letter-spacing:.11em;color:rgba(255,255,255,.35);text-transform:uppercase;position:relative;z-index:2;}
+.rp-live{display:inline-flex;align-items:center;gap:.3rem;background:rgba(39,174,96,.15);border:1px solid rgba(39,174,96,.3);border-radius:20px;padding:.18rem .6rem;font-size:10.5px;font-weight:700;color:#27AE60;margin:.5rem auto 0;position:relative;z-index:2;}
+.rp-dot{width:5px;height:5px;background:#27AE60;border-radius:50%;animation:rpBlink 1.3s ease-in-out infinite;}
+@keyframes rpBlink{0%,100%{opacity:1}50%{opacity:.12}}
+.rp-viz{display:flex;align-items:flex-end;justify-content:center;gap:2.5px;height:28px;margin:.8rem 0 0;position:relative;z-index:2;}
+.rp-bar{width:3px;background:linear-gradient(180deg,var(--gold) 0%,var(--g2) 100%);border-radius:2px;min-height:3px;}
+.rp-bar.on{animation:rpBar var(--d,.8s) ease-in-out infinite alternate;}
+@keyframes rpBar{from{height:3px}to{height:var(--h,14px)}}
+.rp-ctrl{background:#0c1810;padding:1.2rem 1.4rem 1rem;display:flex;flex-direction:column;align-items:center;gap:.8rem;}
+.rp-vol-row{display:flex;align-items:center;gap:.7rem;width:100%;}
+.rp-vol-ico{font-size:14px;color:rgba(255,255,255,.4);flex-shrink:0;}
+.rp-vol{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;outline:none;cursor:pointer;background:linear-gradient(90deg,var(--g2) 80%,rgba(255,255,255,.1) 80%);}
+.rp-vol::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--gold);box-shadow:0 0 7px rgba(212,175,55,.5);cursor:pointer;}
+.rp-btn{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--g1),var(--g2));border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:24px;color:#fff;box-shadow:0 4px 22px rgba(15,123,63,.5),0 0 0 6px rgba(15,123,63,.12);transition:all .2s;}
+.rp-btn:hover{transform:scale(1.08);}
+.rp-btn:active{transform:scale(.96);}
+.rp-btn.loading{animation:rpBtnPulse 1s ease-in-out infinite;}
+@keyframes rpBtnPulse{0%,100%{box-shadow:0 4px 22px rgba(15,123,63,.5),0 0 0 6px rgba(15,123,63,.12)}50%{box-shadow:0 4px 22px rgba(15,123,63,.8),0 0 0 14px rgba(15,123,63,.05)}}
+.rp-status{font-size:12px;color:rgba(255,255,255,.38);letter-spacing:.04em;min-height:16px;text-align:center;width:100%;}
+.rp-status.on{color:#27AE60;font-weight:600;}
+.rp-status.err{color:#e67e22;}
+.rp-now{background:#0d1f14;margin:.4rem 1.2rem;border-radius:12px;padding:.7rem 1rem;display:none;align-items:center;gap:.8rem;border:1px solid rgba(212,175,55,.15);}
+.rp-now.visible{display:flex;}
+.rp-now-art{width:42px;height:42px;border-radius:8px;object-fit:cover;flex-shrink:0;background:rgba(212,175,55,.1);}
+.rp-now-info{flex:1;min-width:0;}
+.rp-now-label{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,175,55,.5);margin-bottom:.15rem;}
+.rp-now-track{font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rp-now-artist{font-size:11px;color:rgba(255,255,255,.45);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+
+.sleep-btn{background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);color:rgba(74,222,128,.8);border-radius:20px;padding:.28rem .75rem;font-size:11.5px;font-weight:600;cursor:pointer;transition:all .18s;font-family:'Roboto',sans-serif;}
+.sleep-btn:hover{background:rgba(74,222,128,.15);border-color:rgba(74,222,128,.4);}
+.sleep-btn.active{background:rgba(74,222,128,.2);border-color:#4ade80;color:#4ade80;}
+
+
+/* ── Studio styles ── */
+.studio-wrap {
+  background: linear-gradient(170deg,#12110a 0%,#1a180e 100%);
+  border-top: 1px solid rgba(212,175,55,.15);
+  overflow: hidden;
+}
+.studio-header {
+  background: linear-gradient(135deg,#1a1608,#221c0a);
+  padding: 1rem 1.2rem .85rem;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid rgba(212,175,55,.2);
+}
+.studio-title {
+  font-family: 'Amiri', serif;
+  font-size: 18px; color: rgba(240,220,130,.9); line-height: 1;
+}
+.studio-subtitle {
+  font-size: 10px; color: rgba(180,160,80,.5);
+  text-transform: uppercase; letter-spacing: .1em; margin-top: 2px;
+}
+.studio-badge {
+  background: rgba(212,175,55,.12);
+  border: 1px solid rgba(212,175,55,.3);
+  border-radius: 20px; padding: .2rem .65rem;
+  font-size: 10px; font-weight: 700; color: rgba(212,175,55,.75);
+  letter-spacing: .06em;
+}
+/* Visualiseur */
+.studio-viz-wrap {
+  position: relative;
+  background: #141209;
+  padding: .7rem 1rem;
+  border-bottom: 1px solid rgba(212,175,55,.08);
+}
+#studioCanvas {
+  width: 100%; height: 64px;
+  border-radius: 8px;
+  display: block;
+}
+.studio-timer {
+  position: absolute; top: 50%; right: 1.5rem;
+  transform: translateY(-50%);
+  font-size: 22px; font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #D4AF37; letter-spacing: .05em;
+  text-shadow: 0 0 12px rgba(212,175,55,.4);
+  pointer-events: none;
+}
+.studio-rec-dot {
+  position: absolute; top: 50%; left: 1.5rem;
+  transform: translateY(-50%);
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #ef4444;
+  box-shadow: 0 0 10px rgba(239,68,68,.7);
+  display: none;
+  animation: recPulse .9s ease-in-out infinite;
+}
+@keyframes recPulse { 0%,100%{opacity:1;transform:translateY(-50%) scale(1)} 50%{opacity:.3;transform:translateY(-50%) scale(.7)} }
+/* Contrôles */
+.studio-controls {
+  padding: .9rem 1.1rem;
+  display: flex; align-items: center; justify-content: center;
+  gap: .7rem;
+  background: #16130a;
+  border-bottom: 1px solid rgba(212,175,55,.08);
+}
+.studio-btn-rec {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: linear-gradient(145deg,#c0392b,#e74c3c);
+  border: none; color: #fff; font-size: 22px;
+  cursor: pointer; flex-shrink: 0;
+  box-shadow: 0 5px 24px rgba(239,68,68,.5), 0 0 0 6px rgba(239,68,68,.1);
+  transition: all .22s cubic-bezier(.34,1.56,.64,1);
+  display: flex; align-items: center; justify-content: center;
+}
+.studio-btn-rec:active { transform: scale(.88); }
+.studio-btn-rec.recording {
+  background: linear-gradient(145deg,#991b1b,#c0392b);
+  animation: recBtnPulse 1.2s ease-in-out infinite;
+}
+@keyframes recBtnPulse {
+  0%,100%{ box-shadow: 0 5px 24px rgba(239,68,68,.5), 0 0 0 6px rgba(239,68,68,.1); }
+  50%{ box-shadow: 0 5px 32px rgba(239,68,68,.8), 0 0 0 14px rgba(239,68,68,.05); }
+}
+.studio-btn-sm {
+  width: 46px; height: 46px; border-radius: 50%;
+  background: rgba(255,255,255,.06);
+  border: 1.5px solid rgba(255,255,255,.1);
+  color: rgba(255,255,255,.6); font-size: 17px;
+  cursor: pointer; flex-shrink: 0;
+  transition: all .2s cubic-bezier(.34,1.56,.64,1);
+  display: flex; align-items: center; justify-content: center;
+}
+.studio-btn-sm:active { transform: scale(.88); background: rgba(255,255,255,.12); }
+.studio-btn-sm.active { border-color: rgba(212,175,55,.5); color: #D4AF37; background: rgba(212,175,55,.1); }
+/* Qualité */
+.studio-quality {
+  padding: .5rem 1.1rem;
+  display: flex; align-items: center; gap: .5rem;
+  background: #16130a;
+  border-bottom: 1px solid rgba(212,175,55,.08);
+}
+.studio-q-btn {
+  flex: 1; padding: .35rem .3rem;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+  color: rgba(255,255,255,.35); font-size: 10.5px;
+  font-weight: 600; letter-spacing: .03em;
+  cursor: pointer; text-align: center;
+  transition: all .18s;
+}
+.studio-q-btn.active {
+  background: rgba(212,175,55,.12);
+  border-color: rgba(212,175,55,.4);
+  color: #D4AF37;
+}
+/* Bibliothèque */
+.studio-lib-header {
+  padding: .6rem 1.1rem .4rem;
+  display: flex; align-items: center; justify-content: space-between;
+  background: #1a180e;
+}
+.studio-lib-title {
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .1em;
+  color: rgba(255,255,255,.3);
+}
+.studio-lib-count {
+  font-size: 10px; color: rgba(212,175,55,.5);
+  font-weight: 600;
+}
+.studio-lib {
+  padding: 0 .7rem .8rem;
+  display: flex; flex-direction: column; gap: .4rem;
+  max-height: 260px; overflow-y: auto;
+  background: #1a180e;
+}
+.studio-lib::-webkit-scrollbar { width: 2px; }
+.studio-lib::-webkit-scrollbar-thumb { background: rgba(212,175,55,.2); }
+.studio-track {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px;
+  padding: .55rem .8rem;
+  display: flex; align-items: center; gap: .7rem;
+  transition: all .18s;
+}
+.studio-track:active { background: rgba(255,255,255,.08); }
+.studio-track.playing {
+  border-color: rgba(212,175,55,.3);
+  background: rgba(212,175,55,.06);
+}
+.studio-track-icon {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(212,175,55,.1);
+  border: 1px solid rgba(212,175,55,.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+  color: rgba(212,175,55,.7);
+}
+.studio-track-info { flex: 1; min-width: 0; }
+.studio-track-name {
+  font-size: 13px; font-weight: 600; color: rgba(255,255,255,.85);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.studio-track-meta {
+  font-size: 10.5px; color: rgba(255,255,255,.3);
+  margin-top: 1px;
+}
+.studio-track-actions {
+  display: flex; gap: .3rem; flex-shrink: 0;
+}
+.studio-track-btn {
+  width: 30px; height: 30px; border-radius: 8px;
+  border: none; cursor: pointer; font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .18s;
+}
+.studio-track-btn.play-btn { background: rgba(212,175,55,.12); color: #D4AF37; }
+.studio-track-btn.play-btn:active { background: rgba(212,175,55,.25); }
+.studio-track-btn.dl-btn { background: rgba(212,175,55,.1); color: #D4AF37; }
+.studio-track-btn.dl-btn:active { background: rgba(212,175,55,.2); }
+.studio-track-btn.del-btn { background: rgba(239,68,68,.1); color: #f87171; }
+.studio-track-btn.del-btn:active { background: rgba(239,68,68,.2); }
+.studio-empty {
+  text-align: center; padding: 1.5rem 1rem;
+  color: rgba(255,255,255,.2); font-size: 13px;
+  font-style: italic;
+}
+/* Waveform mini dans le track */
+.studio-wvf {
+  display: flex; align-items: center; gap: 1.5px;
+  height: 16px; flex-shrink: 0;
+}
+.studio-wvf-bar {
+  width: 2px; background: rgba(212,175,55,.4); border-radius: 1px;
+  transition: height .1s;
+}
+/* Progress bar lecture */
+.studio-progress {
+  position: absolute; bottom: 0; left: 0;
+  height: 2px; background: rgba(212,175,55,.5);
+  border-radius: 0 0 0 8px;
+  transition: width .1s linear;
+  width: 0;
+}
+/* Notification toast studio */
+.studio-toast {
+  position: fixed; bottom: calc(var(--nav-h) + 16px); left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(30,25,10,.95);
+  color: rgba(212,175,55,.95); border-radius: 12px;
+  padding: .5rem 1.1rem; font-size: 12px; font-weight: 600;
+  opacity: 0; transition: all .25s ease;
+  z-index: 600; pointer-events: none; white-space: nowrap;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(212,175,55,.3);
+}
+.studio-toast.show {
+  opacity: 1; transform: translateX(-50%) translateY(0);
+}
+
+
+/* ── Tabs Qibla/Lune ── */
+.ql-tabs {
+  display: flex;
+  background: #030906;
+  border-bottom: 1px solid rgba(212,175,55,.15);
+  flex-shrink: 0;
+  position: sticky; top: 0; z-index: 10;
+}
+.ql-tab {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 4px; padding: .65rem .5rem .55rem;
+  cursor: pointer; border: none; background: none;
+  font-family: 'Roboto', sans-serif;
+  transition: all .2s;
+  border-bottom: 3px solid transparent;
+}
+.ql-tab .qt-icon { font-size: 24px; line-height: 1; }
+.ql-tab .qt-label {
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em;
+}
+/* Qibla — vert doré */
+.ql-tab.qibla-tab { color: rgba(255,255,255,.4); }
+.ql-tab.qibla-tab.active { color: #D4AF37; border-bottom-color: #D4AF37; background: rgba(212,175,55,.05); }
+.ql-tab.qibla-tab.active .qt-icon { filter: drop-shadow(0 0 8px rgba(212,175,55,.6)); }
+/* Lune — bleu argenté */
+.ql-tab.lune-tab { color: rgba(255,255,255,.4); }
+.ql-tab.lune-tab.active { color: #a8d8f0; border-bottom-color: #a8d8f0; background: rgba(168,216,240,.05); }
+.ql-tab.lune-tab.active .qt-icon { filter: drop-shadow(0 0 8px rgba(168,216,240,.5)); }
+/* Calendrier — or */
+.ql-tab.cal-tab { color: rgba(255,255,255,.4); }
+.ql-tab.cal-tab.active { color: #F0DC82; border-bottom-color: #D4AF37; background: rgba(212,175,55,.06); }
+.ql-tab.cal-tab.active .qt-icon { filter: drop-shadow(0 0 8px rgba(212,175,55,.7)); }
+
+.ql-panel { display: none; flex: 1; flex-direction: column; overflow-y: auto; }
+.ql-panel.active { display: flex; }
+
+
+.ical-wrap{display:flex;flex-direction:column;min-height:100%;background:#F7F6F2}
+.ical-head{background:linear-gradient(160deg,#0a3d1e 0%,#0F7B3F 55%,#126b37 100%);padding:1rem 1.1rem .8rem;flex-shrink:0}
+.ical-nav-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
+.ical-nav-btn{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);border-radius:10px;width:34px;height:34px;cursor:pointer;color:#fff;font-size:17px;display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0}
+.ical-nav-btn:hover{background:rgba(255,255,255,.23)}
+.ical-head-center{text-align:center;flex:1;min-width:0}
+.ical-hijri-m{font-family:'Amiri',serif;font-size:21px;color:#fff;line-height:1.1}
+.ical-hijri-y{font-family:'Amiri',serif;font-size:12px;color:rgba(212,175,55,.8);direction:rtl;margin-top:1px}
+.ical-greg-s{font-size:10px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
+.ical-evbar{display:flex;gap:.35rem;overflow-x:auto;padding:.45rem .9rem .4rem;background:rgba(0,0,0,.18);-webkit-overflow-scrolling:touch;flex-shrink:0}
+.ical-evbar::-webkit-scrollbar{display:none}
+.ical-ep{flex-shrink:0;border-radius:20px;padding:3px 9px;font-size:9.5px;font-weight:700;letter-spacing:.04em;white-space:nowrap;border:1px solid transparent}
+.ical-ep.holy{background:rgba(212,175,55,.22);border-color:rgba(212,175,55,.42);color:#E8B96A}
+.ical-ep.gamou{background:rgba(147,112,219,.2);border-color:rgba(147,112,219,.4);color:#C39BD3}
+.ical-ep.none{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.35)}
+.ical-wdays{display:grid;grid-template-columns:repeat(7,1fr);background:#fff;border-bottom:1px solid #EAE8DF;padding:.3rem .5rem .2rem}
+.ical-wd{text-align:center;font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#bbb}
+.ical-wd.fri{color:#0F7B3F}
+.ical-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:.35rem .5rem .5rem;background:#F7F6F2}
+.ical-cell{background:#fff;border-radius:9px;border:1px solid #EAE8DF;padding:.28rem .1rem .22rem;display:flex;flex-direction:column;align-items:center;gap:1px;transition:.12s;cursor:pointer;min-height:48px;justify-content:center;position:relative}
+.ical-cell:hover{border-color:#0F7B3F;background:#f0fbf4}
+.ical-cell.other{opacity:.32;pointer-events:none}
+.ical-cell.today{background:linear-gradient(135deg,#0F7B3F,#1A9650) !important;border-color:#0F7B3F !important;box-shadow:0 2px 8px rgba(15,123,63,.3)}
+.ical-cell.today .gc,.ical-cell.today .hc{color:#fff !important}
+.ical-cell.today .hc{color:rgba(255,255,255,.7) !important}
+.ical-cell.fri-cell .gc{color:#0F7B3F;font-weight:700}
+.ical-cell.holy-cell{background:linear-gradient(135deg,#FBF3E2,#FFF8EE);border-color:rgba(212,175,55,.4)}
+.ical-cell.holy-cell .gc{color:#7a4a00;font-weight:700}
+.ical-cell.gamou-cell{background:linear-gradient(135deg,#F0EBF8,#F8F4FF);border-color:rgba(147,112,219,.35)}
+.ical-cell.gamou-cell .gc{color:#4a2d7a;font-weight:700}
+.ical-cell.ramadan-cell{background:linear-gradient(135deg,#EAF8EE,#F0FBF3);border-color:rgba(15,123,63,.25)}
+.gc{font-size:14px;font-weight:500;color:#1A1A1A;line-height:1}
+.hc{font-size:8.5px;color:#aaa;line-height:1;font-family:'Amiri',serif}
+.ical-cell .ev-dot{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:#D4AF37}
+.ical-infobar{background:#fff;border-top:1px solid #EAE8DF;padding:.6rem 1rem;display:flex;align-items:flex-start;gap:.6rem;flex-shrink:0;min-height:52px}
+.ical-info-ic{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#0F7B3F,#1A9650);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:1px}
+.ical-info-body{flex:1;min-width:0}
+.ical-info-date{font-size:13px;font-weight:700;color:#1A1A1A;font-family:'Amiri',serif}
+.ical-info-sub{font-size:11px;color:#888;margin-top:1px}
+.ical-info-ev{font-size:11.5px;font-weight:700;color:#0F7B3F;margin-top:2px}
+.ical-stats{display:flex;background:#fff;border-top:1px solid #EAE8DF}
+.ical-stat{flex:1;padding:.55rem .3rem;text-align:center;border-right:1px solid #EAE8DF}
+.ical-stat:last-child{border-right:none}
+.ical-stat-n{font-size:20px;font-weight:700;color:#0F7B3F;line-height:1}
+.ical-stat-l{font-size:8.5px;text-transform:uppercase;letter-spacing:.06em;color:#aaa;margin-top:2px}
+
+
+.ab-hero-v2 {
+  background: linear-gradient(160deg,#08061a 0%,#120a30 50%,#08061a 100%);
+  border-bottom: 1px solid rgba(212,175,55,.15);
+  flex-shrink: 0;
+}
+.ab-modes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: .8rem .9rem .7rem;
+}
+.ab-mode-btn {
+  will-change: transform;
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .7rem .85rem;
+  background: rgba(255,255,255,.07);
+  border: 1.5px solid rgba(255,255,255,.15);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all .2s cubic-bezier(.34,1.56,.64,1);
+  font-family: 'Roboto', sans-serif;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+.ab-mode-btn:active { transform: scale(.94); }
+.ab-mode-btn.active {
+  border-color: rgba(212,175,55,.55);
+  background: rgba(212,175,55,.1);
+  box-shadow: 0 0 0 1px rgba(212,175,55,.2), 0 4px 18px rgba(0,0,0,.3);
+}
+.ab-mode-icon {
+  font-size: 24px;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: rgba(255,255,255,.05);
+}
+.ab-mode-btn.active .ab-mode-icon {
+  background: rgba(212,175,55,.15);
+}
+.ab-mode-label {
+  font-size:14px;
+  font-weight:700;
+  color:rgba(255,255,255,.92);
+  line-height:1.15;
+  letter-spacing:.01em;
+}
+.ab-mode-btn.active .ab-mode-label { color: #F0DC82; }
+.ab-mode-sub {
+  font-size:11px;
+  color:rgba(255,255,255,.5);
+  margin-top:2px;
+  line-height:1.3;
+}
+.ab-mode-btn.active .ab-mode-sub { color: rgba(212,175,55,.7); }
+
+/* ── Islam IA — bouton spécial ── */
+#eng-islam {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg,rgba(0,200,120,.07) 0%,rgba(0,150,255,.07) 50%,rgba(120,0,255,.07) 100%);
+  border: 1.5px solid rgba(0,220,130,.35) !important;
+  position: relative;
+  overflow: hidden;
+}
+#eng-islam::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(0,220,130,.08) 25%,
+    rgba(0,150,255,.08) 50%,
+    rgba(180,0,255,.08) 75%,
+    transparent 100%);
+  animation: islamSweep 3s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes islamSweep {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+#eng-islam .ab-mode-icon {
+  background: linear-gradient(135deg,#00c878,#0096ff,#7800ff) !important;
+  box-shadow: 0 0 14px rgba(0,200,120,.4);
+  animation: islamGlow 2.5s ease-in-out infinite;
+}
+@keyframes islamGlow {
+  0%,100% { box-shadow: 0 0 14px rgba(0,200,120,.4); }
+  50%      { box-shadow: 0 0 22px rgba(0,150,255,.6), 0 0 40px rgba(120,0,255,.2); }
+}
+#eng-islam .ab-mode-label {
+  background: linear-gradient(90deg,#00e896,#00aaff,#c864ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 15px !important;
+  letter-spacing: .03em;
+}
+#eng-islam .ab-mode-sub { color: rgba(0,220,130,.5) !important; font-size: 11px !important; }
+#eng-islam.active {
+  border-color: rgba(0,220,130,.7) !important;
+  background: linear-gradient(135deg,rgba(0,200,120,.12),rgba(0,150,255,.12),rgba(120,0,255,.12)) !important;
+  box-shadow: 0 0 0 1px rgba(0,220,130,.3), 0 4px 24px rgba(0,0,0,.4), 0 0 30px rgba(0,200,120,.1) !important;
+}
+.ab-islam-badge {
+  position: absolute; top: 8px; right: 10px;
+  background: linear-gradient(90deg,#00c878,#0096ff);
+  border-radius: 100px;
+  font-size: 9px; font-weight: 800;
+  color: #fff; padding: 2px 7px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+/* Nour IA bouton */
+#eng-asrar {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg,rgba(120,60,0,.12),rgba(212,175,55,.08),rgba(180,120,0,.1));
+  border: 1.5px solid rgba(212,175,55,.4) !important;
+  position: relative; overflow: hidden;
+}
+#eng-asrar::before {
+  content:''; position:absolute; inset:0;
+  background: radial-gradient(ellipse at 50% 50%,rgba(212,175,55,.06) 0%,transparent 70%);
+  animation: asrarPulse 4s ease-in-out infinite; pointer-events:none;
+}
+@keyframes asrarPulse { 0%,100%{opacity:.4;transform:scale(1)} 50%{opacity:1;transform:scale(1.03)} }
+#eng-asrar .ab-mode-icon {
+  background: linear-gradient(135deg,#3d1f00,#7a4500) !important;
+  border: 1px solid rgba(212,175,55,.5);
+  box-shadow: 0 0 12px rgba(212,175,55,.3);
+  animation: asrarGlow 3s ease-in-out infinite;
+}
+@keyframes asrarGlow { 0%,100%{box-shadow:0 0 10px rgba(212,175,55,.3)} 50%{box-shadow:0 0 22px rgba(212,175,55,.6)} }
+#eng-asrar .ab-mode-label {
+  background: linear-gradient(90deg,#D4AF37,#F0DC82,#b8962e);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text; font-size:15px !important; font-family:'Amiri',serif !important;
+}
+#eng-asrar .ab-mode-sub { color:rgba(212,175,55,.45) !important; font-size:11px !important; }
+#eng-asrar.active {
+  border-color: rgba(212,175,55,.75) !important;
+  background: linear-gradient(135deg,rgba(120,60,0,.18),rgba(212,175,55,.12)) !important;
+  box-shadow: 0 0 0 1px rgba(212,175,55,.3),0 4px 24px rgba(0,0,0,.4) !important;
+}
+.ab-asrar-badge {
+  position:absolute; top:8px; right:10px;
+  background: linear-gradient(90deg,#8B6914,#D4AF37);
+  border-radius:100px; font-size:9px; font-weight:800;
+  color:#fff; padding:2px 7px; letter-spacing:.08em; text-transform:uppercase;
+}
+.ab-sug-asrar { border-left-color:#D4AF37 !important; background:linear-gradient(135deg,rgba(212,175,55,.04),rgba(180,120,0,.04)) !important; }
+.ab-sug-asrar:hover { border-color:rgba(212,175,55,.6) !important; box-shadow:0 2px 16px rgba(212,175,55,.12) !important; }
+/* Calculatrice Abjad */
+.asrar-calc-wrap { background:linear-gradient(160deg,#0a0800,#150e00); border-bottom:1px solid rgba(212,175,55,.15); padding:.8rem 1rem; display:none; }
+.asrar-calc-wrap.visible { display:block; }
+.asrar-calc-title { font-family:'Amiri',serif; font-size:15px; color:#F0DC82; margin-bottom:.5rem; text-align:center; letter-spacing:.05em; }
+.asrar-calc-input-row { display:flex; gap:.4rem; }
+.asrar-calc-input { flex:1; background:rgba(212,175,55,.09); border:1.5px solid rgba(212,175,55,.4); border-radius:10px; padding:.5rem .8rem; color:#fff; font-family:'Amiri',serif; font-size:16px; outline:none; direction:rtl; }
+.asrar-calc-input::placeholder { color:rgba(212,175,55,.5); }
+.asrar-calc-btn { background:linear-gradient(135deg,#7a4500,#D4AF37); border:none; border-radius:10px; padding:.5rem .9rem; color:#fff; font-weight:700; font-size:13px; cursor:pointer; white-space:nowrap; }
+.asrar-calc-result { margin-top:.6rem; background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.2); border-radius:10px; padding:.6rem .9rem; display:none; text-align:center; }
+.asrar-calc-result.visible { display:block; }
+.asrar-result-num { font-family:'Amiri',serif; font-size:32px; font-weight:700; color:var(--gold); line-height:1; }
+.asrar-result-label { font-size:12px; color:rgba(212,175,55,.75); margin-top:3px; letter-spacing:.08em; text-transform:uppercase; }
+
+/* ── Istikhara Numérique ── */
+.nour-tabs {
+  display:flex; gap:0;
+  background:#080600;
+  border-bottom:1px solid rgba(212,175,55,.15);
+  flex-shrink:0;
+}
+.nour-tab {
+  flex:1; padding:.55rem .4rem; text-align:center;
+  font-size:12px; font-weight:700; color:rgba(212,175,55,.65);
+  cursor:pointer; border:none; background:none;
+  font-family:'Roboto',sans-serif; border-bottom:2px solid transparent;
+  transition:all .2s; letter-spacing:.03em;
+}
+.nour-tab.active { color:#F0DC82; border-bottom-color:var(--gold); }
+.nour-panel { display:none; }
+.nour-panel.active { display:block; }
+
+/* Formulaire Istikhara */
+.istikh-num-wrap {
+  background:linear-gradient(160deg,#0a0800,#150e00);
+  border-bottom:1px solid rgba(212,175,55,.15);
+  padding:.85rem 1rem;
+}
+.istikh-num-row { display:flex; gap:.4rem; margin-bottom:.5rem; }
+.istikh-num-label {
+  font-size:11.5px; font-weight:700; color:rgba(212,175,55,.8);
+  text-transform:uppercase; letter-spacing:.08em;
+  margin-bottom:.25rem; font-family:'Roboto',sans-serif;
+}
+.istikh-num-input {
+  flex:1; background:rgba(212,175,55,.09);
+  border:1.5px solid rgba(212,175,55,.35); border-radius:10px;
+  padding:.45rem .75rem; color:#fff; font-family:'Amiri',serif;
+  font-size:16px; outline:none; direction:rtl;
+  transition:border-color .2s;
+}
+.istikh-num-input:focus { border-color:rgba(212,175,55,.7); }
+.istikh-num-input::placeholder { color:rgba(212,175,55,.45); }
+.istikh-num-val {
+  flex-shrink:0; width:52px; background:rgba(212,175,55,.1);
+  border:1px solid rgba(212,175,55,.25); border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Amiri',serif; font-size:18px; font-weight:700;
+  color:var(--gold);
+}
+.istikh-type-row {
+  display:flex; gap:.4rem; flex-wrap:wrap; margin-bottom:.6rem;
+}
+.istikh-type-btn {
+  flex:1; min-width:80px; padding:.35rem .5rem;
+  background:rgba(212,175,55,.09); border:1px solid rgba(212,175,55,.3);
+  border-radius:20px; font-size:12px; font-weight:700;
+  color:rgba(212,175,55,.75); cursor:pointer;
+  font-family:'Roboto',sans-serif; transition:all .2s; text-align:center;
+}
+.istikh-type-btn.active {
+  background:rgba(212,175,55,.22); border-color:rgba(212,175,55,.75);
+  color:#F0DC82;
+}
+.istikh-result-bar {
+  background:rgba(212,175,55,.06); border:1px solid rgba(212,175,55,.15);
+  border-radius:12px; padding:.6rem .85rem; margin-top:.5rem;
+  display:none; text-align:center;
+}
+.istikh-result-bar.visible { display:block; }
+.istikh-score-wrap {
+  display:flex; align-items:center; gap:.6rem; justify-content:center;
+  margin-bottom:.4rem;
+}
+.istikh-score-num {
+  font-family:'Amiri',serif; font-size:28px; font-weight:700;
+  color:var(--gold);
+}
+.istikh-score-vs {
+  font-size:13px; color:rgba(212,175,55,.7); font-weight:600;
+}
+.istikh-compat-bar {
+  height:6px; border-radius:3px; overflow:hidden;
+  background:rgba(255,255,255,.08); margin-bottom:.4rem;
+}
+.istikh-compat-fill {
+  height:100%; border-radius:3px;
+  transition:width .6s cubic-bezier(.34,1.56,.64,1);
+}
+.istikh-verdict {
+  font-size:13px; font-weight:700; letter-spacing:.05em; color:rgba(255,255,255,.9);
+}
+.istikh-analyse-btn {
+  width:100%; margin-top:.6rem;
+  background:linear-gradient(135deg,#3d1f00,#7a4500);
+  border:1px solid rgba(212,175,55,.55); border-radius:12px;
+  padding:.65rem; color:#F0DC82; font-weight:700;
+  font-size:14px; cursor:pointer; font-family:'Roboto',sans-serif;
+  transition:opacity .2s; letter-spacing:.04em;
+}
+.istikh-analyse-btn:hover { opacity:.85; }
+
+
 </style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash" onclick="_hideSplash()" style="cursor:pointer">
+  <div class="sp-logo-wrap">
+    <img class="sp-logo" id="splashLogoImg" data-logo="1" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Cheikh Ibrahim Niass رضي الله عنه" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+    <span class="sp-logo-emoji" style="display:none">🕌</span>
+  </div>
+  <div class="sp-name">Faydha</div>
+  <div class="sp-ar">عَالَمُ بَايِ نِيَاسٍ</div>
+  <div class="sp-divider"></div>
+  <div class="sp-bar"><div class="sp-fill"></div></div>
+  <div class="sp-sub">L'application mondiale des Taalibé Baye</div>
+</div>
+
+<div id="toast"></div>
+<button id="langSwitchBtn" onclick="_showLangSelector()" title="Change language">🌐 FR</button>
+<div id="pushNotifBanner" style="display:none"></div>
+
+<!-- ══ PANNEAU FLOTTANT INTERACTIONS (visible streamer uniquement) ══ -->
+<div id="streamerInteractPanel" style="display:none;position:fixed;bottom:calc(var(--nav-h) + var(--safe-b) + 12px);right:12px;z-index:800;width:220px;background:rgba(15,123,63,.96);border:1.5px solid rgba(212,175,55,.5);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.4);backdrop-filter:blur(8px);overflow:hidden">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem .8rem .4rem;border-bottom:1px solid rgba(212,175,55,.2)">
+    <span style="font-family:'Amiri',serif;font-size:14px;color:var(--gold2)">🎙 Interactions live</span>
+    <button onclick="document.getElementById('streamerInteractPanel').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:16px;cursor:pointer;padding:0;line-height:1">×</button>
+  </div>
+  <!-- Compteurs -->
+  <div style="display:flex;gap:4px;padding:.4rem .6rem;border-bottom:1px solid rgba(212,175,55,.15)">
+    <div style="flex:1;text-align:center">
+      <div style="font-size:18px;font-weight:700;color:#fff" id="spHandCount">0</div>
+      <div style="font-size:10px;color:rgba(212,175,55,.7)">🙋 Mains</div>
+    </div>
+    <div style="flex:1;text-align:center">
+      <div style="font-size:18px;font-weight:700;color:var(--gold)" id="spQCount">0</div>
+      <div style="font-size:10px;color:rgba(212,175,55,.7)">❓ Quest.</div>
+    </div>
+    <div style="flex:1;text-align:center">
+      <div style="font-size:18px;font-weight:700;color:#74b9ff" id="spMicCount">0</div>
+      <div style="font-size:10px;color:rgba(212,175,55,.7)">🎤 Parole</div>
+    </div>
+  </div>
+  <!-- Dernière interaction -->
+  <div id="spLastInteract" style="padding:.45rem .8rem;font-size:12px;color:rgba(251,248,232,.75);line-height:1.4;min-height:36px">En attente d'interactions…</div>
+  <!-- Zone demandes de parole (visible seulement si demandes en attente) -->
+  <div id="spMicQueue" style="display:none;border-top:1px solid rgba(212,175,55,.2);padding:.4rem .6rem;max-height:160px;overflow-y:auto"></div>
+  <!-- Actions rapides -->
+  <div style="display:flex;gap:4px;padding:.4rem .6rem">
+    <button onclick="switchAdmTab('interact');document.getElementById('adminOverlay').classList.add('open');showAdminContent()" style="flex:1;background:rgba(212,175,55,.2);border:1px solid rgba(212,175,55,.4);border-radius:8px;color:var(--gold2);font-size:11px;padding:.3rem .4rem;cursor:pointer;font-family:'Roboto',sans-serif">📋 Voir tout</button>
+    <button onclick="interactClearAll()" style="flex:1;background:rgba(192,57,43,.2);border:1px solid rgba(192,57,43,.4);border-radius:8px;color:#ff7675;font-size:11px;padding:.3rem .4rem;cursor:pointer;font-family:'Roboto',sans-serif">🗑 Effacer</button>
+  </div>
+</div>
+
+<!-- ══ OVERLAY RÉACTIONS FLOTTANTES ══ -->
+<div id="reactionsOverlay" style="position:fixed;inset:0;pointer-events:none;z-index:600;overflow:hidden"></div>
+
+<!-- Écran chargement auth — affiché pendant vérification session -->
+
+<div id="authLoading" style="display:none;opacity:0;pointer-events:none;visibility:hidden"></div>
+
+
+<!-- ═══════════════════════════════════════════════════
+     SÉLECTEUR DE LANGUE — Affiché à la première visite
+═══════════════════════════════════════════════════ -->
+
 
 <div id="langSelectorOverlay" style="display:none;opacity:0">
   <div class="lang-sel-logo">🕌</div>
@@ -2545,7 +3240,7 @@ button[onclick="qiblaGPS()"] {
 
 <!-- Barre profil unifiée (avatar + nom + rôle + déconnexion) -->
 <div id="userAvatarBar">
-  <img id="userAvatarImg" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="">
+  <img id="userAvatarImg" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="" loading="lazy">
   <span id="userAvatarName">
     <span id="userAvatarNameText">—</span>
     <span class="bar-role" id="userAvatarRole"></span>
@@ -2572,7 +3267,12 @@ button[onclick="qiblaGPS()"] {
         </div>
       </div>
 
-
+      <!-- ═══ DATE FR + HIJRI — centre ═══ -->
+      <div id="hijri-badge" style="display:flex;flex-direction:column;align-items:center;gap:3px;background:rgba(0,0,0,.25);border:1.5px solid rgba(212,175,55,.35);border-radius:14px;padding:.5rem 1.1rem;min-width:90px;box-shadow:0 2px 12px rgba(0,0,0,.25)">
+        <div id="hijri-fr-date" style="font-family:'Roboto',sans-serif;font-size:12px;font-weight:700;color:rgba(251,248,232,.8);letter-spacing:.04em;line-height:1">—</div>
+        <div id="hijri-day" style="font-family:'Amiri',serif;font-size:30px;font-weight:700;color:var(--gold);line-height:1">—</div>
+        <div id="hijri-month" style="font-family:'Amiri',serif;font-size:13px;color:rgba(212,175,55,.9);line-height:1.2;text-align:center;direction:rtl;font-weight:600">—</div>
+      </div>
 
       <div style="display:flex;align-items:center;gap:.6rem">
         <!-- Bouton paramètres adhan -->
@@ -2721,119 +3421,11 @@ button[onclick="qiblaGPS()"] {
 <!-- SECTION RADIO AL-FAYDHA -->
 <section <section id="sec-ens" class="sec">
 
-<style>
-/* ══ Layout vertical — Radio en haut, Studio en bas ══ */
 
-/* Bouton accordéon Studio */
-.studio-toggle-btn {
-  display: flex; align-items: center; justify-content: space-between;
-  width: 100%; padding: .85rem 1.2rem;
-  background: linear-gradient(135deg,#1a1608 0%,#221c0a 100%);
-  border: none; border-top: 2px solid rgba(212,175,55,.35);
-  cursor: pointer; font-family: 'Roboto', sans-serif;
-  transition: all .25s ease;
-}
-.studio-toggle-btn:hover {
-  background: linear-gradient(135deg,#221d0a 0%,#2a240d 100%);
-}
-.studio-toggle-left {
-  display: flex; align-items: center; gap: .75rem;
-}
-.studio-toggle-icon {
-  font-size: 22px; line-height: 1;
-  filter: grayscale(.4) sepia(.6);
-  transition: transform .3s ease;
-}
-.studio-toggle-btn.open .studio-toggle-icon {
-  transform: scale(1.1);
-  filter: drop-shadow(0 0 8px rgba(212,175,55,.6)) sepia(.3);
-}
-.studio-toggle-texts {}
-.studio-toggle-label {
-  font-size: 11px; font-weight: 800;
-  text-transform: uppercase; letter-spacing: .1em;
-  color: rgba(212,175,55,.75);
-  display: block;
-}
-.studio-toggle-sub {
-  font-size: 9px; font-weight: 600;
-  text-transform: uppercase; letter-spacing: .08em;
-  color: rgba(180,160,80,.45);
-  display: block; margin-top: 1px;
-}
-.studio-toggle-arrow {
-  font-size: 14px; color: rgba(212,175,55,.4);
-  transition: transform .3s ease;
-}
-.studio-toggle-btn.open .studio-toggle-arrow {
-  transform: rotate(180deg);
-  color: rgba(212,175,55,.7);
-}
-
-/* Panel Studio — caché par défaut, s'ouvre sous Radio */
-#ensPanelStudio {
-  display: none;
-  border-top: 1px solid rgba(212,175,55,.12);
-}
-#ensPanelStudio.open { display: flex; flex-direction: column; }
-
-/* Panels — Radio toujours visible */
-#ensPanelRadio { display: flex; flex-direction: column; }
-</style>
 
 <!-- Panel Radio -->
 <div id="ensPanelRadio">
-<style>
-.rp-wrap{display:flex;flex-direction:column;min-height:100%;background:#07100a;}
-.rp-hero{position:relative;background:linear-gradient(170deg,#071410 0%,#0d2318 55%,#0a1a10 100%);padding:1.8rem 1.4rem 1.1rem;text-align:center;overflow:hidden;}
-.rp-rings{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
-.rp-ring{position:absolute;border-radius:50%;border:1px solid rgba(212,175,55,.1);animation:rpRing 4s ease-in-out infinite;}
-.rp-ring:nth-child(1){width:90px;height:90px;}
-.rp-ring:nth-child(2){width:170px;height:170px;animation-delay:.7s;}
-.rp-ring:nth-child(3){width:270px;height:270px;animation-delay:1.4s;}
-.rp-ring:nth-child(4){width:390px;height:390px;animation-delay:2.1s;}
-@keyframes rpRing{0%,100%{transform:scale(1);opacity:.18}50%{transform:scale(1.05);opacity:.55}}
-.rp-disc-wrap{position:relative;width:110px;height:110px;margin:0 auto .9rem;z-index:2;}
-.rp-disc{width:110px;height:110px;border-radius:50%;
-  background:conic-gradient(from 0deg,#0F7B3F 0%,#1a9650 12%,#D4AF37 12%,#b8962e 25%,#0F7B3F 25%,#145a32 38%,#D4AF37 38%,#f0dc82 50%,#0F7B3F 50%,#0a5c2e 62%,#D4AF37 62%,#c8a200 75%,#0F7B3F 75%,#1a9650 88%,#D4AF37 88%,#b8962e 100%);
-  box-shadow:0 0 28px rgba(15,123,63,.5);display:flex;align-items:center;justify-content:center;}
-.rp-disc.spin{animation:rpSpin 5s linear infinite;}
-@keyframes rpSpin{to{transform:rotate(360deg)}}
-.rp-disc-c{width:32px;height:32px;border-radius:50%;background:#07100a;border:2px solid rgba(212,175,55,.4);display:flex;align-items:center;justify-content:center;font-size:13px;}
-.rp-needle{position:absolute;top:5px;right:-8px;width:44px;height:3px;background:linear-gradient(90deg,var(--gold),rgba(212,175,55,.15));border-radius:2px;transform-origin:right center;transform:rotate(-28deg);transition:transform .6s cubic-bezier(.34,1.56,.64,1);z-index:4;}
-.rp-needle.on{transform:rotate(-6deg);}
-.rp-needle::after{content:'';position:absolute;right:-4px;top:-4px;width:11px;height:11px;background:var(--gold);border-radius:50%;box-shadow:0 0 8px rgba(212,175,55,.65);}
-.rp-name{font-family:'Amiri',serif;font-size:21px;color:#fff;margin-bottom:.12rem;position:relative;z-index:2;}
-.rp-ar{font-family:'Amiri',serif;font-size:15px;color:var(--gold2);direction:rtl;margin-bottom:.18rem;position:relative;z-index:2;}
-.rp-freq{font-size:11px;font-weight:700;letter-spacing:.11em;color:rgba(255,255,255,.35);text-transform:uppercase;position:relative;z-index:2;}
-.rp-live{display:inline-flex;align-items:center;gap:.3rem;background:rgba(39,174,96,.15);border:1px solid rgba(39,174,96,.3);border-radius:20px;padding:.18rem .6rem;font-size:10.5px;font-weight:700;color:#27AE60;margin:.5rem auto 0;position:relative;z-index:2;}
-.rp-dot{width:5px;height:5px;background:#27AE60;border-radius:50%;animation:rpBlink 1.3s ease-in-out infinite;}
-@keyframes rpBlink{0%,100%{opacity:1}50%{opacity:.12}}
-.rp-viz{display:flex;align-items:flex-end;justify-content:center;gap:2.5px;height:28px;margin:.8rem 0 0;position:relative;z-index:2;}
-.rp-bar{width:3px;background:linear-gradient(180deg,var(--gold) 0%,var(--g2) 100%);border-radius:2px;min-height:3px;}
-.rp-bar.on{animation:rpBar var(--d,.8s) ease-in-out infinite alternate;}
-@keyframes rpBar{from{height:3px}to{height:var(--h,14px)}}
-.rp-ctrl{background:#0c1810;padding:1.2rem 1.4rem 1rem;display:flex;flex-direction:column;align-items:center;gap:.8rem;}
-.rp-vol-row{display:flex;align-items:center;gap:.7rem;width:100%;}
-.rp-vol-ico{font-size:14px;color:rgba(255,255,255,.4);flex-shrink:0;}
-.rp-vol{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;outline:none;cursor:pointer;background:linear-gradient(90deg,var(--g2) 80%,rgba(255,255,255,.1) 80%);}
-.rp-vol::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--gold);box-shadow:0 0 7px rgba(212,175,55,.5);cursor:pointer;}
-.rp-btn{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--g1),var(--g2));border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:24px;color:#fff;box-shadow:0 4px 22px rgba(15,123,63,.5),0 0 0 6px rgba(15,123,63,.12);transition:all .2s;}
-.rp-btn:hover{transform:scale(1.08);}
-.rp-btn:active{transform:scale(.96);}
-.rp-btn.loading{animation:rpBtnPulse 1s ease-in-out infinite;}
-@keyframes rpBtnPulse{0%,100%{box-shadow:0 4px 22px rgba(15,123,63,.5),0 0 0 6px rgba(15,123,63,.12)}50%{box-shadow:0 4px 22px rgba(15,123,63,.8),0 0 0 14px rgba(15,123,63,.05)}}
-.rp-status{font-size:12px;color:rgba(255,255,255,.38);letter-spacing:.04em;min-height:16px;text-align:center;width:100%;}
-.rp-status.on{color:#27AE60;font-weight:600;}
-.rp-status.err{color:#e67e22;}
-.rp-now{background:#0d1f14;margin:.4rem 1.2rem;border-radius:12px;padding:.7rem 1rem;display:none;align-items:center;gap:.8rem;border:1px solid rgba(212,175,55,.15);}
-.rp-now.visible{display:flex;}
-.rp-now-art{width:42px;height:42px;border-radius:8px;object-fit:cover;flex-shrink:0;background:rgba(212,175,55,.1);}
-.rp-now-info{flex:1;min-width:0;}
-.rp-now-label{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,175,55,.5);margin-bottom:.15rem;}
-.rp-now-track{font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.rp-now-artist{font-size:11px;color:rgba(255,255,255,.45);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-</style>
+
 
 <div class="rp-wrap">
   <div class="rp-hero">
@@ -2852,7 +3444,7 @@ button[onclick="qiblaGPS()"] {
 
   <!-- En cours de diffusion -->
   <div class="rp-now" id="rpNow">
-    <img class="rp-now-art" id="rpArt" src="" alt="">
+    <img class="rp-now-art" id="rpArt" src="" alt="" loading="lazy">
     <div class="rp-now-info">
       <div class="rp-now-label">🎵 En cours de diffusion</div>
       <div class="rp-now-track" id="rpTrack">—</div>
@@ -2893,11 +3485,7 @@ button[onclick="qiblaGPS()"] {
     <button class="sleep-btn" id="sleepCancelBtn" onclick="cancelSleep()" style="display:none;background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.3);color:#f87171">✕ Annuler</button>
   </div>
 </div>
-<style>
-.sleep-btn{background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);color:rgba(74,222,128,.8);border-radius:20px;padding:.28rem .75rem;font-size:11.5px;font-weight:600;cursor:pointer;transition:all .18s;font-family:'Roboto',sans-serif;}
-.sleep-btn:hover{background:rgba(74,222,128,.15);border-color:rgba(74,222,128,.4);}
-.sleep-btn.active{background:rgba(74,222,128,.2);border-color:#4ade80;color:#4ade80;}
-</style>
+
 
 <audio id="rpAudio" preload="none" playsinline webkit-playsinline
   crossorigin="anonymous"></audio>
@@ -3122,7 +3710,7 @@ button[onclick="qiblaGPS()"] {
   });
 
   /* ── iOS AudioContext unlock ── */
-  document.addEventListener('touchstart', function u(){
+  document.addEventListener('touchstart', function u(, {passive:true}){
     var C = window.AudioContext || window.webkitAudioContext;
     if(C){ try{ new C().resume(); }catch(e){} }
     document.removeEventListener('touchstart', u);
@@ -3149,230 +3737,7 @@ button[onclick="qiblaGPS()"] {
 <!-- ══════════════════════════════════════════════════════════
      STUDIO D'ENREGISTREMENT — 100% Privé · IndexedDB · Web Audio API
 ══════════════════════════════════════════════════════════ -->
-<style>
-/* ── Studio styles ── */
-.studio-wrap {
-  background: linear-gradient(170deg,#12110a 0%,#1a180e 100%);
-  border-top: 1px solid rgba(212,175,55,.15);
-  overflow: hidden;
-}
-.studio-header {
-  background: linear-gradient(135deg,#1a1608,#221c0a);
-  padding: 1rem 1.2rem .85rem;
-  display: flex; align-items: center; justify-content: space-between;
-  border-bottom: 1px solid rgba(212,175,55,.2);
-}
-.studio-title {
-  font-family: 'Amiri', serif;
-  font-size: 18px; color: rgba(240,220,130,.9); line-height: 1;
-}
-.studio-subtitle {
-  font-size: 10px; color: rgba(180,160,80,.5);
-  text-transform: uppercase; letter-spacing: .1em; margin-top: 2px;
-}
-.studio-badge {
-  background: rgba(212,175,55,.12);
-  border: 1px solid rgba(212,175,55,.3);
-  border-radius: 20px; padding: .2rem .65rem;
-  font-size: 10px; font-weight: 700; color: rgba(212,175,55,.75);
-  letter-spacing: .06em;
-}
-/* Visualiseur */
-.studio-viz-wrap {
-  position: relative;
-  background: #141209;
-  padding: .7rem 1rem;
-  border-bottom: 1px solid rgba(212,175,55,.08);
-}
-#studioCanvas {
-  width: 100%; height: 64px;
-  border-radius: 8px;
-  display: block;
-}
-.studio-timer {
-  position: absolute; top: 50%; right: 1.5rem;
-  transform: translateY(-50%);
-  font-size: 22px; font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  color: #D4AF37; letter-spacing: .05em;
-  text-shadow: 0 0 12px rgba(212,175,55,.4);
-  pointer-events: none;
-}
-.studio-rec-dot {
-  position: absolute; top: 50%; left: 1.5rem;
-  transform: translateY(-50%);
-  width: 8px; height: 8px; border-radius: 50%;
-  background: #ef4444;
-  box-shadow: 0 0 10px rgba(239,68,68,.7);
-  display: none;
-  animation: recPulse .9s ease-in-out infinite;
-}
-@keyframes recPulse { 0%,100%{opacity:1;transform:translateY(-50%) scale(1)} 50%{opacity:.3;transform:translateY(-50%) scale(.7)} }
-/* Contrôles */
-.studio-controls {
-  padding: .9rem 1.1rem;
-  display: flex; align-items: center; justify-content: center;
-  gap: .7rem;
-  background: #16130a;
-  border-bottom: 1px solid rgba(212,175,55,.08);
-}
-.studio-btn-rec {
-  width: 64px; height: 64px; border-radius: 50%;
-  background: linear-gradient(145deg,#c0392b,#e74c3c);
-  border: none; color: #fff; font-size: 22px;
-  cursor: pointer; flex-shrink: 0;
-  box-shadow: 0 5px 24px rgba(239,68,68,.5), 0 0 0 6px rgba(239,68,68,.1);
-  transition: all .22s cubic-bezier(.34,1.56,.64,1);
-  display: flex; align-items: center; justify-content: center;
-}
-.studio-btn-rec:active { transform: scale(.88); }
-.studio-btn-rec.recording {
-  background: linear-gradient(145deg,#991b1b,#c0392b);
-  animation: recBtnPulse 1.2s ease-in-out infinite;
-}
-@keyframes recBtnPulse {
-  0%,100%{ box-shadow: 0 5px 24px rgba(239,68,68,.5), 0 0 0 6px rgba(239,68,68,.1); }
-  50%{ box-shadow: 0 5px 32px rgba(239,68,68,.8), 0 0 0 14px rgba(239,68,68,.05); }
-}
-.studio-btn-sm {
-  width: 46px; height: 46px; border-radius: 50%;
-  background: rgba(255,255,255,.06);
-  border: 1.5px solid rgba(255,255,255,.1);
-  color: rgba(255,255,255,.6); font-size: 17px;
-  cursor: pointer; flex-shrink: 0;
-  transition: all .2s cubic-bezier(.34,1.56,.64,1);
-  display: flex; align-items: center; justify-content: center;
-}
-.studio-btn-sm:active { transform: scale(.88); background: rgba(255,255,255,.12); }
-.studio-btn-sm.active { border-color: rgba(212,175,55,.5); color: #D4AF37; background: rgba(212,175,55,.1); }
-/* Qualité */
-.studio-quality {
-  padding: .5rem 1.1rem;
-  display: flex; align-items: center; gap: .5rem;
-  background: #16130a;
-  border-bottom: 1px solid rgba(212,175,55,.08);
-}
-.studio-q-btn {
-  flex: 1; padding: .35rem .3rem;
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 8px;
-  color: rgba(255,255,255,.35); font-size: 10.5px;
-  font-weight: 600; letter-spacing: .03em;
-  cursor: pointer; text-align: center;
-  transition: all .18s;
-}
-.studio-q-btn.active {
-  background: rgba(212,175,55,.12);
-  border-color: rgba(212,175,55,.4);
-  color: #D4AF37;
-}
-/* Bibliothèque */
-.studio-lib-header {
-  padding: .6rem 1.1rem .4rem;
-  display: flex; align-items: center; justify-content: space-between;
-  background: #1a180e;
-}
-.studio-lib-title {
-  font-size: 10px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: .1em;
-  color: rgba(255,255,255,.3);
-}
-.studio-lib-count {
-  font-size: 10px; color: rgba(212,175,55,.5);
-  font-weight: 600;
-}
-.studio-lib {
-  padding: 0 .7rem .8rem;
-  display: flex; flex-direction: column; gap: .4rem;
-  max-height: 260px; overflow-y: auto;
-  background: #1a180e;
-}
-.studio-lib::-webkit-scrollbar { width: 2px; }
-.studio-lib::-webkit-scrollbar-thumb { background: rgba(212,175,55,.2); }
-.studio-track {
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.07);
-  border-radius: 12px;
-  padding: .55rem .8rem;
-  display: flex; align-items: center; gap: .7rem;
-  transition: all .18s;
-}
-.studio-track:active { background: rgba(255,255,255,.08); }
-.studio-track.playing {
-  border-color: rgba(212,175,55,.3);
-  background: rgba(212,175,55,.06);
-}
-.studio-track-icon {
-  width: 34px; height: 34px; border-radius: 50%;
-  background: rgba(212,175,55,.1);
-  border: 1px solid rgba(212,175,55,.2);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; flex-shrink: 0;
-  color: rgba(212,175,55,.7);
-}
-.studio-track-info { flex: 1; min-width: 0; }
-.studio-track-name {
-  font-size: 13px; font-weight: 600; color: rgba(255,255,255,.85);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.studio-track-meta {
-  font-size: 10.5px; color: rgba(255,255,255,.3);
-  margin-top: 1px;
-}
-.studio-track-actions {
-  display: flex; gap: .3rem; flex-shrink: 0;
-}
-.studio-track-btn {
-  width: 30px; height: 30px; border-radius: 8px;
-  border: none; cursor: pointer; font-size: 13px;
-  display: flex; align-items: center; justify-content: center;
-  transition: all .18s;
-}
-.studio-track-btn.play-btn { background: rgba(212,175,55,.12); color: #D4AF37; }
-.studio-track-btn.play-btn:active { background: rgba(212,175,55,.25); }
-.studio-track-btn.dl-btn { background: rgba(212,175,55,.1); color: #D4AF37; }
-.studio-track-btn.dl-btn:active { background: rgba(212,175,55,.2); }
-.studio-track-btn.del-btn { background: rgba(239,68,68,.1); color: #f87171; }
-.studio-track-btn.del-btn:active { background: rgba(239,68,68,.2); }
-.studio-empty {
-  text-align: center; padding: 1.5rem 1rem;
-  color: rgba(255,255,255,.2); font-size: 13px;
-  font-style: italic;
-}
-/* Waveform mini dans le track */
-.studio-wvf {
-  display: flex; align-items: center; gap: 1.5px;
-  height: 16px; flex-shrink: 0;
-}
-.studio-wvf-bar {
-  width: 2px; background: rgba(212,175,55,.4); border-radius: 1px;
-  transition: height .1s;
-}
-/* Progress bar lecture */
-.studio-progress {
-  position: absolute; bottom: 0; left: 0;
-  height: 2px; background: rgba(212,175,55,.5);
-  border-radius: 0 0 0 8px;
-  transition: width .1s linear;
-  width: 0;
-}
-/* Notification toast studio */
-.studio-toast {
-  position: fixed; bottom: calc(var(--nav-h) + 16px); left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: rgba(30,25,10,.95);
-  color: rgba(212,175,55,.95); border-radius: 12px;
-  padding: .5rem 1.1rem; font-size: 12px; font-weight: 600;
-  opacity: 0; transition: all .25s ease;
-  z-index: 600; pointer-events: none; white-space: nowrap;
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(212,175,55,.3);
-}
-.studio-toast.show {
-  opacity: 1; transform: translateX(-50%) translateY(0);
-}
-</style>
+
 
 <div class="studio-wrap">
   <!-- Header -->
@@ -3444,10 +3809,7 @@ button[onclick="qiblaGPS()"] {
 (function(){
 'use strict';
 
-/* ════════════════════════════════════════════════════
-   STUDIO — Web Audio API + MediaRecorder + IndexedDB
-   100% local, 0 serveur, qualité professionnelle
-════════════════════════════════════════════════════ */
+
 
 // ── Config qualité ──
 var QUALITY = {
@@ -4107,7 +4469,7 @@ window.toggleStudioPanel = function() {
     <div class="chat-wrap">
       <div class="chat-msgs" id="chatMsgs">
         <div class="chat-msg">
-          <div class="chat-avatar" style="background:transparent;padding:0;overflow:hidden"><img data-logo="1" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Cheikh Ibrahim Niass" style="border-radius:8px;width:26px;height:26px;object-fit:contain;flex-shrink:0"></div>
+          <div class="chat-avatar" style="background:transparent;padding:0;overflow:hidden"><img data-logo="1" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Cheikh Ibrahim Niass" style="border-radius:8px;width:26px;height:26px;object-fit:contain;flex-shrink:0" loading="lazy"></div>
           <div class="chat-bubble">
             <div class="chat-name">Faydha</div>
             <div class="chat-text">Bienvenue dans le chat en direct 🕌 Partagez votre ressenti sur ce live avec toute la communauté.</div>
@@ -4232,7 +4594,7 @@ window.toggleStudioPanel = function() {
 <div class="fullscreen-overlay" id="fullscreenOverlay">
   <div class="fs-player" id="fsPlayer"></div>
   <button class="fs-close" onclick="closeFullscreen()">✕</button>
-  <div id="fsLogo" style="display:none;position:fixed;top:14px;right:64px;z-index:9999;pointer-events:none"><img id="fsLogoImg" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Faydha" style="border-radius:8px;width:44px;height:44px;object-fit:contain;box-shadow:0 3px 16px rgba(0,0,0,.8)"></div>
+  <div id="fsLogo" style="display:none;position:fixed;top:14px;right:64px;z-index:9999;pointer-events:none"><img id="fsLogoImg" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Faydha" style="border-radius:8px;width:44px;height:44px;object-fit:contain;box-shadow:0 3px 16px rgba(0,0,0,.8)" loading="lazy"></div>
   <div class="fs-controls" id="fsControls">
     <span class="fs-live-badge" id="fsLiveBadge" style="display:none">● LIVE</span>
     <span class="fs-title" id="fsTitle">—</span>
@@ -4250,45 +4612,7 @@ window.toggleStudioPanel = function() {
 ═══════════════════════════════════════ -->
 <section id="sec-qibla" class="sec">
 
-<style>
-/* ── Tabs Qibla/Lune ── */
-.ql-tabs {
-  display: flex;
-  background: #030906;
-  border-bottom: 1px solid rgba(212,175,55,.15);
-  flex-shrink: 0;
-  position: sticky; top: 0; z-index: 10;
-}
-.ql-tab {
-  flex: 1; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 4px; padding: .65rem .5rem .55rem;
-  cursor: pointer; border: none; background: none;
-  font-family: 'Roboto', sans-serif;
-  transition: all .2s;
-  border-bottom: 3px solid transparent;
-}
-.ql-tab .qt-icon { font-size: 24px; line-height: 1; }
-.ql-tab .qt-label {
-  font-size: 11px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: .06em;
-}
-/* Qibla — vert doré */
-.ql-tab.qibla-tab { color: rgba(255,255,255,.4); }
-.ql-tab.qibla-tab.active { color: #D4AF37; border-bottom-color: #D4AF37; background: rgba(212,175,55,.05); }
-.ql-tab.qibla-tab.active .qt-icon { filter: drop-shadow(0 0 8px rgba(212,175,55,.6)); }
-/* Lune — bleu argenté */
-.ql-tab.lune-tab { color: rgba(255,255,255,.4); }
-.ql-tab.lune-tab.active { color: #a8d8f0; border-bottom-color: #a8d8f0; background: rgba(168,216,240,.05); }
-.ql-tab.lune-tab.active .qt-icon { filter: drop-shadow(0 0 8px rgba(168,216,240,.5)); }
-/* Calendrier — or */
-.ql-tab.cal-tab { color: rgba(255,255,255,.4); }
-.ql-tab.cal-tab.active { color: #F0DC82; border-bottom-color: #D4AF37; background: rgba(212,175,55,.06); }
-.ql-tab.cal-tab.active .qt-icon { filter: drop-shadow(0 0 8px rgba(212,175,55,.7)); }
 
-.ql-panel { display: none; flex: 1; flex-direction: column; overflow-y: auto; }
-.ql-panel.active { display: flex; }
-</style>
 
 <!-- Barre onglets -->
 <div class="ql-tabs">
@@ -4441,53 +4765,7 @@ window.toggleStudioPanel = function() {
 
 <!-- ═══════════════ PANEL CALENDRIER ISLAMIQUE ═══════════════ -->
 <div class="ql-panel" id="ql-panel-cal">
-<style>
-.ical-wrap{display:flex;flex-direction:column;min-height:100%;background:#F7F6F2}
-.ical-head{background:linear-gradient(160deg,#0a3d1e 0%,#0F7B3F 55%,#126b37 100%);padding:1rem 1.1rem .8rem;flex-shrink:0}
-.ical-nav-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
-.ical-nav-btn{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);border-radius:10px;width:34px;height:34px;cursor:pointer;color:#fff;font-size:17px;display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0}
-.ical-nav-btn:hover{background:rgba(255,255,255,.23)}
-.ical-head-center{text-align:center;flex:1;min-width:0}
-.ical-hijri-m{font-family:'Amiri',serif;font-size:21px;color:#fff;line-height:1.1}
-.ical-hijri-y{font-family:'Amiri',serif;font-size:12px;color:rgba(212,175,55,.8);direction:rtl;margin-top:1px}
-.ical-greg-s{font-size:10px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
-.ical-evbar{display:flex;gap:.35rem;overflow-x:auto;padding:.45rem .9rem .4rem;background:rgba(0,0,0,.18);-webkit-overflow-scrolling:touch;flex-shrink:0}
-.ical-evbar::-webkit-scrollbar{display:none}
-.ical-ep{flex-shrink:0;border-radius:20px;padding:3px 9px;font-size:9.5px;font-weight:700;letter-spacing:.04em;white-space:nowrap;border:1px solid transparent}
-.ical-ep.holy{background:rgba(212,175,55,.22);border-color:rgba(212,175,55,.42);color:#E8B96A}
-.ical-ep.gamou{background:rgba(147,112,219,.2);border-color:rgba(147,112,219,.4);color:#C39BD3}
-.ical-ep.none{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.35)}
-.ical-wdays{display:grid;grid-template-columns:repeat(7,1fr);background:#fff;border-bottom:1px solid #EAE8DF;padding:.3rem .5rem .2rem}
-.ical-wd{text-align:center;font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#bbb}
-.ical-wd.fri{color:#0F7B3F}
-.ical-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:.35rem .5rem .5rem;background:#F7F6F2}
-.ical-cell{background:#fff;border-radius:9px;border:1px solid #EAE8DF;padding:.28rem .1rem .22rem;display:flex;flex-direction:column;align-items:center;gap:1px;transition:.12s;cursor:pointer;min-height:48px;justify-content:center;position:relative}
-.ical-cell:hover{border-color:#0F7B3F;background:#f0fbf4}
-.ical-cell.other{opacity:.32;pointer-events:none}
-.ical-cell.today{background:linear-gradient(135deg,#0F7B3F,#1A9650) !important;border-color:#0F7B3F !important;box-shadow:0 2px 8px rgba(15,123,63,.3)}
-.ical-cell.today .gc,.ical-cell.today .hc{color:#fff !important}
-.ical-cell.today .hc{color:rgba(255,255,255,.7) !important}
-.ical-cell.fri-cell .gc{color:#0F7B3F;font-weight:700}
-.ical-cell.holy-cell{background:linear-gradient(135deg,#FBF3E2,#FFF8EE);border-color:rgba(212,175,55,.4)}
-.ical-cell.holy-cell .gc{color:#7a4a00;font-weight:700}
-.ical-cell.gamou-cell{background:linear-gradient(135deg,#F0EBF8,#F8F4FF);border-color:rgba(147,112,219,.35)}
-.ical-cell.gamou-cell .gc{color:#4a2d7a;font-weight:700}
-.ical-cell.ramadan-cell{background:linear-gradient(135deg,#EAF8EE,#F0FBF3);border-color:rgba(15,123,63,.25)}
-.gc{font-size:14px;font-weight:500;color:#1A1A1A;line-height:1}
-.hc{font-size:8.5px;color:#aaa;line-height:1;font-family:'Amiri',serif}
-.ical-cell .ev-dot{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:#D4AF37}
-.ical-infobar{background:#fff;border-top:1px solid #EAE8DF;padding:.6rem 1rem;display:flex;align-items:flex-start;gap:.6rem;flex-shrink:0;min-height:52px}
-.ical-info-ic{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#0F7B3F,#1A9650);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:1px}
-.ical-info-body{flex:1;min-width:0}
-.ical-info-date{font-size:13px;font-weight:700;color:#1A1A1A;font-family:'Amiri',serif}
-.ical-info-sub{font-size:11px;color:#888;margin-top:1px}
-.ical-info-ev{font-size:11.5px;font-weight:700;color:#0F7B3F;margin-top:2px}
-.ical-stats{display:flex;background:#fff;border-top:1px solid #EAE8DF}
-.ical-stat{flex:1;padding:.55rem .3rem;text-align:center;border-right:1px solid #EAE8DF}
-.ical-stat:last-child{border-right:none}
-.ical-stat-n{font-size:20px;font-weight:700;color:#0F7B3F;line-height:1}
-.ical-stat-l{font-size:8.5px;text-transform:uppercase;letter-spacing:.06em;color:#aaa;margin-top:2px}
-</style>
+
 <div class="ical-wrap">
   <div class="ical-head">
     <div class="ical-nav-row">
@@ -4581,10 +4859,7 @@ window.switchQlTab = function(tab) {
   }
 };
 
-/* ══════════════════════════════════════════════════════
-   CALENDRIER ISLAMIQUE — Moteur complet
-   Double date Grégorien + Hijri · 600+ événements islamiques
-══════════════════════════════════════════════════════ */
+
 
 var GREG_MONTHS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 var HIJRI_MONTHS_FR = ['Muharram','Safar','Rabiʼ al-Awwal','Rabiʼ al-Thâni','Jumadâ al-Úla','Jumadâ al-Thâniya','Rajab','Shaʼbân','Ramadhân','Shawwâl','Dhu al-Qiʼda','Dhu al-Hijja'];
@@ -4788,276 +5063,7 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
 <section id="sec-ai" class="sec">
 
 <!-- ASK BAYE HERO — REFONTE -->
-<style>
-.ab-hero-v2 {
-  background: linear-gradient(160deg,#08061a 0%,#120a30 50%,#08061a 100%);
-  border-bottom: 1px solid rgba(212,175,55,.15);
-  flex-shrink: 0;
-}
-.ab-modes {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  padding: .8rem .9rem .7rem;
-}
-.ab-mode-btn {
-  display: flex;
-  align-items: center;
-  gap: .6rem;
-  padding: .7rem .85rem;
-  background: rgba(255,255,255,.07);
-  border: 1.5px solid rgba(255,255,255,.15);
-  border-radius: 14px;
-  cursor: pointer;
-  transition: all .2s cubic-bezier(.34,1.56,.64,1);
-  font-family: 'Roboto', sans-serif;
-  text-align: left;
-  -webkit-tap-highlight-color: transparent;
-}
-.ab-mode-btn:active { transform: scale(.94); }
-.ab-mode-btn.active {
-  border-color: rgba(212,175,55,.55);
-  background: rgba(212,175,55,.1);
-  box-shadow: 0 0 0 1px rgba(212,175,55,.2), 0 4px 18px rgba(0,0,0,.3);
-}
-.ab-mode-icon {
-  font-size: 24px;
-  line-height: 1;
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  background: rgba(255,255,255,.05);
-}
-.ab-mode-btn.active .ab-mode-icon {
-  background: rgba(212,175,55,.15);
-}
-.ab-mode-label {
-  font-size:14px;
-  font-weight:700;
-  color:rgba(255,255,255,.92);
-  line-height:1.15;
-  letter-spacing:.01em;
-}
-.ab-mode-btn.active .ab-mode-label { color: #F0DC82; }
-.ab-mode-sub {
-  font-size:11px;
-  color:rgba(255,255,255,.5);
-  margin-top:2px;
-  line-height:1.3;
-}
-.ab-mode-btn.active .ab-mode-sub { color: rgba(212,175,55,.7); }
 
-/* ── Islam IA — bouton spécial ── */
-#eng-islam {
-  grid-column: 1 / -1;
-  background: linear-gradient(135deg,rgba(0,200,120,.07) 0%,rgba(0,150,255,.07) 50%,rgba(120,0,255,.07) 100%);
-  border: 1.5px solid rgba(0,220,130,.35) !important;
-  position: relative;
-  overflow: hidden;
-}
-#eng-islam::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(0,220,130,.08) 25%,
-    rgba(0,150,255,.08) 50%,
-    rgba(180,0,255,.08) 75%,
-    transparent 100%);
-  animation: islamSweep 3s ease-in-out infinite;
-  pointer-events: none;
-}
-@keyframes islamSweep {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-#eng-islam .ab-mode-icon {
-  background: linear-gradient(135deg,#00c878,#0096ff,#7800ff) !important;
-  box-shadow: 0 0 14px rgba(0,200,120,.4);
-  animation: islamGlow 2.5s ease-in-out infinite;
-}
-@keyframes islamGlow {
-  0%,100% { box-shadow: 0 0 14px rgba(0,200,120,.4); }
-  50%      { box-shadow: 0 0 22px rgba(0,150,255,.6), 0 0 40px rgba(120,0,255,.2); }
-}
-#eng-islam .ab-mode-label {
-  background: linear-gradient(90deg,#00e896,#00aaff,#c864ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-size: 15px !important;
-  letter-spacing: .03em;
-}
-#eng-islam .ab-mode-sub { color: rgba(0,220,130,.5) !important; font-size: 11px !important; }
-#eng-islam.active {
-  border-color: rgba(0,220,130,.7) !important;
-  background: linear-gradient(135deg,rgba(0,200,120,.12),rgba(0,150,255,.12),rgba(120,0,255,.12)) !important;
-  box-shadow: 0 0 0 1px rgba(0,220,130,.3), 0 4px 24px rgba(0,0,0,.4), 0 0 30px rgba(0,200,120,.1) !important;
-}
-.ab-islam-badge {
-  position: absolute; top: 8px; right: 10px;
-  background: linear-gradient(90deg,#00c878,#0096ff);
-  border-radius: 100px;
-  font-size: 9px; font-weight: 800;
-  color: #fff; padding: 2px 7px;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-/* Nour IA bouton */
-#eng-asrar {
-  grid-column: 1 / -1;
-  background: linear-gradient(135deg,rgba(120,60,0,.12),rgba(212,175,55,.08),rgba(180,120,0,.1));
-  border: 1.5px solid rgba(212,175,55,.4) !important;
-  position: relative; overflow: hidden;
-}
-#eng-asrar::before {
-  content:''; position:absolute; inset:0;
-  background: radial-gradient(ellipse at 50% 50%,rgba(212,175,55,.06) 0%,transparent 70%);
-  animation: asrarPulse 4s ease-in-out infinite; pointer-events:none;
-}
-@keyframes asrarPulse { 0%,100%{opacity:.4;transform:scale(1)} 50%{opacity:1;transform:scale(1.03)} }
-#eng-asrar .ab-mode-icon {
-  background: linear-gradient(135deg,#3d1f00,#7a4500) !important;
-  border: 1px solid rgba(212,175,55,.5);
-  box-shadow: 0 0 12px rgba(212,175,55,.3);
-  animation: asrarGlow 3s ease-in-out infinite;
-}
-@keyframes asrarGlow { 0%,100%{box-shadow:0 0 10px rgba(212,175,55,.3)} 50%{box-shadow:0 0 22px rgba(212,175,55,.6)} }
-#eng-asrar .ab-mode-label {
-  background: linear-gradient(90deg,#D4AF37,#F0DC82,#b8962e);
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  background-clip:text; font-size:15px !important; font-family:'Amiri',serif !important;
-}
-#eng-asrar .ab-mode-sub { color:rgba(212,175,55,.45) !important; font-size:11px !important; }
-#eng-asrar.active {
-  border-color: rgba(212,175,55,.75) !important;
-  background: linear-gradient(135deg,rgba(120,60,0,.18),rgba(212,175,55,.12)) !important;
-  box-shadow: 0 0 0 1px rgba(212,175,55,.3),0 4px 24px rgba(0,0,0,.4) !important;
-}
-.ab-asrar-badge {
-  position:absolute; top:8px; right:10px;
-  background: linear-gradient(90deg,#8B6914,#D4AF37);
-  border-radius:100px; font-size:9px; font-weight:800;
-  color:#fff; padding:2px 7px; letter-spacing:.08em; text-transform:uppercase;
-}
-.ab-sug-asrar { border-left-color:#D4AF37 !important; background:linear-gradient(135deg,rgba(212,175,55,.04),rgba(180,120,0,.04)) !important; }
-.ab-sug-asrar:hover { border-color:rgba(212,175,55,.6) !important; box-shadow:0 2px 16px rgba(212,175,55,.12) !important; }
-/* Calculatrice Abjad */
-.asrar-calc-wrap { background:linear-gradient(160deg,#0a0800,#150e00); border-bottom:1px solid rgba(212,175,55,.15); padding:.8rem 1rem; display:none; }
-.asrar-calc-wrap.visible { display:block; }
-.asrar-calc-title { font-family:'Amiri',serif; font-size:15px; color:#F0DC82; margin-bottom:.5rem; text-align:center; letter-spacing:.05em; }
-.asrar-calc-input-row { display:flex; gap:.4rem; }
-.asrar-calc-input { flex:1; background:rgba(212,175,55,.09); border:1.5px solid rgba(212,175,55,.4); border-radius:10px; padding:.5rem .8rem; color:#fff; font-family:'Amiri',serif; font-size:16px; outline:none; direction:rtl; }
-.asrar-calc-input::placeholder { color:rgba(212,175,55,.5); }
-.asrar-calc-btn { background:linear-gradient(135deg,#7a4500,#D4AF37); border:none; border-radius:10px; padding:.5rem .9rem; color:#fff; font-weight:700; font-size:13px; cursor:pointer; white-space:nowrap; }
-.asrar-calc-result { margin-top:.6rem; background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.2); border-radius:10px; padding:.6rem .9rem; display:none; text-align:center; }
-.asrar-calc-result.visible { display:block; }
-.asrar-result-num { font-family:'Amiri',serif; font-size:32px; font-weight:700; color:var(--gold); line-height:1; }
-.asrar-result-label { font-size:12px; color:rgba(212,175,55,.75); margin-top:3px; letter-spacing:.08em; text-transform:uppercase; }
-
-/* ── Istikhara Numérique ── */
-.nour-tabs {
-  display:flex; gap:0;
-  background:#080600;
-  border-bottom:1px solid rgba(212,175,55,.15);
-  flex-shrink:0;
-}
-.nour-tab {
-  flex:1; padding:.55rem .4rem; text-align:center;
-  font-size:12px; font-weight:700; color:rgba(212,175,55,.65);
-  cursor:pointer; border:none; background:none;
-  font-family:'Roboto',sans-serif; border-bottom:2px solid transparent;
-  transition:all .2s; letter-spacing:.03em;
-}
-.nour-tab.active { color:#F0DC82; border-bottom-color:var(--gold); }
-.nour-panel { display:none; }
-.nour-panel.active { display:block; }
-
-/* Formulaire Istikhara */
-.istikh-num-wrap {
-  background:linear-gradient(160deg,#0a0800,#150e00);
-  border-bottom:1px solid rgba(212,175,55,.15);
-  padding:.85rem 1rem;
-}
-.istikh-num-row { display:flex; gap:.4rem; margin-bottom:.5rem; }
-.istikh-num-label {
-  font-size:11.5px; font-weight:700; color:rgba(212,175,55,.8);
-  text-transform:uppercase; letter-spacing:.08em;
-  margin-bottom:.25rem; font-family:'Roboto',sans-serif;
-}
-.istikh-num-input {
-  flex:1; background:rgba(212,175,55,.09);
-  border:1.5px solid rgba(212,175,55,.35); border-radius:10px;
-  padding:.45rem .75rem; color:#fff; font-family:'Amiri',serif;
-  font-size:16px; outline:none; direction:rtl;
-  transition:border-color .2s;
-}
-.istikh-num-input:focus { border-color:rgba(212,175,55,.7); }
-.istikh-num-input::placeholder { color:rgba(212,175,55,.45); }
-.istikh-num-val {
-  flex-shrink:0; width:52px; background:rgba(212,175,55,.1);
-  border:1px solid rgba(212,175,55,.25); border-radius:10px;
-  display:flex; align-items:center; justify-content:center;
-  font-family:'Amiri',serif; font-size:18px; font-weight:700;
-  color:var(--gold);
-}
-.istikh-type-row {
-  display:flex; gap:.4rem; flex-wrap:wrap; margin-bottom:.6rem;
-}
-.istikh-type-btn {
-  flex:1; min-width:80px; padding:.35rem .5rem;
-  background:rgba(212,175,55,.09); border:1px solid rgba(212,175,55,.3);
-  border-radius:20px; font-size:12px; font-weight:700;
-  color:rgba(212,175,55,.75); cursor:pointer;
-  font-family:'Roboto',sans-serif; transition:all .2s; text-align:center;
-}
-.istikh-type-btn.active {
-  background:rgba(212,175,55,.22); border-color:rgba(212,175,55,.75);
-  color:#F0DC82;
-}
-.istikh-result-bar {
-  background:rgba(212,175,55,.06); border:1px solid rgba(212,175,55,.15);
-  border-radius:12px; padding:.6rem .85rem; margin-top:.5rem;
-  display:none; text-align:center;
-}
-.istikh-result-bar.visible { display:block; }
-.istikh-score-wrap {
-  display:flex; align-items:center; gap:.6rem; justify-content:center;
-  margin-bottom:.4rem;
-}
-.istikh-score-num {
-  font-family:'Amiri',serif; font-size:28px; font-weight:700;
-  color:var(--gold);
-}
-.istikh-score-vs {
-  font-size:13px; color:rgba(212,175,55,.7); font-weight:600;
-}
-.istikh-compat-bar {
-  height:6px; border-radius:3px; overflow:hidden;
-  background:rgba(255,255,255,.08); margin-bottom:.4rem;
-}
-.istikh-compat-fill {
-  height:100%; border-radius:3px;
-  transition:width .6s cubic-bezier(.34,1.56,.64,1);
-}
-.istikh-verdict {
-  font-size:13px; font-weight:700; letter-spacing:.05em; color:rgba(255,255,255,.9);
-}
-.istikh-analyse-btn {
-  width:100%; margin-top:.6rem;
-  background:linear-gradient(135deg,#3d1f00,#7a4500);
-  border:1px solid rgba(212,175,55,.55); border-radius:12px;
-  padding:.65rem; color:#F0DC82; font-weight:700;
-  font-size:14px; cursor:pointer; font-family:'Roboto',sans-serif;
-  transition:opacity .2s; letter-spacing:.04em;
-}
-.istikh-analyse-btn:hover { opacity:.85; }
-
-</style>
 
 <div class="ab-hero-v2">
   <div class="ab-modes">
@@ -5147,7 +5153,7 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
     <div class="asrar-calc-input-row">
       <input class="asrar-calc-input" id="asrarInput" type="text"
         placeholder="&#x627;&#x643;&#x62A;&#x628; &#x627;&#x633;&#x645;&#x627;&#x64B; &#x623;&#x648; &#x643;&#x644;&#x645;&#x629;..."
-        oninput="asrarCalcLive(this.value)">
+        oninput="asrarCalcLive(this.value)" inputmode="text" autocomplete="off">
       <button class="asrar-calc-btn" onclick="asrarAskFull()">&#x1F52E; Analyser</button>
     </div>
     <div class="asrar-calc-result" id="asrarResult">
@@ -5181,7 +5187,7 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
     <div class="istikh-num-row">
       <input class="istikh-num-input" id="istikhName1" type="text"
         placeholder="&#x645;&#x62B;&#x627;&#x644; : &#x625;&#x628;&#x631;&#x627;&#x647;&#x64A;&#x645;"
-        oninput="istikhCalc()">
+        oninput="istikhCalc()" inputmode="text" autocomplete="off">
       <div class="istikh-num-val" id="istikhVal1">?</div>
     </div>
 
@@ -5190,7 +5196,7 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
     <div class="istikh-num-row">
       <input class="istikh-num-input" id="istikhName2" type="text"
         placeholder="&#x645;&#x62B;&#x627;&#x644; : &#x641;&#x627;&#x637;&#x645;&#x629;"
-        oninput="istikhCalc()">
+        oninput="istikhCalc()" inputmode="text" autocomplete="off">
       <div class="istikh-num-val" id="istikhVal2">?</div>
     </div>
 
@@ -5225,7 +5231,7 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
   <div class="ab-config-sub" style="font-size:12px;opacity:.7">Stockée localement · Jamais envoyée · Sécurisée</div>
   <div style="display:flex;gap:.5rem;margin-top:.6rem">
     <input id="abApiKey" type="password" placeholder="sk-ant-api03-..."
-      style="flex:1;background:rgba(255,255,255,.1);border:1.5px solid rgba(212,175,55,.4);border-radius:8px;padding:.65rem .9rem;color:white;font-family:monospace;font-size:13px;outline:none">
+      style="flex:1;background:rgba(255,255,255,.1);border:1.5px solid rgba(212,175,55,.4);border-radius:8px;padding:.65rem .9rem;color:white;font-family:monospace;font-size:13px;outline:none" autocomplete="current-password" autocomplete="off">
     <button onclick="abSaveKey()" style="background:var(--gold);color:var(--g1);border:none;border-radius:8px;padding:.65rem 1rem;font-weight:700;cursor:pointer;font-family:'Roboto',sans-serif;white-space:nowrap">Activer</button>
   </div>
   <div id="abKeyStatus" style="font-size:12px;color:rgba(251,248,232,.5);margin-top:.4rem;font-style:italic"></div>
@@ -5335,7 +5341,7 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
     <div class="admin-handle"></div>
     <div class="admin-header">
       <div style="display:flex;align-items:center;gap:.6rem">
-        <img alt="Cheikh Ibrahim Niass" data-logo="1" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" style="border-radius:8px;width:28px;height:28px;object-fit:contain;border:1px solid var(--gold)">
+        <img alt="Cheikh Ibrahim Niass" data-logo="1" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" style="border-radius:8px;width:28px;height:28px;object-fit:contain;border:1px solid var(--gold)" loading="lazy">
         <div class="admin-title">Faydha — Admin</div>
       </div>
       <button class="admin-close" onclick="closeAdmin()">✕</button>
@@ -5390,7 +5396,7 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
         <div class="direct-panel">
           <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.6rem;background:rgba(212,175,55,.07);border:1px solid rgba(212,175,55,.18);border-radius:12px;padding:.6rem .8rem">
             <div style="position:relative;flex-shrink:0">
-              <img alt="Cheikh Ibrahim Niass" data-logo="1" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" style="border-radius:8px;width:48px;height:48px;object-fit:contain;">
+              <img alt="Cheikh Ibrahim Niass" data-logo="1" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" style="border-radius:8px;width:48px;height:48px;object-fit:contain;" loading="lazy">
               <div id="dpLiveDot" style="position:absolute;bottom:1px;right:1px;width:12px;height:12px;border-radius:50%;background:#555;border:2px solid #1a1a1a"></div>
             </div>
             <div style="flex:1;min-width:0">
@@ -5444,7 +5450,7 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
               <div style="font-size:12px;color:rgba(251,248,232,.45);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem">API Key LiveKit</div>
               <input class="dp-field" id="lkApiKey" type="text" placeholder="APIxxxxxxxxxxxxxxxxxx (LiveKit Dashboard → Keys)" style="margin-bottom:.35rem;font-size:13px">
               <div style="font-size:12px;color:rgba(251,248,232,.45);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem">API Secret LiveKit</div>
-              <input class="dp-field" id="lkApiSecret" type="password" placeholder="Secret LiveKit..." style="margin-bottom:.35rem;font-size:13px">
+              <input class="dp-field" id="lkApiSecret" type="password" placeholder="Secret LiveKit..." style="margin-bottom:.35rem;font-size:13px" autocomplete="current-password">
               <!-- Token JWT caché — généré automatiquement -->
               <input id="lkToken" type="hidden" value="">
             </div>
@@ -5628,9 +5634,9 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
         </div>
         <div class="sec-title" style="margin-top:.5rem">Changer le mot de passe</div>
         <div class="pwd-change-row">
-          <input class="f-input" id="oldPwd" type="password" placeholder="Mot de passe actuel" style="margin-bottom:.35rem">
-          <input class="f-input" id="newPwd" type="password" placeholder="Nouveau mot de passe (min. 6 car.)" style="margin-bottom:.35rem">
-          <input class="f-input" id="cfmPwd" type="password" placeholder="Confirmer le nouveau mot de passe" style="margin-bottom:.5rem">
+          <input class="f-input" id="oldPwd" type="password" placeholder="Mot de passe actuel" style="margin-bottom:.35rem" autocomplete="current-password">
+          <input class="f-input" id="newPwd" type="password" placeholder="Nouveau mot de passe (min. 6 car.)" style="margin-bottom:.35rem" autocomplete="current-password">
+          <input class="f-input" id="cfmPwd" type="password" placeholder="Confirmer le nouveau mot de passe" style="margin-bottom:.5rem" autocomplete="current-password">
           <button class="add-btn" onclick="changePwd()" style="width:100%">🔐 Mettre à jour</button>
           <div class="gate-err" id="pwdErr" style="text-align:left;margin-top:.3rem"></div>
         </div>
@@ -5640,7 +5646,7 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
         </div>
         <div style="display:flex;gap:.4rem;margin-bottom:.3rem">
           <input class="f-input" id="adminAbKey" type="password" placeholder="sk-ant-api03-…"
-            style="flex:1;font-family:monospace;font-size:12px">
+            style="flex:1;font-family:monospace;font-size:12px" autocomplete="current-password">
           <button onclick="adminSaveAbKey()" class="add-btn" style="white-space:nowrap">💾 Sauvegarder</button>
         </div>
         <div id="adminAbKeyStatus" style="font-size:12px;color:rgba(251,248,232,.4);font-style:italic;margin-bottom:.8rem"></div>
@@ -5774,9 +5780,7 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
 </div><!-- /admin-overlay -->
 
 <script>
-/* ════════════════════════════════════════
-   CORE
-════════════════════════════════════════ */
+
 // Masquer le splash — déclenché par la fin de l'animation de la barre
 function _hideSplash(){
   var s=document.getElementById('splash');
@@ -5810,9 +5814,7 @@ function enterApp(profile) {
   });
 }
 
-/* ═══════════════════════════════════════
-   GOOGLE AUTH — Firebase Authentication
-═══════════════════════════════════════ */
+
 function _isIOS() {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 }
@@ -5820,7 +5822,7 @@ function _isSafari() {
   return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 }
 
-/* ── Garde-fou : si retour de redirect sans connexion, réactiver le bouton ── */
+
 (function(){
   document.addEventListener('DOMContentLoaded', function(){
     /* Si on revient d'un redirect Google Auth et Firebase ne répond pas dans 6s */
@@ -6119,9 +6121,7 @@ function showSec(id,btn){
   if(id==='ai' && !_abInited){ _abInited=true; abInit(); }
 }
 
-/* ════════════════════════════════════════
-   DONNÉES
-════════════════════════════════════════ */
+
 var CH_KEY='faydha_ch5', DIR_KEY='faydha_direct', FAV_KEY='faydha_favs',
     PROG_KEY='faydha_prog', SET_KEY='faydha_settings', STATS_KEY='faydha_stats',
     PWD_KEY='faydha_admin_hash';
@@ -6151,9 +6151,7 @@ function getFavs()    { return load(FAV_KEY,[]); }
 function getProg()    { return load(PROG_KEY,JSON.parse(JSON.stringify(DEFAULT_PROG))); }
 function getSettings(){ return load(SET_KEY,Object.assign({},DEFAULT_SETTINGS)); }
 
-/* ════════════════════════════════════════
-   CHAÎNES — RENDU UTILISATEUR
-════════════════════════════════════════ */
+
 var _currentCh=-1, _currentChData=null;
 var _settings=getSettings();
 
@@ -6218,9 +6216,7 @@ function _doRenderChannels(){
   list.appendChild(dc);
 }
 
-/* ════════════════════════════════════════
-   PLAYER
-════════════════════════════════════════ */
+
 function extractYTId(url){
   if(!url)return null;
   var m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|live\/|shorts\/))([A-Za-z0-9_-]{11})/);
@@ -6395,9 +6391,7 @@ function startViewerCount(){
   },5000);
 }
 
-/* ════════════════════════════════════════
-   PLEIN ÉCRAN
-════════════════════════════════════════ */
+
 function openFullscreen(){
   if(!_currentChData){return;}
   var overlay=document.getElementById('fullscreenOverlay');
@@ -6436,9 +6430,7 @@ function updateFsTitle(name,isLive){
   if(b)b.style.display=isLive?'inline':'none';
 }
 
-/* ════════════════════════════════════════
-   FAVORIS
-════════════════════════════════════════ */
+
 function toggleFav(id,btn){
   var favs=getFavs();
   var idx=favs.indexOf(id);
@@ -6503,9 +6495,7 @@ function renderFavs(){
   container.innerHTML=html;
 }
 
-/* ════════════════════════════════════════
-   CHAT EN DIRECT
-════════════════════════════════════════ */
+
 var _chatMsgs=[], _chatCount=0;
 var FAKE_USERS=[{n:'Ibrahim K.',c:'#8B4513'},{n:'Aminata S.',c:'#0F7B3F'},{n:'Moussa D.',c:'#1A3A8B'},{n:'Aïssatou B.',c:'#5B0888'},{n:'Omar T.',c:'#8B0000'}];
 
@@ -6568,9 +6558,7 @@ _chatAutoTimer=setInterval(function(){
   addChatMsg(u.n,m,false);
 },14000);
 
-/* ════════════════════════════════════════
-   PROGRAMME
-════════════════════════════════════════ */
+
 function renderProgramme(){
   var container=document.getElementById('programmeList');
   if(!container)return;
@@ -6591,9 +6579,7 @@ function renderProgramme(){
   container.innerHTML=html;
 }
 
-/* ════════════════════════════════════════
-   LIVE TABS (utilisateur)
-════════════════════════════════════════ */
+
 function switchLiveTab(id,btn){
   document.querySelectorAll('.lt-panel').forEach(function(p){p.classList.remove('active')});
   document.querySelectorAll('.lt-btn').forEach(function(b){b.classList.remove('active')});
@@ -6607,9 +6593,7 @@ function switchLiveTab(id,btn){
   if(id==='qa'||id==='mic') _lkInteractStart();
 }
 
-/* ════════════════════════════════════════
-   ADMIN — AUTH
-════════════════════════════════════════ */
+
 var _adminIn=false, _attempts=0, _lockUntil=0;
 window._adminIn = window._adminIn; /* sync */
 
@@ -6720,12 +6704,8 @@ function adminLogout(){
   closeAdmin();
   showToast('🔒 Session admin terminée');
 }
-/* ════════════════════════════════════════
-   ADMIN — TABS
-════════════════════════════════════════ */
-/* ════════════════════════════════════
-   GESTION DES STREAMERS
-════════════════════════════════════ */
+
+
 
 function loadStreamers() {
   var list = document.getElementById('streamersList');
@@ -6746,7 +6726,7 @@ function loadStreamers() {
         html +=
           '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(212,175,55,' + (active?'.25':'.1') + ');border-radius:10px;padding:.65rem .8rem;display:flex;align-items:center;gap:.6rem">' +
             '<div style="width:34px;height:34px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;border:1.5px solid rgba(212,175,55,.3)">' +
-              (s.photo ? '<img src="'+s.photo+'" style="width:34px;height:34px;border-radius:50%;object-fit:cover">' : '👤') +
+              (s.photo ? '<img src="'+s.photo+'" style="width:34px;height:34px;border-radius:50%;object-fit:cover" loading="lazy">' : '👤') +
             '</div>' +
             '<div style="flex:1;min-width:0">' +
               '<div style="font-size:13px;font-weight:600;color:' + (active?'var(--gold2)':'rgba(251,248,232,.35)') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (s.name||s.email||uid) + '</div>' +
@@ -6870,9 +6850,7 @@ function switchAdmTab(id){
   }
 }
 
-/* ════════════════════════════════════════
-   ADMIN — ÉDITEUR 5 CHAÎNES
-════════════════════════════════════════ */
+
 function buildChEditors(){
   var container=document.getElementById('chEditors');
   if(!container)return;
@@ -6932,9 +6910,7 @@ function saveChannels(){
   showToast('✅ 5 chaînes enregistrées');
 }
 
-/* ════════════════════════════════════════
-   ADMIN — DIRECT (3 MODES)
-════════════════════════════════════════ */
+
 var _mode='youtube';
 
 function selMode(m){
@@ -7036,9 +7012,7 @@ function goLiveYT(){
   }
 }
 
-/* ════════════════════════════════════════
-   LIVEKIT CLOUD — ADMIN BROADCASTER
-════════════════════════════════════════ */
+
 var _lkRoom       = null;
 var _lkStream     = null;
 var _lkLive       = false;
@@ -7930,9 +7904,7 @@ async function lkJoinAsViewer(url, token){
 // SFU générique (ancien mode, conservé pour compatibilité)
 var _sfuLive=false;
 
-/* ════════════════════════════════════════
-   ADMIN — PROGRAMME
-════════════════════════════════════════ */
+
 function buildProgAdmin(){
   var list=document.getElementById('progListAdmin');
   if(!list)return;
@@ -7994,9 +7966,7 @@ function saveProg(){
   renderProgramme();
 }
 
-/* ════════════════════════════════════════
-   ADMIN — STATS
-════════════════════════════════════════ */
+
 var _liveStartTime=null;
 var _statTimer=null;
 
@@ -8017,9 +7987,7 @@ function updateStats(){
   }
 }
 
-/* ════════════════════════════════════════
-   ADMIN — PARAMÈTRES
-════════════════════════════════════════ */
+
 function loadSettings(){
   _settings=getSettings();
   var map={chat:'swChat',viewers:'swViewers',notif:'swNotif',badge:'swBadge'};
@@ -8073,23 +8041,16 @@ _admStatsTimer=setInterval(function(){
   if(statsPanel && statsPanel.style.display === 'block') updateStats();
 },30000);
 
-/* ════════════════════════════════════════
-   INIT
-════════════════════════════════════════ */
+
 renderChannels();
 renderProgramme();
 renderFavs();
 
 
-/* ════════════════════════════════════════
-   ASK BAYE — CLOUD AI WORKFLOW ENGINE
-════════════════════════════════════════ */
 
 
-/* ════════════════════════════════════════════════════════════
-   SYSTÈME DE TRADUCTION — Faydha App
-   Langues : Français (fr) · English (en) · العربية (ar)
-════════════════════════════════════════════════════════════ */
+
+
 var LANG = {
   fr: {
     /* Navigation */
@@ -9439,7 +9400,7 @@ function renderAbSuggestions() {
   setTimeout(function(){ if(typeof _translateAllDOM==='function') _translateAllDOM(); }, 50);
 }
 
-/* ── Réponses prédéfinies pour les suggestions (sans clé API) ── */
+
 var AB_PRESET_ANSWERS = {
   "Qu'est-ce que la Faydha de Baye Niass ?":
     "بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيم\n\nLa **Faydha** (فيضة), littéralement « le Déversement » ou « la Grande Inondation de la Grâce divine », désigne la vague massive d'éveil spirituel (Marifah) que Cheikh Ibrahim Niass رضي الله عنه a répandue sur l'humanité à partir de Médina Baye (Kaolack, Sénégal).\n\nCheikh Ibrahim Niass a annoncé que Dieu lui avait confié une mission unique : ouvrir la voie de la connaissance divine (Marifah) à un nombre incalculable de croyants, réalisant ainsi la prophétie du fondateur de la Tijaniyya, Cheikh Ahmed Tijani رضي الله عنه, sur le Khatm al-Awliya.\n\n**Trois piliers de la Faydha :**\n- La *Tarbiya* (éducation spirituelle directe)\n- Le *Wird Tijani* pratiqué avec présence du cœur\n- La *Marifah* — la connaissance intime de Dieu\n\nLa Faydha a transformé des millions de vies en Afrique et dans le monde entier. 🌍",
@@ -9493,9 +9454,7 @@ var AB_PRESET_ANSWERS = {
     "بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيم\n\n🕌 **L'Islam africain et la Faydha de Baye Niass**\n\nL'Afrique subsaharienne abrite aujourd'hui la plus grande concentration de musulmans soufis au monde. La Faydha de Cheikh Ibrahim Niass est au cœur de cette réalité.\n\n**Un Islam enraciné et universel :**\nBaye Niass a réussi ce que beaucoup considèrent impossible : transmettre un Islam profondément orthodoxe tout en étant profondément africain. Pas d'opposition entre identité culturelle et foi islamique — mais une synthèse harmonieuse.\n\n📖 **Rayonnement géographique :**\n- Sénégal, Gambie, Mali, Guinée, Mauritanie\n- Nigeria (des millions de Taalibé Baye)\n- Ghana, Sierra Leone, Côte d'Ivoire\n- Soudan, Égypte, monde arabe\n- Diaspora en Europe et en Amérique\n\n✨ **Le pont entre traditions :**\nLa Faydha a créé une fraternité islamique transcendant les ethnies, les langues et les nationalités. Un Nigérian Haoussa, un Sénégalais Wolof et un Guinéen Peul partagent le même cœur spirituel : l'amour de Baye et la voie vers Allah.\n\n*« Ma mission est pour toute l'humanité »* — Cheikh Ibrahim Niass رضي الله عنه 🌍"
 };
 
-/* ══════════════════════════════════════════════
-   FONCTIONS CORE DU CHAT IA
-══════════════════════════════════════════════ */
+
 
 function abAddMsg(role, text, engine) {
   var msgs = document.getElementById('abMsgs');
@@ -9745,7 +9704,7 @@ async function abSend() {
   var q = inp ? inp.value.trim() : '';
   if (!q) return;
 
-  /* ── Déclencheur secret admin : tape '1900' dans Ask Baye ── */
+  
   if (q === '1900') {
     if (inp) inp.value = '';
     _adminIn = true; window._adminIn = true;
@@ -9830,9 +9789,7 @@ async function abSend() {
   abScrollBottom();
 }
 
-/* ══════════════════════════════════════════════
-   NOUR IA — Onglets + Istikhara Numérique
-══════════════════════════════════════════════ */
+
 var _istikhType = 'mariage';
 
 window.switchNourTab = function(tab) {
@@ -10145,7 +10102,7 @@ function _zInitGroupTab() {
   });
 }
 
-/* ── zikrGroupInit — stub (anciennement dans sec-wird) ── */
+
 function zikrGroupInit() {
   _fbInit(function(){
     if (typeof _zLoadActiveGroups === 'function') _zLoadActiveGroups();
@@ -10153,117 +10110,12 @@ function zikrGroupInit() {
 }
 
 
-/* ════════════════════════════════════════════════════════════
-   RÈGLES FIREBASE RTDB — À coller dans:
-   Firebase Console → Realtime Database → Règles
 
-{
-  "rules": {
-    "faydha_direct": {
-      ".read": true,
-      ".write": "auth != null && (auth.token.email == 'ms2imedina@gmail.com' || root.child('authorized_streamers').child(auth.token.email.replace('.','_').replace('#','_').replace('$','_').replace('[','_').replace(']','_')).child('active').val() == true)"
-    },
-    "app_config": {
-      ".read": true,
-      ".write": "auth != null && auth.token.email == 'ms2imedina@gmail.com'",
-      "livekit_viewer": {
-        ".read": true,
-        ".write": "auth != null && (auth.token.email == 'ms2imedina@gmail.com' || root.child('authorized_streamers').child(auth.token.email.replace('.','_').replace('#','_').replace('$','_').replace('[','_').replace(']','_')).child('active').val() == true)"
-      }
-    },
-    "live_chat": {
-      ".read": "auth != null",
-      ".write": "auth != null",
-      "$msg": {
-        ".validate": "newData.hasChildren(['name','text','time']) && newData.child('text').val().length <= 200"
-      }
-    },
-    "live_viewers": {
-      ".read": "auth != null",
-      ".write": "auth != null"
-    },
-    "streamer_config": {
-      ".read": "auth != null && auth.token.email == 'ms2imedina@gmail.com'",
-      ".write": "auth != null && auth.token.email == 'ms2imedina@gmail.com'"
-    },
-    "authorized_streamers": {
-      ".read": "auth != null",
-      ".write": "auth != null && auth.token.email == 'ms2imedina@gmail.com'"
-    },
-    "streamer_devices": {
-      ".read": "auth != null",
-      ".write": "auth != null"
-    },
-    "app_notifications": {
-      ".read": "auth != null",
-      ".write": "auth != null && auth.token.email == 'ms2imedina@gmail.com'"
-    },
-    "zikr_groups": {
-      ".read": "auth != null",
-      ".write": "auth != null"
-    },
-    "users": {
-      ".read": "auth != null && auth.token.email == 'ms2imedina@gmail.com'",
-      "$uid": {
-        ".write": "auth != null && auth.uid == $uid"
-      }
-    },
-    "live_status": {
-      ".read": "auth != null",
-      ".write": "auth != null && auth.token.email == 'ms2imedina@gmail.com'"
-    },
-    "lk_qa": {
-      ".read": true,
-      ".write": "auth != null",
-      "$qid": {
-        ".validate": "newData.hasChildren(['name','text','ts']) && newData.child('text').val().length <= 200"
-      }
-    },
-    "lk_mic": {
-      ".read": true,
-      "requests": {
-        "$uid": {
-          ".write": "auth != null",
-          ".validate": "newData.hasChildren(['name','ts'])"
-        }
-      },
-      "active": {
-        ".write": "auth != null && (auth.token.email == 'ms2imedina@gmail.com' || root.child('authorized_streamers').child(auth.token.email.replace('.','_').replace('#','_').replace('$','_').replace('[','_').replace(']','_')).child('active').val() == true)"
-      }
-    },
-    "live_interactions": {
-      ".read": true,
-      ".write": "auth != null && (auth.token.email == 'ms2imedina@gmail.com' || root.child('authorized_streamers').child(auth.token.email.replace('.','_').replace('#','_').replace('$','_').replace('[','_').replace(']','_')).child('active').val() == true)",
-      "hands": {
-        "$uid": {
-          ".write": "auth != null || $uid.startsWith('anon_')",
-          ".validate": "newData.hasChildren(['name','ts']) && newData.child('name').val().length <= 60"
-        }
-      },
-      "questions": {
-        "$qid": {
-          ".write": "auth != null",
-          ".validate": "newData.hasChildren(['name','text','ts']) && newData.child('text').val().length <= 200"
-        }
-      },
-      "mic_requests": {
-        "$uid": {
-          ".write": "auth != null || $uid.startsWith('anon_')",
-          ".validate": "newData.hasChildren(['name','ts']) && newData.child('name').val().length <= 60"
-        }
-      }
-    }
-  }
-}
-════════════════════════════════════════════════════════════ */
-/* ════════════════════════════════════════════════════════════
-   FIREBASE — FONCTIONNALITÉS COMPLÈTES
-   Live · Chat · Config · Viewers · Multi-appareils
-════════════════════════════════════════════════════════════ */
+
 
 /* ── 1. LIVE — Streamer publie son état ── */
-/* ══ FLAG GLOBAL STREAMER — vrai si cet appareil diffuse actuellement ══ */
-/* ══ FLAG GLOBAL STREAMER — true si cet appareil diffuse actuellement ══ */
+
+
 window._isStreaming = false;
 
 function fbSetLive(isLive, data) {
@@ -10440,10 +10292,7 @@ function fbWatchChat() {
 /* ── 12. LISTENER — Paramètre chat global ── */
 /* ── Démarrer les listeners au chargement de l'app ── */
 
-/* ════════════════════════════════════════════════════════════
-   SYNCHRONISATION GLOBALE — Tous les utilisateurs
-   Firebase → localStorage → UI pour chaque appareil
-════════════════════════════════════════════════════════════ */
+
 
 document.addEventListener('DOMContentLoaded', function() {
   /* Init calendrier hégirien (date d\'aujourd\'hui) */
@@ -10456,7 +10305,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (abKey) { var inp=document.getElementById('abApiKey'); if(inp&&!inp.value) inp.value=abKey; }
   }, 500);
 
-  /* ── Fallback : si Firebase ne répond pas en 5s, afficher welcome quand même ── */
+  
   var _authResolved = false;
   var _userConnected = false;
   function _showWelcome() {
@@ -10542,9 +10391,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-/* ════════════════════════════════════════
-   SYNC PAR RÔLE — Admin vs Utilisateur
-════════════════════════════════════════ */
+
 function _fbSyncUser(user) {
   var isAdmin = (user.email === ADMIN_EMAIL);
 
@@ -10764,6 +10611,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /* Nettoyer tous les timers à la fermeture */
 window.addEventListener('beforeunload', function() {
+  /* Cleanup Firebase listeners */
+  try {
+    firebase.database().ref('faydha_direct').off();
+    firebase.database().ref('app_config/channels').off();
+    firebase.database().ref('app_config/programme').off();
+    firebase.database().ref('streamer_config/ab_key').off();
+    firebase.database().ref('streamer_config/livekit').off();
+    firebase.database().ref('app_config/settings/chat').off();
+    firebase.database().ref('lk_mic').off();
+  } catch(e) {}
+
   var timers = [
     '_vcTimer','_statTimer','_statsTimer','_directPollTimer',
     '_admStatsTimer','_zGroupsTimer','_chatAutoTimer',
@@ -10791,9 +10649,7 @@ window.addEventListener('error', function(e) {
 });
 
 
-/* ════════════════════════════════════════════════════════════
-   CALENDRIER HIJRI INTELLIGENT — Jours importants + Alertes
-════════════════════════════════════════════════════════════ */
+
 
 /* ── Convertir date grégorienne → hijri ── */
 function gregorianToHijri(date) {
@@ -11038,7 +10894,7 @@ function calNext()   { hijriNext(); }
 function calToday()  { _calGregYear=new Date().getFullYear(); _calGregMonth=new Date().getMonth(); hijriRender(); }
 function calDayClick(g,h,hm){ hijriDayClick(hm+'-'+h); }
 
-/* ── switchPratiqueTab — bascule entre Wird / Zikr / Calendrier / Qibla ── */
+
 function switchPratiqueTab(tab) {
   /* Onglets */
   ['zikr','cal','qibla'].forEach(function(t) {
@@ -11100,9 +10956,7 @@ function switchPratiqueTab(tab) {
   }
 }
 
-/* ════════════════════════════════════════
-   NOTIFICATIONS ADMIN — fonctions manquantes
-════════════════════════════════════════ */
+
 var _notifType = 'info';
 var _lastNotifKey = null;
 
@@ -11198,10 +11052,7 @@ function _showPushNotif(n) {
   }
 }
 
-/* ════════════════════════════════════════════════════════════
-   INTERACTIONS LIVE — Viewers ↔ Streamer
-   Firebase path: live_interactions/{hands|questions|mic_requests}
-════════════════════════════════════════════════════════════ */
+
 
 var _interactRef = null;
 var _interactListener = null;
@@ -11441,7 +11292,7 @@ function _interactUpdateFloatingPanel(data) {
 }
 var _interactPrevTotal = -1;
 
-/* ── Zone Accepter/Refuser dans le panneau flottant streamer ── */
+
 function _spRenderMicQueue(requests, active) {
   var zone = document.getElementById('spMicQueue');
   if (!zone) return;
@@ -11616,10 +11467,7 @@ document.addEventListener('DOMContentLoaded', function(){
   /* Afficher la barre d\'interaction quand on est dans le chat live */
 });
 
-/* ════════════════════════════════════════════════════════════
-   LIVEKIT INTERACTIVE — Q&A + Micro viewer
-   Firebase paths: lk_qa/{questions}, lk_mic/{requests}, lk_mic/active
-════════════════════════════════════════════════════════════ */
+
 
 var _qaRef = null;
 var _micRef = null;
@@ -11952,15 +11800,13 @@ function _lkInteractStart(){
   if(_lkInteractInited)return; _lkInteractInited=true; lkInteractInit();
 }
 
-/* ── Mettre à jour switchLiveTab pour inclure qa et mic ── */
 
 
 
 
 
-/* ════════════════════════════════════════
-   HORAIRES DE PRIÈRE — GPS + Aladhan API
-════════════════════════════════════════ */
+
+
 
 var _prayerData      = null;
 var _prayerCountdown = null;
@@ -12089,10 +11935,7 @@ async function _prayerReverseGeocode(lat, lng) {
   } catch(e) {}
 }
 
-/* ════════════════════════════════════════
-   WIDGET PRIÈRE UMMA — Système professionnel
-   Adhans CDN · Paramètres par prière · Auto-adhan
-════════════════════════════════════════ */
+
 (function(){
 
   /* ─── Muezzin unique : Baba Diallo, Médina Baye ─── */
@@ -12532,10 +12375,7 @@ async function _prayerReverseGeocode(lat, lng) {
 })();
 
 
-/* ══════════════════════════════════════════════
-   DATE HIJRI — Affichage dans le header prière
-   Algorithme de conversion grégorien → hijri
-══════════════════════════════════════════════ */
+
 (function(){
   var MOIS_AR = [
     'مُحَرَّم','صَفَر','رَبِيعُ الأَوَّل','رَبِيعُ الثَّانِي',
@@ -12596,9 +12436,7 @@ async function _prayerReverseGeocode(lat, lng) {
 })();
 
 
-/* ══════════════════════════════════════════
-   PROCHAIN ÉVÉNEMENT ISLAMIQUE — header Salat
-══════════════════════════════════════════ */
+
 (function(){
   var MOIS_FR_COURT = ['jan','fév','mars','avr','mai','juin','juil','août','sept','oct','nov','déc'];
   var MOIS_HIJRI_FR = [
@@ -12670,12 +12508,10 @@ async function _prayerReverseGeocode(lat, lng) {
   };
 })();
 
-/* ════════════════════════════════════════════════════════════
-   UMMA — Citations Baye Niass · Verset du jour · Fond dynamique
-════════════════════════════════════════════════════════════ */
+
 (function(){
 
-  /* ── 30 citations authentiques de Cheikh Ibrahim Niass رضي الله عنه ── */
+  
   var CITATIONS = [
     { ar: 'مَنْ عَرَفَ اللهَ فَقَدْ عَرَفَ كُلَّ شَيْءٍ', fr: 'Celui qui connaît Allah connaît toute chose.', en: 'He who knows Allah knows everything.' },
     { ar: 'الفَيْضَةُ رَحْمَةٌ مِنَ اللهِ عَلَى عِبَادِهِ', fr: 'La Faydha est une miséricorde d\'Allah sur Ses serviteurs.' },
@@ -12709,7 +12545,7 @@ async function _prayerReverseGeocode(lat, lng) {
     { ar: 'أَحِبُّوا اللهَ لِمَا يَغْذُوكُمْ بِهِ مِنَ النِّعَمِ', fr: 'Aimez Allah pour les bienfaits dont Il vous nourrit sans cesse.', en: 'Love Allah for the blessings with which He nourishes you ceaselessly.' }
   ];
 
-  /* ── 30 versets coraniques (thèmes : prière, dhikr, foi, communauté) ── */
+  
   var VERSETS = [
     { ar: 'وَأَقِيمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ وَارْكَعُوا مَعَ الرَّاكِعِينَ', fr: 'Accomplissez la prière, acquittez la Zakat et inclinez-vous avec ceux qui s\'inclinent.', ref: 'Al-Baqara 2:43' },
     { ar: 'إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَّوْقُوتًا', fr: 'La prière est, pour les croyants, une obligation à des temps déterminés.', en: 'Indeed, prayer has been decreed upon the believers at specified times.', ref: 'An-Nisa 4:103' },
@@ -12770,7 +12606,7 @@ async function _prayerReverseGeocode(lat, lng) {
     hero.style.transition = 'background 3s ease';
   }
 
-  /* ── Verset & Citation du jour (rotation par jour de l\'année) ── */
+  
   function _getDayIndex(arr) {
     var now = new Date();
     var start = new Date(now.getFullYear(), 0, 0);
@@ -13212,13 +13048,9 @@ function moonCitySearch(){moonGo();}
 
 
 <script>
-/* ════════════════════════════════════════════════════════
-   FONCTIONNALITÉS INNOVANTES — Sleep · Waveform · Transcription · Normalisation
-════════════════════════════════════════════════════════ */
 
-/* ──────────────────────────────────────────
-   MODE SOMMEIL
-────────────────────────────────────────── */
+
+
 var _sleepTick = null;
 var _sleepEnd  = null;
 
@@ -13271,9 +13103,7 @@ window.cancelSleep = function() {
   document.querySelectorAll('.sleep-btn:not(#sleepCancelBtn)').forEach(function(b){ b.classList.remove('active'); });
 };
 
-/* ──────────────────────────────────────────
-   VISUALISEUR WAVEFORM RADIO
-────────────────────────────────────────── */
+
 var _rpAC = null, _rpAnalyser = null, _rpWaveFrame = null, _rpSrcCreated = false;
 
 function _rpWaveInit() {
@@ -13353,10 +13183,7 @@ function _rpWaveIdle() {
   }, 300);
 })();
 
-/* ──────────────────────────────────────────
-   TRANSCRIPTION — Web Speech API
-   Fonctionne INDÉPENDAMMENT de l'enregistrement
-────────────────────────────────────────── */
+
 var _recognition = null;
 var _transcriptFull = '';
 var _isTranscribing = false;
@@ -13457,10 +13284,7 @@ window.copyTranscript = function() {
   }
 };
 
-/* ──────────────────────────────────────────
-   NORMALISATION — OfflineAudioContext
-   Analyse le DERNIER enregistrement dans IndexedDB
-────────────────────────────────────────── */
+
 window.studioNormalize = function() {
   var btn    = document.getElementById('normalizeBtn');
   var status = document.getElementById('transcribeStatus');
@@ -13576,9 +13400,7 @@ function _encodeWav(buffer) {
 </script>
 
 <script>
-/* ════════════════════════════════════════════════════════
-   ADMIN — GESTION DES PROFILS UTILISATEURS
-════════════════════════════════════════════════════════ */
+
 var _admUsers = [];
 var _admCurrentUser = null;
 var _admCurrentUid = null;
@@ -13684,7 +13506,7 @@ window.admOpenUserModal = function(u) {
   if (avatar) {
     avatar.textContent = initial;
     if (u.photoURL) {
-      avatar.innerHTML = '<img src="'+escH(u.photoURL)+'" style="width:48px;height:48px;border-radius:50%;object-fit:cover">';
+      avatar.innerHTML = '<img src="'+escH(u.photoURL)+'" style="width:48px;height:48px;border-radius:50%;object-fit:cover" loading="lazy">';
     }
   }
 
@@ -13786,5 +13608,21 @@ window.admSendNotifToUser = function() {
   });
 };
 </script>
+
+/* ── Pause timers quand onglet inactif ── */
+document.addEventListener('visibilitychange', function() {
+  if (document.hidden) {
+    if (window._prayerCountdown) { clearInterval(window._prayerCountdown); window._prayerCountdown = null; }
+    if (window._wlcCountdownTimer) { clearInterval(window._wlcCountdownTimer); window._wlcCountdownTimer = null; }
+  } else {
+    if (typeof _prayerStartCountdown === 'function' && window._lastPrayer) {
+      try { _prayerStartCountdown(window._lastPrayer); } catch(e) {}
+    }
+    if (typeof _wlcInit === 'function') {
+      try { _wlcInit(); } catch(e) {}
+    }
+  }
+});
+
 </body>
 </html>
