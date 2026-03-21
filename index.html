@@ -8474,10 +8474,18 @@ function setLang(lang) {
   _lang = lang;
   window._lang = lang;
   try { localStorage.setItem('faydha_lang', lang); } catch(e) {}
+  /* Switcher les suggestions selon la langue */
+  if (typeof AB_SUGGESTIONS_EN !== 'undefined') {
+    if (lang === 'en') AB_SUGGESTIONS = AB_SUGGESTIONS_EN;
+    else if (lang === 'ar') AB_SUGGESTIONS = AB_SUGGESTIONS_AR;
+    else AB_SUGGESTIONS = AB_SUGGESTIONS_FR;
+  }
   /* RTL pour l'arabe */
   document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
   document.documentElement.setAttribute('lang', lang === 'ar' ? 'ar' : lang === 'en' ? 'en' : 'fr');
   applyTranslations();
+  /* Re-rendre les suggestions avec la bonne langue */
+  if (typeof renderAbSuggestions === 'function') renderAbSuggestions();
 }
 
 function applyTranslations() {
@@ -8794,6 +8802,12 @@ function _txQ(selector, text) {
   }
   /* Lancer applyTranslations dès que DOM est prêt */
   function _doApply() {
+    /* Switcher les suggestions selon la langue sauvegardée */
+    if (typeof AB_SUGGESTIONS_EN !== 'undefined' && _lang) {
+      if (_lang === 'en') AB_SUGGESTIONS = AB_SUGGESTIONS_EN;
+      else if (_lang === 'ar') AB_SUGGESTIONS = AB_SUGGESTIONS_AR;
+      else AB_SUGGESTIONS = AB_SUGGESTIONS_FR;
+    }
     if (!saved) {
       _showLangSelector();
     } else {
@@ -8885,7 +8899,7 @@ var AB_ENGINE_LABELS = {
   asrar:   '🔢 Nour IA'
 };
 
-var AB_SUGGESTIONS = {
+var AB_SUGGESTIONS_FR = {
   baye: [
     {icon:'🕌', q:"Qu'est-ce que la Faydha de Baye Niass ?", cat:"Fondements"},
     {icon:'☽',  q:"Expliquez le concept de Tarbiya dans la Tijaniyya", cat:"Voie spirituelle"},
@@ -8965,6 +8979,169 @@ var AB_SUGGESTIONS = {
     {icon:'🔓', q:"Il y a un secret que je porte seul(e) depuis des années", cat:"Secret"}
   ]
 };
+
+/* ── Suggestions EN ── */
+var AB_SUGGESTIONS_EN = {
+  baye: [
+    {icon:'🕌', q:"What is the Faydha of Baye Niass?", cat:"Foundations"},
+    {icon:'☽',  q:"Explain the concept of Tarbiya in the Tijaniyya", cat:"Spiritual Path"},
+    {icon:'📿', q:"What is the meaning of the Tijani Wird?", cat:"Practices"},
+    {icon:'🌟', q:"Who was Cheikh Ibrahim Niass really?", cat:"Biography"},
+    {icon:'💫', q:"What is Marifah according to Baye Niass?", cat:"Spirituality"},
+    {icon:'📜', q:"Tell me about Baye Niass book Kashif al-Ilbas", cat:"Works"}
+  ],
+  quran: [
+    {icon:'📖', q:"Tafsir of Surah Al-Fatiha in the Tijaniyya tradition", cat:"Tafsir"},
+    {icon:'✨', q:"Quranic verses on Marifah — divine knowledge", cat:"Spirituality"},
+    {icon:'🌙', q:"What is the spiritual significance of Surah Al-Kahf?", cat:"Exegesis"},
+    {icon:'💎', q:"The 99 Names of Allah and their importance in the Quran", cat:"Asma al-Husna"}
+  ],
+  tasaw: [
+    {icon:'✨', q:"Explain the concept of Fana — extinction of the self", cat:"Maqamat"},
+    {icon:'💫', q:"The difference between Sharia, Tariqa and Haqiqa", cat:"Spiritual Path"},
+    {icon:'🌟', q:"What are Hal and Maqam in Sufism?", cat:"Spiritual States"},
+    {icon:'☽',  q:"The concept of Muraqaba in Tijaniyya", cat:"Practices"}
+  ],
+  istikh: [
+    {icon:'🌙', q:"How to correctly perform Salat al-Istikhara?", cat:"Practical Guide"},
+    {icon:'💜', q:"What are the signs of a positive answer to Istikhara?", cat:"Signs"},
+    {icon:'📿', q:"Baye Niass teaching on trust in Allah — Tawakkul", cat:"Tawakkul"},
+    {icon:'🤲', q:"The complete Istikhara Dua in Arabic with meaning", cat:"Dua"}
+  ],
+  conseil: [
+    {icon:'💔', q:"I am in love but my family opposes the relationship. What should I do?", cat:"Relationships"},
+    {icon:'💍', q:"My spouse makes me suffer in silence. How do I talk to them?", cat:"Marriage"},
+    {icon:'😔', q:"I feel lonely and misunderstood by everyone around me", cat:"Loneliness"},
+    {icon:'🤔', q:"I have a very difficult decision to make and do not know what to choose", cat:"Decision"},
+    {icon:'😰', q:"Someone betrayed me deeply. How do I heal from this wound?", cat:"Betrayal"},
+    {icon:'🏠', q:"There are serious conflicts in my family. How do I handle this?", cat:"Family"}
+  ],
+  reve: [
+    {icon:'🌊', q:"I dreamed I was drowning in a vast sea but I did not die", cat:"Water"},
+    {icon:'🐍', q:"I dreamed of a snake chasing me without biting me", cat:"Animal"},
+    {icon:'🌟', q:"I dreamed of the Prophet ﷺ. What does this blessed dream mean?", cat:"Prophetic"},
+    {icon:'👤', q:"I dreamed of a deceased relative speaking to me. What does he want to say?", cat:"The Dead"},
+    {icon:'🏃', q:"I often dream I am running but my legs do not obey me", cat:"Recurring"},
+    {icon:'🦁', q:"I dreamed of a lion staring at me without attacking", cat:"Animal"}
+  ],
+  asrar: [
+    {icon:'💍', q:"Istikhara Num. marriage: Ibrahim + Fatima — analyze their Abjad compatibility", cat:"Istikhara Num."},
+    {icon:'💼', q:"Istikhara Num. work: does this position suit me according to Abjad?", cat:"Istikhara Num."},
+    {icon:'🔢', q:"Calculate the Abjad value of the name Ibrahim and reveal its spiritual secrets", cat:"Abjad Calc"},
+    {icon:'📿', q:"What are the numerical secrets of the Tijani Wird — the 3 x 100 repetitions?", cat:"Wird Tijani"},
+    {icon:'🌙', q:"Reveal the secrets of the name Allah and its deep Abjad value", cat:"99 Names"},
+    {icon:'📖', q:"What are the numerical secrets of Bismillah Ar-Rahman Ar-Rahim?", cat:"Nour — Quran"},
+    {icon:'🔲', q:"Explain the science of Wafq — Islamic magic squares", cat:"Wafq"},
+    {icon:'✨', q:"What is the spiritual secret of the number 786 according to Abjad?", cat:"Secrets"},
+    {icon:'💫', q:"Analyze the name Muhammad — Abjad value and secrets of its letters", cat:"Nour — Names"},
+    {icon:'🌟', q:"What are the hidden numerical secrets in Surah Al-Fatiha?", cat:"Nour — Quran"},
+    {icon:'🔮', q:"Explain the secrets of the letter Qaf and its rank in Abjad", cat:"Nour — Letters"},
+    {icon:'📿', q:"Spiritual meaning of the number 99 — the 99 Names and their secrets", cat:"Numbers"}
+  ],
+  islam: [
+    {icon:'🌍', q:"Islam AI, explain to me the deep meaning of my life and mission on earth", cat:"Existence"},
+    {icon:'🔬', q:"How did the Quran predict modern scientific discoveries?", cat:"Science & Faith"},
+    {icon:'💔', q:"I am going through a terrible trial. Give me Islamic wisdom to hold on", cat:"Resilience"},
+    {icon:'🧠', q:"What is the difference between artificial intelligence and divine intelligence?", cat:"Philosophy"},
+    {icon:'💰', q:"How to manage my finances 100% Islamically?", cat:"Halal Finance"},
+    {icon:'🌙', q:"What is the deepest secret hidden in Surah Al-Fatiha?", cat:"Quran Secrets"},
+    {icon:'👨‍👩‍👧', q:"How to build a thriving Muslim family in the 21st century?", cat:"Family"},
+    {icon:'⚡', q:"I doubt my faith. Islam AI, help me find certainty again", cat:"Aqida"},
+    {icon:'🔮', q:"What are the signs we are living in the end times according to Islam?", cat:"Akhir az-Zaman"},
+    {icon:'🩺', q:"Prophetic medicine: how to heal naturally according to the Sunnah?", cat:"Tibb Nabawi"}
+  ],
+  sensible: [
+    {icon:'❤️', q:"My spouse is no longer interested in me. What should I do?", cat:"Intimate Life"},
+    {icon:'😞', q:"I did something I am ashamed of and do not know what to do", cat:"Repentance"},
+    {icon:'💭', q:"I have thoughts I cannot share with anyone. Is that normal?", cat:"Thoughts"},
+    {icon:'💔', q:"My spouse cheated on me. Should I forgive or leave?", cat:"Infidelity"},
+    {icon:'😰', q:"I have been suffering in silence for a long time and cannot take it anymore", cat:"Distress"},
+    {icon:'🔓', q:"There is a secret I have been carrying alone for years", cat:"Secret"}
+  ]
+};
+
+/* ── Suggestions AR ── */
+var AB_SUGGESTIONS_AR = {
+  baye: [
+    {icon:'🕌', q:"ما هي الفيضة عند الشيخ إبراهيم نياس؟", cat:"الأسس"},
+    {icon:'☽',  q:"اشرح مفهوم التربية في الطريقة التيجانية", cat:"الطريق الروحاني"},
+    {icon:'📿', q:"ما هو معنى الورد التيجاني؟", cat:"الممارسات"},
+    {icon:'🌟', q:"من كان الشيخ إبراهيم نياس حقاً؟", cat:"السيرة"},
+    {icon:'💫', q:"ما هي المعرفة عند باي نياس؟", cat:"الروحانية"},
+    {icon:'📜', q:"حدثني عن كتاب كاشف الإلباس لباي نياس", cat:"المؤلفات"}
+  ],
+  quran: [
+    {icon:'📖', q:"تفسير سورة الفاتحة في التقليد التيجاني", cat:"التفسير"},
+    {icon:'✨', q:"الآيات القرآنية في المعرفة الإلهية", cat:"الروحانية"},
+    {icon:'🌙', q:"ما هي الأهمية الروحية لسورة الكهف؟", cat:"التفسير"},
+    {icon:'💎', q:"أسماء الله الحسنى وأهميتها في القرآن", cat:"الأسماء الحسنى"}
+  ],
+  tasaw: [
+    {icon:'✨', q:"اشرح مفهوم الفناء في الصوفية", cat:"المقامات"},
+    {icon:'💫', q:"الفرق بين الشريعة والطريقة والحقيقة", cat:"الطريق الروحاني"},
+    {icon:'🌟', q:"ما هو الحال والمقام في التصوف؟", cat:"الأحوال الروحية"},
+    {icon:'☽',  q:"مفهوم المراقبة في الطريقة التيجانية", cat:"الممارسات"}
+  ],
+  istikh: [
+    {icon:'🌙', q:"كيف أؤدي صلاة الاستخارة بشكل صحيح؟", cat:"دليل عملي"},
+    {icon:'💜', q:"ما هي علامات الإجابة الإيجابية للاستخارة؟", cat:"العلامات"},
+    {icon:'📿', q:"تعليم باي نياس في التوكل على الله", cat:"التوكل"},
+    {icon:'🤲', q:"دعاء الاستخارة كاملاً بالعربية وشرحه", cat:"الدعاء"}
+  ],
+  conseil: [
+    {icon:'💔', q:"أنا أحب شخصاً لكن عائلتي ترفض العلاقة. ماذا أفعل؟", cat:"العلاقات"},
+    {icon:'💍', q:"زوجي/زوجتي يجعلني أعاني في صمت. كيف أتحدث معه/معها؟", cat:"الزواج"},
+    {icon:'😔', q:"أشعر بالوحدة وسوء الفهم من الجميع حولي", cat:"الوحدة"},
+    {icon:'🤔', q:"لدي قرار صعب جداً ولا أعرف ماذا أختار", cat:"القرار"},
+    {icon:'😰', q:"خانني شخص ما بعمق. كيف أشفى من هذا الجرح؟", cat:"الخيانة"},
+    {icon:'🏠', q:"هناك خلافات خطيرة في عائلتي. كيف أتعامل مع هذا؟", cat:"العائلة"}
+  ],
+  reve: [
+    {icon:'🌊', q:"حلمت أنني أغرق في بحر واسع لكنني لم أمت", cat:"الماء"},
+    {icon:'🐍', q:"حلمت بثعبان يطاردني دون أن يعضني", cat:"الحيوانات"},
+    {icon:'🌟', q:"حلمت بالنبي ﷺ. ماذا يعني هذا الحلم المبارك؟", cat:"الرؤيا النبوية"},
+    {icon:'👤', q:"حلمت بقريب متوفى يتحدث إليّ. ماذا يريد أن يقول؟", cat:"الأموات"},
+    {icon:'🏃', q:"كثيراً ما أحلم أنني أجري لكن ساقاي لا تطيعانني", cat:"الأحلام المتكررة"},
+    {icon:'🦁', q:"حلمت بأسد يحدق بي دون أن يهاجمني", cat:"الحيوانات"}
+  ],
+  asrar: [
+    {icon:'💍', q:"استخارة الأرقام للزواج: إبراهيم + فاطمة — تحليل توافق الأبجد", cat:"استخارة الأرقام"},
+    {icon:'💼', q:"هل هذا العمل مناسب لي وفق الحساب الأبجدي؟", cat:"استخارة الأرقام"},
+    {icon:'🔢', q:"احسب القيمة الأبجدية لاسم إبراهيم وأكشف أسراره", cat:"حساب الأبجد"},
+    {icon:'📿', q:"ما هي الأسرار العددية للورد التيجاني — 3 × 100 تكرار؟", cat:"الورد التيجاني"},
+    {icon:'🌙', q:"أكشف أسرار اسم الله وقيمته الأبجدية العميقة", cat:"الأسماء التسعة والتسعون"},
+    {icon:'📖', q:"ما هي الأسرار العددية للبسملة؟", cat:"نور — القرآن"},
+    {icon:'🔲', q:"اشرح لي علم الوفق — المربعات السحرية الإسلامية", cat:"الوفق"},
+    {icon:'✨', q:"ما هو السر الروحاني للعدد 786 وفق الأبجد؟", cat:"الأسرار"},
+    {icon:'💫', q:"حلل اسم محمد — القيمة الأبجدية وأسرار الحروف", cat:"نور — الأسماء"},
+    {icon:'🌟', q:"ما هي الأسرار العددية في سورة الفاتحة؟", cat:"نور — القرآن"},
+    {icon:'🔮', q:"اشرح أسرار حرف القاف ومرتبته في الأبجد", cat:"نور — الحروف"},
+    {icon:'📿', q:"المعنى الروحاني للعدد 99 — الأسماء الحسنى وأسرارها", cat:"الأرقام"}
+  ],
+  islam: [
+    {icon:'🌍', q:"الإسلام AI، اشرح لي المعنى العميق لحياتي ومهمتي على الأرض", cat:"الوجود"},
+    {icon:'🔬', q:"كيف تنبأ القرآن بالاكتشافات العلمية الحديثة؟", cat:"العلم والإيمان"},
+    {icon:'💔', q:"أمر بمحنة شديدة. أعطني حكمة إسلامية لأصمد", cat:"الصمود"},
+    {icon:'🧠', q:"ما الفرق بين الذكاء الاصطناعي والذكاء الإلهي؟", cat:"الفلسفة"},
+    {icon:'💰', q:"كيف أدير أموالي بطريقة إسلامية 100%؟", cat:"المال الحلال"},
+    {icon:'🌙', q:"ما هو أعمق سر مخفي في سورة الفاتحة؟", cat:"أسرار القرآن"},
+    {icon:'👨‍👩‍👧', q:"كيف أبني أسرة مسلمة سعيدة في القرن الواحد والعشرين؟", cat:"العائلة"},
+    {icon:'⚡', q:"أشك في إيماني. الإسلام AI، ساعدني على استعادة اليقين", cat:"العقيدة"},
+    {icon:'🔮', q:"ما هي علامات آخر الزمان في الإسلام؟", cat:"آخر الزمان"},
+    {icon:'🩺', q:"الطب النبوي: كيف أتداوى بالطريقة الطبيعية وفق السنة؟", cat:"الطب النبوي"}
+  ],
+  sensible: [
+    {icon:'❤️', q:"زوجي/زوجتي لم يعد مهتماً بي. ماذا أفعل؟", cat:"الحياة الزوجية"},
+    {icon:'😞', q:"فعلت شيئاً أشعر بالخجل منه ولا أعرف ماذا أفعل", cat:"التوبة"},
+    {icon:'💭', q:"لديّ أفكار لا أستطيع مشاركتها مع أحد. هل هذا طبيعي؟", cat:"الأفكار"},
+    {icon:'💔', q:"خانني شريك حياتي. هل أسامح أم أرحل؟", cat:"الخيانة الزوجية"},
+    {icon:'😰', q:"أعاني في صمت منذ فترة طويلة ولم أعد أتحمل", cat:"الضيق"},
+    {icon:'🔓', q:"هناك سر أحمله وحدي منذ سنوات", cat:"السر"}
+  ]
+};
+
+/* ── Sélecteur de suggestions selon la langue ── */
+var AB_SUGGESTIONS = AB_SUGGESTIONS_FR;
 
 /* ── Init ── */
 function abInit() {
@@ -9048,7 +9225,11 @@ function setEngine(e, btn) {
 function renderAbSuggestions() {
   var grid = document.getElementById('abSugGrid');
   if (!grid) return;
-  var sugs = AB_SUGGESTIONS[_abEngine] || AB_SUGGESTIONS.baye;
+  /* Sélectionner les bonnes suggestions selon la langue */
+  var sData = (window._lang === 'en' && typeof AB_SUGGESTIONS_EN !== 'undefined') ? AB_SUGGESTIONS_EN :
+              (window._lang === 'ar' && typeof AB_SUGGESTIONS_AR !== 'undefined') ? AB_SUGGESTIONS_AR :
+              (typeof AB_SUGGESTIONS_FR !== 'undefined') ? AB_SUGGESTIONS_FR : AB_SUGGESTIONS;
+  var sugs = sData[_abEngine] || sData.baye;
   grid.innerHTML = '';
   sugs.forEach(function(s, i) {
     var card = document.createElement('div');
