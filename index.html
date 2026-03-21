@@ -2811,12 +2811,10 @@ button[onclick="qiblaGPS()"] {
 
   /* ─── Streams HTTPS uniquement ─── */
   var STREAMS = [
-    /* Zeno.fm — proxy HTTPS du stream lyartech, fiable */
-    'https://stream.zeno.fm/OUE5xD8nztzuv',
-    /* Stream officiel fastcast4u — parfois servi en HTTPS direct */
+    /* URL officielle Radio Al Fayda 90.1 FM Kaolack — source : radioalfayda.net */
     'https://usa5.fastcast4u.com/proxy/lyartech?mp=/1',
-    /* Hostrails relay */
-    'https://cast2.hostrails.com/radio-alfayda'
+    /* Fallback HTTPS alternatif */
+    'https://stream.zeno.fm/OUE5xD8nztzuv'
   ];
 
   var META_API   = 'https://metadata-api.mytuner.mobi/v2/439363';
@@ -2932,32 +2930,35 @@ button[onclick="qiblaGPS()"] {
     var wrap = document.querySelector('.rp-wrap');
     if(!wrap || document.getElementById('rpEmbed')) return;
 
-    setSt('Player officiel chargé', 'on');
-
-    /* Simuler visuellement que c'est en lecture */
+    setSt('Connexion player officiel...', 'on');
     disc.classList.add('spin');
     needle.classList.add('on');
     vizOn(true);
 
     var div = document.createElement('div');
     div.id = 'rpEmbed';
-    div.style.cssText =
-      'padding:.6rem 1rem .8rem;background:#0a1a0e;' +
-      'border-top:1px solid rgba(212,175,55,.15);text-align:center';
+    div.style.cssText = 'padding:.6rem 1rem .9rem;background:#0a1a0e;border-top:1px solid rgba(212,175,55,.15);text-align:center';
+
+    /* Essayer Zeno.fm embed en premier — plus fiable HTTPS */
+    /* Player officiel Muses — identique à radioalfayda.net */
+    var musesUrl = 'https://hosted.muses.org/player.html?' +
+      'url=http%3A%2F%2Fusa5.fastcast4u.com%2Fproxy%2Flyartech%3Fmp%3D%2F1' +
+      '&codec=mp3&volume=80&autoplay=true' +
+      '&title=RADIO+AL+FAYDA+90.1+KAOLACK' +
+      '&welcome=BIENVENUE' +
+      '&skin=mcclean&width=280&height=60&wmode=transparent';
+
     div.innerHTML =
-      '<div style="font-size:10px;color:rgba(255,255,255,.3);' +
-      'letter-spacing:.06em;margin-bottom:.5rem">📡 PLAYER OFFICIEL</div>' +
-      '<iframe ' +
-        'src="https://hosted.muses.org/player.html?' +
-          'url=http%3A%2F%2Fusa5.fastcast4u.com%2Fproxy%2Flyartech%3Fmp%3D%2F1' +
-          '&codec=mp3&volume=80&autoplay=true' +
-          '&title=RADIO+AL+FAYDA+90.1+KAOLACK' +
-          '&skin=mcclean&width=260&height=60" ' +
-        'width="260" height="66" frameborder="0" scrolling="no" ' +
+      '<div style="font-size:10px;color:rgba(255,255,255,.3);letter-spacing:.06em;margin-bottom:.6rem">&#x1F4E1; PLAYER OFFICIEL — Radio Al Fayda 90.1 FM Kaolack</div>' +
+      '<iframe src="' + musesUrl + '" ' +
+        'width="100%" height="66" frameborder="0" scrolling="no" ' +
         'allow="autoplay;encrypted-media" ' +
-        'style="border-radius:10px;display:block;margin:0 auto">' +
-      '</iframe>';
+        'style="border-radius:10px;display:block;max-width:300px;margin:0 auto">' +
+      '</iframe>' +
+      '<div style="font-size:9px;color:rgba(255,255,255,.2);margin-top:5px">Radio Al Fayda 90.1 FM — Kaolack, Sénégal</div>';
+
     wrap.appendChild(div);
+    setSt('Radio Al-Faydha — En direct', 'on');
   }
 
   function hideEmbed(){
@@ -8562,11 +8563,12 @@ async function abCallClaude(question, apiKey, systemPrompt) {
       'Content-Type': 'application/json',
       'x-api-key': apiKey,
       'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
+      'anthropic-dangerous-direct-browser-access': 'true',
+      'anthropic-beta': 'max-tokens-3-5-sonnet-2024-07-15'
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1024,
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2048,
       system: systemPrompt,
       messages: messages
     })
