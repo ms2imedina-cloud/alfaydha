@@ -311,17 +311,15 @@ body{
 .wlc-footer-ar{font-family:'Amiri',serif;font-size:16px;color:rgba(212,175,55,.4);direction:rtl}
 
 /* ══ GOOGLE SIGN-IN ══ */
-.wlc-google-btn{
-  display:flex;align-items:center;justify-content:center;gap:.75rem;
-  background:#fff;border:none;border-radius:14px;
-  padding:.85rem 1.5rem;width:calc(100% - 2.4rem);margin:0 1.2rem;
-  cursor:pointer;transition:all .25s;
-  box-shadow:0 4px 16px rgba(0,0,0,.25);
-  font-family:'Roboto',sans-serif;font-size:15px;font-weight:500;color:#3c4043;
-}
-.wlc-google-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.35)}
-.wlc-google-btn:active{transform:scale(.97)}
-.wlc-google-btn img{width:22px;height:22px}
+.wlc-phone-btn{display:flex;align-items:center;justify-content:center;gap:.7rem;width:100%;padding:.85rem 1.2rem;background:var(--g1);border:2px solid var(--gold);border-radius:16px;color:#fff;font-size:15px;font-weight:700;font-family:'Roboto',sans-serif;cursor:pointer;transition:all .25s;letter-spacing:.03em}
+.wlc-phone-btn:hover{background:var(--g2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(15,123,63,.4)}
+.wlc-phone-btn:active{transform:scale(.98)}
+.wlc-otp-box{width:100%;background:rgba(255,255,255,.07);border:1.5px solid rgba(212,175,55,.3);border-radius:16px;padding:1.1rem 1.2rem;display:flex;flex-direction:column;gap:.7rem;box-sizing:border-box}
+.wlc-otp-input{width:100%;padding:.7rem 1rem;border-radius:10px;border:1.5px solid rgba(212,175,55,.4);background:rgba(255,255,255,.08);color:#fff;font-size:16px;font-family:'Roboto',sans-serif;text-align:center;letter-spacing:.15em;outline:none}
+.wlc-otp-input::placeholder{color:rgba(251,248,232,.35);letter-spacing:.05em}
+.wlc-otp-input:focus{border-color:var(--gold);background:rgba(255,255,255,.12)}
+.wlc-phone-label{font-size:12px;color:rgba(251,248,232,.5);text-align:center}
+#recaptcha-container{display:flex;justify-content:center;margin:.5rem 0}
 .wlc-or-row{
   display:flex;align-items:center;gap:.75rem;
   margin:.9rem 1.2rem .5rem;
@@ -2532,19 +2530,39 @@ button[onclick="qiblaGPS()"] {
     <div class="wlc-verse-fr">« Quiconque craint Allah, Il lui ménagera une issue et lui accordera Ses dons par où il n'espérait pas. » (Coran 65:2-3)</div>
   </div>
 
-  <!-- CONNEXION GOOGLE UNIQUEMENT -->
-  <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;padding:0 1.2rem;width:100%">
+  <!-- CONNEXION PAR NUMÉRO DE TÉLÉPHONE -->
+  <div style="display:flex;flex-direction:column;align-items:center;gap:.9rem;padding:0 1.2rem;width:100%">
 
-    <!-- Description -->
     <div style="text-align:center;font-size:13px;color:rgba(251,248,232,.55);line-height:1.7;padding:0 .5rem">
-      Connectez-vous pour accéder à toutes les fonctionnalités de la communauté Taalibé mondiale
+      Entrez votre numéro de téléphone pour accéder à l'application
     </div>
 
-    <!-- Bouton Google -->
-    <button class="wlc-google-btn" onclick="signInWithGoogle()" style="width:100%;margin:0">
-      <svg width="22" height="22" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-3.59-13.46-8.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
-      Se connecter avec Google
-    </button>
+    <!-- Étape 1 : Numéro -->
+    <div id="phoneStep1" class="wlc-otp-box">
+      <div class="wlc-phone-label">📱 Numéro international (ex: +221 77 000 00 00)</div>
+      <input id="phoneInput" class="wlc-otp-input" type="tel"
+        placeholder="+221 77 000 00 00"
+        style="letter-spacing:.05em;font-size:17px"
+        onkeydown="if(event.key==='Enter') sendSMS()">
+      <div id="recaptcha-container"></div>
+      <button class="wlc-phone-btn" onclick="sendSMS()" id="sendSmsBtn">
+        📲 Recevoir le code SMS
+      </button>
+    </div>
+
+    <!-- Étape 2 : Code OTP (masqué au départ) -->
+    <div id="phoneStep2" class="wlc-otp-box" style="display:none">
+      <div class="wlc-phone-label">🔐 Code reçu par SMS</div>
+      <input id="otpInput" class="wlc-otp-input" type="number"
+        placeholder="_ _ _ _ _ _" maxlength="6"
+        onkeydown="if(event.key==='Enter') verifySMS()">
+      <button class="wlc-phone-btn" onclick="verifySMS()" id="verifyBtn">
+        ✅ Vérifier le code
+      </button>
+      <button onclick="resetPhone()" style="background:none;border:none;color:rgba(251,248,232,.4);font-size:12px;cursor:pointer;font-family:'Roboto',sans-serif;margin-top:.2rem">
+        ← Changer de numéro
+      </button>
+    </div>
 
   </div>
 
@@ -2564,7 +2582,7 @@ button[onclick="qiblaGPS()"] {
     <span id="userAvatarNameText">—</span>
     <span class="bar-role" id="userAvatarRole"></span>
   </span>
-  <button id="userSignOutBtn" onclick="signOutGoogle()">Déconnexion</button>
+  <button id="userSignOutBtn" onclick="signOutPhone()">Déconnexion</button>
 </div>
 
 <!-- SECTION UMMA -->
@@ -5831,205 +5849,210 @@ function enterApp(profile) {
 }
 
 /* ═══════════════════════════════════════
-   GOOGLE AUTH — Firebase Authentication
+   PHONE AUTH — Firebase Authentication
 ═══════════════════════════════════════ */
-function _isIOS() {
-  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-}
-function _isSafari() {
-  return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-}
 
-/* ── Garde-fou : si retour de redirect sans connexion, réactiver le bouton ── */
-(function(){
-  document.addEventListener('DOMContentLoaded', function(){
-    /* Si on revient d'un redirect Google Auth et Firebase ne répond pas dans 6s */
-    var pending = false;
-    try { pending = !!sessionStorage.getItem('gauth_pending'); } catch(e) {}
-    if (pending) {
-      setTimeout(function(){
-        try { sessionStorage.removeItem('gauth_pending'); } catch(e) {}
-        var btn = document.querySelector('.wlc-google-btn');
-        if (btn && btn.disabled) {
-          btn.disabled = false;
-          btn.innerHTML = _googleBtnHTML();
-        }
-      }, 6000);
-    }
-  });
-})();
+var _phoneConfirmation = null;
+var _recaptchaVerifier = null;
+var _recaptchaRendered = false;
 
-function signInWithGoogle() {
-  var btn = document.querySelector('.wlc-google-btn');
-  if (btn) { btn.disabled = true; btn.innerHTML = '<span>⏳</span> Connexion…'; }
-
-  function _resetBtn() {
-    if (btn) { btn.disabled = false; btn.innerHTML = _googleBtnHTML(); }
-  }
-  function _launch() {
+function _initRecaptcha() {
+  if (_recaptchaRendered) return;
+  _recaptchaRendered = true;
+  _fbInit(function() {
     try {
-      var provider = new firebase.auth.GoogleAuthProvider();
-      provider.setCustomParameters({ prompt: 'select_account' });
-      if (_isIOS() || _isSafari()) {
-        try { sessionStorage.setItem('gauth_pending', '1'); } catch(e) {}
-        /* Réactiver le bouton après 2s pour éviter qu'il reste bloqué si la redirect tarde */
-        setTimeout(function(){
-          if(btn && btn.disabled){ btn.disabled=false; btn.innerHTML='<span>↩</span> Appuyez à nouveau…'; }
-        }, 2000);
-        firebase.auth().signInWithRedirect(provider).catch(function(err){ _resetBtn(); showToast('⚠️ ' + err.message); });
-        return;
+      _recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+        size: 'normal',
+        callback: function() {},
+        'expired-callback': function() { _recaptchaRendered = false; }
+      });
+      _recaptchaVerifier.render();
+    } catch(e) { console.warn('[reCAPTCHA]', e); }
+  });
+}
+
+/* Afficher le reCAPTCHA quand l'utilisateur commence à taper */
+document.addEventListener('DOMContentLoaded', function() {
+  var phoneInput = document.getElementById('phoneInput');
+  if (phoneInput) {
+    phoneInput.addEventListener('focus', function() { _initRecaptcha(); });
+  }
+});
+
+function sendSMS() {
+  var phone = (document.getElementById('phoneInput').value || '').trim();
+  if (!phone || phone.length < 8) {
+    showToast('⚠️ Entrez un numéro valide avec l'indicatif (+221...)');
+    return;
+  }
+  var btn = document.getElementById('sendSmsBtn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Envoi en cours…'; }
+
+  _fbInit(function() {
+    try {
+      if (!_recaptchaVerifier) {
+        _recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+          size: 'invisible',
+          callback: function() {}
+        });
       }
-      firebase.auth().signInWithPopup(provider)
-        .then(function(result) {
-          firebase.database().ref('users/' + result.user.uid).set({
-            name: result.user.displayName, email: result.user.email,
-            photo: result.user.photoURL, lastLogin: Date.now(), uid: result.user.uid
-          });
+      firebase.auth().signInWithPhoneNumber(phone, _recaptchaVerifier)
+        .then(function(confirmationResult) {
+          _phoneConfirmation = confirmationResult;
+          /* Passer à l'étape 2 */
+          document.getElementById('phoneStep1').style.display = 'none';
+          document.getElementById('phoneStep2').style.display = 'flex';
+          document.getElementById('otpInput').focus();
+          showToast('📲 SMS envoyé sur ' + phone);
         })
         .catch(function(err) {
-          _resetBtn();
-          if (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment') {
-            setTimeout(function() { firebase.auth().signInWithRedirect(provider); }, 500);
-          } else if (err.code !== 'auth/popup-closed-by-user') {
-            showToast('⚠️ ' + err.message);
+          if (btn) { btn.disabled = false; btn.textContent = '📲 Recevoir le code SMS'; }
+          console.error('[Phone Auth]', err);
+          if (err.code === 'auth/invalid-phone-number') {
+            showToast('❌ Numéro invalide — vérifiez l'indicatif pays (+221, +33...)');
+          } else if (err.code === 'auth/too-many-requests') {
+            showToast('⏳ Trop de tentatives — attendez quelques minutes');
+          } else {
+            showToast('❌ Erreur: ' + (err.message || err.code));
           }
+          /* Réinitialiser reCAPTCHA */
+          try { _recaptchaVerifier.clear(); } catch(e) {}
+          _recaptchaVerifier = null;
+          _recaptchaRendered = false;
         });
-    } catch(e) { _resetBtn(); showToast('⚠️ Service indisponible — réessayez'); }
-  }
-  /* Lancer directement si Firebase prêt, sinon attendre max 8s */
-  var _waited = 0;
-  (function _poll(){
-    if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
-      _launch();
-    } else if (_waited < 8000) {
-      _waited += 250;
-      setTimeout(_poll, 250);
-    } else {
-      _resetBtn();
-      showToast('⚠️ Connexion impossible — vérifiez votre réseau');
+    } catch(e) {
+      if (btn) { btn.disabled = false; btn.textContent = '📲 Recevoir le code SMS'; }
+      showToast('⚠️ Service indisponible — vérifiez votre connexion');
     }
-  })();
+  });
 }
 
-function _googleBtnHTML() {
-  return '<svg width="22" height="22" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-3.59-13.46-8.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Se connecter avec Google';
+function verifySMS() {
+  var code = (document.getElementById('otpInput').value || '').trim();
+  if (!code || code.length !== 6) {
+    showToast('⚠️ Entrez le code à 6 chiffres reçu par SMS');
+    return;
+  }
+  if (!_phoneConfirmation) {
+    showToast('⚠️ Session expirée — recommencez');
+    resetPhone();
+    return;
+  }
+  var btn = document.getElementById('verifyBtn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Vérification…'; }
+
+  _phoneConfirmation.confirm(code)
+    .then(function(result) {
+      _onPhoneUser(result.user);
+    })
+    .catch(function(err) {
+      if (btn) { btn.disabled = false; btn.textContent = '✅ Vérifier le code'; }
+      if (err.code === 'auth/invalid-verification-code') {
+        showToast('❌ Code incorrect — vérifiez le SMS');
+      } else if (err.code === 'auth/code-expired') {
+        showToast('⏳ Code expiré — demandez un nouveau SMS');
+        resetPhone();
+      } else {
+        showToast('❌ Erreur: ' + (err.message || err.code));
+      }
+    });
 }
 
-/* Email admin/streamer officiel */
-var ADMIN_EMAIL = 'ms2imedina@gmail.com';
+function resetPhone() {
+  _phoneConfirmation = null;
+  document.getElementById('phoneStep1').style.display = 'flex';
+  document.getElementById('phoneStep2').style.display = 'none';
+  document.getElementById('phoneInput').value = '';
+  document.getElementById('otpInput').value = '';
+  var btn = document.getElementById('sendSmsBtn');
+  if (btn) { btn.disabled = false; btn.textContent = '📲 Recevoir le code SMS'; }
+  try { if (_recaptchaVerifier) _recaptchaVerifier.clear(); } catch(e) {}
+  _recaptchaVerifier = null;
+  _recaptchaRendered = false;
+}
 
-function _onGoogleUser(user) {
-  var isAdmin = (user.email === ADMIN_EMAIL);
+var ADMIN_PHONE = '+221XXXXXXXXX'; /* ← Remplacez par votre numéro admin */
 
-  /* Stocker infos localement */
-  var profile = isAdmin ? 'google:admin' : 'google:' + user.uid;
-  try{ localStorage.setItem('faydha_profile', profile); }catch(e){}
-  try { localStorage.setItem('faydha_google_user', JSON.stringify({
-    uid: user.uid, name: user.displayName, photo: user.photoURL, email: user.email, isAdmin: isAdmin
+function _onPhoneUser(user) {
+  var phone = user.phoneNumber;
+  var isAdmin = (phone === ADMIN_PHONE);
+
+  /* Stocker localement */
+  var profile = isAdmin ? 'phone:admin' : 'phone:' + user.uid;
+  try { localStorage.setItem('faydha_profile', profile); } catch(e) {}
+  try { localStorage.setItem('faydha_phone_user', JSON.stringify({
+    uid: user.uid, phone: phone, isAdmin: isAdmin, lastLogin: Date.now()
   })); } catch(e) {}
 
-  /* Afficher bouton langue */
+  /* Sauvegarder dans Firebase RTDB */
+  _fbInit(function() {
+    firebase.database().ref('users/' + user.uid).set({
+      phone: phone,
+      lastLogin: Date.now(),
+      uid: user.uid,
+      isAdmin: isAdmin,
+      country: phone.substring(0, 4)  /* indicatif pays */
+    });
+  });
+
+  /* Masquer welcome */
+  var w = document.getElementById('welcome');
+  if (w) {
+    w.style.transition = 'opacity .5s ease';
+    w.style.opacity = '0';
+    setTimeout(function() { w.classList.add('hidden'); w.style.opacity = ''; }, 500);
+  }
+
+  /* Afficher barre utilisateur */
+  _showUserBar(phone, null, isAdmin);
+
+  /* Rôle */
+  var roleEl = document.getElementById('userAvatarRole');
+  if (roleEl) roleEl.textContent = isAdmin ? '👑 Admin · Streamer' : '📱 ' + phone;
+
+  /* Langue */
   var langBtn = document.getElementById('langSwitchBtn');
   if (langBtn) {
     langBtn.style.display = 'block';
     var flags = {fr:'🇫🇷 FR', en:'🇬🇧 EN', ar:'🇸🇦 ع'};
     langBtn.textContent = flags[_lang] || '🌐 FR';
   }
-  /* Masquer welcome */
-  var w = document.getElementById('welcome');
-  if (w) { w.style.transition='opacity .5s ease'; w.style.opacity='0'; setTimeout(function(){ w.classList.add('hidden'); w.style.opacity=''; }, 500); }
-
-  /* Afficher barre utilisateur */
-  _showUserBar(user.displayName, user.photoURL, isAdmin);
-
-  /* Mettre à jour label profil */
-  var el = document.getElementById('userAvatarRole');
-  if (el) el.textContent = isAdmin ? '👑 Admin · Streamer' : '🔵 ' + (user.displayName || user.email);
-
-  /* Sauvegarder dans Firebase RTDB */
-  _fbInit(function() {
-    firebase.database().ref('users/' + user.uid).set({
-      name: user.displayName, email: user.email,
-      photo: user.photoURL, lastLogin: Date.now(),
-      uid: user.uid, isAdmin: isAdmin
-    });
-  });
 
   if (isAdmin) {
-    /* Activer session admin automatiquement */
     _adminIn = true; window._adminIn = true;
     if (typeof interactUpdateRole === 'function') interactUpdateRole();
     var fab = document.getElementById('adminFab');
     if (fab) fab.classList.add('show');
-    setTimeout(function(){
-      showToast('👑 Bienvenue Admin — Accès streamer activé ✅');
-      _fbInit(function(){ lkLoadConfig && lkLoadConfig(); });
-    }, 700);
+    setTimeout(function() { showToast('👑 Bienvenue Admin ✅'); }, 600);
+    _fbInit(function() { lkLoadConfig && lkLoadConfig(); });
   } else {
-    /* Vérifier si l'utilisateur est un streamer autorisé */
+    setTimeout(function() { showToast('✅ Bienvenue — ' + phone + ' 📿'); }, 600);
+    /* Vérifier streamer */
     checkStreamerAccess(user, function(isStreamer) {
       if (isStreamer) {
-        _adminIn = true; window._adminIn = true; /* Accès streamer : peut faire des lives */
+        _adminIn = true; window._adminIn = true;
         window._isStreamer = true;
         if (typeof interactUpdateRole === 'function') interactUpdateRole();
         var fab = document.getElementById('adminFab');
         if (fab) fab.classList.add('show');
-        /* Mettre à jour label */
-        var el = document.getElementById('userAvatarRole');
-        if (el) el.textContent = '📡 Streamer · ' + (user.displayName || user.email);
-        var roleEl2 = document.getElementById('userAvatarRole');
-        if (roleEl2) roleEl2.innerHTML = '<span style="background:var(--g2);color:#fff;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:700;margin-right:4px">📡 STREAMER</span>Diffuseur officiel';
-        setTimeout(function(){ showToast('📡 Bienvenue Streamer — Accès live activé ✅'); }, 700);
-      } else {
-        setTimeout(function(){ showToast('✅ Bienvenue ' + (user.displayName || '') + ' 📿'); }, 600);
+        setTimeout(function() { showToast('📡 Bienvenue Streamer ✅'); }, 700);
       }
     });
   }
 }
 
-function _showUserBar(name, photo, isAdmin) {
-  var bar    = document.getElementById('userAvatarBar');
-  var img    = document.getElementById('userAvatarImg');
-  var nameEl = document.getElementById('userAvatarNameText');
-  var roleEl = document.getElementById('userAvatarRole');
-  if (bar) bar.classList.add('show');
-  if (img && photo) { img.src = photo; img.style.display='block'; }
-  else if (img) img.style.display='none';
-  /* Nom */
-  if (nameEl) nameEl.textContent = name || 'Connecté';
-  /* Rôle sous le nom */
-  if (roleEl && isAdmin) {
-    roleEl.innerHTML = '<span style="background:var(--gold);color:#000;border-radius:4px;padding:1px 5px;font-size:10px;font-weight:700;margin-right:3px">👑</span>Admin · Streamer';
-  }
-  /* Hauteur de la barre unifiée */
-  document.querySelectorAll('.sec').forEach(function(s){
-    s.style.paddingTop = '50px';
-  });
-  /* Bouton ⚙️ admin compact */
-  if (isAdmin) {
-    var signOutBtn = document.getElementById('userSignOutBtn');
-    if (signOutBtn && !document.getElementById('adminQuickBtn')) {
-      signOutBtn.insertAdjacentHTML('beforebegin',
-        '<button id="adminQuickBtn" onclick="document.getElementById(\'adminOverlay\').classList.add(\'open\');showAdminContent();" '+
-        'style="font-size:11px;color:#000;cursor:pointer;background:var(--gold);border:none;border-radius:100px;padding:.22rem .6rem;font-family:\'Roboto\',sans-serif;margin-right:4px;font-weight:700;flex-shrink:0">⚙️</button>'
-      );
-    }
-  }
-}
-
-function signOutGoogle() {
+function signOutPhone() {
   if (!confirm('Se déconnecter ?')) return;
   _fbInit(function() {
     firebase.auth().signOut().then(function() {
-      try{ localStorage.removeItem('faydha_profile'); }catch(e){}
-      try{ localStorage.removeItem('faydha_google_user'); }catch(e){}
-      /* Cacher barre et profil */
+      try { localStorage.removeItem('faydha_profile'); } catch(e) {}
+      try { localStorage.removeItem('faydha_phone_user'); } catch(e) {}
       var bar = document.getElementById('userAvatarBar');
       if (bar) bar.classList.remove('show');
-      document.querySelectorAll('.sec').forEach(function(s){ s.style.paddingTop = ''; });
-      /* Afficher welcome */
+      document.querySelectorAll('.sec').forEach(function(s) { s.style.paddingTop = ''; });
       var w = document.getElementById('welcome');
-      if (w) { w.classList.remove('hidden'); w.style.opacity='1'; }
+      if (w) { w.classList.remove('hidden'); w.style.opacity = '1'; }
+      resetPhone();
       showToast('👋 Déconnecté');
     });
   });
@@ -8128,7 +8151,7 @@ var LANG = {
 
     /* Welcome / Connexion */
     wlc_connect_desc: 'Connectez-vous pour accéder à toutes les fonctionnalités de la communauté Taalibé mondiale',
-    wlc_google:  'Se connecter avec Google',
+    wlc_google:  'Connexion par téléphone',
     wlc_feat1:   'Accès à la communauté mondiale Taalibé',
     wlc_feat2:   'Accès aux groupes Zikr en temps réel',
     wlc_feat3:   'Chat en direct avec la communauté',
@@ -8780,7 +8803,7 @@ function applyTranslations() {
   /* Welcome page */
   var wDesc = document.querySelector('#welcome [style*="13px"][style*="rgba(251"]');
   if (wDesc) wDesc.textContent = t('wlc_connect_desc');
-  var gBtn = document.querySelector('.wlc-google-btn');
+  var gBtn = document.getElementById('sendSmsBtn');
   if (gBtn) {
     var gTxt = gBtn.childNodes[gBtn.childNodes.length - 1];
     if (gTxt && gTxt.nodeType === 3) gTxt.textContent = ' ' + t('wlc_google');
@@ -10596,8 +10619,8 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function _updateGoogleBtn() {
-    /* Le bouton est toujours cliquable — _fbInit dans signInWithGoogle gère l\'attente */
-    var btn = document.querySelector('.wlc-google-btn');
+    /* Le bouton est toujours cliquable — _fbInit dans sendSMS gère l\'attente */
+    var btn = document.getElementById('sendSmsBtn');
     if (!btn) return;
     btn.disabled = false;
     btn.style.opacity = '1';
@@ -10642,7 +10665,7 @@ document.addEventListener('DOMContentLoaded', function() {
         _userConnected = true;
         /* Ignorer les sessions anonymes (utilisateurs sans Google) */
         if (user.isAnonymous) return;
-        _onGoogleUser(user);
+        _onPhoneUser(user);
         _fbSyncUser(user);
       } else {
         if (_userConnected) {
@@ -11357,7 +11380,7 @@ function interactInit() {
 /* ── Obtenir nom affiché ── */
 function _interactGetName() {
   var gu = null;
-  try { gu = JSON.parse(localStorage.getItem('faydha_google_user')||'null'); } catch(e){}
+  try { gu = JSON.parse(localStorage.getItem('faydha_phone_user')||'null'); } catch(e){}
   if (gu && gu.name) return gu.name;
   var profile = localStorage.getItem('faydha_profile') || 'visiteur';
   var names = {talibe:'Taalibé',participant:'Participant',nouveau:'Nouveau Taalibé',visiteur:'Visiteur'};
@@ -11453,7 +11476,7 @@ function interactRequestMic() {
 function _interactGetUID() {
   /* 1. Utilisateur Google connecté */
   var gu = null;
-  try { gu = JSON.parse(localStorage.getItem('faydha_google_user')||'null'); } catch(e){}
+  try { gu = JSON.parse(localStorage.getItem('faydha_phone_user')||'null'); } catch(e){}
   if (gu && gu.uid) return gu.uid;
   /* 2. Utilisateur anonyme Firebase (a un uid stable par session) */
   try {
@@ -12055,7 +12078,7 @@ function micAdminReject(uid){_fbInit(function(){firebase.database().ref('lk_mic/
 
 /* ── Helpers ── */
 function _lkGetDisplayName(){
-  try{var gu=JSON.parse(localStorage.getItem('faydha_google_user')||'null');if(gu&&gu.name)return gu.name;}catch(e){}
+  try{var gu=JSON.parse(localStorage.getItem('faydha_phone_user')||'null');if(gu&&gu.name)return gu.name;}catch(e){}
   var p=localStorage.getItem('faydha_profile')||'visiteur';
   return {talibe:'Taalibé',participant:'Participant',nouveau:'Nouveau',visiteur:'Visiteur'}[p]||'Visiteur';
 }
