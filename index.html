@@ -5287,7 +5287,7 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
       <span id="abSpeedLabel" style="font-size:11px;color:var(--g1);font-weight:700;min-width:28px;text-align:center">×1.0</span>
       <button onclick="abSpeedUp()" style="background:none;border:none;cursor:pointer;font-size:13px;color:var(--g1);padding:0 2px;line-height:1" title="Accélérer">🐇</button>
     </div>
-    <button class="ab-key-btn" onclick="abToggleConfig()" title="Clé API Ask Baye" id="abKeyBtn">&#x1F511;</button>
+    <button class="ab-key-btn" onclick="abToggleConfig()" title="Clé API Ask Baye" id="abKeyBtn" style="display:none">&#x1F511;</button>
     <button class="ab-clr-btn" onclick="abClear()">&#x2715; Vider</button>
   </div>
 </div>
@@ -9590,8 +9590,7 @@ function abSpeak(text) {
   window.speechSynthesis.cancel();
   var clean = text.replace(/(<([^>]+)>)/gi,'').replace(/[*#_~\x60]/g,'');
   var utt = new SpeechSynthesisUtterance(clean);
-  var l = window._abLang || 'fr';
-  utt.lang = l === 'ar' ? 'ar-SA' : l === 'en' ? 'en-GB' : 'fr-FR';
+  utt.lang = (window._abLang === 'ar') ? 'ar-SA' : 'fr-FR';
   utt.rate = window._abSpeed || 1.0;
   window.speechSynthesis.speak(utt);
 }
@@ -13791,102 +13790,6 @@ window.admSendNotifToUser = function() {
     });
   });
 };
-</script>
-
-<script>
-/* ══ Langue vocale — 3 langues FR / EN / AR ══ */
-window._abLang = window._abLang || 'fr';
-
-window.abToggleLang = function() {
-  var btn = document.getElementById('abLangBtn');
-  var langs = [
-    { code: 'fr', label: '🇫🇷 FR' },
-    { code: 'en', label: '🇬🇧 EN' },
-    { code: 'ar', label: '🇸🇦 AR' }
-  ];
-  var idx = langs.findIndex(function(l){ return l.code === window._abLang; });
-  idx = (idx + 1) % langs.length;
-  window._abLang = langs[idx].code;
-  if (btn) btn.textContent = langs[idx].label;
-  /* Sync avec le système de langue global si possible */
-  if (typeof selectLang === 'function') {
-    try { selectLang(window._abLang, true); } catch(e) {}
-  }
-  if (typeof showToast === 'function') {
-    var names = { fr: 'Français', en: 'English', ar: 'عربي' };
-    showToast('🌐 ' + names[window._abLang]);
-  }
-};
-
-/* ══ Message vocal — 3 langues ══ */
-var _abMicRecog = null;
-var _abMicActive = false;
-
-window.abToggleMic = function() {
-  var btn = document.getElementById('abMicBtn');
-  var inp = document.getElementById('abInput');
-
-  if (_abMicActive) {
-    if (_abMicRecog) { try { _abMicRecog.stop(); } catch(e) {} }
-    _abMicActive = false;
-    if (btn) { btn.textContent = '🎤'; btn.classList.remove('listening'); }
-    return;
-  }
-
-  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) {
-    if (typeof showToast === 'function') showToast('⚠️ Utilisez Chrome ou Edge');
-    return;
-  }
-
-  var langMap = { fr: 'fr-FR', en: 'en-GB', ar: 'ar-SA' };
-  var langNames = { fr: 'Parlez en français...', en: 'Speak in English...', ar: 'تحدث بالعربية...' };
-  var curLang = window._abLang || 'fr';
-
-  _abMicRecog = new SR();
-  _abMicRecog.continuous = false;
-  _abMicRecog.interimResults = true;
-  _abMicRecog.maxAlternatives = 1;
-  _abMicRecog.lang = langMap[curLang] || 'fr-FR';
-
-  _abMicRecog.onstart = function() {
-    _abMicActive = true;
-    if (btn) { btn.textContent = '⏹️'; btn.classList.add('listening'); }
-    if (typeof showToast === 'function') showToast('🎤 ' + (langNames[curLang] || 'Parlez...'));
-  };
-
-  _abMicRecog.onresult = function(e) {
-    var t = '';
-    for (var i = 0; i < e.results.length; i++) t += e.results[i][0].transcript;
-    if (inp) inp.value = t;
-  };
-
-  _abMicRecog.onerror = function(e) {
-    _abMicActive = false;
-    if (btn) { btn.textContent = '🎤'; btn.classList.remove('listening'); }
-    if (e.error === 'not-allowed' && typeof showToast === 'function') showToast('⚠️ Autorisez le microphone');
-    else if (e.error === 'no-speech' && typeof showToast === 'function') showToast('Aucune voix détectée');
-  };
-
-  _abMicRecog.onend = function() {
-    _abMicActive = false;
-    if (btn) { btn.textContent = '🎤'; btn.classList.remove('listening'); }
-    if (inp && inp.value.trim() && typeof abSend === 'function') abSend();
-  };
-
-  try { _abMicRecog.start(); } catch(e) {
-    if (typeof showToast === 'function') showToast('⚠️ Impossible de démarrer le micro');
-  }
-};
-
-/* Init bouton langue au démarrage */
-document.addEventListener('DOMContentLoaded', function() {
-  var saved = window._lang || localStorage.getItem('faydha_lang') || 'fr';
-  window._abLang = saved;
-  var labels = { fr: '🇫🇷 FR', en: '🇬🇧 EN', ar: '🇸🇦 AR' };
-  var btn = document.getElementById('abLangBtn');
-  if (btn) btn.textContent = labels[saved] || '🇫🇷 FR';
-});
 </script>
 </body>
 </html>
