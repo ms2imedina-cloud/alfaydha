@@ -175,7 +175,7 @@ body{
 #splash{
   position:fixed;inset:0;z-index:9999;background:var(--g1);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;
-  transition:opacity .3s ease,visibility .3s ease;
+  transition:opacity .25s ease,visibility .25s ease;
 }
 #splash.hidden{opacity:0;visibility:hidden;pointer-events:none}
 /* splash contrôlé uniquement par JS */
@@ -2268,7 +2268,7 @@ button[onclick="qiblaGPS()"] {
 <body>
 
 <!-- SPLASH -->
-<div id="splash">
+<div id="splash" onclick="_hideSplash()" style="cursor:pointer">
   <img class="sp-logo" data-logo="1" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Cheikh Ibrahim Niass رضي الله عنه">
   <div class="sp-name">Baye Niass World</div>
   <div class="sp-ar">عَالَمُ بَايِ نِيَاسٍ</div>
@@ -2318,6 +2318,7 @@ button[onclick="qiblaGPS()"] {
 <style>
 @keyframes spin{to{transform:rotate(360deg)}}
 #authLoading>div:nth-child(3){will-change:transform;}
+#authLoading{pointer-events:none!important;}
 /* Fallback CSS : force disparition du loading si JS/Firebase bloqué après 7s */
 /* authLoading géré uniquement par JS — pas d'animation CSS qui bloque */
 #authLoading{transition:opacity .4s ease;}
@@ -5897,15 +5898,16 @@ document.addEventListener('DOMContentLoaded', function(){
     if(_splashHidden) return;
     _splashHidden = true;
     _hideSplash();
-    /* Forcer authLoading à disparaître si Firebase trop lent */
-    setTimeout(function(){
-      var al = document.getElementById('authLoading');
-      if(al){
-        al.style.opacity = '0';
-        al.style.pointerEvents = 'none';
-        setTimeout(function(){ if(al.parentNode) al.parentNode.removeChild(al); _showWelcomeForced(); }, 400);
-      }
-    }, 800);
+    /* Masquer authLoading immédiatement */
+    var al = document.getElementById('authLoading');
+    if(al){
+      al.style.opacity = '0';
+      al.style.pointerEvents = 'none';
+      al.style.display = 'none';
+      setTimeout(function(){ if(al && al.parentNode) al.parentNode.removeChild(al); }, 200);
+    }
+    /* Afficher welcome si pas connecté */
+    setTimeout(function(){ _showWelcomeForced(); }, 300);
   }
 
   function _showWelcomeForced(){
@@ -5921,8 +5923,8 @@ document.addEventListener('DOMContentLoaded', function(){
     if(window._fbReady){ clearInterval(_splashPoll); _doHideSplash(); }
   }, 80);
 
-  /* Max 2s puis on force */
-  setTimeout(function(){ clearInterval(_splashPoll); _doHideSplash(); }, 2000);
+  /* Max 800ms puis on force — ne jamais bloquer l'utilisateur */
+  setTimeout(function(){ clearInterval(_splashPoll); _doHideSplash(); }, 800);
 });
 
 /* L\'accès est contrôlé par Firebase Auth — voir onAuthStateChanged */
@@ -8218,6 +8220,87 @@ var AB_PRESET_ANSWERS = {
   "L'Islam africain et la Faydha : un pont entre traditions":
     "بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيم\n\n🕌 **L'Islam africain et la Faydha de Baye Niass**\n\nL'Afrique subsaharienne abrite aujourd'hui la plus grande concentration de musulmans soufis au monde. La Faydha de Cheikh Ibrahim Niass est au cœur de cette réalité.\n\n**Un Islam enraciné et universel :**\nBaye Niass a réussi ce que beaucoup considèrent impossible : transmettre un Islam profondément orthodoxe tout en étant profondément africain. Pas d'opposition entre identité culturelle et foi islamique — mais une synthèse harmonieuse.\n\n📖 **Rayonnement géographique :**\n- Sénégal, Gambie, Mali, Guinée, Mauritanie\n- Nigeria (des millions de Taalibé Baye)\n- Ghana, Sierra Leone, Côte d'Ivoire\n- Soudan, Égypte, monde arabe\n- Diaspora en Europe et en Amérique\n\n✨ **Le pont entre traditions :**\nLa Faydha a créé une fraternité islamique transcendant les ethnies, les langues et les nationalités. Un Nigérian Haoussa, un Sénégalais Wolof et un Guinéen Peul partagent le même cœur spirituel : l'amour de Baye et la voie vers Allah.\n\n*« Ma mission est pour toute l'humanité »* — Cheikh Ibrahim Niass رضي الله عنه 🌍"
 };
+
+/* ══════════════════════════════════════════════
+   FONCTIONS CORE DU CHAT IA
+══════════════════════════════════════════════ */
+
+function abAddMsg(role, text, engine) {
+  var msgs = document.getElementById('abMsgs');
+  if (!msgs) return null;
+  var div = document.createElement('div');
+  div.className = 'ab-msg ' + (role === 'user' ? 'user' : 'baye');
+
+  var bubble = document.createElement('div');
+  bubble.className = 'ab-bubble';
+
+  if (role !== 'user' && engine && engine !== 'error' && AB_ENGINE_LABELS && AB_ENGINE_LABELS[engine]) {
+    var badge = document.createElement('div');
+    badge.className = 'ab-bubble-engine';
+    badge.textContent = AB_ENGINE_LABELS[engine];
+    bubble.appendChild(badge);
+  }
+
+  var body = document.createElement('div');
+  body.className = 'ab-bubble-body';
+  /* Convertir markdown basique : **gras**, *italique*, listes */
+  var html = text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*([^*]+)\*/g,'<em>$1</em>')
+    .replace(/^#{1,3}\s+(.+)$/gm,'<strong>$1</strong>')
+    .replace(/
+/g,'<br>');
+  body.innerHTML = html;
+  bubble.appendChild(body);
+
+  /* Bouton TTS */
+  if (role !== 'user') {
+    var ttsBtn = document.createElement('button');
+    ttsBtn.className = 'ab-tts-btn';
+    ttsBtn.title = 'Écouter';
+    ttsBtn.innerHTML = '&#x1F508;';
+    ttsBtn.onclick = (function(t){ return function(){ abSpeak(t); }; })(text);
+    bubble.appendChild(ttsBtn);
+  }
+
+  div.appendChild(bubble);
+  msgs.appendChild(div);
+  return div;
+}
+
+function abAddThinking() {
+  var msgs = document.getElementById('abMsgs');
+  if (!msgs) return null;
+  var id = 'think_' + Date.now();
+  var div = document.createElement('div');
+  div.className = 'ab-msg baye';
+  div.id = id;
+  div.innerHTML = '<div class="ab-bubble"><div class="ab-thinking"><span></span><span></span><span></span></div></div>';
+  msgs.appendChild(div);
+  abScrollBottom();
+  return id;
+}
+
+function abRemoveThinking(id) {
+  var el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+function abScrollBottom() {
+  var chat = document.getElementById('abChat');
+  if (chat) { setTimeout(function(){ chat.scrollTop = chat.scrollHeight; }, 60); }
+}
+
+function abSpeak(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  var clean = text.replace(/(<([^>]+)>)/gi,'').replace(/[*#_~\x60]/g,'');
+  var utt = new SpeechSynthesisUtterance(clean);
+  utt.lang = (window._abLang === 'ar') ? 'ar-SA' : 'fr-FR';
+  utt.rate = window._abSpeed || 1.0;
+  window.speechSynthesis.speak(utt);
+}
 
 async function abAskSuggestion(q) {
   // Cacher les suggestions, afficher le chat
