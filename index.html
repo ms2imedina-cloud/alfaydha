@@ -314,6 +314,8 @@ body{
 .wlc-phone-btn{display:flex;align-items:center;justify-content:center;gap:.7rem;width:100%;padding:.85rem 1.2rem;background:var(--g1);border:2px solid var(--gold);border-radius:16px;color:#fff;font-size:15px;font-weight:700;font-family:'Roboto',sans-serif;cursor:pointer;transition:all .25s;letter-spacing:.03em}
 .wlc-phone-btn:hover{background:var(--g2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(15,123,63,.4)}
 .wlc-phone-btn:active{transform:scale(.98)}
+select#countrySelect option { background:#0F7B3F; color:#fff; }
+select#countrySelect optgroup { background:#084d24; color:rgba(212,175,55,.8); font-size:11px; }
 .wlc-otp-box{width:100%;background:rgba(255,255,255,.07);border:1.5px solid rgba(212,175,55,.3);border-radius:16px;padding:1.1rem 1.2rem;display:flex;flex-direction:column;gap:.7rem;box-sizing:border-box}
 .wlc-otp-input{width:100%;padding:.7rem 1rem;border-radius:10px;border:1.5px solid rgba(212,175,55,.4);background:rgba(255,255,255,.08);color:#fff;font-size:16px;font-family:'Roboto',sans-serif;text-align:center;letter-spacing:.15em;outline:none}
 .wlc-otp-input::placeholder{color:rgba(251,248,232,.35);letter-spacing:.05em}
@@ -2539,12 +2541,186 @@ button[onclick="qiblaGPS()"] {
 
     <!-- Étape 1 : Numéro -->
     <div id="phoneStep1" class="wlc-otp-box">
-      <div class="wlc-phone-label">📱 Numéro international (ex: +221 77 000 00 00)</div>
-      <input id="phoneInput" class="wlc-otp-input" type="tel"
-        placeholder="+221 77 000 00 00"
-        style="letter-spacing:.05em;font-size:17px"
-        onkeydown="if(event.key==='Enter') sendSMS()">
-      <div id="recaptcha-container"></div>
+      <div class="wlc-phone-label">📱 Sélectionnez votre pays et entrez votre numéro</div>
+
+      <!-- Sélecteur pays + champ numéro -->
+      <div style="display:flex;gap:.5rem;align-items:stretch">
+
+        <!-- Dropdown pays -->
+        <div style="position:relative;flex-shrink:0">
+          <select id="countrySelect" onchange="updatePhonePlaceholder()"
+            style="appearance:none;-webkit-appearance:none;background:rgba(255,255,255,.1);border:1.5px solid rgba(212,175,55,.4);border-radius:10px;color:#fff;font-size:14px;font-family:'Roboto',sans-serif;padding:.7rem .5rem .7rem .7rem;cursor:pointer;height:100%;min-width:110px;outline:none">
+            <!-- ★ FAVORIS -->
+            <optgroup label="★ Favoris">
+              <option value="+221" data-flag="🇸🇳" selected>🇸🇳 +221 SN</option>
+              <option value="+223" data-flag="🇲🇱">🇲🇱 +223 ML</option>
+              <option value="+224" data-flag="🇬🇳">🇬🇳 +224 GN</option>
+              <option value="+225" data-flag="🇨🇮">🇨🇮 +225 CI</option>
+              <option value="+226" data-flag="🇧🇫">🇧🇫 +226 BF</option>
+              <option value="+227" data-flag="🇳🇪">🇳🇪 +227 NE</option>
+              <option value="+228" data-flag="🇹🇬">🇹🇬 +228 TG</option>
+              <option value="+229" data-flag="🇧🇯">🇧🇯 +229 BJ</option>
+              <option value="+222" data-flag="🇲🇷">🇲🇷 +222 MR</option>
+              <option value="+220" data-flag="🇬🇲">🇬🇲 +220 GM</option>
+              <option value="+234" data-flag="🇳🇬">🇳🇬 +234 NG</option>
+              <option value="+33"  data-flag="🇫🇷">🇫🇷 +33 FR</option>
+              <option value="+32"  data-flag="🇧🇪">🇧🇪 +32 BE</option>
+              <option value="+41"  data-flag="🇨🇭">🇨🇭 +41 CH</option>
+            </optgroup>
+            <!-- AFRIQUE -->
+            <optgroup label="🌍 Afrique">
+              <option value="+213">🇩🇿 +213 Algérie</option>
+              <option value="+244">🇦🇴 +244 Angola</option>
+              <option value="+229">🇧🇯 +229 Bénin</option>
+              <option value="+267">🇧🇼 +267 Botswana</option>
+              <option value="+226">🇧🇫 +226 Burkina Faso</option>
+              <option value="+257">🇧🇮 +257 Burundi</option>
+              <option value="+237">🇨🇲 +237 Cameroun</option>
+              <option value="+238">🇨🇻 +238 Cap-Vert</option>
+              <option value="+236">🇨🇫 +236 Centrafrique</option>
+              <option value="+269">🇰🇲 +269 Comores</option>
+              <option value="+242">🇨🇬 +242 Congo</option>
+              <option value="+243">🇨🇩 +243 Congo RD</option>
+              <option value="+253">🇩🇯 +253 Djibouti</option>
+              <option value="+20">🇪🇬 +20 Égypte</option>
+              <option value="+291">🇪🇷 +291 Érythrée</option>
+              <option value="+251">🇪🇹 +251 Éthiopie</option>
+              <option value="+241">🇬🇦 +241 Gabon</option>
+              <option value="+220">🇬🇲 +220 Gambie</option>
+              <option value="+233">🇬🇭 +233 Ghana</option>
+              <option value="+224">🇬🇳 +224 Guinée</option>
+              <option value="+245">🇬🇼 +245 Guinée-Bissau</option>
+              <option value="+240">🇬🇶 +240 Guinée éq.</option>
+              <option value="+225">🇨🇮 +225 Côte d'Ivoire</option>
+              <option value="+254">🇰🇪 +254 Kenya</option>
+              <option value="+266">🇱🇸 +266 Lesotho</option>
+              <option value="+231">🇱🇷 +231 Liberia</option>
+              <option value="+218">🇱🇾 +218 Libye</option>
+              <option value="+261">🇲🇬 +261 Madagascar</option>
+              <option value="+265">🇲🇼 +265 Malawi</option>
+              <option value="+223">🇲🇱 +223 Mali</option>
+              <option value="+212">🇲🇦 +212 Maroc</option>
+              <option value="+222">🇲🇷 +222 Mauritanie</option>
+              <option value="+230">🇲🇺 +230 Maurice</option>
+              <option value="+258">🇲🇿 +258 Mozambique</option>
+              <option value="+264">🇳🇦 +264 Namibie</option>
+              <option value="+227">🇳🇪 +227 Niger</option>
+              <option value="+234">🇳🇬 +234 Nigeria</option>
+              <option value="+256">🇺🇬 +256 Ouganda</option>
+              <option value="+250">🇷🇼 +250 Rwanda</option>
+              <option value="+239">🇸🇹 +239 São Tomé</option>
+              <option value="+221">🇸🇳 +221 Sénégal</option>
+              <option value="+232">🇸🇱 +232 Sierra Leone</option>
+              <option value="+252">🇸🇴 +252 Somalie</option>
+              <option value="+249">🇸🇩 +249 Soudan</option>
+              <option value="+211">🇸🇸 +211 Soudan du Sud</option>
+              <option value="+268">🇸🇿 +268 Eswatini</option>
+              <option value="+255">🇹🇿 +255 Tanzanie</option>
+              <option value="+235">🇹🇩 +235 Tchad</option>
+              <option value="+228">🇹🇬 +228 Togo</option>
+              <option value="+216">🇹🇳 +216 Tunisie</option>
+              <option value="+263">🇿🇼 +263 Zimbabwe</option>
+              <option value="+260">🇿🇲 +260 Zambie</option>
+            </optgroup>
+            <!-- EUROPE -->
+            <optgroup label="🌍 Europe">
+              <option value="+355">🇦🇱 +355 Albanie</option>
+              <option value="+49">🇩🇪 +49 Allemagne</option>
+              <option value="+43">🇦🇹 +43 Autriche</option>
+              <option value="+32">🇧🇪 +32 Belgique</option>
+              <option value="+359">🇧🇬 +359 Bulgarie</option>
+              <option value="+385">🇭🇷 +385 Croatie</option>
+              <option value="+45">🇩🇰 +45 Danemark</option>
+              <option value="+34">🇪🇸 +34 Espagne</option>
+              <option value="+358">🇫🇮 +358 Finlande</option>
+              <option value="+33">🇫🇷 +33 France</option>
+              <option value="+30">🇬🇷 +30 Grèce</option>
+              <option value="+36">🇭🇺 +36 Hongrie</option>
+              <option value="+353">🇮🇪 +353 Irlande</option>
+              <option value="+39">🇮🇹 +39 Italie</option>
+              <option value="+352">🇱🇺 +352 Luxembourg</option>
+              <option value="+356">🇲🇹 +356 Malte</option>
+              <option value="+377">🇲🇨 +377 Monaco</option>
+              <option value="+47">🇳🇴 +47 Norvège</option>
+              <option value="+31">🇳🇱 +31 Pays-Bas</option>
+              <option value="+48">🇵🇱 +48 Pologne</option>
+              <option value="+351">🇵🇹 +351 Portugal</option>
+              <option value="+40">🇷🇴 +40 Roumanie</option>
+              <option value="+44">🇬🇧 +44 Royaume-Uni</option>
+              <option value="+7">🇷🇺 +7 Russie</option>
+              <option value="+381">🇷🇸 +381 Serbie</option>
+              <option value="+46">🇸🇪 +46 Suède</option>
+              <option value="+41">🇨🇭 +41 Suisse</option>
+              <option value="+380">🇺🇦 +380 Ukraine</option>
+            </optgroup>
+            <!-- AMÉRIQUES -->
+            <optgroup label="🌎 Amériques">
+              <option value="+54">🇦🇷 +54 Argentine</option>
+              <option value="+55">🇧🇷 +55 Brésil</option>
+              <option value="+1">🇨🇦 +1 Canada</option>
+              <option value="+56">🇨🇱 +56 Chili</option>
+              <option value="+57">🇨🇴 +57 Colombie</option>
+              <option value="+53">🇨🇺 +53 Cuba</option>
+              <option value="+593">🇪🇨 +593 Équateur</option>
+              <option value="+1">🇺🇸 +1 États-Unis</option>
+              <option value="+502">🇬🇹 +502 Guatemala</option>
+              <option value="+509">🇭🇹 +509 Haïti</option>
+              <option value="+52">🇲🇽 +52 Mexique</option>
+              <option value="+51">🇵🇪 +51 Pérou</option>
+              <option value="+1787">🇵🇷 +1787 Porto Rico</option>
+              <option value="+598">🇺🇾 +598 Uruguay</option>
+              <option value="+58">🇻🇪 +58 Venezuela</option>
+            </optgroup>
+            <!-- ASIE & MOYEN-ORIENT -->
+            <optgroup label="🌏 Asie / Moyen-Orient">
+              <option value="+966">🇸🇦 +966 Arabie Saoudite</option>
+              <option value="+994">🇦🇿 +994 Azerbaïdjan</option>
+              <option value="+880">🇧🇩 +880 Bangladesh</option>
+              <option value="+86">🇨🇳 +86 Chine</option>
+              <option value="+971">🇦🇪 +971 Émirats Arabes</option>
+              <option value="+91">🇮🇳 +91 Inde</option>
+              <option value="+62">🇮🇩 +62 Indonésie</option>
+              <option value="+98">🇮🇷 +98 Iran</option>
+              <option value="+964">🇮🇶 +964 Irak</option>
+              <option value="+972">🇮🇱 +972 Israël</option>
+              <option value="+81">🇯🇵 +81 Japon</option>
+              <option value="+962">🇯🇴 +962 Jordanie</option>
+              <option value="+965">🇰🇼 +965 Koweït</option>
+              <option value="+961">🇱🇧 +961 Liban</option>
+              <option value="+60">🇲🇾 +60 Malaisie</option>
+              <option value="+960">🇲🇻 +960 Maldives</option>
+              <option value="+968">🇴🇲 +968 Oman</option>
+              <option value="+92">🇵🇰 +92 Pakistan</option>
+              <option value="+63">🇵🇭 +63 Philippines</option>
+              <option value="+974">🇶🇦 +974 Qatar</option>
+              <option value="+82">🇰🇷 +82 Corée du Sud</option>
+              <option value="+65">🇸🇬 +65 Singapour</option>
+              <option value="+94">🇱🇰 +94 Sri Lanka</option>
+              <option value="+963">🇸🇾 +963 Syrie</option>
+              <option value="+66">🇹🇭 +66 Thaïlande</option>
+              <option value="+90">🇹🇷 +90 Turquie</option>
+              <option value="+84">🇻🇳 +84 Vietnam</option>
+              <option value="+967">🇾🇪 +967 Yémen</option>
+            </optgroup>
+            <!-- OCÉANIE -->
+            <optgroup label="🌏 Océanie">
+              <option value="+61">🇦🇺 +61 Australie</option>
+              <option value="+64">🇳🇿 +64 Nouvelle-Zélande</option>
+            </optgroup>
+          </select>
+          <div style="position:absolute;right:6px;top:50%;transform:translateY(-50%);color:rgba(212,175,55,.7);pointer-events:none;font-size:12px">▼</div>
+        </div>
+
+        <!-- Champ numéro sans indicatif -->
+        <input id="phoneInput" class="wlc-otp-input" type="tel"
+          placeholder="77 000 00 00"
+          style="letter-spacing:.05em;font-size:17px;flex:1;min-width:0"
+          onkeydown="if(event.key==='Enter') sendSMS()">
+      </div>
+
+      <!-- Affichage numéro complet -->
+      <div id="phonePreview" style="text-align:center;font-size:12px;color:rgba(212,175,55,.6);min-height:16px"></div>
+
       <button class="wlc-phone-btn" onclick="sendSMS()" id="sendSmsBtn">
         📲 Recevoir le code SMS
       </button>
@@ -5854,77 +6030,107 @@ function enterApp(profile) {
 
 var _phoneConfirmation = null;
 var _recaptchaVerifier = null;
-var _recaptchaRendered = false;
 
-function _initRecaptcha() {
-  if (_recaptchaRendered) return;
-  _recaptchaRendered = true;
+function _initInvisibleRecaptcha(callback) {
   _fbInit(function() {
     try {
-      _recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-        size: 'normal',
-        callback: function() {},
-        'expired-callback': function() { _recaptchaRendered = false; }
+      /* Supprimer l'ancien si existe */
+      if (_recaptchaVerifier) {
+        try { _recaptchaVerifier.clear(); } catch(e) {}
+        _recaptchaVerifier = null;
+      }
+      /* Créer un div temporaire invisible pour reCAPTCHA */
+      var rc = document.getElementById('rc-invis');
+      if (!rc) {
+        rc = document.createElement('div');
+        rc.id = 'rc-invis';
+        rc.style.cssText = 'position:fixed;bottom:0;right:0;z-index:-1;opacity:0;pointer-events:none';
+        document.body.appendChild(rc);
+      }
+      _recaptchaVerifier = new firebase.auth.RecaptchaVerifier('rc-invis', {
+        size: 'invisible',
+        callback: function() {}
       });
-      _recaptchaVerifier.render();
-    } catch(e) { console.warn('[reCAPTCHA]', e); }
+      _recaptchaVerifier.render().then(function() {
+        if (typeof callback === 'function') callback();
+      });
+    } catch(e) {
+      console.warn('[reCAPTCHA]', e);
+      if (typeof callback === 'function') callback();
+    }
   });
 }
 
-/* Afficher le reCAPTCHA quand l'utilisateur commence à taper */
+function updatePhonePlaceholder() {
+  var sel = document.getElementById('countrySelect');
+  var input = document.getElementById('phoneInput');
+  var preview = document.getElementById('phonePreview');
+  if (!sel) return;
+  var code = sel.value;
+  if (input) input.placeholder = code==='+221'?'77 000 00 00':code==='+33'?'6 00 00 00 00':'000 000 000';
+  if (preview) preview.textContent = '';
+}
+
+function _getFullPhone() {
+  var sel = document.getElementById('countrySelect');
+  var input = document.getElementById('phoneInput');
+  var code = sel ? sel.value : '+221';
+  var num = (input ? input.value : '').trim().replace(/\s/g,'').replace(/^0+/,'');
+  return code + num;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-  var phoneInput = document.getElementById('phoneInput');
-  if (phoneInput) {
-    phoneInput.addEventListener('focus', function() { _initRecaptcha(); });
+  var pi = document.getElementById('phoneInput');
+  if (pi) {
+    pi.addEventListener('input', function() {
+      var full = _getFullPhone();
+      var pv = document.getElementById('phonePreview');
+      if (pv && full.replace(/\D/g,'').length > 4) pv.textContent = '\uD83D\uDCF1 ' + full;
+    });
   }
 });
 
 function sendSMS() {
-  var phone = (document.getElementById('phoneInput').value || '').trim();
-  if (!phone || phone.length < 8) {
-    showToast('⚠️ Entrez un numéro valide avec l\'indicatif (+221...)');
+  var phone = _getFullPhone();
+  if (!phone || phone.replace(/\D/g,'').length < 8) {
+    showToast('\u26A0\uFE0F Entrez un num\u00E9ro valide');
     return;
   }
   var btn = document.getElementById('sendSmsBtn');
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Envoi en cours…'; }
 
-  _fbInit(function() {
-    try {
-      if (!_recaptchaVerifier) {
-        _recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-          size: 'invisible',
-          callback: function() {}
-        });
+  function _doSend() {
+    _fbInit(function() {
+      try {
+        firebase.auth().signInWithPhoneNumber(phone, _recaptchaVerifier)
+          .then(function(confirmationResult) {
+            _phoneConfirmation = confirmationResult;
+            document.getElementById('phoneStep1').style.display = 'none';
+            document.getElementById('phoneStep2').style.display = 'flex';
+            document.getElementById('otpInput').focus();
+            showToast('📲 SMS envoyé sur ' + phone);
+          })
+          .catch(function(err) {
+            if (btn) { btn.disabled = false; btn.textContent = '📲 Recevoir le code SMS'; }
+            console.error('[Phone Auth]', err);
+            if (err.code === 'auth/invalid-phone-number') {
+              showToast('❌ Numéro invalide — vérifiez l\'indicatif (+221, +33...)');
+            } else if (err.code === 'auth/too-many-requests') {
+              showToast('⏳ Trop de tentatives — attendez quelques minutes');
+            } else {
+              showToast('❌ ' + (err.message || err.code));
+            }
+            try { _recaptchaVerifier.clear(); } catch(e) {}
+            _recaptchaVerifier = null;
+          });
+      } catch(e) {
+        if (btn) { btn.disabled = false; btn.textContent = '📲 Recevoir le code SMS'; }
+        showToast('⚠️ Service indisponible — vérifiez votre connexion');
       }
-      firebase.auth().signInWithPhoneNumber(phone, _recaptchaVerifier)
-        .then(function(confirmationResult) {
-          _phoneConfirmation = confirmationResult;
-          /* Passer à l'étape 2 */
-          document.getElementById('phoneStep1').style.display = 'none';
-          document.getElementById('phoneStep2').style.display = 'flex';
-          document.getElementById('otpInput').focus();
-          showToast('📲 SMS envoyé sur ' + phone);
-        })
-        .catch(function(err) {
-          if (btn) { btn.disabled = false; btn.textContent = '📲 Recevoir le code SMS'; }
-          console.error('[Phone Auth]', err);
-          if (err.code === 'auth/invalid-phone-number') {
-            showToast('❌ Numéro invalide — vérifiez l\'indicatif pays (+221, +33...)');
-          } else if (err.code === 'auth/too-many-requests') {
-            showToast('⏳ Trop de tentatives — attendez quelques minutes');
-          } else {
-            showToast('❌ Erreur: ' + (err.message || err.code));
-          }
-          /* Réinitialiser reCAPTCHA */
-          try { _recaptchaVerifier.clear(); } catch(e) {}
-          _recaptchaVerifier = null;
-          _recaptchaRendered = false;
-        });
-    } catch(e) {
-      if (btn) { btn.disabled = false; btn.textContent = '📲 Recevoir le code SMS'; }
-      showToast('⚠️ Service indisponible — vérifiez votre connexion');
-    }
-  });
+    });
+  }
+
+  _initInvisibleRecaptcha(_doSend);
 }
 
 function verifySMS() {
@@ -5964,6 +6170,8 @@ function resetPhone() {
   document.getElementById('phoneStep2').style.display = 'none';
   document.getElementById('phoneInput').value = '';
   document.getElementById('otpInput').value = '';
+  var pv = document.getElementById('phonePreview');
+  if (pv) pv.textContent = '';
   var btn = document.getElementById('sendSmsBtn');
   if (btn) { btn.disabled = false; btn.textContent = '📲 Recevoir le code SMS'; }
   try { if (_recaptchaVerifier) _recaptchaVerifier.clear(); } catch(e) {}
