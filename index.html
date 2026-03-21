@@ -5218,7 +5218,7 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
 </div>
 
 <!-- CONFIG API KEY -->
-<div class="ab-config" id="abConfig" style="display:block;border-radius:16px;margin:.5rem .8rem;overflow:hidden">
+<div class="ab-config" id="abConfig" style="display:none;border-radius:16px;margin:.5rem .8rem;overflow:hidden">
   <div class="ab-config-title" style="font-size:15px;letter-spacing:.01em">🔑 Clé API Anthropic</div>
   <div class="ab-config-sub" style="font-size:12px;opacity:.7">Stockée localement · Jamais envoyée · Sécurisée</div>
   <div style="display:flex;gap:.5rem;margin-top:.6rem">
@@ -5280,7 +5280,7 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
       <span id="abSpeedLabel" style="font-size:11px;color:var(--g1);font-weight:700;min-width:28px;text-align:center">×1.0</span>
       <button onclick="abSpeedUp()" style="background:none;border:none;cursor:pointer;font-size:13px;color:var(--g1);padding:0 2px;line-height:1" title="Accélérer">🐇</button>
     </div>
-    <button class="ab-key-btn" onclick="abToggleConfig()" title="Clé API Ask Baye" id="abKeyBtn">&#x1F511;</button>
+    <button class="ab-key-btn" onclick="abToggleConfig()" title="Clé API Ask Baye" id="abKeyBtn" style="display:none">&#x1F511;</button>
     <button class="ab-clr-btn" onclick="abClear()">&#x2715; Vider</button>
   </div>
 </div>
