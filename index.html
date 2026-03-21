@@ -9634,19 +9634,6 @@ function abScrollBottom() {
 var _abSpeechActive = false;
 var _abCurrentAudio = null;
 
-/* ══ ELEVENLABS TTS CONFIG ══ */
-var _XI_API_KEY = 'sk_e25cea7f5ccebd7af1f51b5ec00196128f0d76a039c510bd';
-/* Voix masculines ElevenLabs - disponibles sur tous les comptes :
-   Adam  pNInz6obpgDQGcFmaJgB  grave multilingue
-   Antoni ErXwobaYiN019PkySvjV naturel multilingue
-   Josh  TxGEqnHWrfWFTfGW9XjX jeune multilingue
-*/
-var _XI_VOICES = {
-  fr: 'pNInz6obpgDQGcFmaJgB',
-  en: 'pNInz6obpgDQGcFmaJgB',
-  ar: 'pNInz6obpgDQGcFmaJgB'
-};
-
 function abStopSpeak() {
   _abSpeechActive = false;
   if (window.speechSynthesis) window.speechSynthesis.cancel();
@@ -9660,76 +9647,24 @@ function abStopSpeak() {
   });
 }
 
-async function abSpeakElevenLabs(text, lang) {
-  var voiceId = _XI_VOICES[lang] || _XI_VOICES['fr'];
-  try {
-    var resp = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + voiceId, {
-      method: 'POST',
-      headers: {
-        'xi-api-key': _XI_API_KEY,
-        'Content-Type': 'application/json',
-        'Accept': 'audio/mpeg'
-      },
-      body: JSON.stringify({
-        text: text,
-        model_id: 'eleven_multilingual_v2',
-        voice_settings: { stability: 0.5, similarity_boost: 0.75, style: 0.25, use_speaker_boost: true }
-      })
-    });
-    if (!resp.ok) throw new Error('ElevenLabs HTTP ' + resp.status);
-    var blob = await resp.blob();
-    if (!blob || blob.size < 100) throw new Error('Blob vide');
-    var url = URL.createObjectURL(blob);
-    var audio = new Audio(url);
-    _abCurrentAudio = audio;
-    audio.volume = 1.0;
-    audio.onended = function() {
-      URL.revokeObjectURL(url);
-      _abCurrentAudio = null;
-      _abSpeechActive = false;
-      document.querySelectorAll('.ab-tts-btn.speaking').forEach(function(b){
-        b.classList.remove('speaking'); b.innerHTML = '&#x1F508;';
-      });
-    };
-    audio.onerror = function(e) {
-      console.warn('[XI] audio error', e);
-      URL.revokeObjectURL(url);
-      _abCurrentAudio = null;
-      _abSpeechActive = false;
-    };
-    /* play() doit être appelé directement depuis l'événement utilisateur
-       ou depuis un contexte async déclenché par l'utilisateur */
-    var playPromise = audio.play();
-    if (playPromise) await playPromise;
-    return true;
-  } catch(e) {
-    console.warn('[Lumière IA] ElevenLabs erreur:', e.message);
-    return false;
-  }
+/* ── Sélectionner une voix féminine dans le navigateur ── */
+function abGetFemaleVoice(lang) {
+  if (!window.speechSynthesis) return null;
+  var voices = window.speechSynthesis.getVoices();
+  var langCode = lang === 'ar' ? 'ar' : lang === 'en' ? 'en' : 'fr';
+  /* Chercher d'abord une voix féminine dans la langue cible */
+  var female = voices.filter(function(v) {
+    return v.lang.startsWith(langCode) &&
+      (/female|femme|woman|fiona|amelie|amelie|thomas|virginie|audrey|claire|florence|helene|isabelle|marie|nathalie|pauline|sylvie|veronique|alice|google french female|google uk english female/i.test(v.name) ||
+       v.name.includes('female') || v.name.includes('Female'));
+  });
+  if (female.length) return female[0];
+  /* Sinon voix quelconque dans la langue */
+  var any = voices.filter(function(v) { return v.lang.startsWith(langCode); });
+  if (any.length) return any[0];
+  return null;
 }
 
-function abSpeakFallback(text, lang) {
-  if (!window.speechSynthesis) { _abSpeechActive = false; return; }
-  var utt = new SpeechSynthesisUtterance(text);
-  utt.lang = lang==='ar' ? 'ar-SA' : lang==='en' ? 'en-GB' : 'fr-FR';
-  utt.rate = window._abSpeed || 0.92;
-  utt.pitch = 1.0;
-  utt.volume = 1.0;
-  utt.onend = function() {
-    _abSpeechActive = false;
-    document.querySelectorAll('.ab-tts-btn.speaking').forEach(function(b){
-      b.classList.remove('speaking'); b.innerHTML = '&#x1F508;';
-    });
-  };
-  utt.onerror = function() { _abSpeechActive = false; };
-  window.speechSynthesis.speak(utt);
-}
-
-/* ── abSpeak : point d'entrée principal ──
-   - Joue un court bip du jingle (3 premières secondes seulement)
-   - Génère et joue la voix ElevenLabs EN PARALLÈLE
-   - Fallback TTS navigateur si ElevenLabs échoue
-*/
 function abSpeak(text) {
   abStopSpeak();
   _abSpeechActive = true;
@@ -9738,44 +9673,34 @@ function abSpeak(text) {
   if (!clean) { _abSpeechActive = false; return; }
   var l = window._abLang || window._lang || 'fr';
 
-  /* Lancer ElevenLabs directement sans jingle */
-  abSpeakElevenLabs(clean, l).then(function(ok) {
-    if (!ok && _abSpeechActive) {
-      abSpeakFallback(clean, l);
-    }
-  });
-}
+  if (!window.speechSynthesis) { _abSpeechActive = false; return; }
 
-/* ── Lister les voix ElevenLabs disponibles ── */
-async function abListVoices() {
-  try {
-    if (typeof showToast === 'function') showToast('⏳ Chargement des voix...');
-    var resp = await fetch('https://api.elevenlabs.io/v1/voices', {
-      headers: { 'xi-api-key': _XI_API_KEY }
-    });
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    var data = await resp.json();
-    var voices = data.voices || [];
-    // Filtrer voix masculines ou utiles
-    var lines = voices.map(function(v) {
-      var gen = (v.labels && v.labels.gender) ? v.labels.gender : '?';
-      var lang = (v.labels && v.labels.language) ? v.labels.language : '?';
-      return v.voice_id + ' | ' + v.name + ' | ' + gen + ' | ' + lang;
-    });
-    var msg = 'VOIX DISPONIBLES (' + voices.length + ') :\n\n' + lines.join('\n');
-    // Afficher dans un popup
-    var d = document.createElement('div');
-    d.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.9);z-index:9999;overflow:auto;padding:1rem;font-family:monospace;font-size:11px;color:#D4AF37;white-space:pre-wrap';
-    d.textContent = msg;
-    var btn = document.createElement('button');
-    btn.textContent = '✕ Fermer';
-    btn.style.cssText = 'display:block;margin:1rem auto;padding:.5rem 1.5rem;background:#D4AF37;border:none;border-radius:8px;font-weight:700;cursor:pointer';
-    btn.onclick = function() { d.remove(); };
-    d.appendChild(btn);
-    document.body.appendChild(d);
-  } catch(e) {
-    if (typeof showToast === 'function') showToast('❌ Erreur: ' + e.message);
-    alert('Erreur voix ElevenLabs: ' + e.message);
+  function doSpeak() {
+    var utt = new SpeechSynthesisUtterance(clean);
+    utt.lang = l === 'ar' ? 'ar-SA' : l === 'en' ? 'en-GB' : 'fr-FR';
+    utt.rate = window._abSpeed || 0.92;
+    utt.pitch = 1.1;
+    utt.volume = 1.0;
+    var femaleVoice = abGetFemaleVoice(l);
+    if (femaleVoice) utt.voice = femaleVoice;
+    utt.onend = function() {
+      _abSpeechActive = false;
+      document.querySelectorAll('.ab-tts-btn.speaking').forEach(function(b){
+        b.classList.remove('speaking'); b.innerHTML = '&#x1F508;';
+      });
+    };
+    utt.onerror = function() { _abSpeechActive = false; };
+    window.speechSynthesis.speak(utt);
+  }
+
+  /* Les voix peuvent ne pas être chargées immédiatement */
+  if (window.speechSynthesis.getVoices().length === 0) {
+    window.speechSynthesis.onvoiceschanged = function() {
+      window.speechSynthesis.onvoiceschanged = null;
+      doSpeak();
+    };
+  } else {
+    doSpeak();
   }
 }
 
