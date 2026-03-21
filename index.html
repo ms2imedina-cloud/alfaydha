@@ -9619,16 +9619,24 @@ function abScrollBottom() {
    2. Lit le texte via TTS dans la langue sélectionnée (FR/EN/AR)
 */
 var _abSpeechActive = false;
+var _abCurrentAudio = null;
+
+/* ══ ELEVENLABS TTS CONFIG ══ */
+var _XI_API_KEY = 'sk_293238401490b607ef8d79573e96652f63146612e918753b';
+var _XI_VOICES = {
+  fr: 'TX3LPaxmHKxFdv7VOEO3',  /* Liam - multilingue excellent français */
+  en: '21m00Tcm4TlvDq8ikWAM',  /* Rachel - anglais */
+  ar: 'IKne3meq5aSn9XLyUdCD'   /* Farhan - arabe */
+};
 
 function abPlayJingle(cb) {
   var audio = document.getElementById('lumiereVoiceAudio');
   if (!audio) { if(cb) cb(); return; }
   audio.currentTime = 0;
-  audio.volume = 0.7;
+  audio.volume = 0.65;
   var p = audio.play();
   if (p && p.then) {
     p.then(function() {
-      /* Attendre la fin du jingle puis lancer le TTS */
       audio.onended = function() { audio.onended = null; if(cb) cb(); };
     }).catch(function() { if(cb) cb(); });
   } else {
@@ -9636,41 +9644,80 @@ function abPlayJingle(cb) {
   }
 }
 
-function abSpeak(text) {
-  /* Arrêter tout audio en cours */
+function abStopSpeak() {
+  _abSpeechActive = false;
   if (window.speechSynthesis) window.speechSynthesis.cancel();
-  var audioEl = document.getElementById('lumiereVoiceAudio');
-  if (audioEl) { audioEl.pause(); audioEl.currentTime = 0; }
-  _abSpeechActive = true;
+  if (_abCurrentAudio) { _abCurrentAudio.pause(); _abCurrentAudio.currentTime = 0; _abCurrentAudio = null; }
+  var jingle = document.getElementById('lumiereVoiceAudio');
+  if (jingle) { jingle.pause(); jingle.currentTime = 0; }
+  document.querySelectorAll('.ab-tts-btn.speaking').forEach(function(b){
+    b.classList.remove('speaking'); b.innerHTML = '&#x1F508;';
+  });
+}
 
-  var clean = text.replace(/(<([^>]+)>)/gi,'').replace(/[*#_~\x60]/g,'').trim();
-  var l = window._abLang || window._lang || 'fr';
-
-  /* Jouer le jingle Lumière IA puis lire le texte dans la langue */
-  abPlayJingle(function() {
-    if (!_abSpeechActive) return;
-    if (!window.speechSynthesis) return;
-    var utt = new SpeechSynthesisUtterance(clean);
-    utt.lang = l==='ar' ? 'ar-SA' : l==='en' ? 'en-GB' : 'fr-FR';
-    utt.rate = window._abSpeed || 0.92;
-    utt.pitch = 1.0;
-    utt.volume = 1.0;
-    utt.onend = function() {
-      _abSpeechActive = false;
+async function abSpeakElevenLabs(text, lang) {
+  var voiceId = _XI_VOICES[lang] || _XI_VOICES['fr'];
+  try {
+    var resp = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + voiceId + '/stream', {
+      method: 'POST',
+      headers: {
+        'xi-api-key': _XI_API_KEY,
+        'Content-Type': 'application/json',
+        'Accept': 'audio/mpeg'
+      },
+      body: JSON.stringify({
+        text: text,
+        model_id: 'eleven_multilingual_v2',
+        voice_settings: { stability: 0.5, similarity_boost: 0.75, style: 0.3, use_speaker_boost: true }
+      })
+    });
+    if (!resp.ok) throw new Error('ElevenLabs ' + resp.status);
+    var blob = await resp.blob();
+    var url = URL.createObjectURL(blob);
+    var audio = new Audio(url);
+    _abCurrentAudio = audio;
+    audio.volume = 1.0;
+    audio.onended = function() {
+      URL.revokeObjectURL(url); _abCurrentAudio = null; _abSpeechActive = false;
       document.querySelectorAll('.ab-tts-btn.speaking').forEach(function(b){
         b.classList.remove('speaking'); b.innerHTML = '&#x1F508;';
       });
     };
-    utt.onerror = function() { _abSpeechActive = false; };
-    window.speechSynthesis.speak(utt);
-  });
+    audio.onerror = function() { URL.revokeObjectURL(url); _abCurrentAudio = null; _abSpeechActive = false; };
+    await audio.play();
+    return true;
+  } catch(e) {
+    console.warn('[Lumière IA] ElevenLabs:', e.message);
+    return false;
+  }
 }
 
-function abStopSpeak() {
-  _abSpeechActive = false;
-  if (window.speechSynthesis) window.speechSynthesis.cancel();
-  var audioEl = document.getElementById('lumiereVoiceAudio');
-  if (audioEl) { audioEl.pause(); audioEl.currentTime = 0; }
+function abSpeakFallback(text, lang) {
+  if (!window.speechSynthesis) { _abSpeechActive = false; return; }
+  var utt = new SpeechSynthesisUtterance(text);
+  utt.lang = lang==='ar' ? 'ar-SA' : lang==='en' ? 'en-GB' : 'fr-FR';
+  utt.rate = window._abSpeed || 0.92; utt.pitch = 1.0; utt.volume = 1.0;
+  utt.onend = function() {
+    _abSpeechActive = false;
+    document.querySelectorAll('.ab-tts-btn.speaking').forEach(function(b){
+      b.classList.remove('speaking'); b.innerHTML = '&#x1F508;';
+    });
+  };
+  utt.onerror = function() { _abSpeechActive = false; };
+  window.speechSynthesis.speak(utt);
+}
+
+function abSpeak(text) {
+  abStopSpeak();
+  _abSpeechActive = true;
+  var clean = text.replace(/(<([^>]+)>)/gi,'').replace(/[*#_~`]/g,'').trim();
+  if (!clean) { _abSpeechActive = false; return; }
+  var l = window._abLang || window._lang || 'fr';
+  abPlayJingle(async function() {
+    if (!_abSpeechActive) return;
+    var ok = await abSpeakElevenLabs(clean, l);
+    if (!ok && _abSpeechActive) abSpeakFallback(clean, l);
+  });
 }
 
 async function abAskSuggestion(q) {
