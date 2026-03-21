@@ -2573,10 +2573,10 @@ button[onclick="qiblaGPS()"] {
       </div>
 
       <!-- ═══ DATE FR + HIJRI — centre ═══ -->
-      <div id="hijri-badge" style="display:flex;flex-direction:column;align-items:center;gap:2px;background:rgba(0,0,0,.2);border:1px solid rgba(212,175,55,.22);border-radius:12px;padding:.3rem .75rem;min-width:72px">
-        <div id="hijri-fr-date" style="font-family:'Roboto',sans-serif;font-size:11px;font-weight:600;color:rgba(251,248,232,.65);letter-spacing:.03em;line-height:1">—</div>
-        <div id="hijri-day" style="font-family:'Amiri',serif;font-size:20px;font-weight:700;color:var(--gold);line-height:1.05">—</div>
-        <div id="hijri-month" style="font-family:'Amiri',serif;font-size:11px;color:rgba(212,175,55,.85);line-height:1;text-align:center;direction:rtl">—</div>
+      <div id="hijri-badge" style="display:flex;flex-direction:column;align-items:center;gap:3px;background:rgba(0,0,0,.25);border:1.5px solid rgba(212,175,55,.35);border-radius:14px;padding:.5rem 1.1rem;min-width:90px;box-shadow:0 2px 12px rgba(0,0,0,.25)">
+        <div id="hijri-fr-date" style="font-family:'Roboto',sans-serif;font-size:12px;font-weight:700;color:rgba(251,248,232,.8);letter-spacing:.04em;line-height:1">—</div>
+        <div id="hijri-day" style="font-family:'Amiri',serif;font-size:30px;font-weight:700;color:var(--gold);line-height:1">—</div>
+        <div id="hijri-month" style="font-family:'Amiri',serif;font-size:13px;color:rgba(212,175,55,.9);line-height:1.2;text-align:center;direction:rtl;font-weight:600">—</div>
       </div>
 
       <div style="display:flex;align-items:center;gap:.6rem">
@@ -2614,16 +2614,6 @@ button[onclick="qiblaGPS()"] {
     </div>
   </div>
 
-  <!-- ① Prochain événement islamique — sous le tableau des prières -->
-  <div id="umma-next-event-block" style="margin:.45rem .8rem .3rem;border-radius:14px;overflow:hidden;border:1px solid rgba(212,175,55,.25);background:linear-gradient(135deg,rgba(5,18,10,.85),rgba(3,12,7,.9));flex-shrink:0">
-    <div style="display:flex;align-items:center;gap:.45rem;padding:.42rem .8rem .32rem;border-bottom:1px solid rgba(212,175,55,.14)">
-      <span style="font-size:13px">🗓</span>
-      <span style="font-size:9.5px;color:rgba(212,175,55,.75);text-transform:uppercase;letter-spacing:.1em;font-weight:700">Prochain événement islamique</span>
-    </div>
-    <div id="umma-next-event-content" style="padding:.45rem .8rem .55rem">
-      <span style="font-size:12px;color:rgba(255,255,255,.3);font-style:italic">Calcul en cours…</span>
-    </div>
-  </div>
 
   <!-- Barre lecteur adhan (apparaît pendant la lecture) -->
   <div id="wlc-adhan-player" style="display:none;background:var(--g1);padding:.55rem 1rem;flex-direction:row;align-items:center;gap:.8rem;flex-shrink:0;border-top:2px solid var(--gold)">
@@ -4371,13 +4361,9 @@ window.toggleStudioPanel = function() {
         <button onclick="qiblaGPS()" style="background:none;border:1px solid var(--g1);border-radius:20px;padding:.4rem 1rem;font-size:12px;color:var(--g1);cursor:pointer;">📍 GPS auto</button>
         <button id="qiblaCompassBtn" onclick="qiblaCompassToggle()" style="background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;border:none;border-radius:20px;padding:.4rem 1rem;font-size:12px;font-weight:700;cursor:pointer;">🧭 Boussole</button>
       </div>
-      <!-- Villes rapides -->
+      <!-- Ville rapide -->
       <div style="display:flex;gap:.35rem;justify-content:center;flex-wrap:wrap">
         <button onclick="_qiblaRun(14.152,-16.0765,'Kaolack')" style="background:rgba(15,123,63,.08);border:1px solid rgba(15,123,63,.2);border-radius:20px;padding:.25rem .65rem;font-size:11px;color:var(--g1);cursor:pointer;">Kaolack</button>
-        <button onclick="_qiblaRun(14.6937,-17.4441,'Dakar')" style="background:rgba(15,123,63,.08);border:1px solid rgba(15,123,63,.2);border-radius:20px;padding:.25rem .65rem;font-size:11px;color:var(--g1);cursor:pointer;">Dakar</button>
-        <button onclick="_qiblaRun(14.791,-16.9359,'Thiès')" style="background:rgba(15,123,63,.08);border:1px solid rgba(15,123,63,.2);border-radius:20px;padding:.25rem .65rem;font-size:11px;color:var(--g1);cursor:pointer;">Thiès</button>
-        <button onclick="_qiblaRun(14.8528,-15.88,'Touba')" style="background:rgba(15,123,63,.08);border:1px solid rgba(15,123,63,.2);border-radius:20px;padding:.25rem .65rem;font-size:11px;color:var(--g1);cursor:pointer;">Touba</button>
-        <button onclick="_qiblaRun(14.152,-16.0765,'Médina Baye')" style="background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.3);border-radius:20px;padding:.25rem .65rem;font-size:11px;color:var(--gold);cursor:pointer;font-weight:600;">🕌 Médina Baye</button>
       </div>
       <div id="qiblaCompassStatus" style="font-size:11px;color:var(--text3);margin-top:.3rem;min-height:15px;font-weight:600;"></div>
       <div id="qiblaMsg" style="font-size:12px;color:var(--red);margin-top:.2rem;min-height:16px;"></div>
@@ -5340,7 +5326,7 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
 
   <button class="nav-btn" id="nav-ai" onclick="showSec('ai',this)">
     <span class="nav-icon">✨</span>
-    <span class="nav-label">Éveil IA</span>
+    <span class="nav-label">Lumière IA</span>
   </button>
 
 </nav>
@@ -8116,7 +8102,7 @@ var LANG = {
     nav_radio:   'AlFaydha',
     nav_live:    'Direct',
     nav_qibla:   'Qibla',
-    nav_ai:      'Éveil IA',
+    nav_ai:      'Lumière IA',
 
     /* Splash / Welcome */
     app_name:    'Faydha',
@@ -8252,7 +8238,7 @@ var LANG = {
     nav_radio:   'AlFaydha',
     nav_live:    'Direct',
     nav_qibla:   'Qibla',
-    nav_ai:      'Awakening AI',
+    nav_ai:      'Light AI',
 
     app_name:    'Faydha',
     app_sub:     'The worldwide app for Taalibé Baye',
@@ -8369,7 +8355,7 @@ var LANG = {
     nav_radio:   'الفيضة',
     nav_live:    'مباشر',
     nav_qibla:   'قبلة',
-    nav_ai:      'صحوة AI',
+    nav_ai:      'نور AI',
 
     app_name:    'عالَم بَايِ نِيَاسٍ',
     app_sub:     'تطبيق التاليبي باي في العالم',
@@ -8505,6 +8491,9 @@ function setLang(lang) {
   applyTranslations();
   /* Re-rendre les suggestions avec la bonne langue */
   if (typeof renderAbSuggestions === 'function') renderAbSuggestions();
+  /* Re-rendre verset et citation selon la langue */
+  if (typeof _renderVerset   === 'function') _renderVerset();
+  if (typeof _renderCitation === 'function') _renderCitation();
 }
 
 
@@ -12693,70 +12682,70 @@ async function _prayerReverseGeocode(lat, lng) {
 
   /* ── 30 citations authentiques de Cheikh Ibrahim Niass رضي الله عنه ── */
   var CITATIONS = [
-    { ar: 'مَنْ عَرَفَ اللهَ فَقَدْ عَرَفَ كُلَّ شَيْءٍ', fr: 'Celui qui connaît Allah connaît toute chose.' },
+    { ar: 'مَنْ عَرَفَ اللهَ فَقَدْ عَرَفَ كُلَّ شَيْءٍ', fr: 'Celui qui connaît Allah connaît toute chose.', en: 'He who knows Allah knows everything.' },
     { ar: 'الفَيْضَةُ رَحْمَةٌ مِنَ اللهِ عَلَى عِبَادِهِ', fr: 'La Faydha est une miséricorde d\'Allah sur Ses serviteurs.' },
-    { ar: 'لَا تَنْظُرْ إِلَى صِغَرِ الذَّنْبِ وَلَكِنِ انْظُرْ إِلَى عَظَمَةِ مَنْ عَصَيْتَ', fr: 'Ne regarde pas la petitesse du péché, mais regarde la grandeur de Celui que tu as désobéi.' },
-    { ar: 'الذِّكْرُ حَيَاةُ الْقُلُوبِ وَغِذَاؤُهَا', fr: 'Le dhikr est la vie des cœurs et leur nourriture.' },
+    { ar: 'لَا تَنْظُرْ إِلَى صِغَرِ الذَّنْبِ وَلَكِنِ انْظُرْ إِلَى عَظَمَةِ مَنْ عَصَيْتَ', fr: 'Ne regarde pas la petitesse du péché, mais regarde la grandeur de Celui que tu as désobéi.', en: 'Do not look at the smallness of the sin, but look at the greatness of the One you disobeyed.' },
+    { ar: 'الذِّكْرُ حَيَاةُ الْقُلُوبِ وَغِذَاؤُهَا', fr: 'Le dhikr est la vie des cœurs et leur nourriture.', en: 'Dhikr is the life of hearts and their nourishment.' },
     { ar: 'مَنْ أَحَبَّ اللهَ أَحَبَّهُ النَّاسُ', fr: 'Celui qui aime Allah, les gens l\'aimeront.' },
     { ar: 'الصَّلَاةُ عِمَادُ الدِّينِ مَنْ أَقَامَهَا فَقَدْ أَقَامَ الدِّينَ', fr: 'La prière est le pilier de la religion. Celui qui l\'accomplit a établi la religion.' },
-    { ar: 'إِنَّ قَلْبَ الْمُؤْمِنِ مِرْآةٌ لِرَبِّهِ', fr: 'Le cœur du croyant est le miroir de son Seigneur.' },
+    { ar: 'إِنَّ قَلْبَ الْمُؤْمِنِ مِرْآةٌ لِرَبِّهِ', fr: 'Le cœur du croyant est le miroir de son Seigneur.', en: 'The heart of the believer is the mirror of his Lord.' },
     { ar: 'التَّوَاضُعُ لِلهِ يَرْفَعُ صَاحِبَهُ', fr: 'L\'humilité devant Allah élève celui qui la pratique.' },
-    { ar: 'مَنْ أَرَادَ اللهَ وَجَدَهُ قَرِيبًا', fr: 'Celui qui cherche Allah Le trouve proche.' },
-    { ar: 'الصَّبْرُ مِفْتَاحُ الْفَرَجِ', fr: 'La patience est la clé de la délivrance.' },
-    { ar: 'أَكْثِرُوا مِنَ الصَّلَاةِ عَلَى النَّبِيِّ فَإِنَّهَا نُورٌ', fr: 'Multipliez la prière sur le Prophète ﷺ car elle est lumière.' },
+    { ar: 'مَنْ أَرَادَ اللهَ وَجَدَهُ قَرِيبًا', fr: 'Celui qui cherche Allah Le trouve proche.', en: 'He who seeks Allah finds Him near.' },
+    { ar: 'الصَّبْرُ مِفْتَاحُ الْفَرَجِ', fr: 'La patience est la clé de la délivrance.', en: 'Patience is the key to relief.' },
+    { ar: 'أَكْثِرُوا مِنَ الصَّلَاةِ عَلَى النَّبِيِّ فَإِنَّهَا نُورٌ', fr: 'Multipliez la prière sur le Prophète ﷺ car elle est lumière.', en: 'Multiply prayers upon the Prophet ﷺ for it is light.' },
     { ar: 'الْعِلْمُ نُورٌ يَقْذِفُهُ اللهُ فِي قَلْبِ مَنْ يَشَاءُ', fr: 'La connaissance est une lumière qu\'Allah dépose dans le cœur de qui Il veut.' },
-    { ar: 'مَنْ صَدَقَ مَعَ اللهِ صَدَقَ اللهُ مَعَهُ', fr: 'Celui qui est sincère avec Allah, Allah sera sincère avec lui.' },
+    { ar: 'مَنْ صَدَقَ مَعَ اللهِ صَدَقَ اللهُ مَعَهُ', fr: 'Celui qui est sincère avec Allah, Allah sera sincère avec lui.', en: 'He who is sincere with Allah, Allah will be sincere with him.' },
     { ar: 'لَا تَيْأَسْ مِنْ رَحْمَةِ اللهِ فَإِنَّهَا وَاسِعَةٌ', fr: 'Ne désespère jamais de la miséricorde d\'Allah car elle est immense.' },
     { ar: 'الْمُحَبَّةُ فِي اللهِ أَسَاسُ الْأُخُوَّةِ', fr: 'L\'amour pour Allah est le fondement de la fraternité.' },
-    { ar: 'مَنْ جَاهَدَ نَفْسَهُ فَتَحَ اللهُ لَهُ أَبْوَابَ الْخَيْرِ', fr: 'Celui qui combat son âme, Allah lui ouvre les portes du bien.' },
-    { ar: 'الدُّنْيَا جِسْرٌ فَاعْبُرُوهُ وَلَا تَعْمُرُوهُ', fr: 'Ce monde est un pont, traversez-le et ne le construisez pas.' },
-    { ar: 'أَصْلُ كُلِّ خَيْرٍ التَّقْوَى', fr: 'La racine de tout bien est la piété.' },
-    { ar: 'مَنْ أَخْلَصَ لِلهِ كَفَاهُ اللهُ كُلَّ شَيْءٍ', fr: 'Celui qui se consacre sincèrement à Allah, Allah lui suffira en toute chose.' },
+    { ar: 'مَنْ جَاهَدَ نَفْسَهُ فَتَحَ اللهُ لَهُ أَبْوَابَ الْخَيْرِ', fr: 'Celui qui combat son âme, Allah lui ouvre les portes du bien.', en: 'He who strives against his soul, Allah opens for him the doors of goodness.' },
+    { ar: 'الدُّنْيَا جِسْرٌ فَاعْبُرُوهُ وَلَا تَعْمُرُوهُ', fr: 'Ce monde est un pont, traversez-le et ne le construisez pas.', en: 'This world is a bridge, cross it and do not build upon it.' },
+    { ar: 'أَصْلُ كُلِّ خَيْرٍ التَّقْوَى', fr: 'La racine de tout bien est la piété.', en: 'The root of all good is piety.' },
+    { ar: 'مَنْ أَخْلَصَ لِلهِ كَفَاهُ اللهُ كُلَّ شَيْءٍ', fr: 'Celui qui se consacre sincèrement à Allah, Allah lui suffira en toute chose.', en: 'He who is sincerely devoted to Allah, Allah will suffice him in all things.' },
     { ar: 'الذَّاكِرُونَ اللهَ هُمُ الْأَحْيَاءُ', fr: 'Ceux qui font le dhikr d\'Allah sont les vivants.' },
     { ar: 'رِسَالَتِي لِلْإِنْسَانِيَّةِ جَمْعَاءَ', fr: 'Ma mission s\'adresse à l\'humanité tout entière.' },
     { ar: 'بِالتَّوْبَةِ تُفْتَحُ أَبْوَابُ الرَّحْمَةِ', fr: 'Par le repentir s\'ouvrent les portes de la miséricorde.' },
-    { ar: 'النُّورُ الَّذِي يَهْدِي الْقُلُوبَ هُوَ نُورُ الْمَعْرِفَةِ', fr: 'La lumière qui guide les cœurs est la lumière de la connaissance divine.' },
-    { ar: 'اللهُ أَكْبَرُ مِنْ كُلِّ مَا تَخَافُ', fr: 'Allah est plus grand que tout ce que tu crains.' },
-    { ar: 'مَدِينَةُ بَايَ مَنْبَعُ الْفَيْضِ وَالنُّورِ', fr: 'Médina Baye est la source de la Faydha et de la lumière.' },
-    { ar: 'الْجُمُعَةُ سَيِّدُ الْأَيَّامِ وَالْحَضْرَةُ جَمْعُ الْقُلُوبِ', fr: 'Le vendredi est le maître des jours et la Hadra est le rassemblement des cœurs.' },
+    { ar: 'النُّورُ الَّذِي يَهْدِي الْقُلُوبَ هُوَ نُورُ الْمَعْرِفَةِ', fr: 'La lumière qui guide les cœurs est la lumière de la connaissance divine.', en: 'The light that guides hearts is the light of divine knowledge.' },
+    { ar: 'اللهُ أَكْبَرُ مِنْ كُلِّ مَا تَخَافُ', fr: 'Allah est plus grand que tout ce que tu crains.', en: 'Allah is greater than everything you fear.' },
+    { ar: 'مَدِينَةُ بَايَ مَنْبَعُ الْفَيْضِ وَالنُّورِ', fr: 'Médina Baye est la source de la Faydha et de la lumière.', en: 'Médina Baye is the source of the Faydha and of light.' },
+    { ar: 'الْجُمُعَةُ سَيِّدُ الْأَيَّامِ وَالْحَضْرَةُ جَمْعُ الْقُلُوبِ', fr: 'Le vendredi est le maître des jours et la Hadra est le rassemblement des cœurs.', en: 'Friday is the master of days and the Hadra is the gathering of hearts.' },
     { ar: 'اتَّقِ اللهَ حَيْثُمَا كُنْتَ وَأَتْبِعِ السَّيِّئَةَ الْحَسَنَةَ', fr: 'Crains Allah où que tu sois et fais suivre la mauvaise action d\'une bonne.' },
-    { ar: 'مَنْ عَاشَ لِلهِ مَاتَ لِلهِ وَبُعِثَ مَعَ الصَّالِحِينَ', fr: 'Celui qui vit pour Allah meurt pour Allah et ressuscite parmi les vertueux.' },
+    { ar: 'مَنْ عَاشَ لِلهِ مَاتَ لِلهِ وَبُعِثَ مَعَ الصَّالِحِينَ', fr: 'Celui qui vit pour Allah meurt pour Allah et ressuscite parmi les vertueux.', en: 'He who lives for Allah dies for Allah and is resurrected among the righteous.' },
     { ar: 'نِعْمَةُ الْإِسْلَامِ لَا تُعَادِلُهَا نِعْمَةٌ', fr: 'Le bienfait de l\'Islam n\'a pas d\'équivalent.' },
-    { ar: 'أَحِبُّوا اللهَ لِمَا يَغْذُوكُمْ بِهِ مِنَ النِّعَمِ', fr: 'Aimez Allah pour les bienfaits dont Il vous nourrit sans cesse.' }
+    { ar: 'أَحِبُّوا اللهَ لِمَا يَغْذُوكُمْ بِهِ مِنَ النِّعَمِ', fr: 'Aimez Allah pour les bienfaits dont Il vous nourrit sans cesse.', en: 'Love Allah for the blessings with which He nourishes you ceaselessly.' }
   ];
 
   /* ── 30 versets coraniques (thèmes : prière, dhikr, foi, communauté) ── */
   var VERSETS = [
     { ar: 'وَأَقِيمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ وَارْكَعُوا مَعَ الرَّاكِعِينَ', fr: 'Accomplissez la prière, acquittez la Zakat et inclinez-vous avec ceux qui s\'inclinent.', ref: 'Al-Baqara 2:43' },
-    { ar: 'إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَّوْقُوتًا', fr: 'La prière est, pour les croyants, une obligation à des temps déterminés.', ref: 'An-Nisa 4:103' },
-    { ar: 'يَا أَيُّهَا الَّذِينَ آمَنُوا اذْكُرُوا اللهَ ذِكْرًا كَثِيرًا', fr: 'Ô vous qui croyez ! Invoquez Allah fréquemment.', ref: 'Al-Ahzab 33:41' },
+    { ar: 'إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَّوْقُوتًا', fr: 'La prière est, pour les croyants, une obligation à des temps déterminés.', en: 'Indeed, prayer has been decreed upon the believers at specified times.', ref: 'An-Nisa 4:103' },
+    { ar: 'يَا أَيُّهَا الَّذِينَ آمَنُوا اذْكُرُوا اللهَ ذِكْرًا كَثِيرًا', fr: 'Ô vous qui croyez ! Invoquez Allah fréquemment.', en: 'O you who believe, remember Allah with much remembrance.', ref: 'Al-Ahzab 33:41' },
     { ar: 'أَلَا بِذِكْرِ اللهِ تَطْمَئِنُّ الْقُلُوبُ', fr: 'C\'est par le rappel d\'Allah que les cœurs s\'apaisent.', ref: 'Ar-Ra\'d 13:28' },
     { ar: 'وَمَن يَتَّقِ اللهَ يَجْعَل لَّهُ مَخْرَجًا وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ', fr: 'Quiconque craint Allah, Il lui ménagera une issue et le pourvoira par où il n\'espérait pas.', ref: 'At-Talaq 65:2-3' },
     { ar: 'وَاعْتَصِمُوا بِحَبْلِ اللهِ جَمِيعًا وَلَا تَفَرَّقُوا', fr: 'Tenez-vous tous fermement au câble d\'Allah et ne vous divisez pas.', ref: 'Al-Imran 3:103' },
-    { ar: 'إِنَّمَا الْمُؤْمِنُونَ إِخْوَةٌ فَأَصْلِحُوا بَيْنَ أَخَوَيْكُمْ', fr: 'Les croyants ne sont que des frères. Réconciliez donc vos frères.', ref: 'Al-Hujurat 49:10' },
+    { ar: 'إِنَّمَا الْمُؤْمِنُونَ إِخْوَةٌ فَأَصْلِحُوا بَيْنَ أَخَوَيْكُمْ', fr: 'Les croyants ne sont que des frères. Réconciliez donc vos frères.', en: 'The believers are but brothers, so make settlement between your brothers.', ref: 'Al-Hujurat 49:10' },
     { ar: 'يَرْفَعِ اللهُ الَّذِينَ آمَنُوا مِنكُمْ وَالَّذِينَ أُوتُوا الْعِلْمَ دَرَجَاتٍ', fr: 'Allah élève ceux d\'entre vous qui croient et ceux à qui le savoir a été donné.', ref: 'Al-Mujadila 58:11' },
-    { ar: 'وَقُل رَّبِّ زِدْنِي عِلْمًا', fr: 'Et dis : Seigneur, accroît mes connaissances.', ref: 'Taha 20:114' },
-    { ar: 'إِنَّ اللهَ مَعَ الصَّابِرِينَ', fr: 'Allah est avec les patients.', ref: 'Al-Baqara 2:153' },
+    { ar: 'وَقُل رَّبِّ زِدْنِي عِلْمًا', fr: 'Et dis : Seigneur, accroît mes connaissances.', en: 'And say: My Lord, increase me in knowledge.', ref: 'Taha 20:114' },
+    { ar: 'إِنَّ اللهَ مَعَ الصَّابِرِينَ', fr: 'Allah est avec les patients.', en: 'Indeed, Allah is with the patient.', ref: 'Al-Baqara 2:153' },
     { ar: 'وَلَا تَيْأَسُوا مِن رَّوْحِ اللهِ إِنَّهُ لَا يَيْأَسُ مِن رَّوْحِ اللهِ إِلَّا الْقَوْمُ الْكَافِرُونَ', fr: 'Ne désespérez pas de la bonté d\'Allah. Seuls les incroyants désespèrent de Sa bonté.', ref: 'Yusuf 12:87' },
     { ar: 'فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي وَلَا تَكْفُرُونِ', fr: 'Souvenez-vous de Moi, Je Me souviendrai de vous. Soyez-Moi reconnaissants et ne soyez pas ingrats.', ref: 'Al-Baqara 2:152' },
     { ar: 'وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ', fr: 'Lorsque Mes serviteurs t\'interrogent sur Moi, dis-leur que Je suis proche.', ref: 'Al-Baqara 2:186' },
     { ar: 'إِنَّ اللهَ وَمَلَائِكَتَهُ يُصَلُّونَ عَلَى النَّبِيِّ', fr: 'Allah et Ses anges prient sur le Prophète. Ô croyants, priez sur lui et saluez-le.', ref: 'Al-Ahzab 33:56' },
-    { ar: 'قُلْ إِن كُنتُمْ تُحِبُّونَ اللهَ فَاتَّبِعُونِي يُحْبِبْكُمُ اللهُ', fr: 'Dis : Si vous aimez Allah, suivez-moi, Allah vous aimera.', ref: 'Al-Imran 3:31' },
+    { ar: 'قُلْ إِن كُنتُمْ تُحِبُّونَ اللهَ فَاتَّبِعُونِي يُحْبِبْكُمُ اللهُ', fr: 'Dis : Si vous aimez Allah, suivez-moi, Allah vous aimera.', en: 'Say: If you love Allah, follow me and Allah will love you.', ref: 'Al-Imran 3:31' },
     { ar: 'وَمَا خَلَقْتُ الْجِنَّ وَالْإِنسَ إِلَّا لِيَعْبُدُونِ', fr: 'Je n\'ai créé les djinns et les hommes que pour qu\'ils M\'adorent.', ref: 'Adh-Dhariyat 51:56' },
-    { ar: 'وَتَوَكَّلْ عَلَى اللهِ وَكَفَىٰ بِاللهِ وَكِيلًا', fr: 'Mets ta confiance en Allah. Allah suffit comme protecteur.', ref: 'Al-Ahzab 33:3' },
-    { ar: 'اللهُ نُورُ السَّمَاوَاتِ وَالْأَرْضِ', fr: 'Allah est la lumière des cieux et de la terre.', ref: 'An-Nur 24:35' },
+    { ar: 'وَتَوَكَّلْ عَلَى اللهِ وَكَفَىٰ بِاللهِ وَكِيلًا', fr: 'Mets ta confiance en Allah. Allah suffit comme protecteur.', en: 'Put your trust in Allah. Allah is sufficient as a Trustee.', ref: 'Al-Ahzab 33:3' },
+    { ar: 'اللهُ نُورُ السَّمَاوَاتِ وَالْأَرْضِ', fr: 'Allah est la lumière des cieux et de la terre.', en: 'Allah is the light of the heavens and the earth.', ref: 'An-Nur 24:35' },
     { ar: 'وَلَذِكْرُ اللهِ أَكْبَرُ', fr: 'Le souvenir d\'Allah est la plus grande des choses.', ref: 'Al-Ankabut 29:45' },
     { ar: 'لَا يُكَلِّفُ اللهُ نَفْسًا إِلَّا وُسْعَهَا', fr: 'Allah ne charge une âme que de ce qu\'elle peut supporter.', ref: 'Al-Baqara 2:286' },
-    { ar: 'وَمَن يُطِعِ اللهَ وَرَسُولَهُ فَقَدْ فَازَ فَوْزًا عَظِيمًا', fr: 'Quiconque obéit à Allah et à Son Messager remporte un succès immense.', ref: 'Al-Ahzab 33:71' },
+    { ar: 'وَمَن يُطِعِ اللهَ وَرَسُولَهُ فَقَدْ فَازَ فَوْزًا عَظِيمًا', fr: 'Quiconque obéit à Allah et à Son Messager remporte un succès immense.', en: 'Whoever obeys Allah and His Messenger has indeed achieved a great triumph.', ref: 'Al-Ahzab 33:71' },
     { ar: 'إِنَّمَا يَخْشَى اللهَ مِنْ عِبَادِهِ الْعُلَمَاءُ', fr: 'Parmi les serviteurs d\'Allah, seuls les savants Le craignent véritablement.', ref: 'Fatir 35:28' },
-    { ar: 'وَبَشِّرِ الصَّابِرِينَ', fr: 'Et annonce la bonne nouvelle aux endurants.', ref: 'Al-Baqara 2:155' },
+    { ar: 'وَبَشِّرِ الصَّابِرِينَ', fr: 'Et annonce la bonne nouvelle aux endurants.', en: 'And give good tidings to the patient.', ref: 'Al-Baqara 2:155' },
     { ar: 'هُوَ الْأَوَّلُ وَالْآخِرُ وَالظَّاهِرُ وَالْبَاطِنُ', fr: 'Il est le Premier et le Dernier, l\'Apparent et le Caché.', ref: 'Al-Hadid 57:3' },
-    { ar: 'وَاسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ', fr: 'Cherchez secours dans la patience et la prière.', ref: 'Al-Baqara 2:45' },
-    { ar: 'إِنَّ مَعَ الْعُسْرِ يُسْرًا', fr: 'Certes, avec la difficulté vient la facilité.', ref: 'Ash-Sharh 94:6' },
-    { ar: 'وَاللهُ يَهْدِي مَن يَشَاءُ إِلَىٰ صِرَاطٍ مُّسْتَقِيمٍ', fr: 'Allah guide qui Il veut vers un chemin droit.', ref: 'Al-Baqara 2:213' },
+    { ar: 'وَاسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ', fr: 'Cherchez secours dans la patience et la prière.', en: 'Seek help through patience and prayer.', ref: 'Al-Baqara 2:45' },
+    { ar: 'إِنَّ مَعَ الْعُسْرِ يُسْرًا', fr: 'Certes, avec la difficulté vient la facilité.', en: 'Indeed, with hardship comes ease.', ref: 'Ash-Sharh 94:6' },
+    { ar: 'وَاللهُ يَهْدِي مَن يَشَاءُ إِلَىٰ صِرَاطٍ مُّسْتَقِيمٍ', fr: 'Allah guide qui Il veut vers un chemin droit.', en: 'Allah guides whom He wills to a straight path.', ref: 'Al-Baqara 2:213' },
     { ar: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً', fr: 'Seigneur, accorde-nous le bien en ce monde et le bien dans l\'Au-delà.', ref: 'Al-Baqara 2:201' },
-    { ar: 'فَإِنَّ مَعَ الْعُسْرِ يُسْرًا إِنَّ مَعَ الْعُسْرِ يُسْرًا', fr: 'Avec la difficulté vient certes la facilité. Avec la difficulté vient certes la facilité.', ref: 'Ash-Sharh 94:5-6' },
-    { ar: 'وَهُوَ مَعَكُمْ أَيْنَ مَا كُنتُمْ', fr: 'Il est avec vous où que vous soyez.', ref: 'Al-Hadid 57:4' }
+    { ar: 'فَإِنَّ مَعَ الْعُسْرِ يُسْرًا إِنَّ مَعَ الْعُسْرِ يُسْرًا', fr: 'Avec la difficulté vient certes la facilité. Avec la difficulté vient certes la facilité.', en: 'For indeed, with hardship will be ease. Indeed, with hardship will be ease.', ref: 'Ash-Sharh 94:5-6' },
+    { ar: 'وَهُوَ مَعَكُمْ أَيْنَ مَا كُنتُمْ', fr: 'Il est avec vous où que vous soyez.', en: 'And He is with you wherever you are.', ref: 'Al-Hadid 57:4' }
   ];
 
   /* ── Fond dynamique selon l\'heure ── */
@@ -12797,20 +12786,40 @@ async function _prayerReverseGeocode(lat, lng) {
 
   function _renderVerset() {
     var v = VERSETS[_getDayIndex(VERSETS)];
-    var ar = document.getElementById('umma-verset-ar');
-    var fr = document.getElementById('umma-verset-fr');
+    var ar  = document.getElementById('umma-verset-ar');
+    var fr  = document.getElementById('umma-verset-fr');
     var ref = document.getElementById('umma-verset-ref');
     if(ar) ar.textContent = v.ar;
-    if(fr) fr.textContent = '\u00ab ' + v.fr + ' \u00bb';
+    /* Traduction selon langue */
+    var lang = (typeof _lang !== 'undefined') ? _lang : 'fr';
+    if(fr) {
+      if(lang === 'ar') {
+        fr.textContent = ''; fr.style.display = 'none';
+      } else {
+        fr.style.display = '';
+        var txt = (lang === 'en' && v.en) ? v.en : v.fr;
+        fr.textContent = '\u00ab ' + txt + ' \u00bb';
+      }
+    }
     if(ref) ref.textContent = v.ref;
   }
 
   function _renderCitation() {
-    var c = CITATIONS[_getDayIndex(CITATIONS)];
+    var ci = CITATIONS[_getDayIndex(CITATIONS)];
     var ar = document.getElementById('umma-citation-ar');
     var fr = document.getElementById('umma-citation-fr');
-    if(ar) ar.textContent = c.ar;
-    if(fr) fr.textContent = c.fr;
+    if(ar) ar.textContent = ci.ar;
+    /* Traduction selon langue */
+    var lang = (typeof _lang !== 'undefined') ? _lang : 'fr';
+    if(fr) {
+      if(lang === 'ar') {
+        fr.textContent = ''; fr.style.display = 'none';
+      } else {
+        fr.style.display = '';
+        var txt = (lang === 'en' && ci.en) ? ci.en : ci.fr;
+        fr.textContent = txt;
+      }
+    }
   }
 
   /* ── Init ── */
