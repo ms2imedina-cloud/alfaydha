@@ -4761,6 +4761,8 @@ function icalRender() {
   document.getElementById('icalStFri').textContent  = friCount;
   document.getElementById('icalStHoly').textContent = holyCount;
   document.getElementById('icalStLeft').textContent = leftCount;
+  /* Retraduire après render calendrier */
+  setTimeout(function(){ if(typeof _translateAllDOM==='function') _translateAllDOM(); }, 50);
 
   /* Compte à rebours Ramadan */
   var ramStart = null;
@@ -6104,6 +6106,8 @@ function _initSecCache() {
   if (!_cachedAdminFab) _cachedAdminFab = document.getElementById('adminFab');
 }
 function showSec(id,btn){
+  /* Retraduire après changement de section */
+  setTimeout(function(){ if(typeof _translateAllDOM==='function') _translateAllDOM(); }, 200);
   /* Zikr et Cal sont maintenant dans la section Pratique (wird) */
   var pratTab = null;
 
@@ -8488,6 +8492,194 @@ function setLang(lang) {
   if (typeof renderAbSuggestions === 'function') renderAbSuggestions();
 }
 
+
+/* ── Traduction DOM complète ── */
+function _translateAllDOM() {
+  var isAR = _lang === 'ar';
+  var isEN = _lang === 'en';
+  if (!isAR && !isEN) return; /* FR = défaut, rien à faire */
+
+  /* Table de traduction: FR → EN/AR */
+  var TR = {
+    "Détection GPS…": {en:"GPS detection…", ar:"تحديد الموقع…"},
+    "Prochaine": {en:"Next", ar:"التالية"},
+    "Chargement…": {en:"Loading…", ar:"جارٍ التحميل…"},
+    "Appel à la prière ·": {en:"Call to prayer ·", ar:"الأذان ·"},
+    "⚙️ Paramètres Adhan": {en:"⚙️ Adhan Settings", ar:"⚙️ إعدادات الأذان"},
+    "🔔 Appel à la prière automatique": {en:"🔔 Automatic call to prayer", ar:"🔔 الأذان التلقائي"},
+    "Jouer l'adhan à l'heure de chaque prière": {en:"Play adhan at each prayer time", ar:"تشغيل الأذان عند وقت كل صلاة"},
+    "⏰ Alerte avant la prière": {en:"⏰ Alert before prayer", ar:"⏰ تنبيه قبل الصلاة"},
+    "Notification sonore avant l'heure": {en:"Sound notification before prayer time", ar:"إشعار صوتي قبل الوقت"},
+    "Désactivée": {en:"Disabled", ar:"معطل"},
+    "5 min avant": {en:"5 min before", ar:"قبل 5 دقائق"},
+    "10 min avant": {en:"10 min before", ar:"قبل 10 دقائق"},
+    "15 min avant": {en:"15 min before", ar:"قبل 15 دقيقة"},
+    "30 min avant": {en:"30 min before", ar:"قبل 30 دقيقة"},
+    "Activer par prière": {en:"Enable per prayer", ar:"تفعيل لكل صلاة"},
+    "Muezzin officiel de Médina Baye": {en:"Official Muezzin of Médina Baye", ar:"المؤذن الرسمي لمدينة باي"},
+    "🔊 Écouter": {en:"🔊 Listen", ar:"🔊 استمع"},
+    "حفظ الإعدادات · Sauvegarder": {en:"Save settings", ar:"حفظ الإعدادات"},
+    "Verset du jour": {en:"Verse of the day", ar:"آية اليوم"},
+    "Parole de Baye Niass": {en:"Word of Baye Niass", ar:"كلمة باي نياس"},
+    "EN DIRECT": {en:"ON AIR", ar:"مباشر"},
+    "ENREGISTREMENT": {en:"RECORDING", ar:"تسجيل"},
+    "🎵 En cours de diffusion": {en:"🎵 Now broadcasting", ar:"🎵 جارٍ البث"},
+    "Appuyez ▶ pour écouter": {en:"Press ▶ to listen", ar:"اضغط ▶ للاستماع"},
+    "MODE SOMMEIL": {en:"SLEEP MODE", ar:"وضع النوم"},
+    "15 min": {en:"15 min", ar:"١٥ دقيقة"},
+    "30 min": {en:"30 min", ar:"٣٠ دقيقة"},
+    "45 min": {en:"45 min", ar:"٤٥ دقيقة"},
+    "1 heure": {en:"1 hour", ar:"ساعة واحدة"},
+    "✕ Annuler": {en:"✕ Cancel", ar:"✕ إلغاء"},
+    "Radio Al-Faydha · Médina Baye": {en:"Radio Al-Faydha · Médina Baye", ar:"راديو الفيضة · مدينة باي"},
+    "🎙 Studio d'enregistrement": {en:"🎙 Recording Studio", ar:"🎙 استوديو التسجيل"},
+    "Micro · IndexedDB · 100% Privé": {en:"Mic · IndexedDB · 100% Private", ar:"مايكرو · خاص 100%"},
+    "Qualité": {en:"Quality", ar:"الجودة"},
+    "🎤 Voix": {en:"🎤 Voice", ar:"🎤 صوت"},
+    "✨ Hi-Fi": {en:"✨ Hi-Fi", ar:"✨ عالي الجودة"},
+    "🏆 Studio": {en:"🏆 Studio", ar:"🏆 ستوديو"},
+    "Transcription": {en:"Transcription", ar:"نسخ نصي"},
+    "Copier": {en:"Copy", ar:"نسخ"},
+    "📁 Bibliothèque locale": {en:"📁 Local library", ar:"📁 المكتبة المحلية"},
+    "0 enregistrement": {en:"0 recording", ar:"0 تسجيل"},
+    "Aucun enregistrement — appuyez sur ⏺ pour commencer": {en:"No recording — press ⏺ to start", ar:"لا يوجد تسجيل — اضغط ⏺ للبدء"},
+    "📡 Médina Baye Live": {en:"📡 Médina Baye Live", ar:"📡 مدينة باي مباشر"},
+    "Diffusions mondiales · مدينة باي · Taalibé Baye": {en:"Worldwide broadcasts · Médina Baye · Taalibé Baye", ar:"البث العالمي · مدينة باي · التاليبي باي"},
+    "🌍 Mondial": {en:"🌍 Worldwide", ar:"🌍 عالمي"},
+    "📺 TV · Radio · Conférences": {en:"📺 TV · Radio · Conferences", ar:"📺 تلفزيون · راديو · مؤتمرات"},
+    "spectateurs": {en:"viewers", ar:"مشاهد"},
+    "Choisissez une chaîne": {en:"Choose a channel", ar:"اختر قناة"},
+    "Sélectionnez une chaîne ci-dessous": {en:"Select a channel below", ar:"اختر قناة أدناه"},
+    "⛶ Plein écran": {en:"⛶ Full screen", ar:"⛶ شاشة كاملة"},
+    "☆ Favori": {en:"☆ Favorite", ar:"☆ المفضلة"},
+    "⬆ Partager": {en:"⬆ Share", ar:"⬆ مشاركة"},
+    "✕ Fermer": {en:"✕ Close", ar:"✕ إغلاق"},
+    "📺 Chaînes": {en:"📺 Channels", ar:"📺 القنوات"},
+    "💬 Chat": {en:"💬 Chat", ar:"💬 دردشة"},
+    "❓ Q&A": {en:"❓ Q&A", ar:"❓ أسئلة وأجوبة"},
+    "🎤 Micro": {en:"🎤 Mic", ar:"🎤 مايكرو"},
+    "📅 Programme": {en:"📅 Schedule", ar:"📅 البرنامج"},
+    "⭐ Favoris": {en:"⭐ Favorites", ar:"⭐ المفضلة"},
+    "Chaînes disponibles": {en:"Available channels", ar:"القنوات المتاحة"},
+    "Bienvenue dans le chat en direct 🕌 Partagez votre ressenti sur ce live avec toute la communauté.": {en:"Welcome to the live chat 🕌 Share your feelings about this live with the whole community.", ar:"مرحباً بكم في الدردشة المباشرة 🕌 شاركوا مشاعركم حول هذا البث مع المجتمع كله."},
+    "maintenant": {en:"now", ar:"الآن"},
+    "Main levée": {en:"Hand raised", ar:"رفع يد"},
+    "Question": {en:"Question", ar:"سؤال"},
+    "Parole": {en:"Speech", ar:"كلمة"},
+    "❓ Votre question au Cheikh :": {en:"❓ Your question to the Sheikh:", ar:"❓ سؤالك للشيخ:"},
+    "Envoyer": {en:"Send", ar:"إرسال"},
+    "❓ Questions au Cheikh": {en:"❓ Questions to the Sheikh", ar:"❓ الأسئلة للشيخ"},
+    "Posez votre question — le Cheikh y répondra en direct": {en:"Ask your question — the Sheikh will answer live", ar:"اطرح سؤالك — سيجيب الشيخ مباشرة"},
+    "Aucune question pour l'instant — soyez le premier 🤲": {en:"No questions yet — be the first 🤲", ar:"لا أسئلة حتى الآن — كن الأول 🤲"},
+    "Votre question (200 caractères max)": {en:"Your question (200 characters max)", ar:"سؤالك (200 حرف كحد أقصى)"},
+    "🎤 Prise de parole": {en:"🎤 Request to speak", ar:"🎤 طلب الكلام"},
+    "Demandez à intervenir vocalement au micro": {en:"Request to speak at the microphone", ar:"اطلب التدخل بالميكروفون"},
+    "Micro désactivé": {en:"Mic disabled", ar:"الميكروفون معطل"},
+    "Vous êtes en mode écoute": {en:"You are in listening mode", ar:"أنت في وضع الاستماع"},
+    "Comment ça fonctionne :": {en:"How it works:", ar:"كيف يعمل:"},
+    "Demander": {en:"Request", ar:"طلب"},
+    "pour lever la main": {en:"to raise your hand", ar:"لرفع يدك"},
+    "Terminer": {en:"End", ar:"إنهاء"},
+    "File d'attente": {en:"Queue", ar:"قائمة الانتظار"},
+    "Aucune demande en attente": {en:"No pending requests", ar:"لا توجد طلبات معلقة"},
+    "parle": {en:"speaking", ar:"يتحدث"},
+    "● LIVE": {en:"● LIVE", ar:"● مباشر"},
+    "✕ Quitter": {en:"✕ Leave", ar:"✕ مغادرة"},
+    "Direction Mecque": {en:"Mecca Direction", ar:"اتجاه مكة"},
+    "Croissant Hilal": {en:"Hilal Crescent", ar:"هلال رمضان"},
+    "Calendrier": {en:"Calendar", ar:"التقويم"},
+    "🕋 Direction de La Mecque": {en:"🕋 Mecca Direction", ar:"🕋 اتجاه القبلة"},
+    "Posez à plat ou entrez votre ville": {en:"Place flat or enter your city", ar:"ضع الهاتف أفقياً أو أدخل مدينتك"},
+    "📍 GPS auto": {en:"📍 GPS auto", ar:"📍 GPS تلقائي"},
+    "🧭 Boussole": {en:"🧭 Compass", ar:"🧭 البوصلة"},
+    "Direction": {en:"Direction", ar:"الاتجاه"},
+    "Distance": {en:"Distance", ar:"المسافة"},
+    "🌙 Visibilité du Croissant": {en:"🌙 Hilal Visibility", ar:"🌙 رؤية الهلال"},
+    "Entrez votre ville pour un calcul précis": {en:"Enter your city for precise calculation", ar:"أدخل مدينتك لحساب دقيق"},
+    "📍 GPS": {en:"📍 GPS", ar:"📍 GPS"},
+    "🌙 Calculer maintenant": {en:"🌙 Calculate now", ar:"🌙 احسب الآن"},
+    "Âge :": {en:"Age:", ar:"العمر:"},
+    "jours · Illumination :": {en:"days · Illumination:", ar:"أيام · الإضاءة:"},
+    "🌑 Nouvelle Lune": {en:"🌑 New Moon", ar:"🌑 المحاق"},
+    "🌕 Pleine Lune": {en:"🌕 Full Moon", ar:"🌕 البدر"},
+    "Chargement...": {en:"Loading...", ar:"جارٍ التحميل..."},
+    "Appuyez sur une date": {en:"Tap a date", ar:"اضغط على تاريخ"},
+    "Double date Grégorien • Hijri": {en:"Gregorian & Hijri date", ar:"التاريخ الميلادي والهجري"},
+    "Vendredis": {en:"Fridays", ar:"الجمعات"},
+    "Jours saints": {en:"Holy days", ar:"الأيام المقدسة"},
+    "Jours restants": {en:"Days left", ar:"أيام متبقية"},
+    "Aucun événement ce mois": {en:"No events this month", ar:"لا أحداث هذا الشهر"},
+  };
+
+  /* Traduire tous les TextNodes du DOM */
+  function walkAndTranslate(node) {
+    if (node.nodeType === 3) { /* TEXT_NODE */
+      var txt = node.textContent.trim();
+      if (txt && TR[txt]) {
+        var translated = isAR ? TR[txt].ar : TR[txt].en;
+        if (translated) node.textContent = node.textContent.replace(txt, translated);
+      }
+    } else if (node.nodeType === 1) { /* ELEMENT_NODE */
+      /* Traduire les placeholders */
+      if (node.placeholder && TR[node.placeholder]) {
+        node.placeholder = isAR ? TR[node.placeholder].ar : TR[node.placeholder].en;
+      }
+      /* Traduire les title */
+      if (node.title && TR[node.title]) {
+        node.title = isAR ? TR[node.title].ar : TR[node.title].en;
+      }
+      /* Récursion */
+      var children = node.childNodes;
+      for (var i = 0; i < children.length; i++) {
+        /* Ne pas entrer dans les scripts/styles */
+        var tag = (node.tagName || '').toLowerCase();
+        if (tag !== 'script' && tag !== 'style') {
+          walkAndTranslate(children[i]);
+        }
+      }
+    }
+  }
+
+  /* Sections à traduire */
+  var sections = ['sec-umma','sec-ens','sec-live','sec-qibla','sec-ai','welcome','userAvatarBar'];
+  sections.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) walkAndTranslate(el);
+  });
+
+  /* Jours de la semaine du calendrier */
+  var calDays = t('cal_days');
+  if (Array.isArray(calDays)) {
+    document.querySelectorAll('.ical-wd').forEach(function(el, i) {
+      if (calDays[i]) el.textContent = calDays[i];
+    });
+  }
+
+  /* Stats calendrier */
+  document.querySelectorAll('.ical-stat-l').forEach(function(el) {
+    var map = {
+      'Vendredis': isAR?'الجمعات':'Fridays',
+      'Fridays': isAR?'الجمعات':'Fridays',
+      'Jours saints': isAR?'الأيام المقدسة':'Holy days',
+      'Holy days': isAR?'الأيام المقدسة':'Holy days',
+      'Jours restants': isAR?'أيام متبقية':'Days left',
+      'Days left': isAR?'أيام متبقية':'Days left',
+      'Ramadan': isAR?'رمضان':'Ramadan',
+      '★': '★'
+    };
+    var k = el.textContent.trim();
+    if (map[k]) el.textContent = map[k];
+  });
+
+  /* RTL global pour arabe */
+  if (isAR) {
+    document.querySelectorAll('.ab-msg.user .ab-bubble, .ab-msg.baye .ab-bubble').forEach(function(el) {
+      el.style.direction = 'rtl';
+      el.style.textAlign = 'right';
+    });
+  }
+}
+
 function applyTranslations() {
   /* Sync window._lang */
   window._lang = _lang;
@@ -8767,6 +8959,9 @@ function applyTranslations() {
   var flags={fr:'🇫🇷 FR',en:'🇬🇧 EN',ar:'🇸🇦 ع'};
   var langBtn2=document.getElementById('langSwitchBtn');
   if(langBtn2) langBtn2.textContent=flags[_lang]||'🌐';
+
+  /* ══ TRADUCTION DOM COMPLÈTE ══ */
+  setTimeout(function(){ _translateAllDOM(); }, 100);
 
   /* ══ CALENDRIER ══ */
   if(typeof GREG_MONTHS_FR!=='undefined'){
@@ -9241,6 +9436,8 @@ function renderAbSuggestions() {
     card.onclick = (function(question){ return function(){ abAskSuggestion(question); }; })(s.q);
     grid.appendChild(card);
   });
+  /* Retraduire les catégories des suggestions */
+  setTimeout(function(){ if(typeof _translateAllDOM==='function') _translateAllDOM(); }, 50);
 }
 
 /* ── Réponses prédéfinies pour les suggestions (sans clé API) ── */
