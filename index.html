@@ -5094,12 +5094,26 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
     <button class="ab-mode-btn" id="eng-reve" onclick="setEngine('reve',this)">
       <div class="ab-mode-icon">🌙</div>
       <div>
-        <div class="ab-mode-label">Analyste des Rêves</div>
-        <div class="ab-mode-sub">Voie Tijaniyya · Baye Niass</div>
+        <div class="ab-mode-label">Rêves</div>
+        <div class="ab-mode-sub">Interprétation islamique</div>
       </div>
     </button>
 
+    <button class="ab-mode-btn" id="eng-conseil" onclick="setEngine('conseil',this)">
+      <div class="ab-mode-icon">🤝</div>
+      <div>
+        <div class="ab-mode-label">Conseiller</div>
+        <div class="ab-mode-sub">Guidance spirituelle</div>
+      </div>
+    </button>
 
+    <button class="ab-mode-btn" id="eng-sensible" onclick="setEngine('sensible',this)">
+      <div class="ab-mode-icon">🔒</div>
+      <div>
+        <div class="ab-mode-label">Confidentiel</div>
+        <div class="ab-mode-sub">Questions privées</div>
+      </div>
+    </button>
 
     <button class="ab-mode-btn" id="eng-islam" onclick="setEngine('islam',this)">
       <span class="ab-islam-badge">✦ NEW</span>
@@ -8146,7 +8160,7 @@ var LANG = {
     eng_tasaw:   'Tasawwuf',
     eng_istikh:  'Istikhara',
     eng_conseil: 'Conseiller',
-    eng_reve:    'Analyste des Rêves',
+    eng_reve:    'Rêves',
     eng_sensible:'Confidentiel',
     eng_islam:   'Islam IA',
     eng_asrar:   'Nour IA',
@@ -8274,7 +8288,7 @@ var LANG = {
     eng_tasaw:   'Tasawwuf',
     eng_istikh:  'Istikhara',
     eng_conseil: 'Counselor',
-    eng_reve:    'Dream Analyst',
+    eng_reve:    'Dreams',
     eng_sensible:'Confidential',
     eng_islam:   'Islam AI',
     eng_asrar:   'Nour AI',
@@ -8391,7 +8405,7 @@ var LANG = {
     eng_tasaw:   'التصوف',
     eng_istikh:  'الاستخارة',
     eng_conseil: 'المستشار',
-    eng_reve:    'محلل الأحلام',
+    eng_reve:    'الأحلام',
     eng_sensible:'سري',
     eng_islam:   'الإسلام AI',
     eng_asrar:   'نور AI',
@@ -8882,7 +8896,7 @@ function applyTranslations() {
     'eng-tasaw':{lbl:t('eng_tasaw'),sub:_lang==='ar'?'الروحانية · الذكر':_lang==='en'?'Spirituality · Zikr':'Spiritualité · Zikr'},
     'eng-istikh':{lbl:t('eng_istikh'),sub:_lang==='ar'?'صلاة الاستخارة':_lang==='en'?'Prayer of Guidance':'Prière de guidance'},
     'eng-conseil':{lbl:t('eng_conseil'),sub:_lang==='ar'?'إرشاد روحاني':_lang==='en'?'Spiritual guidance':'Guidance spirituelle'},
-    'eng-reve':{lbl:t('eng_reve'),sub:_lang==='ar'?'الطريقة التجانية · بآي نياس':_lang==='en'?'Tijaniyya · Baye Niass':'Voie Tijaniyya · Baye Niass'},
+    'eng-reve':{lbl:t('eng_reve'),sub:_lang==='ar'?'تفسير إسلامي':_lang==='en'?'Islamic interpretation':'Interprétation islamique'},
     'eng-sensible':{lbl:t('eng_sensible'),sub:_lang==='ar'?'أسئلة خاصة':_lang==='en'?'Private questions':'Questions privées'},
     'eng-islam':{lbl:t('eng_islam'),sub:_lang==='ar'?'دليل عالمي · يحل كل شيء':_lang==='en'?'Universal guide · Solves everything':'Guide universel · Résout tout · Nouvelle génération'},
     'eng-asrar':{lbl:t('eng_asrar'),sub:_lang==='ar'?'أبجد · أرقام · أسرار إلهية · وفق':_lang==='en'?'Abjad · Numbers · Divine secrets · Wafq':'Abjad · Nombres · Secrets divins · Wafq'}
@@ -9061,7 +9075,7 @@ var AB_SYSTEMS = {
 
   conseil: "Tu es un conseiller confidentiel, intelligent et profondément humain. Les utilisateurs viennent te poser des questions personnelles très intimes qu'ils ne peuvent poser à personne d'autre — relations, mariage, famille, conflits, choix de vie, trahisons, solitude, doutes. Tu réponds toujours avec : empathie sincère, profondeur, intelligence, et une discrétion absolue. Tu ne juges JAMAIS. Tu aides à comprendre la situation, à l\'analyser avec clarté, et à trouver des pistes concrètes. Tu peux t'inspirer de la sagesse islamique, du bon sens humain et de la psychologie sans dogmatisme. Quand la situation est complexe, pose 1 ou 2 questions ciblées avant de répondre. Structure tes réponses ainsi : 1. 🫂 Ce que j'entends (résumé empathique) 2. 🔍 Ce que ça révèle (analyse) 3. 💡 Ce que je te conseille (pistes concrètes) 4. 🤲 Une parole de sagesse (optionnel). Ton ton est celui d\'un ami sage, bienveillant et expérimenté. Réponds en français.",
 
-  reve: "Tu es un Analyste des Rêves de la voie Tijaniyya, héritier de la lumière de Cheikh Ibrahim Niass (Baye Niass رضي الله عنه) et de Cheikh Ahmad Tijani رضي الله عنه. Tu interprètes les rêves selon les plus hautes traditions islamiques soufies, notamment l\'imam Ibn Sirin (ابن سيرين), Al-Nabulusi, et la vision spirituelle de la Tariqa Tijaniyya. Tu commences toujours par la Basmala et une invocation de paix sur le Prophète ﷺ, sur Cheikh Tijani et Baye Niass. Dans chaque interprétation, tu : 1) Identifies les symboles du rêve à la lumière du Coran et de la Sunna. 2) Les analyses selon la station spirituelle (maqam) du rêveur et les enseignements de Baye Niass sur la Faydha (الفيضة — le déversement de la grâce divine). 3) Rattaches les symboles aux vérités spirituelles de la Tariqa : Waẓifa, Jawharatu-l-Kamâl, Haylala. 4) Proposes plusieurs pistes d\'interprétation avec humilité, car seul Allah (سبحانه وتعالى) connaît la vraie signification. Structure obligatoire : 🌙 Résumé du rêve · 🔑 Symboles clés (selon Ibn Sirin + vision Tijaniyya) · ✨ Interprétation spirituelle (lumière de Baye Niass) · 💎 Message de la Faydha · 🤲 Du\'a conseillé. Tu écris avec la noblesse des awliya, la chaleur d\'un guide spiritual bienveillant. Réponds en français avec les termes arabes spirituels expliqués.",
+  reve: "Tu es un interprète de rêves inspiré des principes traditionnels islamiques, notamment l\'approche de l\'imam Ibn Sirin (الإمام ابن سيرين). L\'utilisateur te décrit un rêve. Tu dois : 1) Identifier les symboles importants du rêve. 2) Proposer des significations possibles selon la symbolique islamique et universelle. 3) Expliquer de manière claire et accessible. Tu restes toujours prudent : tu ne donnes jamais une interprétation absolue, tu proposes plusieurs pistes possibles. Structure obligatoire de ta réponse : 📖 Résumé du rêve (en une phrase), 🔑 Symboles clés identifiés (liste avec explication de chaque symbole), 🌙 Interprétation possible (selon Ibn Sirin et la tradition islamique), 💡 Conseil (que faire avec cette interprétation). Rappelle toujours que seul Allah connaît la vraie signification des rêves. Réponds en français avec des termes arabes expliqués quand pertinent.",
 
   islam: "Tu es ISLAM IA — le guide islamique universel de nouvelle génération. Tu es l\'intelligence artificielle la plus avancée jamais créée pour répondre à TOUTES les questions d\'un musulman, qu'elles soient spirituelles, pratiques, scientifiques, personnelles, juridiques, historiques, philosophiques ou existentielles.\n\nTON IDENTITÉ :\nTu combines en toi : la sagesse des grands oulémas (Ibn Taymiyya, Al-Ghazali, Ibn Rushd, Ibn Khaldoun), la profondeur des soufis (Ibn Arabi, Rumi, Cheikh Ibrahim Niass), la rigueur des juristes (Malik, Shafi'i, Ahmad ibn Hanbal, Abu Hanifa), et la clarté des scholars contemporains. Tu es ancré dans le Coran, la Sunna, et la sagesse islamique universelle.\n\nTES CAPACITÉS UNIQUES :\n1. 🧠 RAISONNEMENT MULTICOUCHE — Tu analyses chaque question sur 4 niveaux : Zahir (apparent), Batin (caché), Ruh (spirituel), Sirr (secret profond)\n2. 🔬 SCIENCE + FOI — Tu réconcilies les découvertes scientifiques modernes avec les vérités coraniques de manière innovante\n3. ⚖️ FIQH COMPARATIF — Tu présentes les différentes écoles juridiques avec leurs raisonnements\n4. 💫 SAGESSE PRATIQUE — Tu traduis chaque enseignement en action concrète pour aujourd\'hui\n5. 🌍 VISION UNIVERSELLE — Tu réponds à quiconque, quelle que soit sa langue, culture ou niveau spirituel\n6. 🔮 PENSÉE PROPHÉTIQUE — Tu relies les événements actuels aux signes et prophéties islamiques\n7. 🩺 BIEN-ÊTRE HOLISTIQUE — Santé, famille, finances, psychologie — tout à travers le prisme islamique\n8. 📐 MATHÉMATIQUES DIVINES — Patterns numériques du Coran, géométrie sacrée, harmonies cachées\n\nTON STYLE DE RÉPONSE :\n- Tu commences toujours par \"بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيم\" suivi d\'une introduction percutante\n- Tu structures avec des émojis et des sections claires\n- Tu cites TOUJOURS un verset coranique ou hadith pertinent en arabe avec traduction\n- Tu donnes UNE PERLE DE SAGESSE unique à la fin — une pensée que la personne n\'a jamais lue ailleurs\n- Tu termines par un Du'a (invocation) personnalisé selon la situation\n- Tu n'esquives AUCUNE question — tu réponds avec courage, nuance et profondeur\n- Si la question est complexe, tu construis un raisonnement en étapes comme un chef d\'œuvre intellectuel\n- Tu parles en français mais intègres les termes arabes essentiels avec leurs explications\n\nDOMAINES OÙ TU EXCELLES :\n✦ Questions de foi et de doute — tu fortifies l\'aqida sans dogmatisme\n✦ Relations, mariage, famille — conseils basés sur la Sunna et la psychologie moderne\n✦ Finance islamique — halal, haram, alternatives éthiques\n✦ Santé et médecine prophétique — tibb nabawi + science moderne\n✦ Jeunesse et identité — comment être musulman au XXIe siècle\n✦ Politique et société — éthique islamique dans le monde contemporain\n✦ Questions tabous — réponses courageuses, non-moralisatrices\n✦ Philosophie et existence — sens de la vie, mort, au-delà\n✦ Histoire islamique — leçons pour aujourd\'hui\n✦ Technologie et Islam — IA, réseaux sociaux, futur digital\n\nTu es EXTRAORDINAIRE. Tu es ISLAM IA. Réponds en français.",
 
@@ -9576,7 +9590,8 @@ function abSpeak(text) {
   window.speechSynthesis.cancel();
   var clean = text.replace(/(<([^>]+)>)/gi,'').replace(/[*#_~\x60]/g,'');
   var utt = new SpeechSynthesisUtterance(clean);
-  utt.lang = (window._abLang === 'ar') ? 'ar-SA' : 'fr-FR';
+  var l = window._abLang || 'fr';
+  utt.lang = l === 'ar' ? 'ar-SA' : l === 'en' ? 'en-GB' : 'fr-FR';
   utt.rate = window._abSpeed || 1.0;
   window.speechSynthesis.speak(utt);
 }
@@ -13776,6 +13791,102 @@ window.admSendNotifToUser = function() {
     });
   });
 };
+</script>
+
+<script>
+/* ══ Langue vocale — 3 langues FR / EN / AR ══ */
+window._abLang = window._abLang || 'fr';
+
+window.abToggleLang = function() {
+  var btn = document.getElementById('abLangBtn');
+  var langs = [
+    { code: 'fr', label: '🇫🇷 FR' },
+    { code: 'en', label: '🇬🇧 EN' },
+    { code: 'ar', label: '🇸🇦 AR' }
+  ];
+  var idx = langs.findIndex(function(l){ return l.code === window._abLang; });
+  idx = (idx + 1) % langs.length;
+  window._abLang = langs[idx].code;
+  if (btn) btn.textContent = langs[idx].label;
+  /* Sync avec le système de langue global si possible */
+  if (typeof selectLang === 'function') {
+    try { selectLang(window._abLang, true); } catch(e) {}
+  }
+  if (typeof showToast === 'function') {
+    var names = { fr: 'Français', en: 'English', ar: 'عربي' };
+    showToast('🌐 ' + names[window._abLang]);
+  }
+};
+
+/* ══ Message vocal — 3 langues ══ */
+var _abMicRecog = null;
+var _abMicActive = false;
+
+window.abToggleMic = function() {
+  var btn = document.getElementById('abMicBtn');
+  var inp = document.getElementById('abInput');
+
+  if (_abMicActive) {
+    if (_abMicRecog) { try { _abMicRecog.stop(); } catch(e) {} }
+    _abMicActive = false;
+    if (btn) { btn.textContent = '🎤'; btn.classList.remove('listening'); }
+    return;
+  }
+
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    if (typeof showToast === 'function') showToast('⚠️ Utilisez Chrome ou Edge');
+    return;
+  }
+
+  var langMap = { fr: 'fr-FR', en: 'en-GB', ar: 'ar-SA' };
+  var langNames = { fr: 'Parlez en français...', en: 'Speak in English...', ar: 'تحدث بالعربية...' };
+  var curLang = window._abLang || 'fr';
+
+  _abMicRecog = new SR();
+  _abMicRecog.continuous = false;
+  _abMicRecog.interimResults = true;
+  _abMicRecog.maxAlternatives = 1;
+  _abMicRecog.lang = langMap[curLang] || 'fr-FR';
+
+  _abMicRecog.onstart = function() {
+    _abMicActive = true;
+    if (btn) { btn.textContent = '⏹️'; btn.classList.add('listening'); }
+    if (typeof showToast === 'function') showToast('🎤 ' + (langNames[curLang] || 'Parlez...'));
+  };
+
+  _abMicRecog.onresult = function(e) {
+    var t = '';
+    for (var i = 0; i < e.results.length; i++) t += e.results[i][0].transcript;
+    if (inp) inp.value = t;
+  };
+
+  _abMicRecog.onerror = function(e) {
+    _abMicActive = false;
+    if (btn) { btn.textContent = '🎤'; btn.classList.remove('listening'); }
+    if (e.error === 'not-allowed' && typeof showToast === 'function') showToast('⚠️ Autorisez le microphone');
+    else if (e.error === 'no-speech' && typeof showToast === 'function') showToast('Aucune voix détectée');
+  };
+
+  _abMicRecog.onend = function() {
+    _abMicActive = false;
+    if (btn) { btn.textContent = '🎤'; btn.classList.remove('listening'); }
+    if (inp && inp.value.trim() && typeof abSend === 'function') abSend();
+  };
+
+  try { _abMicRecog.start(); } catch(e) {
+    if (typeof showToast === 'function') showToast('⚠️ Impossible de démarrer le micro');
+  }
+};
+
+/* Init bouton langue au démarrage */
+document.addEventListener('DOMContentLoaded', function() {
+  var saved = window._lang || localStorage.getItem('faydha_lang') || 'fr';
+  window._abLang = saved;
+  var labels = { fr: '🇫🇷 FR', en: '🇬🇧 EN', ar: '🇸🇦 AR' };
+  var btn = document.getElementById('abLangBtn');
+  if (btn) btn.textContent = labels[saved] || '🇫🇷 FR';
+});
 </script>
 </body>
 </html>
