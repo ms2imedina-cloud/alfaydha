@@ -119,19 +119,20 @@ function _fbInit(cb) {
 }
 
 </script>
-<!-- Firebase SDKs — chargés en parallèle pour rapidité maximale -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<!-- Firebase SDKs — defer : ne bloquent plus le parser HTML, chargés en parallèle -->
+<script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script>
-(function(){
+/* Avec defer, les SDKs Firebase se chargent après le DOM — init via DOMContentLoaded */
+document.addEventListener('DOMContentLoaded', function(){
   try{
     if(typeof firebase!=='undefined'){
       if(!firebase.apps.length) firebase.initializeApp(window._fbConfig);
       window._fbReady=true;
     }
   }catch(e){ console.error('[Firebase]',e); }
-})();
+});
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>/* ════════════════════════════════════════════════════════════
@@ -173,19 +174,58 @@ body{
 }
 
 #splash{
-  position:fixed;inset:0;z-index:9999;background:var(--g1);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;
-  transition:opacity .25s ease,visibility .25s ease;
+  position:fixed;inset:0;z-index:9999;
+  background:linear-gradient(160deg,#063d1e 0%,#0F7B3F 55%,#0a5c2e 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9rem;
+  transition:opacity .3s ease,visibility .3s ease;
+  overflow:hidden;
+}
+#splash::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(circle,rgba(212,175,55,.08) 1px,transparent 1px);
+  background-size:28px 28px;pointer-events:none;
 }
 #splash.hidden{opacity:0;visibility:hidden;pointer-events:none}
 /* splash contrôlé uniquement par JS */
+.sp-logo-wrap{
+  width:88px;height:88px;border-radius:22px;
+  background:rgba(255,255,255,.1);border:1.5px solid rgba(212,175,55,.3);
+  display:flex;align-items:center;justify-content:center;
+  animation:spFadeUp .45s ease both;
+  box-shadow:0 8px 32px rgba(0,0,0,.25);
+}
 .sp-logo{width:72px;height:72px;object-fit:contain;border-radius:8px;}
-.sp-name{font-family:'Amiri',serif;font-size:45px;color:#fff;line-height:1}
-.sp-ar{font-family:'Amiri',serif;font-size:20px;color:var(--gold2);direction:rtl}
-.sp-bar{width:180px;height:2px;background:rgba(212,175,55,.15);border-radius:100px;overflow:hidden}
-.sp-fill{height:100%;background:var(--gold);border-radius:100px;animation:spBar 2.2s ease forwards}
+.sp-logo-emoji{font-size:40px;line-height:1}
+.sp-name{
+  font-family:'Amiri',serif;font-size:46px;color:#fff;line-height:1;
+  animation:spFadeUp .45s .1s ease both;
+  text-shadow:0 2px 20px rgba(0,0,0,.3);
+}
+.sp-ar{
+  font-family:'Amiri',serif;font-size:19px;color:var(--gold2);direction:rtl;
+  animation:spFadeUp .45s .18s ease both;
+  opacity:.85;
+}
+.sp-divider{
+  width:48px;height:1.5px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  animation:spFadeUp .45s .22s ease both;
+}
+.sp-bar{
+  width:200px;height:3px;background:rgba(212,175,55,.15);
+  border-radius:100px;overflow:hidden;
+  animation:spFadeUp .45s .25s ease both;
+}
+.sp-fill{height:100%;background:linear-gradient(90deg,var(--gold),#F0DC82);border-radius:100px;animation:spBar 0.7s .3s ease forwards;width:0}
 @keyframes spBar{from{width:0}to{width:100%}}
-.sp-sub{font-size:13px;color:var(--gold3);font-style:italic;letter-spacing:.1em}
+.sp-sub{
+  font-size:12px;color:rgba(251,248,232,.55);font-style:italic;letter-spacing:.12em;
+  animation:spFadeUp .45s .3s ease both;
+}
+@keyframes spFadeUp{
+  from{opacity:0;transform:translateY(12px)}
+  to{opacity:1;transform:translateY(0)}
+}
 
 /* ══ PAGE D'ACCUEIL ══ */
 #welcome{
@@ -1919,7 +1959,7 @@ html { background: #0a0a0a; }
   font-weight: 600 !important;
   letter-spacing: .02em !important;
   box-shadow: 0 8px 32px rgba(0,0,0,.25) !important;
-  backdrop-filter: blur(12px) !important;
+  backdrop-filter: blur(4px) !important;
 }
 
 /* ── Bouton GPS Qibla ── */
@@ -1975,8 +2015,8 @@ button[onclick="qiblaGPS()"]:hover {
   background: linear-gradient(180deg,#0d2818 0%,#0a1f12 100%) !important;
   border-top: 1px solid rgba(212,175,55,.25) !important;
   box-shadow: 0 -4px 24px rgba(0,0,0,.25) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
 }
 .nav-btn {
   color: rgba(255,255,255,.42) !important;
@@ -2238,7 +2278,7 @@ button { -webkit-tap-highlight-color: transparent; }
 #toastEl {
   border-radius: 14px !important;
   font-weight: 600 !important;
-  backdrop-filter: blur(16px) !important;
+  backdrop-filter: blur(4px) !important;
   box-shadow: 0 8px 32px rgba(0,0,0,.3) !important;
 }
 
@@ -2285,9 +2325,13 @@ button[onclick="qiblaGPS()"] {
 
 <!-- SPLASH -->
 <div id="splash" onclick="_hideSplash()" style="cursor:pointer">
-  <img class="sp-logo" data-logo="1" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Cheikh Ibrahim Niass رضي الله عنه">
+  <div class="sp-logo-wrap">
+    <img class="sp-logo" id="splashLogoImg" data-logo="1" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Cheikh Ibrahim Niass رضي الله عنه" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+    <span class="sp-logo-emoji" style="display:none">🕌</span>
+  </div>
   <div class="sp-name">Baye Niass World</div>
   <div class="sp-ar">عَالَمُ بَايِ نِيَاسٍ</div>
+  <div class="sp-divider"></div>
   <div class="sp-bar"><div class="sp-fill"></div></div>
   <div class="sp-sub">L'application mondiale des Taalibé Baye</div>
 </div>
@@ -6053,12 +6097,16 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   }
 
+  /* Callback direct via _fbInit — supprime le poll setInterval 80ms */
+  _fbInit(function(){ _doHideSplash(); });
+  /* Fallback max 400ms — ne jamais bloquer l'utilisateur */
+  /* (était 800ms + poll, maintenant 400ms callback direct) */
   var _splashPoll = setInterval(function(){
     if(window._fbReady){ clearInterval(_splashPoll); _doHideSplash(); }
-  }, 80);
+  }, 100);
 
-  /* Max 800ms puis on force — ne jamais bloquer l'utilisateur */
-  setTimeout(function(){ clearInterval(_splashPoll); _doHideSplash(); }, 800);
+  /* Max 400ms puis on force — ne jamais bloquer l'utilisateur */
+  setTimeout(function(){ clearInterval(_splashPoll); _doHideSplash(); }, 400);
 });
 
 /* L\'accès est contrôlé par Firebase Auth — voir onAuthStateChanged */
@@ -6106,8 +6154,8 @@ function _initSecCache() {
   if (!_cachedAdminFab) _cachedAdminFab = document.getElementById('adminFab');
 }
 function showSec(id,btn){
-  /* Retraduire après changement de section */
-  setTimeout(function(){ if(typeof _translateAllDOM==='function') _translateAllDOM(); }, 200);
+  /* Retraduire après changement de section — requestAnimationFrame évite le setTimeout 200ms */
+  requestAnimationFrame(function(){ if(typeof _translateAllDOM==='function') _translateAllDOM(); });
   /* Zikr et Cal sont maintenant dans la section Pratique (wird) */
   var pratTab = null;
 
