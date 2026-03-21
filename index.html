@@ -507,6 +507,21 @@ body{
 @keyframes livePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(.94)}}
 @keyframes ldPulse{0%,100%{opacity:1}50%{opacity:.3}}
 
+/* ── Bouton langue dans l'app ── */
+#langSwitchBtn {
+  position: fixed; bottom: calc(var(--nav-h) + var(--safe-b) + 10px);
+  right: 12px; z-index: 400;
+  background: rgba(15,123,63,.9);
+  border: 1px solid rgba(212,175,55,.4);
+  border-radius: 100px; padding: 5px 10px;
+  font-size: 13px; cursor: pointer;
+  color: rgba(212,175,55,.9); font-weight: 700;
+  display: none; /* affiché après connexion */
+  transition: all .2s;
+  backdrop-filter: blur(8px);
+}
+#langSwitchBtn:hover { background: rgba(212,175,55,.2); }
+
 /* ═══════════════════════════════════════
    LIVE TV — SECTION UTILISATEUR
 ═══════════════════════════════════════ */
@@ -2277,6 +2292,7 @@ button[onclick="qiblaGPS()"] {
 </div>
 
 <div id="toast"></div>
+<button id="langSwitchBtn" onclick="_showLangSelector()" title="Change language">🌐 FR</button>
 <div id="pushNotifBanner" style="display:none"></div>
 
 <!-- ══ PANNEAU FLOTTANT INTERACTIONS (visible streamer uniquement) ══ -->
@@ -2324,6 +2340,116 @@ button[onclick="qiblaGPS()"] {
 #authLoading{transition:opacity .4s ease;}
 </style>
 <div id="authLoading" style="display:none;opacity:0;pointer-events:none;visibility:hidden"></div>
+
+
+<!-- ═══════════════════════════════════════════════════
+     SÉLECTEUR DE LANGUE — Affiché à la première visite
+═══════════════════════════════════════════════════ -->
+<style>
+#langSelectorOverlay {
+  position: fixed; inset: 0; z-index: 10000;
+  background: linear-gradient(160deg, #0a3d1e 0%, #0F7B3F 55%, #126b37 100%);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 0; transition: opacity .3s ease;
+  padding: 1.5rem 1.2rem;
+}
+#langSelectorOverlay.hidden { opacity: 0; pointer-events: none; }
+
+.lang-sel-logo {
+  width: 72px; height: 72px; border-radius: 18px;
+  background: rgba(255,255,255,.12); border: 1.5px solid rgba(212,175,55,.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; margin-bottom: .8rem;
+}
+.lang-sel-title {
+  font-family: 'Amiri', serif; font-size: 32px;
+  color: #fff; text-align: center; margin-bottom: .2rem;
+}
+.lang-sel-ar {
+  font-family: 'Amiri', serif; font-size: 16px;
+  color: rgba(212,175,55,.7); direction: rtl;
+  text-align: center; margin-bottom: 1.5rem;
+}
+.lang-sel-prompt {
+  font-size: 13px; color: rgba(255,255,255,.5);
+  text-align: center; letter-spacing: .08em;
+  text-transform: uppercase; margin-bottom: 1rem;
+}
+.lang-sel-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: .6rem; width: 100%; max-width: 320px; margin-bottom: 1.2rem;
+}
+.lang-sel-btn {
+  background: rgba(255,255,255,.07);
+  border: 1.5px solid rgba(255,255,255,.12);
+  border-radius: 16px; padding: 1rem .5rem;
+  text-align: center; cursor: pointer;
+  transition: all .2s ease; display: flex;
+  flex-direction: column; align-items: center; gap: 5px;
+}
+.lang-sel-btn:hover { background: rgba(255,255,255,.12); border-color: rgba(212,175,55,.3); }
+.lang-sel-btn.active {
+  background: rgba(212,175,55,.18);
+  border-color: rgba(212,175,55,.7);
+  box-shadow: 0 4px 16px rgba(212,175,55,.2);
+}
+.lang-sel-flag { font-size: 28px; line-height: 1; }
+.lang-sel-name { font-size: 13px; font-weight: 700; color: rgba(255,255,255,.8); }
+.lang-sel-native { font-size: 11px; color: rgba(255,255,255,.4); }
+.lang-sel-btn.active .lang-sel-name { color: #F0DC82; }
+.lang-sel-btn.active .lang-sel-native { color: rgba(212,175,55,.6); }
+.lang-sel-confirm {
+  width: 100%; max-width: 320px;
+  padding: .95rem; border: none; border-radius: 16px;
+  background: linear-gradient(135deg, #D4AF37, #B8962E);
+  color: #0a1a0e; font-size: 16px; font-weight: 800;
+  cursor: pointer; font-family: 'Roboto', sans-serif;
+  letter-spacing: .02em; transition: opacity .2s; margin-bottom: .8rem;
+}
+.lang-sel-confirm:hover { opacity: .88; }
+.lang-sel-skip {
+  font-size: 12px; color: rgba(255,255,255,.3);
+  cursor: pointer; text-decoration: underline; text-align: center;
+}
+.lang-sel-divider {
+  width: 60px; height: 1px; background: rgba(212,175,55,.25);
+  margin: .8rem auto;
+}
+</style>
+
+<div id="langSelectorOverlay" style="display:none;opacity:0">
+  <div class="lang-sel-logo">🕌</div>
+  <div class="lang-sel-title">Faydha</div>
+  <div class="lang-sel-ar">عَالَمُ بَايِ نِيَاسٍ</div>
+  <div class="lang-sel-divider"></div>
+  <div class="lang-sel-prompt" id="langPromptText">Choisissez votre langue · Choose · اختر</div>
+
+  <div class="lang-sel-grid">
+    <div class="lang-sel-btn active" id="langBtn-fr" onclick="selectLang('fr')">
+      <span class="lang-sel-flag">🇫🇷</span>
+      <span class="lang-sel-name">Français</span>
+      <span class="lang-sel-native">Français</span>
+    </div>
+    <div class="lang-sel-btn" id="langBtn-en" onclick="selectLang('en')">
+      <span class="lang-sel-flag">🇬🇧</span>
+      <span class="lang-sel-name">English</span>
+      <span class="lang-sel-native">English</span>
+    </div>
+    <div class="lang-sel-btn" id="langBtn-ar" onclick="selectLang('ar')">
+      <span class="lang-sel-flag">🇸🇦</span>
+      <span class="lang-sel-name">العربية</span>
+      <span class="lang-sel-native">Arabic</span>
+    </div>
+  </div>
+
+  <button class="lang-sel-confirm" onclick="confirmLang()" id="langConfirmBtn">
+    Continuer · Continue · متابعة
+  </button>
+  <div class="lang-sel-skip" onclick="confirmLang()">
+    Passer · Skip · تخطى
+  </div>
+</div>
 
 <!-- ═══════════════════════════════════════
      PAGE D'ACCUEIL — CONNEXION GOOGLE
@@ -5787,6 +5913,13 @@ function _onGoogleUser(user) {
     uid: user.uid, name: user.displayName, photo: user.photoURL, email: user.email, isAdmin: isAdmin
   })); } catch(e) {}
 
+  /* Afficher bouton langue */
+  var langBtn = document.getElementById('langSwitchBtn');
+  if (langBtn) {
+    langBtn.style.display = 'block';
+    var flags = {fr:'🇫🇷 FR', en:'🇬🇧 EN', ar:'🇸🇦 ع'};
+    langBtn.textContent = flags[_lang] || '🌐 FR';
+  }
   /* Masquer welcome */
   var w = document.getElementById('welcome');
   if (w) { w.style.transition='opacity .5s ease'; w.style.opacity='0'; setTimeout(function(){ w.classList.add('hidden'); w.style.opacity=''; }, 500); }
@@ -7951,6 +8084,456 @@ renderFavs();
    ASK BAYE — CLOUD AI WORKFLOW ENGINE
 ════════════════════════════════════════ */
 
+
+/* ════════════════════════════════════════════════════════════
+   SYSTÈME DE TRADUCTION — Faydha App
+   Langues : Français (fr) · English (en) · العربية (ar)
+════════════════════════════════════════════════════════════ */
+var LANG = {
+  fr: {
+    /* Navigation */
+    nav_salat:   'Salat',
+    nav_radio:   'Radio',
+    nav_live:    'Live',
+    nav_qibla:   'Qibla',
+    nav_ai:      'Kashf AI',
+
+    /* Splash / Welcome */
+    app_name:    'Baye Niass World',
+    app_sub:     'L\'application mondiale des Taalibé Baye',
+    lang_choose: 'Choisissez votre langue',
+    lang_continue:'Continuer',
+    lang_skip:   'Passer',
+
+    /* Welcome / Connexion */
+    wlc_connect_desc: 'Connectez-vous pour accéder à toutes les fonctionnalités de la communauté Taalibé Baye mondiale',
+    wlc_google:  'Se connecter avec Google',
+    wlc_feat1:   'Accès à la communauté mondiale Taalibé Baye',
+    wlc_feat2:   'Accès aux groupes Zikr en temps réel',
+    wlc_feat3:   'Chat en direct avec la communauté',
+    wlc_verse_fr:'« Quiconque craint Allah, Il lui ménagera une issue et lui accordera Ses dons par où il n\'espérait pas. » (Coran 65:2-3)',
+
+    /* Section Prières */
+    pray_title:  'Horaires de Prière',
+    pray_next:   'Prochaine prière',
+    pray_refresh:'Actualiser',
+    pray_loc:    'Détection GPS…',
+    pray_next_badge: 'Prochaine',
+
+    /* Onglets Pratique */
+    tab_wird:    'Wird',
+    tab_zikr:    'Zikr',
+    tab_cal:     'Calendrier',
+
+    /* Radio */
+    radio_live:  'EN DIRECT',
+    radio_connecting: 'Connexion...',
+    radio_playing:    'Radio Al Fayda — En direct',
+    radio_error: 'Signal indisponible',
+    studio_rec:  'ENREGISTREMENT',
+
+    /* Qibla */
+    qibla_tab:   'Direction Mecque',
+    lune_tab:    'Croissant Hilal',
+    cal_tab:     'Calendrier',
+    qibla_btn:   'Trouver la Qibla',
+
+    /* Baye IA */
+    ai_placeholder: 'Posez votre question...',
+    ai_send:     'Envoyer',
+    ai_clear:    '✕ Vider',
+    ai_key_title:'Clé API Anthropic',
+    ai_key_sub:  'Stockée localement · Jamais envoyée · Sécurisée',
+    ai_key_btn:  'Activer',
+    ai_sugs:     'Questions fréquentes',
+    ai_thinking: 'Réflexion...',
+
+    /* Moteurs IA */
+    eng_baye:    'Baye IA',
+    eng_quran:   'Coran',
+    eng_tasaw:   'Tasawwuf',
+    eng_istikh:  'Istikhara',
+    eng_conseil: 'Conseiller',
+    eng_reve:    'Rêves',
+    eng_sensible:'Confidentiel',
+    eng_islam:   'Islam IA',
+    eng_asrar:   'Nour IA',
+
+    /* Calendrier */
+    cal_days:    ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],
+    cal_months_greg: ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'],
+    cal_fridays: 'Vendredis',
+    cal_holy:    'Jours saints',
+    cal_left:    'Jours restants',
+    cal_ramadan: 'Ramadan',
+    cal_today:   'Appuyez sur une date',
+
+    /* Toast / Messages */
+    toast_saved: '✅ Sauvegardé',
+    toast_api_required: '🔑 Ajoutez votre clé API',
+    toast_copied:'✅ Copié',
+    toast_offline:'Hors ligne',
+
+    /* Zikr */
+    zikr_start:  'Commencer',
+    zikr_stop:   'Arrêter',
+    zikr_reset:  'Réinitialiser',
+    zikr_count:  'Compteur',
+    zikr_target: 'Objectif',
+
+    /* Live */
+    live_watching: 'En direct',
+    live_chat:   'Chat',
+    live_react:  'Réagir',
+
+    /* Profil */
+    logout:      'Déconnexion',
+    profile:     'Profil',
+  },
+
+  en: {
+    nav_salat:   'Prayer',
+    nav_radio:   'Radio',
+    nav_live:    'Live',
+    nav_qibla:   'Qibla',
+    nav_ai:      'Kashf AI',
+
+    app_name:    'Baye Niass World',
+    app_sub:     'The worldwide app for Taalibé Baye',
+    lang_choose: 'Choose your language',
+    lang_continue:'Continue',
+    lang_skip:   'Skip',
+
+    wlc_connect_desc: 'Sign in to access all features of the worldwide Taalibé Baye community',
+    wlc_google:  'Sign in with Google',
+    wlc_feat1:   'Access to the worldwide Taalibé Baye community',
+    wlc_feat2:   'Access to real-time Zikr groups',
+    wlc_feat3:   'Live chat with the community',
+    wlc_verse_fr:'« Whoever fears Allah — He will make for him a way out and will provide for him from where he does not expect. » (Quran 65:2-3)',
+
+    pray_title:  'Prayer Times',
+    pray_next:   'Next prayer',
+    pray_refresh:'Refresh',
+    pray_loc:    'GPS detection…',
+    pray_next_badge: 'Next',
+
+    tab_wird:    'Wird',
+    tab_zikr:    'Zikr',
+    tab_cal:     'Calendar',
+
+    radio_live:  'ON AIR',
+    radio_connecting: 'Connecting...',
+    radio_playing:    'Radio Al Fayda — Live',
+    radio_error: 'Signal unavailable',
+    studio_rec:  'RECORDING',
+
+    qibla_tab:   'Mecca Direction',
+    lune_tab:    'Hilal Crescent',
+    cal_tab:     'Calendar',
+    qibla_btn:   'Find Qibla',
+
+    ai_placeholder: 'Ask your question...',
+    ai_send:     'Send',
+    ai_clear:    '✕ Clear',
+    ai_key_title:'Anthropic API Key',
+    ai_key_sub:  'Stored locally · Never sent · Secured',
+    ai_key_btn:  'Activate',
+    ai_sugs:     'Frequent questions',
+    ai_thinking: 'Thinking...',
+
+    eng_baye:    'Baye AI',
+    eng_quran:   'Quran',
+    eng_tasaw:   'Tasawwuf',
+    eng_istikh:  'Istikhara',
+    eng_conseil: 'Counselor',
+    eng_reve:    'Dreams',
+    eng_sensible:'Confidential',
+    eng_islam:   'Islam AI',
+    eng_asrar:   'Nour AI',
+
+    cal_days:    ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+    cal_months_greg: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+    cal_fridays: 'Fridays',
+    cal_holy:    'Holy days',
+    cal_left:    'Days left',
+    cal_ramadan: 'Ramadan',
+    cal_today:   'Tap a date',
+
+    toast_saved: '✅ Saved',
+    toast_api_required: '🔑 Add your API key',
+    toast_copied:'✅ Copied',
+    toast_offline:'Offline',
+
+    zikr_start:  'Start',
+    zikr_stop:   'Stop',
+    zikr_reset:  'Reset',
+    zikr_count:  'Counter',
+    zikr_target: 'Target',
+
+    live_watching: 'Live',
+    live_chat:   'Chat',
+    live_react:  'React',
+
+    logout:      'Sign out',
+    profile:     'Profile',
+  },
+
+  ar: {
+    nav_salat:   'صلاة',
+    nav_radio:   'راديو',
+    nav_live:    'مباشر',
+    nav_qibla:   'قبلة',
+    nav_ai:      'كشف AI',
+
+    app_name:    'عالَم بَايِ نِيَاسٍ',
+    app_sub:     'تطبيق التاليبي باي في العالم',
+    lang_choose: 'اختر لغتك',
+    lang_continue:'متابعة',
+    lang_skip:   'تخطى',
+
+    wlc_connect_desc: 'سجل دخولك للوصول إلى جميع مميزات مجتمع التاليبي باي العالمي',
+    wlc_google:  'تسجيل الدخول بـ Google',
+    wlc_feat1:   'الوصول إلى مجتمع التاليبي باي العالمي',
+    wlc_feat2:   'الوصول إلى مجموعات الذكر الفوري',
+    wlc_feat3:   'الدردشة المباشرة مع المجتمع',
+    wlc_verse_fr:'﴿ وَمَن يَتَّقِ اللهَ يَجْعَل لَّهُ مَخْرَجًا وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ ﴾ (الطلاق 65:2-3)',
+
+    pray_title:  'أوقات الصلاة',
+    pray_next:   'الصلاة القادمة',
+    pray_refresh:'تحديث',
+    pray_loc:    'تحديد الموقع…',
+    pray_next_badge: 'التالية',
+
+    tab_wird:    'الورد',
+    tab_zikr:    'الذكر',
+    tab_cal:     'التقويم',
+
+    radio_live:  'مباشر',
+    radio_connecting: 'جارٍ الاتصال...',
+    radio_playing:    'راديو الفيضة — مباشر',
+    radio_error: 'الإشارة غير متوفرة',
+    studio_rec:  'تسجيل',
+
+    qibla_tab:   'اتجاه مكة',
+    lune_tab:    'الهلال',
+    cal_tab:     'التقويم',
+    qibla_btn:   'تحديد القبلة',
+
+    ai_placeholder: 'اكتب سؤالك...',
+    ai_send:     'إرسال',
+    ai_clear:    '✕ مسح',
+    ai_key_title:'مفتاح API Anthropic',
+    ai_key_sub:  'محفوظ محليًا · آمن · لا يُرسَل',
+    ai_key_btn:  'تفعيل',
+    ai_sugs:     'أسئلة متكررة',
+    ai_thinking: 'جارٍ التفكير...',
+
+    eng_baye:    'باي AI',
+    eng_quran:   'القرآن',
+    eng_tasaw:   'التصوف',
+    eng_istikh:  'الاستخارة',
+    eng_conseil: 'المستشار',
+    eng_reve:    'الأحلام',
+    eng_sensible:'سري',
+    eng_islam:   'الإسلام AI',
+    eng_asrar:   'نور AI',
+
+    cal_days:    ['أحد','إثن','ثلا','أرب','خمي','جمع','سبت'],
+    cal_months_greg: ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'],
+    cal_fridays: 'الجمعات',
+    cal_holy:    'الأيام المقدسة',
+    cal_left:    'أيام متبقية',
+    cal_ramadan: 'رمضان',
+    cal_today:   'اضغط على تاريخ',
+
+    toast_saved: '✅ تم الحفظ',
+    toast_api_required: '🔑 أضف مفتاح API',
+    toast_copied:'✅ تم النسخ',
+    toast_offline:'غير متصل',
+
+    zikr_start:  'ابدأ',
+    zikr_stop:   'توقف',
+    zikr_reset:  'إعادة تعيين',
+    zikr_count:  'العداد',
+    zikr_target: 'الهدف',
+
+    live_watching: 'مباشر',
+    live_chat:   'دردشة',
+    live_react:  'تفاعل',
+
+    logout:      'تسجيل الخروج',
+    profile:     'الملف الشخصي',
+  }
+};
+
+/* Langue active — lue depuis localStorage */
+var _lang = localStorage.getItem('faydha_lang') || 'fr';
+
+function t(key) {
+  return (LANG[_lang] && LANG[_lang][key]) || (LANG['fr'] && LANG['fr'][key]) || key;
+}
+
+function setLang(lang) {
+  _lang = lang;
+  try { localStorage.setItem('faydha_lang', lang); } catch(e) {}
+  /* RTL pour l'arabe */
+  document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+  document.documentElement.setAttribute('lang', lang === 'ar' ? 'ar' : lang === 'en' ? 'en' : 'fr');
+  applyTranslations();
+}
+
+function applyTranslations() {
+  /* Navigation */
+  var navMap = {
+    'nav-umma': t('nav_salat'),
+    'nav-ens':  t('nav_radio'),
+    'nav-live': t('nav_live'),
+    'nav-qibla':t('nav_qibla'),
+    'nav-ai':   t('nav_ai')
+  };
+  Object.keys(navMap).forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var lbl = el.querySelector('.nav-label');
+    if (lbl) lbl.textContent = navMap[id];
+  });
+
+  /* Onglets internes Radio */
+  var ensRadio = document.getElementById('ensTabRadio');
+  if (ensRadio) { var s = ensRadio.querySelector('.et-sub'); if(s) s.textContent = t('radio_live'); }
+  var ensStudio = document.getElementById('ensTabStudio');
+  if (ensStudio) { var s2 = ensStudio.querySelector('.et-sub'); if(s2) s2.textContent = t('studio_rec'); }
+
+  /* Onglets Qibla */
+  var qlQibla = document.getElementById('qltab-qibla');
+  if (qlQibla) { var ql = qlQibla.querySelector('.qt-label'); if(ql) ql.textContent = t('qibla_tab'); }
+  var qlLune = document.getElementById('qltab-lune');
+  if (qlLune) { var ql2 = qlLune.querySelector('.qt-label'); if(ql2) ql2.textContent = t('lune_tab'); }
+  var qlCal = document.getElementById('qltab-cal');
+  if (qlCal) { var ql3 = qlCal.querySelector('.qt-label'); if(ql3) ql3.textContent = t('cal_tab'); }
+
+  /* Onglets pratique Wird/Zikr/Cal */
+  var pratTabs = document.querySelectorAll('.pratique-tab');
+  if (pratTabs.length >= 3) {
+    var tkeys = [t('tab_wird'), t('tab_zikr'), t('tab_cal')];
+    pratTabs.forEach(function(tab, i) {
+      if (tkeys[i]) { var lbl = tab.querySelector('.pt-label'); if(lbl) lbl.textContent = tkeys[i]; }
+    });
+  }
+
+  /* Baye IA — placeholder + bouton */
+  var inp = document.getElementById('abInput');
+  if (inp) inp.placeholder = t('ai_placeholder');
+  var clrBtn = document.querySelector('.ab-clr-btn');
+  if (clrBtn) clrBtn.innerHTML = t('ai_clear');
+  var sugTitle = document.querySelector('.ab-sug-title');
+  if (sugTitle) sugTitle.textContent = t('ai_sugs');
+  var cfgTitle = document.querySelector('.ab-config-title');
+  if (cfgTitle) cfgTitle.textContent = t('ai_key_title');
+  var cfgSub = document.querySelector('.ab-config-sub');
+  if (cfgSub) cfgSub.textContent = t('ai_key_sub');
+  var cfgBtn = document.querySelector('.ab-config button');
+  if (cfgBtn && cfgBtn.onclick && cfgBtn.onclick.toString().indexOf('abSaveKey')!==-1) cfgBtn.textContent = t('ai_key_btn');
+
+  /* Moteurs IA labels */
+  var engMap = {
+    'eng-baye':    t('eng_baye'),
+    'eng-quran':   t('eng_quran'),
+    'eng-tasaw':   t('eng_tasaw'),
+    'eng-istikh':  t('eng_istikh'),
+    'eng-conseil': t('eng_conseil'),
+    'eng-reve':    t('eng_reve'),
+    'eng-sensible':t('eng_sensible'),
+    'eng-islam':   t('eng_islam'),
+    'eng-asrar':   t('eng_asrar')
+  };
+  Object.keys(engMap).forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var lbl = el.querySelector('.ab-mode-label');
+    if (lbl) lbl.textContent = engMap[id];
+  });
+
+  /* Welcome page */
+  var wDesc = document.querySelector('#welcome [style*="13px"][style*="rgba(251"]');
+  if (wDesc) wDesc.textContent = t('wlc_connect_desc');
+  var gBtn = document.querySelector('.wlc-google-btn');
+  if (gBtn) {
+    var gTxt = gBtn.childNodes[gBtn.childNodes.length - 1];
+    if (gTxt && gTxt.nodeType === 3) gTxt.textContent = ' ' + t('wlc_google');
+  }
+
+  /* RTL : ajuster les éléments directionnels */
+  if (_lang === 'ar') {
+    document.querySelectorAll('.ab-msg.user').forEach(function(m){ m.style.flexDirection = 'row-reverse'; });
+    document.querySelectorAll('.ab-input-wrap').forEach(function(m){ m.style.direction = 'rtl'; });
+  } else {
+    document.querySelectorAll('.ab-msg.user').forEach(function(m){ m.style.flexDirection = ''; });
+    document.querySelectorAll('.ab-input-wrap').forEach(function(m){ m.style.direction = ''; });
+  }
+
+  /* Mettre à jour le calendrier si visible */
+  if (typeof icalRender === 'function') {
+    if (typeof GREG_MONTHS_FR !== 'undefined') {
+      var m = t('cal_months_greg');
+      if (Array.isArray(m)) GREG_MONTHS_FR.splice.apply(GREG_MONTHS_FR, [0, 12].concat(m));
+    }
+  }
+
+  /* Mettre à jour les prompts IA selon la langue */
+  if (typeof AB_SYSTEMS !== 'undefined') {
+    var langNote = _lang === 'ar' ? '\n\nRéponds en arabe (العربية).' :
+                   _lang === 'en' ? '\n\nRespond in English.' : '';
+    window._langNote = langNote;
+  }
+}
+
+/* Appliquer au chargement */
+document.addEventListener('DOMContentLoaded', function() {
+  var saved = localStorage.getItem('faydha_lang');
+  if (saved && LANG[saved]) {
+    _lang = saved;
+    document.documentElement.setAttribute('dir', saved === 'ar' ? 'rtl' : 'ltr');
+  }
+  /* Montrer sélecteur si première visite */
+  if (!saved) {
+    _showLangSelector();
+  } else {
+    applyTranslations();
+  }
+});
+
+function _showLangSelector() {
+  var overlay = document.getElementById('langSelectorOverlay');
+  if (overlay) { overlay.style.display = 'flex'; overlay.style.opacity = '1'; }
+}
+
+function _hideLangSelector() {
+  var overlay = document.getElementById('langSelectorOverlay');
+  if (overlay) {
+    overlay.style.opacity = '0';
+    setTimeout(function(){ overlay.style.display = 'none'; }, 300);
+  }
+}
+
+window.selectLang = function(lang) {
+  /* Mettre à jour visuellement */
+  document.querySelectorAll('.lang-sel-btn').forEach(function(b){ b.classList.remove('active'); });
+  var btn = document.getElementById('langBtn-' + lang);
+  if (btn) btn.classList.add('active');
+  window._pendingLang = lang;
+};
+
+window.confirmLang = function() {
+  var lang = window._pendingLang || 'fr';
+  setLang(lang);
+  _hideLangSelector();
+  /* Mettre à jour le bouton flottant */
+  var flags = {fr:'🇫🇷 FR', en:'🇬🇧 EN', ar:'🇸🇦 ع'};
+  var btn = document.getElementById('langSwitchBtn');
+  if (btn) btn.textContent = flags[lang] || '🌐';
+};
+
 var _abEngine = 'baye';
 var _abHistory = [];
 var _abLoading = false;
@@ -8637,6 +9220,12 @@ async function abCallClaude(question, apiKey, systemPrompt) {
   // Utilise l'historique complet (déjà inclu la question courante)
   var messages = _abHistory.slice(-14);
 
+  /* Injecter instruction de langue dans le prompt système */
+  var langInstr = '';
+  if (window._lang === 'en') langInstr = '\n\nIMPORTANT: Always respond in English.';
+  else if (window._lang === 'ar') langInstr = '\n\nمهم: أجب دائمًا باللغة العربية الفصحى.';
+  var finalSystem = systemPrompt + langInstr;
+
   var resp = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -8649,7 +9238,7 @@ async function abCallClaude(question, apiKey, systemPrompt) {
     body: JSON.stringify({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 2048,
-      system: systemPrompt,
+      system: finalSystem,
       messages: messages
     })
   });
