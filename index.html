@@ -1148,7 +1148,7 @@ body{
 .ab-config{background:linear-gradient(135deg,var(--g1),var(--g2));border-bottom:1px solid rgba(212,175,55,.2);padding:1rem 1.5rem}
 .ab-config-title{font-family:'Amiri',serif;font-size:16px;color:var(--gold2);margin-bottom:.2rem}
 .ab-config-sub{font-size:12px;color:rgba(251,248,232,.55);line-height:1.5}
-.ab-suggestions{padding:1rem 1rem}
+.ab-suggestions{padding:.9rem .85rem}
 .ab-sug-title{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem}
 .ab-sug-grid{display:flex;flex-direction:column;gap:.45rem}
 .ab-sug-card{background:var(--white);border:1px solid var(--gold3);border-left:3px solid var(--gold);border-radius:10px;padding:.7rem 1rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.7rem}
@@ -4803,28 +4803,30 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
   background: linear-gradient(160deg,#08061a 0%,#120a30 50%,#08061a 100%);
   border-bottom: 1px solid rgba(212,175,55,.15);
   flex-shrink: 0;
+  padding-bottom: .5rem;
 }
 .ab-modes {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  padding: 1rem 1rem .9rem;
+  gap: 8px;
+  padding: .85rem .85rem .75rem;
   box-sizing: border-box;
+  width: 100%;
 }
 .ab-mode-btn {
   display: flex;
   align-items: center;
-  gap: .55rem;
-  padding: .75rem .85rem;
+  gap: .5rem;
+  padding: .7rem .75rem;
   background: rgba(255,255,255,.07);
   border: 1.5px solid rgba(255,255,255,.12);
-  border-radius: 14px;
+  border-radius: 12px;
   cursor: pointer;
   transition: all .2s cubic-bezier(.34,1.56,.64,1);
   font-family: 'Roboto', sans-serif;
   text-align: left;
   -webkit-tap-highlight-color: transparent;
-  min-height: 62px;
+  min-height: 60px;
   box-sizing: border-box;
   width: 100%;
 }
@@ -4835,22 +4837,22 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
   box-shadow: 0 0 0 1px rgba(212,175,55,.2), 0 4px 18px rgba(0,0,0,.3);
 }
 .ab-mode-icon {
-  font-size: 24px;
+  font-size: 22px;
   line-height: 1;
   flex-shrink: 0;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
-  background: rgba(255,255,255,.05);
+  border-radius: 9px;
+  background: rgba(255,255,255,.06);
 }
 .ab-mode-btn.active .ab-mode-icon {
   background: rgba(212,175,55,.15);
 }
 .ab-mode-label {
-  font-size:13px;
+  font-size:12.5px;
   font-weight:700;
   color:rgba(255,255,255,.92);
   line-height:1.2;
@@ -4858,8 +4860,8 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
 }
 .ab-mode-btn.active .ab-mode-label { color: #F0DC82; }
 .ab-mode-sub {
-  font-size:10.5px;
-  color:rgba(255,255,255,.5);
+  font-size:10px;
+  color:rgba(255,255,255,.45);
   margin-top:2px;
   line-height:1.3;
 }
@@ -4977,12 +4979,12 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
 .nour-tabs {
   display:flex; gap:0;
   background:#080600;
-  border-bottom:1px solid rgba(212,175,55,.15);
+  border-bottom:2px solid rgba(212,175,55,.2);
   flex-shrink:0;
 }
 .nour-tab {
-  flex:1; padding:.7rem .4rem; text-align:center;
-  font-size:13px; font-weight:700; color:rgba(212,175,55,.65);
+  flex:1; padding:.75rem .4rem; text-align:center;
+  font-size:13px; font-weight:700; color:rgba(212,175,55,.6);
   cursor:pointer; border:none; background:none;
   font-family:'Roboto',sans-serif; border-bottom:2px solid transparent;
   transition:all .2s; letter-spacing:.03em;
@@ -4995,38 +4997,41 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
 .istikh-num-wrap {
   background:linear-gradient(160deg,#0a0800,#150e00);
   border-bottom:1px solid rgba(212,175,55,.15);
-  padding:1rem 1rem;
+  padding:.9rem .85rem;
   box-sizing:border-box;
+  width:100%;
 }
-.istikh-num-row { display:flex; gap:.4rem; margin-bottom:.5rem; }
+.istikh-num-row { display:flex; gap:.5rem; margin-bottom:.6rem; align-items:stretch; }
 .istikh-num-label {
-  font-size:11.5px; font-weight:700; color:rgba(212,175,55,.8);
-  text-transform:uppercase; letter-spacing:.08em;
-  margin-bottom:.25rem; font-family:'Roboto',sans-serif;
+  font-size:11px; font-weight:700; color:rgba(212,175,55,.8);
+  text-transform:uppercase; letter-spacing:.07em;
+  margin-bottom:.3rem; font-family:'Roboto',sans-serif;
 }
 .istikh-num-input {
   flex:1; background:rgba(212,175,55,.09);
   border:1.5px solid rgba(212,175,55,.35); border-radius:10px;
-  padding:.45rem .75rem; color:#fff; font-family:'Amiri',serif;
-  font-size:16px; outline:none; direction:rtl;
+  padding:.55rem .85rem; color:#fff; font-family:'Amiri',serif;
+  font-size:15px; outline:none; direction:rtl;
   transition:border-color .2s;
+  width:100%; box-sizing:border-box;
 }
 .istikh-num-input:focus { border-color:rgba(212,175,55,.7); }
 .istikh-num-input::placeholder { color:rgba(212,175,55,.45); }
 .istikh-num-val {
-  flex-shrink:0; width:52px; background:rgba(212,175,55,.1);
+  flex-shrink:0; width:46px; min-height:42px;
+  background:rgba(212,175,55,.1);
   border:1px solid rgba(212,175,55,.25); border-radius:10px;
   display:flex; align-items:center; justify-content:center;
-  font-family:'Amiri',serif; font-size:18px; font-weight:700;
+  font-family:'Amiri',serif; font-size:17px; font-weight:700;
   color:var(--gold);
 }
 .istikh-type-row {
   display:flex; gap:.4rem; flex-wrap:wrap; margin-bottom:.6rem;
 }
 .istikh-type-btn {
-  padding:.45rem .3rem;
-  background:rgba(212,175,55,.09); border:1px solid rgba(212,175,55,.3);
-  border-radius:20px; font-size:12px; font-weight:700;
+  padding:.42rem .25rem;
+  background:rgba(212,175,55,.09); border:1px solid rgba(212,175,55,.28);
+  border-radius:20px; font-size:11.5px; font-weight:700;
   color:rgba(212,175,55,.75); cursor:pointer;
   font-family:'Roboto',sans-serif; transition:all .2s; text-align:center;
   box-sizing:border-box; width:100%; white-space:nowrap;
@@ -5064,13 +5069,13 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
   font-size:13px; font-weight:700; letter-spacing:.05em; color:rgba(255,255,255,.9);
 }
 .istikh-analyse-btn {
-  width:100%; margin-top:.75rem;
+  width:100%; margin-top:.7rem;
   background:linear-gradient(135deg,#3d1f00,#7a4500);
-  border:1px solid rgba(212,175,55,.55); border-radius:12px;
-  padding:.75rem 1rem; color:#F0DC82; font-weight:700;
+  border:1.5px solid rgba(212,175,55,.6); border-radius:12px;
+  padding:.7rem 1rem; color:#F0DC82; font-weight:700;
   font-size:14px; cursor:pointer; font-family:'Roboto',sans-serif;
   transition:opacity .2s; letter-spacing:.04em;
-  box-sizing:border-box;
+  box-sizing:border-box; text-align:center;
 }
 .istikh-analyse-btn:hover { opacity:.85; }
 
@@ -5142,7 +5147,7 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
   </div>
 
   <!-- Panel Abjad -->
-  <div class="nour-panel active" id="nourPanelAbjad" style="padding:.8rem 1rem">
+  <div class="nour-panel active" id="nourPanelAbjad" style="padding:.85rem .85rem">
     <div class="asrar-calc-title" style="font-size:16px;margin-bottom:.5rem">&#x62D;&#x633;&#x627;&#x628; &#x627;&#x644;&#x62C;&#x64F;&#x645;&#x651;&#x644; — Calculatrice Abjad</div>
     <div class="asrar-calc-input-row">
       <input class="asrar-calc-input" id="asrarInput" type="text"
