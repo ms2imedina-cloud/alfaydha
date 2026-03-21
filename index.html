@@ -4963,33 +4963,45 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
 .ab-sug-asrar { border-left-color:#D4AF37 !important; background:linear-gradient(135deg,rgba(212,175,55,.04),rgba(180,120,0,.04)) !important; }
 .ab-sug-asrar:hover { border-color:rgba(212,175,55,.6) !important; box-shadow:0 2px 16px rgba(212,175,55,.12) !important; }
 /* Calculatrice Abjad */
-.asrar-calc-wrap { background:linear-gradient(160deg,#0a0800,#150e00); border-bottom:1px solid rgba(212,175,55,.15); padding:.8rem 1rem; display:none; }
+.asrar-calc-wrap { background:linear-gradient(160deg,#0a0800,#150e00); border-bottom:1px solid rgba(212,175,55,.15); padding:.85rem 1rem; display:none; }
 .asrar-calc-wrap.visible { display:block; }
-.asrar-calc-title { font-family:'Amiri',serif; font-size:15px; color:#F0DC82; margin-bottom:.5rem; text-align:center; letter-spacing:.05em; }
-.asrar-calc-input-row { display:flex; gap:.4rem; }
-.asrar-calc-input { flex:1; background:rgba(212,175,55,.09); border:1.5px solid rgba(212,175,55,.4); border-radius:10px; padding:.5rem .8rem; color:#fff; font-family:'Amiri',serif; font-size:16px; outline:none; direction:rtl; }
+.asrar-calc-title { font-family:'Amiri',serif; font-size:16px; color:#F0DC82; margin-bottom:.65rem; text-align:center; letter-spacing:.05em; }
+.asrar-calc-input-row { display:flex; gap:.5rem; align-items:stretch; width:100%; box-sizing:border-box; }
+.asrar-calc-input { flex:1; min-width:0; background:rgba(212,175,55,.09); border:1.5px solid rgba(212,175,55,.4); border-radius:10px; padding:.55rem .8rem; color:#fff; font-family:'Amiri',serif; font-size:16px; outline:none; direction:rtl; box-sizing:border-box; }
 .asrar-calc-input::placeholder { color:rgba(212,175,55,.5); }
-.asrar-calc-btn { background:linear-gradient(135deg,#7a4500,#D4AF37); border:none; border-radius:10px; padding:.5rem .9rem; color:#fff; font-weight:700; font-size:13px; cursor:pointer; white-space:nowrap; }
-.asrar-calc-result { margin-top:.6rem; background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.2); border-radius:10px; padding:.6rem .9rem; display:none; text-align:center; }
+.asrar-calc-btn { flex-shrink:0; background:linear-gradient(135deg,#7a4500,#D4AF37); border:none; border-radius:10px; padding:.55rem 1rem; color:#fff; font-weight:700; font-size:13px; cursor:pointer; white-space:nowrap; }
+.asrar-calc-result { margin-top:.7rem; background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.2); border-radius:10px; padding:.75rem .9rem; display:none; text-align:center; box-sizing:border-box; }
 .asrar-calc-result.visible { display:block; }
-.asrar-result-num { font-family:'Amiri',serif; font-size:32px; font-weight:700; color:var(--gold); line-height:1; }
-.asrar-result-label { font-size:12px; color:rgba(212,175,55,.75); margin-top:3px; letter-spacing:.08em; text-transform:uppercase; }
+.asrar-result-num { font-family:'Amiri',serif; font-size:36px; font-weight:700; color:var(--gold); line-height:1.1; }
+.asrar-result-label { font-size:12px; color:rgba(212,175,55,.75); margin-top:4px; letter-spacing:.08em; text-transform:uppercase; }
 
 /* ── Istikhara Numérique ── */
 .nour-tabs {
   display:flex; gap:0;
-  background:#080600;
-  border-bottom:2px solid rgba(212,175,55,.2);
+  background:#0a0700;
+  border-bottom:2px solid rgba(212,175,55,.25);
   flex-shrink:0;
+  width:100%;
+  box-sizing:border-box;
 }
 .nour-tab {
-  flex:1; padding:.75rem .4rem; text-align:center;
-  font-size:13px; font-weight:700; color:rgba(212,175,55,.6);
+  flex:1;
+  padding:.85rem .5rem;
+  text-align:center;
+  font-size:13.5px; font-weight:700; color:rgba(212,175,55,.55);
   cursor:pointer; border:none; background:none;
-  font-family:'Roboto',sans-serif; border-bottom:2px solid transparent;
-  transition:all .2s; letter-spacing:.03em;
+  font-family:'Roboto',sans-serif;
+  border-bottom:3px solid transparent;
+  margin-bottom:-2px;
+  transition:all .2s; letter-spacing:.04em;
+  min-width:0;
+  white-space:nowrap;
 }
-.nour-tab.active { color:#F0DC82; border-bottom-color:var(--gold); }
+.nour-tab.active {
+  color:#F0DC82;
+  border-bottom-color:var(--gold);
+  background:rgba(212,175,55,.08);
+}
 .nour-panel { display:none; }
 .nour-panel.active { display:block; }
 
@@ -4997,7 +5009,7 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
 .istikh-num-wrap {
   background:linear-gradient(160deg,#0a0800,#150e00);
   border-bottom:1px solid rgba(212,175,55,.15);
-  padding:.9rem .85rem;
+  padding:.9rem;
   box-sizing:border-box;
   width:100%;
 }
@@ -5147,8 +5159,8 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
   </div>
 
   <!-- Panel Abjad -->
-  <div class="nour-panel active" id="nourPanelAbjad" style="padding:.85rem .85rem">
-    <div class="asrar-calc-title" style="font-size:16px;margin-bottom:.5rem">&#x62D;&#x633;&#x627;&#x628; &#x627;&#x644;&#x62C;&#x64F;&#x645;&#x651;&#x644; — Calculatrice Abjad</div>
+  <div class="nour-panel active" id="nourPanelAbjad" style="padding:.9rem;box-sizing:border-box;width:100%">
+    <div class="asrar-calc-title" style="font-size:16px;margin-bottom:.65rem;text-align:center">&#x62D;&#x633;&#x627;&#x628; &#x627;&#x644;&#x62C;&#x64F;&#x645;&#x651;&#x644; — Calculatrice Abjad</div>
     <div class="asrar-calc-input-row">
       <input class="asrar-calc-input" id="asrarInput" type="text"
         placeholder="&#x627;&#x643;&#x62A;&#x628; &#x627;&#x633;&#x645;&#x627;&#x64B; &#x623;&#x648; &#x643;&#x644;&#x645;&#x629;..."
@@ -5158,7 +5170,7 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
     <div class="asrar-calc-result" id="asrarResult">
       <div class="asrar-result-num" id="asrarResultNum">0</div>
       <div class="asrar-result-label">Valeur Abjad</div>
-      <div id="asrarResultDetail" style="font-size:11px;color:rgba(212,175,55,.4);margin-top:4px;direction:rtl;font-family:'Amiri',serif"></div>
+      <div id="asrarResultDetail" style="font-size:11px;color:rgba(212,175,55,.4);margin-top:5px;direction:rtl;font-family:'Amiri',serif"></div>
     </div>
   </div>
 
@@ -9629,25 +9641,14 @@ var _XI_VOICES = {
   ar: 'IKne3meq5aSn9XLyUdCD'   /* Farhan - arabe */
 };
 
-function abPlayJingle(cb) {
-  var audio = document.getElementById('lumiereVoiceAudio');
-  if (!audio) { if(cb) cb(); return; }
-  audio.currentTime = 0;
-  audio.volume = 0.65;
-  var p = audio.play();
-  if (p && p.then) {
-    p.then(function() {
-      audio.onended = function() { audio.onended = null; if(cb) cb(); };
-    }).catch(function() { if(cb) cb(); });
-  } else {
-    if(cb) cb();
-  }
-}
-
 function abStopSpeak() {
   _abSpeechActive = false;
   if (window.speechSynthesis) window.speechSynthesis.cancel();
-  if (_abCurrentAudio) { _abCurrentAudio.pause(); _abCurrentAudio.currentTime = 0; _abCurrentAudio = null; }
+  if (_abCurrentAudio) {
+    _abCurrentAudio.pause();
+    _abCurrentAudio.currentTime = 0;
+    _abCurrentAudio = null;
+  }
   var jingle = document.getElementById('lumiereVoiceAudio');
   if (jingle) { jingle.pause(); jingle.currentTime = 0; }
   document.querySelectorAll('.ab-tts-btn.speaking').forEach(function(b){
@@ -9658,7 +9659,7 @@ function abStopSpeak() {
 async function abSpeakElevenLabs(text, lang) {
   var voiceId = _XI_VOICES[lang] || _XI_VOICES['fr'];
   try {
-    var resp = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + voiceId + '/stream', {
+    var resp = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + voiceId, {
       method: 'POST',
       headers: {
         'xi-api-key': _XI_API_KEY,
@@ -9668,26 +9669,37 @@ async function abSpeakElevenLabs(text, lang) {
       body: JSON.stringify({
         text: text,
         model_id: 'eleven_multilingual_v2',
-        voice_settings: { stability: 0.5, similarity_boost: 0.75, style: 0.3, use_speaker_boost: true }
+        voice_settings: { stability: 0.5, similarity_boost: 0.75, style: 0.25, use_speaker_boost: true }
       })
     });
-    if (!resp.ok) throw new Error('ElevenLabs ' + resp.status);
+    if (!resp.ok) throw new Error('ElevenLabs HTTP ' + resp.status);
     var blob = await resp.blob();
+    if (!blob || blob.size < 100) throw new Error('Blob vide');
     var url = URL.createObjectURL(blob);
     var audio = new Audio(url);
     _abCurrentAudio = audio;
     audio.volume = 1.0;
     audio.onended = function() {
-      URL.revokeObjectURL(url); _abCurrentAudio = null; _abSpeechActive = false;
+      URL.revokeObjectURL(url);
+      _abCurrentAudio = null;
+      _abSpeechActive = false;
       document.querySelectorAll('.ab-tts-btn.speaking').forEach(function(b){
         b.classList.remove('speaking'); b.innerHTML = '&#x1F508;';
       });
     };
-    audio.onerror = function() { URL.revokeObjectURL(url); _abCurrentAudio = null; _abSpeechActive = false; };
-    await audio.play();
+    audio.onerror = function(e) {
+      console.warn('[XI] audio error', e);
+      URL.revokeObjectURL(url);
+      _abCurrentAudio = null;
+      _abSpeechActive = false;
+    };
+    /* play() doit être appelé directement depuis l'événement utilisateur
+       ou depuis un contexte async déclenché par l'utilisateur */
+    var playPromise = audio.play();
+    if (playPromise) await playPromise;
     return true;
   } catch(e) {
-    console.warn('[Lumière IA] ElevenLabs:', e.message);
+    console.warn('[Lumière IA] ElevenLabs erreur:', e.message);
     return false;
   }
 }
@@ -9696,7 +9708,9 @@ function abSpeakFallback(text, lang) {
   if (!window.speechSynthesis) { _abSpeechActive = false; return; }
   var utt = new SpeechSynthesisUtterance(text);
   utt.lang = lang==='ar' ? 'ar-SA' : lang==='en' ? 'en-GB' : 'fr-FR';
-  utt.rate = window._abSpeed || 0.92; utt.pitch = 1.0; utt.volume = 1.0;
+  utt.rate = window._abSpeed || 0.92;
+  utt.pitch = 1.0;
+  utt.volume = 1.0;
   utt.onend = function() {
     _abSpeechActive = false;
     document.querySelectorAll('.ab-tts-btn.speaking').forEach(function(b){
@@ -9707,18 +9721,44 @@ function abSpeakFallback(text, lang) {
   window.speechSynthesis.speak(utt);
 }
 
+/* ── abSpeak : point d'entrée principal ──
+   - Joue un court bip du jingle (3 premières secondes seulement)
+   - Génère et joue la voix ElevenLabs EN PARALLÈLE
+   - Fallback TTS navigateur si ElevenLabs échoue
+*/
 function abSpeak(text) {
   abStopSpeak();
   _abSpeechActive = true;
-  var clean = text.replace(/(<([^>]+)>)/gi,'').replace(/[*#_~`]/g,'').trim();
+
+  var clean = text.replace(/(<([^>]+)>)/gi, '').replace(/[*#_~`]/g, '').trim();
   if (!clean) { _abSpeechActive = false; return; }
   var l = window._abLang || window._lang || 'fr';
-  abPlayJingle(async function() {
-    if (!_abSpeechActive) return;
-    var ok = await abSpeakElevenLabs(clean, l);
-    if (!ok && _abSpeechActive) abSpeakFallback(clean, l);
+
+  /* Jouer 3s du jingle en fond puis couper (notification sonore légère) */
+  var jingle = document.getElementById('lumiereVoiceAudio');
+  if (jingle) {
+    jingle.currentTime = 0;
+    jingle.volume = 0.4;
+    jingle.play().catch(function(){});
+    setTimeout(function(){
+      jingle.pause();
+      jingle.currentTime = 0;
+    }, 2500);
+  }
+
+  /* Lancer ElevenLabs immédiatement (pas d'attente jingle) */
+  abSpeakElevenLabs(clean, l).then(function(ok) {
+    if (!ok && _abSpeechActive) {
+      abSpeakFallback(clean, l);
+    }
   });
 }
+
+/* abPlayJingle conservé pour compatibilité */
+function abPlayJingle(cb) {
+  if (cb) cb();
+}
+
 
 async function abAskSuggestion(q) {
   // Cacher les suggestions, afficher le chat
