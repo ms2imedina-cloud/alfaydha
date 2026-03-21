@@ -8611,7 +8611,7 @@ function applyTranslations() {
   var etSubStudio=document.querySelector('#ensTabStudio .et-sub');
   if(etSubStudio) etSubStudio.textContent=t('studio_rec');
   /* Studio */
-  _txQ('.studio-title',_lang==='ar'?'🎙 استوديو التسجيل':_lang==='en'?'🎙 Recording Studio':'🎙 Studio d'enregistrement');
+  _txQ('.studio-title',_lang==='ar'?'🎙 استوديو التسجيل':_lang==='en'?'🎙 Recording Studio':'🎙 Studio d\'enregistrement');
   _txQ('.studio-quality-label',_lang==='ar'?'الجودة':_lang==='en'?'Quality':'Qualité');
 
   /* ══ SECTION LIVE ══ */
@@ -8705,13 +8705,13 @@ function applyTranslations() {
   var istikhLabels=document.querySelectorAll('.ab-istikh-label');
   if(istikhLabels.length>=5){
     istikhLabels[0].childNodes[0].textContent=_lang==='ar'?'اسمك ':_lang==='en'?'Your first name ':'Votre prénom ';
-    istikhLabels[1].childNodes[0].textContent=_lang==='ar'?'اسم أمك ':_lang==='en'?'Your mother's name ':'Prénom de votre mère ';
+    istikhLabels[1].childNodes[0].textContent=_lang==='ar'?'اسم أمك ':_lang==='en'?'Your mother\'s name ':'Prénom de votre mère ';
     istikhLabels[2].childNodes[0].textContent=_lang==='ar'?'القرار / السؤال ':_lang==='en'?'Decision / Question ':'Décision / Question ';
-    if(istikhLabels[3]) istikhLabels[3].textContent=_lang==='ar'?'ما تشعر به في قلبك':_lang==='en'?'Your heart's feeling':'Ressenti du cœur après la prière';
+    if(istikhLabels[3]) istikhLabels[3].textContent=_lang==='ar'?'ما تشعر به في قلبك':_lang==='en'?'Your heart\'s feeling':'Ressenti du cœur après la prière';
     if(istikhLabels[4]) istikhLabels[4].textContent=_lang==='ar'?'تطور الوضع':_lang==='en'?'Evolution of situation':'Évolution de votre situation';
   }
   var istikhBtn=document.querySelector('.ab-istikh-btn');
-  if(istikhBtn) istikhBtn.textContent=_lang==='ar'?'🌙 طلب التحليل الروحاني':_lang==='en'?'🌙 Request spiritual analysis':'🌙 Demander l'analyse spirituelle';
+  if(istikhBtn) istikhBtn.textContent=_lang==='ar'?'🌙 طلب التحليل الروحاني':_lang==='en'?'🌙 Request spiritual analysis':'🌙 Demander l\'analyse spirituelle';
   /* Nour IA tabs */
   var nourTabA=document.getElementById('nourTabAbjad');
   if(nourTabA) nourTabA.textContent=_lang==='ar'?'🔢 أبجد':_lang==='en'?'🔢 Abjad':'🔢 Abjad';
