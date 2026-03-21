@@ -2565,7 +2565,6 @@ button[onclick="qiblaGPS()"] {
     <div style="position:absolute;inset:0;opacity:.05;background-image:radial-gradient(circle,var(--gold) 1px,transparent 1px);background-size:22px 22px;pointer-events:none"></div>
     <div style="display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1">
       <div style="display:flex;align-items:center;gap:.6rem">
-        <span style="font-size:26px">🕌</span>
         <div>
           <div style="font-family:'Amiri',serif;font-size:20px;color:var(--gold2);line-height:1">مَوَاقِيتُ الصَّلَاة</div>
           <div style="font-size:11px;color:rgba(251,248,232,.55);margin-top:3px" id="wlc-prayer-loc">📍 Détection GPS…</div>
@@ -4970,11 +4969,10 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
   background:#080600;
   border-bottom:1px solid rgba(212,175,55,.15);
   flex-shrink:0;
-  padding:0 1rem;
 }
 .nour-tab {
-  flex:1; padding:.65rem .4rem; text-align:center;
-  font-size:13px; font-weight:700; color:rgba(212,175,55,.65);
+  flex:1; padding:.55rem .4rem; text-align:center;
+  font-size:12px; font-weight:700; color:rgba(212,175,55,.65);
   cursor:pointer; border:none; background:none;
   font-family:'Roboto',sans-serif; border-bottom:2px solid transparent;
   transition:all .2s; letter-spacing:.03em;
@@ -4987,60 +4985,47 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
 .istikh-num-wrap {
   background:linear-gradient(160deg,#0a0800,#150e00);
   border-bottom:1px solid rgba(212,175,55,.15);
-  padding:1rem 1rem;
-  box-sizing:border-box;
+  padding:.85rem 1rem;
 }
-.istikh-num-row { display:flex; gap:.5rem; margin-bottom:.65rem; align-items:stretch; }
+.istikh-num-row { display:flex; gap:.4rem; margin-bottom:.5rem; }
 .istikh-num-label {
-  font-size:11px; font-weight:700; color:rgba(212,175,55,.8);
-  text-transform:uppercase; letter-spacing:.09em;
-  margin-bottom:.3rem; font-family:'Roboto',sans-serif;
+  font-size:11.5px; font-weight:700; color:rgba(212,175,55,.8);
+  text-transform:uppercase; letter-spacing:.08em;
+  margin-bottom:.25rem; font-family:'Roboto',sans-serif;
 }
 .istikh-num-input {
   flex:1; background:rgba(212,175,55,.09);
   border:1.5px solid rgba(212,175,55,.35); border-radius:10px;
-  padding:.55rem .85rem; color:#fff; font-family:'Amiri',serif;
+  padding:.45rem .75rem; color:#fff; font-family:'Amiri',serif;
   font-size:16px; outline:none; direction:rtl;
-  transition:border-color .2s; width:100%; box-sizing:border-box;
+  transition:border-color .2s;
 }
 .istikh-num-input:focus { border-color:rgba(212,175,55,.7); }
-.istikh-num-input::placeholder { color:rgba(212,175,55,.45); font-size:14px; }
+.istikh-num-input::placeholder { color:rgba(212,175,55,.45); }
 .istikh-num-val {
-  flex-shrink:0; width:48px; height:auto; min-height:40px;
-  background:rgba(212,175,55,.1);
+  flex-shrink:0; width:52px; background:rgba(212,175,55,.1);
   border:1px solid rgba(212,175,55,.25); border-radius:10px;
   display:flex; align-items:center; justify-content:center;
   font-family:'Amiri',serif; font-size:18px; font-weight:700;
   color:var(--gold);
 }
 .istikh-type-row {
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr;
-  gap:.45rem;
-  margin-bottom:.75rem;
+  display:flex; gap:.4rem; flex-wrap:wrap; margin-bottom:.6rem;
 }
 .istikh-type-btn {
-  padding:.45rem .3rem;
+  flex:1; min-width:80px; padding:.35rem .5rem;
   background:rgba(212,175,55,.09); border:1px solid rgba(212,175,55,.3);
   border-radius:20px; font-size:12px; font-weight:700;
   color:rgba(212,175,55,.75); cursor:pointer;
   font-family:'Roboto',sans-serif; transition:all .2s; text-align:center;
-  white-space:nowrap;
 }
-.istikh-type-btn:nth-child(4),
-.istikh-type-btn:nth-child(5) {
-  grid-column:span 1;
-}
-/* 4e et 5e bouton centrés sur la 2e ligne */
-.istikh-type-row .istikh-type-btn:nth-child(4) { grid-column:1/2; margin-left:auto; width:100%; }
-.istikh-type-row .istikh-type-btn:nth-child(5) { grid-column:2/3; margin-right:auto; width:100%; }
 .istikh-type-btn.active {
   background:rgba(212,175,55,.22); border-color:rgba(212,175,55,.75);
   color:#F0DC82;
 }
 .istikh-result-bar {
   background:rgba(212,175,55,.06); border:1px solid rgba(212,175,55,.15);
-  border-radius:12px; padding:.7rem 1rem; margin-top:.6rem;
+  border-radius:12px; padding:.6rem .85rem; margin-top:.5rem;
   display:none; text-align:center;
 }
 .istikh-result-bar.visible { display:block; }
@@ -5067,12 +5052,12 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
   font-size:13px; font-weight:700; letter-spacing:.05em; color:rgba(255,255,255,.9);
 }
 .istikh-analyse-btn {
-  width:100%; margin-top:.75rem;
+  width:100%; margin-top:.6rem;
   background:linear-gradient(135deg,#3d1f00,#7a4500);
   border:1px solid rgba(212,175,55,.55); border-radius:12px;
-  padding:.75rem 1rem; color:#F0DC82; font-weight:700;
+  padding:.65rem; color:#F0DC82; font-weight:700;
   font-size:14px; cursor:pointer; font-family:'Roboto',sans-serif;
-  transition:opacity .2s; letter-spacing:.04em; box-sizing:border-box;
+  transition:opacity .2s; letter-spacing:.04em;
 }
 .istikh-analyse-btn:hover { opacity:.85; }
 
@@ -5191,8 +5176,6 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
       <button class="istikh-type-btn active" onclick="setIstikhType('mariage',this)">&#x1F48D; Mariage</button>
       <button class="istikh-type-btn" onclick="setIstikhType('travail',this)">&#x1F4BC; Travail</button>
       <button class="istikh-type-btn" onclick="setIstikhType('voyage',this)">&#x2708;&#xFE0F; Voyage</button>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.45rem;margin-bottom:.75rem;">
       <button class="istikh-type-btn" onclick="setIstikhType('association',this)">&#x1F91D; Association</button>
       <button class="istikh-type-btn" onclick="setIstikhType('decision',this)">&#x2696;&#xFE0F; Décision</button>
     </div>
