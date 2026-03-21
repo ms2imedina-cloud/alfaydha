@@ -513,7 +513,7 @@ body{
 }
 .nav-btn{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:5px;padding:.55rem .1rem .45rem;cursor:pointer;border:none;background:none;
+  gap:4px;padding:.5rem .05rem .4rem;cursor:pointer;border:none;background:none;
   color:rgba(255,255,255,.42);font-family:'Roboto',sans-serif;transition:all .2s ease;
   position:relative;min-width:0;border-top:3px solid transparent;
 }
@@ -524,7 +524,7 @@ body{
 }
 .nav-btn:hover:not(.active){color:rgba(255,255,255,.7);background:rgba(255,255,255,.06)}
 .nav-icon{
-  font-size:26px;line-height:1;
+  font-size:24px;line-height:1;
   transition:transform .2s ease;
 }
 .nav-btn.active .nav-icon{
@@ -533,8 +533,9 @@ body{
 }
 .nav-label{
   font-size:10px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.06em;
+  text-transform:uppercase;letter-spacing:.04em;
   line-height:1.2;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;max-width:100%;
 }
 .nav-btn.active .nav-label{ color:#F0DC82; }
 .nav-live-badge{
@@ -1131,10 +1132,10 @@ body{
 .ab-istikh-btn{width:100%;margin-top:.8rem;padding:.7rem;background:linear-gradient(135deg,#4B0082,#7B2FBE);border:none;border-radius:12px;color:#fff;font-family:'Roboto',sans-serif;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.05em;transition:opacity .2s}
 .ab-istikh-btn:hover{opacity:.88}
 .ab-istikh-required{color:#e74c3c;margin-left:3px}
-.ab-config{background:linear-gradient(135deg,var(--g1),var(--g2));border-bottom:1px solid rgba(212,175,55,.2);padding:1rem 1.5rem}
+.ab-config{background:linear-gradient(135deg,var(--g1),var(--g2));border-bottom:1px solid rgba(212,175,55,.2);padding:1rem 1rem;margin:.5rem 1rem;border-radius:14px;overflow:hidden}
 .ab-config-title{font-family:'Amiri',serif;font-size:16px;color:var(--gold2);margin-bottom:.2rem}
 .ab-config-sub{font-size:12px;color:rgba(251,248,232,.55);line-height:1.5}
-.ab-suggestions{padding:1rem 1.5rem}
+.ab-suggestions{padding:1rem 1rem}
 .ab-sug-title{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem}
 .ab-sug-grid{display:flex;flex-direction:column;gap:.45rem}
 .ab-sug-card{background:var(--white);border:1px solid var(--gold3);border-left:3px solid var(--gold);border-radius:10px;padding:.7rem 1rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.7rem}
@@ -2565,6 +2566,7 @@ button[onclick="qiblaGPS()"] {
     <div style="position:absolute;inset:0;opacity:.05;background-image:radial-gradient(circle,var(--gold) 1px,transparent 1px);background-size:22px 22px;pointer-events:none"></div>
     <div style="display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1">
       <div style="display:flex;align-items:center;gap:.6rem">
+        <span style="font-size:26px">🕌</span>
         <div>
           <div style="font-family:'Amiri',serif;font-size:20px;color:var(--gold2);line-height:1">مَوَاقِيتُ الصَّلَاة</div>
           <div style="font-size:11px;color:rgba(251,248,232,.55);margin-top:3px" id="wlc-prayer-loc">📍 Détection GPS…</div>
@@ -4801,14 +4803,15 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
 .ab-modes {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  padding: .8rem .9rem .7rem;
+  gap: 10px;
+  padding: 1rem 1rem .9rem;
+  box-sizing: border-box;
 }
 .ab-mode-btn {
   display: flex;
   align-items: center;
-  gap: .6rem;
-  padding: .7rem .85rem;
+  gap: .55rem;
+  padding: .75rem .8rem;
   background: rgba(255,255,255,.07);
   border: 1.5px solid rgba(255,255,255,.15);
   border-radius: 14px;
@@ -4817,6 +4820,9 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
   font-family: 'Roboto', sans-serif;
   text-align: left;
   -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 64px;
 }
 .ab-mode-btn:active { transform: scale(.94); }
 .ab-mode-btn.active {
@@ -4840,15 +4846,15 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
   background: rgba(212,175,55,.15);
 }
 .ab-mode-label {
-  font-size:14px;
+  font-size:13px;
   font-weight:700;
   color:rgba(255,255,255,.92);
-  line-height:1.15;
+  line-height:1.2;
   letter-spacing:.01em;
 }
 .ab-mode-btn.active .ab-mode-label { color: #F0DC82; }
 .ab-mode-sub {
-  font-size:11px;
+  font-size:10.5px;
   color:rgba(255,255,255,.5);
   margin-top:2px;
   line-height:1.3;
@@ -4969,10 +4975,11 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
   background:#080600;
   border-bottom:1px solid rgba(212,175,55,.15);
   flex-shrink:0;
+  padding:0;
 }
 .nour-tab {
-  flex:1; padding:.55rem .4rem; text-align:center;
-  font-size:12px; font-weight:700; color:rgba(212,175,55,.65);
+  flex:1; padding:.7rem .4rem; text-align:center;
+  font-size:13px; font-weight:700; color:rgba(212,175,55,.65);
   cursor:pointer; border:none; background:none;
   font-family:'Roboto',sans-serif; border-bottom:2px solid transparent;
   transition:all .2s; letter-spacing:.03em;
@@ -4985,7 +4992,8 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
 .istikh-num-wrap {
   background:linear-gradient(160deg,#0a0800,#150e00);
   border-bottom:1px solid rgba(212,175,55,.15);
-  padding:.85rem 1rem;
+  padding:1rem 1rem;
+  box-sizing:border-box;
 }
 .istikh-num-row { display:flex; gap:.4rem; margin-bottom:.5rem; }
 .istikh-num-label {
@@ -5010,14 +5018,18 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
   color:var(--gold);
 }
 .istikh-type-row {
-  display:flex; gap:.4rem; flex-wrap:wrap; margin-bottom:.6rem;
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:.45rem;
+  margin-bottom:.45rem;
 }
 .istikh-type-btn {
-  flex:1; min-width:80px; padding:.35rem .5rem;
+  padding:.45rem .3rem;
   background:rgba(212,175,55,.09); border:1px solid rgba(212,175,55,.3);
   border-radius:20px; font-size:12px; font-weight:700;
   color:rgba(212,175,55,.75); cursor:pointer;
   font-family:'Roboto',sans-serif; transition:all .2s; text-align:center;
+  white-space:nowrap; box-sizing:border-box; width:100%;
 }
 .istikh-type-btn.active {
   background:rgba(212,175,55,.22); border-color:rgba(212,175,55,.75);
@@ -5052,12 +5064,13 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
   font-size:13px; font-weight:700; letter-spacing:.05em; color:rgba(255,255,255,.9);
 }
 .istikh-analyse-btn {
-  width:100%; margin-top:.6rem;
+  width:100%; margin-top:.75rem;
   background:linear-gradient(135deg,#3d1f00,#7a4500);
   border:1px solid rgba(212,175,55,.55); border-radius:12px;
-  padding:.65rem; color:#F0DC82; font-weight:700;
+  padding:.75rem 1rem; color:#F0DC82; font-weight:700;
   font-size:14px; cursor:pointer; font-family:'Roboto',sans-serif;
   transition:opacity .2s; letter-spacing:.04em;
+  box-sizing:border-box;
 }
 .istikh-analyse-btn:hover { opacity:.85; }
 
@@ -5176,6 +5189,8 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
       <button class="istikh-type-btn active" onclick="setIstikhType('mariage',this)">&#x1F48D; Mariage</button>
       <button class="istikh-type-btn" onclick="setIstikhType('travail',this)">&#x1F4BC; Travail</button>
       <button class="istikh-type-btn" onclick="setIstikhType('voyage',this)">&#x2708;&#xFE0F; Voyage</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.45rem;margin-bottom:.75rem;">
       <button class="istikh-type-btn" onclick="setIstikhType('association',this)">&#x1F91D; Association</button>
       <button class="istikh-type-btn" onclick="setIstikhType('decision',this)">&#x2696;&#xFE0F; Décision</button>
     </div>
