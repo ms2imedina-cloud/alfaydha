@@ -5882,7 +5882,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function sendSMS() {
   var phone = (document.getElementById('phoneInput').value || '').trim();
   if (!phone || phone.length < 8) {
-    showToast('⚠️ Entrez un numéro valide avec l'indicatif (+221...)');
+    showToast('⚠️ Entrez un numéro valide avec l\'indicatif (+221...)');
     return;
   }
   var btn = document.getElementById('sendSmsBtn');
@@ -5909,7 +5909,7 @@ function sendSMS() {
           if (btn) { btn.disabled = false; btn.textContent = '📲 Recevoir le code SMS'; }
           console.error('[Phone Auth]', err);
           if (err.code === 'auth/invalid-phone-number') {
-            showToast('❌ Numéro invalide — vérifiez l'indicatif pays (+221, +33...)');
+            showToast('❌ Numéro invalide — vérifiez l\'indicatif pays (+221, +33...)');
           } else if (err.code === 'auth/too-many-requests') {
             showToast('⏳ Trop de tentatives — attendez quelques minutes');
           } else {
@@ -8151,7 +8151,7 @@ var LANG = {
 
     /* Welcome / Connexion */
     wlc_connect_desc: 'Connectez-vous pour accéder à toutes les fonctionnalités de la communauté Taalibé mondiale',
-    wlc_google:  'Connexion par téléphone',
+    wlc_google:  '📲 Recevoir le code SMS',
     wlc_feat1:   'Accès à la communauté mondiale Taalibé',
     wlc_feat2:   'Accès aux groupes Zikr en temps réel',
     wlc_feat3:   'Chat en direct avec la communauté',
@@ -8285,7 +8285,7 @@ var LANG = {
     lang_skip:   'Skip',
 
     wlc_connect_desc: 'Sign in to access all features of the worldwide Taalibé community',
-    wlc_google:  'Sign in with Google',
+    wlc_google:  '📲 Receive SMS code',
     wlc_feat1:   'Access to the worldwide Taalibé community',
     wlc_feat2:   'Access to real-time Zikr groups',
     wlc_feat3:   'Live chat with the community',
@@ -8402,7 +8402,7 @@ var LANG = {
     lang_skip:   'تخطى',
 
     wlc_connect_desc: 'سجل دخولك للوصول إلى جميع مميزات مجتمع التاليبي باي العالمي',
-    wlc_google:  'تسجيل الدخول بـ Google',
+    wlc_google:  '📲 استقبال رمز SMS',
     wlc_feat1:   'الوصول إلى مجتمع التاليبي باي العالمي',
     wlc_feat2:   'الوصول إلى مجموعات الذكر الفوري',
     wlc_feat3:   'الدردشة المباشرة مع المجتمع',
@@ -8803,11 +8803,7 @@ function applyTranslations() {
   /* Welcome page */
   var wDesc = document.querySelector('#welcome [style*="13px"][style*="rgba(251"]');
   if (wDesc) wDesc.textContent = t('wlc_connect_desc');
-  var gBtn = document.getElementById('sendSmsBtn');
-  if (gBtn) {
-    var gTxt = gBtn.childNodes[gBtn.childNodes.length - 1];
-    if (gTxt && gTxt.nodeType === 3) gTxt.textContent = ' ' + t('wlc_google');
-  }
+  /* Bouton SMS — texte géré directement dans le HTML */
 
   /* RTL : ajuster les éléments directionnels */
   if (_lang === 'ar') {
