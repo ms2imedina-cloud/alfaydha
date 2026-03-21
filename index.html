@@ -9655,8 +9655,6 @@ function abStopSpeak() {
     _abCurrentAudio.currentTime = 0;
     _abCurrentAudio = null;
   }
-  var jingle = document.getElementById('lumiereVoiceAudio');
-  if (jingle) { jingle.pause(); jingle.currentTime = 0; }
   document.querySelectorAll('.ab-tts-btn.speaking').forEach(function(b){
     b.classList.remove('speaking'); b.innerHTML = '&#x1F508;';
   });
@@ -9740,19 +9738,7 @@ function abSpeak(text) {
   if (!clean) { _abSpeechActive = false; return; }
   var l = window._abLang || window._lang || 'fr';
 
-  /* Jouer 3s du jingle en fond puis couper (notification sonore légère) */
-  var jingle = document.getElementById('lumiereVoiceAudio');
-  if (jingle) {
-    jingle.currentTime = 0;
-    jingle.volume = 0.4;
-    jingle.play().catch(function(){});
-    setTimeout(function(){
-      jingle.pause();
-      jingle.currentTime = 0;
-    }, 2500);
-  }
-
-  /* Lancer ElevenLabs immédiatement (pas d'attente jingle) */
+  /* Lancer ElevenLabs directement sans jingle */
   abSpeakElevenLabs(clean, l).then(function(ok) {
     if (!ok && _abSpeechActive) {
       abSpeakFallback(clean, l);
@@ -9852,11 +9838,6 @@ async function abAskSuggestion(q) {
   if (answer !== null) {
     abAddMsg('baye', answer, _abEngine);
     _abHistory.push({ role: 'assistant', content: answer });
-    /* Jingle discret à l'arrivée d'une réponse */
-    (function() {
-      var jingle = document.getElementById('lumiereVoiceAudio');
-      if (jingle) { jingle.currentTime = 0; jingle.volume = 0.4; jingle.play().catch(function(){}); }
-    })();
   } else {
     abAddMsg('baye', '❌ ' + (errMsg || 'Erreur inconnue'), 'error');
   }
@@ -10038,11 +10019,6 @@ async function abSend() {
   if (answer !== null) {
     abAddMsg('baye', answer, _abEngine);
     _abHistory.push({ role: 'assistant', content: answer });
-    /* Jingle discret à l'arrivée d'une réponse */
-    (function() {
-      var jingle = document.getElementById('lumiereVoiceAudio');
-      if (jingle) { jingle.currentTime = 0; jingle.volume = 0.4; jingle.play().catch(function(){}); }
-    })();
   } else {
     abAddMsg('baye', '❌ ' + (errMsg || 'Erreur inconnue'), 'error');
   }
