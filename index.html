@@ -1148,7 +1148,7 @@ body{
 .ab-config{background:linear-gradient(135deg,var(--g1),var(--g2));border-bottom:1px solid rgba(212,175,55,.2);padding:1rem 1.5rem}
 .ab-config-title{font-family:'Amiri',serif;font-size:16px;color:var(--gold2);margin-bottom:.2rem}
 .ab-config-sub{font-size:12px;color:rgba(251,248,232,.55);line-height:1.5}
-.ab-suggestions{padding:1rem 1.5rem}
+.ab-suggestions{padding:1rem 1rem}
 .ab-sug-title{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem}
 .ab-sug-grid{display:flex;flex-direction:column;gap:.45rem}
 .ab-sug-card{background:var(--white);border:1px solid var(--gold3);border-left:3px solid var(--gold);border-radius:10px;padding:.7rem 1rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.7rem}
@@ -2716,7 +2716,6 @@ button[onclick="qiblaGPS()"] {
       <div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.8rem">
         <span style="font-size:18px">✨</span>
         <span style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;font-weight:700">Parole de Baye Niass</span>
-        <span style="font-family:'Amiri',serif;font-size:11px;color:var(--gold);opacity:.7">رضي الله عنه</span>
         <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(212,175,55,.3),transparent)"></div>
       </div>
       <div>
@@ -4808,22 +4807,26 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
 .ab-modes {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  padding: .8rem .9rem .7rem;
+  gap: 10px;
+  padding: 1rem 1rem .9rem;
+  box-sizing: border-box;
 }
 .ab-mode-btn {
   display: flex;
   align-items: center;
-  gap: .6rem;
-  padding: .7rem .85rem;
+  gap: .55rem;
+  padding: .75rem .85rem;
   background: rgba(255,255,255,.07);
-  border: 1.5px solid rgba(255,255,255,.15);
+  border: 1.5px solid rgba(255,255,255,.12);
   border-radius: 14px;
   cursor: pointer;
   transition: all .2s cubic-bezier(.34,1.56,.64,1);
   font-family: 'Roboto', sans-serif;
   text-align: left;
   -webkit-tap-highlight-color: transparent;
+  min-height: 62px;
+  box-sizing: border-box;
+  width: 100%;
 }
 .ab-mode-btn:active { transform: scale(.94); }
 .ab-mode-btn.active {
@@ -4847,15 +4850,15 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
   background: rgba(212,175,55,.15);
 }
 .ab-mode-label {
-  font-size:14px;
+  font-size:13px;
   font-weight:700;
   color:rgba(255,255,255,.92);
-  line-height:1.15;
+  line-height:1.2;
   letter-spacing:.01em;
 }
 .ab-mode-btn.active .ab-mode-label { color: #F0DC82; }
 .ab-mode-sub {
-  font-size:11px;
+  font-size:10.5px;
   color:rgba(255,255,255,.5);
   margin-top:2px;
   line-height:1.3;
@@ -4978,8 +4981,8 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
   flex-shrink:0;
 }
 .nour-tab {
-  flex:1; padding:.55rem .4rem; text-align:center;
-  font-size:12px; font-weight:700; color:rgba(212,175,55,.65);
+  flex:1; padding:.7rem .4rem; text-align:center;
+  font-size:13px; font-weight:700; color:rgba(212,175,55,.65);
   cursor:pointer; border:none; background:none;
   font-family:'Roboto',sans-serif; border-bottom:2px solid transparent;
   transition:all .2s; letter-spacing:.03em;
@@ -4992,7 +4995,8 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
 .istikh-num-wrap {
   background:linear-gradient(160deg,#0a0800,#150e00);
   border-bottom:1px solid rgba(212,175,55,.15);
-  padding:.85rem 1rem;
+  padding:1rem 1rem;
+  box-sizing:border-box;
 }
 .istikh-num-row { display:flex; gap:.4rem; margin-bottom:.5rem; }
 .istikh-num-label {
@@ -5020,11 +5024,12 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
   display:flex; gap:.4rem; flex-wrap:wrap; margin-bottom:.6rem;
 }
 .istikh-type-btn {
-  flex:1; min-width:80px; padding:.35rem .5rem;
+  padding:.45rem .3rem;
   background:rgba(212,175,55,.09); border:1px solid rgba(212,175,55,.3);
   border-radius:20px; font-size:12px; font-weight:700;
   color:rgba(212,175,55,.75); cursor:pointer;
   font-family:'Roboto',sans-serif; transition:all .2s; text-align:center;
+  box-sizing:border-box; width:100%; white-space:nowrap;
 }
 .istikh-type-btn.active {
   background:rgba(212,175,55,.22); border-color:rgba(212,175,55,.75);
@@ -5059,12 +5064,13 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
   font-size:13px; font-weight:700; letter-spacing:.05em; color:rgba(255,255,255,.9);
 }
 .istikh-analyse-btn {
-  width:100%; margin-top:.6rem;
+  width:100%; margin-top:.75rem;
   background:linear-gradient(135deg,#3d1f00,#7a4500);
   border:1px solid rgba(212,175,55,.55); border-radius:12px;
-  padding:.65rem; color:#F0DC82; font-weight:700;
+  padding:.75rem 1rem; color:#F0DC82; font-weight:700;
   font-size:14px; cursor:pointer; font-family:'Roboto',sans-serif;
   transition:opacity .2s; letter-spacing:.04em;
+  box-sizing:border-box;
 }
 .istikh-analyse-btn:hover { opacity:.85; }
 
@@ -5100,27 +5106,10 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
     <button class="ab-mode-btn" id="eng-reve" onclick="setEngine('reve',this)">
       <div class="ab-mode-icon">🌙</div>
       <div>
-        <div class="ab-mode-label">Rêves</div>
-        <div class="ab-mode-sub">Interprétation islamique</div>
+        <div class="ab-mode-label">Analyste des Rêves</div>
+        <div class="ab-mode-sub">Voie Tijaniyya · Baye Niass</div>
       </div>
     </button>
-
-    <button class="ab-mode-btn" id="eng-conseil" onclick="setEngine('conseil',this)">
-      <div class="ab-mode-icon">🤝</div>
-      <div>
-        <div class="ab-mode-label">Conseiller</div>
-        <div class="ab-mode-sub">Guidance spirituelle</div>
-      </div>
-    </button>
-
-    <button class="ab-mode-btn" id="eng-sensible" onclick="setEngine('sensible',this)">
-      <div class="ab-mode-icon">🔒</div>
-      <div>
-        <div class="ab-mode-label">Confidentiel</div>
-        <div class="ab-mode-sub">Questions privées</div>
-      </div>
-    </button>
-
     <button class="ab-mode-btn" id="eng-islam" onclick="setEngine('islam',this)">
       <span class="ab-islam-badge">✦ NEW</span>
       <div class="ab-mode-icon" style="font-size:22px">🌐</div>
@@ -5179,10 +5168,12 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
 
     <!-- Type de question -->
     <div class="istikh-num-label">Type de question</div>
-    <div class="istikh-type-row" id="istikhTypeRow">
+    <div class="istikh-type-row" id="istikhTypeRow" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.45rem;margin-bottom:.45rem;">
       <button class="istikh-type-btn active" onclick="setIstikhType('mariage',this)">&#x1F48D; Mariage</button>
       <button class="istikh-type-btn" onclick="setIstikhType('travail',this)">&#x1F4BC; Travail</button>
       <button class="istikh-type-btn" onclick="setIstikhType('voyage',this)">&#x2708;&#xFE0F; Voyage</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.45rem;margin-bottom:.75rem;">
       <button class="istikh-type-btn" onclick="setIstikhType('association',this)">&#x1F91D; Association</button>
       <button class="istikh-type-btn" onclick="setIstikhType('decision',this)">&#x2696;&#xFE0F; Décision</button>
     </div>
