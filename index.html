@@ -8189,6 +8189,42 @@ var LANG = {
     /* Profil */
     logout:      'Déconnexion',
     profile:     'Profil',
+    /* Prières */
+    pray_adhan_settings: 'Paramètres Adhan',
+    pray_adhan_auto: 'Appel à la prière automatique',
+    pray_adhan_play: 'Jouer l\'adhan à l\'heure de chaque prière',
+    pray_alert: 'Alerte avant la prière',
+    pray_disabled: 'Désactivée',
+    pray_5min: '5 min avant',
+    pray_10min: '10 min avant',
+    pray_15min: '15 min avant',
+    pray_30min: '30 min avant',
+    pray_per_prayer: 'Activer par prière',
+    pray_save: 'حفظ · Sauvegarder',
+    pray_verse_day: 'Verset du jour',
+    pray_quote_baye: 'Parole de Baye Niass',
+    /* Live */
+    live_choose: 'Choisissez une chaîne',
+    live_choose_sub: 'Sélectionnez une chaîne ci-dessous',
+    live_channels: '📺 Chaînes',
+    live_chat: '💬 Chat',
+    live_qa: '❓ Q&A',
+    live_mic: '🎤 Micro',
+    /* Radio */
+    radio_hint: 'Appuyez ▶ pour écouter',
+    radio_sleep: 'Mode Sommeil',
+    /* Qibla */
+    qibla_flat: 'Posez à plat ou entrez votre ville',
+    qibla_direction: 'Direction',
+    qibla_distance: 'Distance',
+    /* Lune */
+    moon_hint: 'Entrez votre ville pour un calcul précis',
+    moon_calc: '🌙 Calculer maintenant',
+    moon_age: 'Âge',
+    moon_illum: 'Illumination',
+    /* IA */
+    ai_analyze: '🔮 Analyser',
+    ai_istikhara_btn: '🌙 Demander l\'analyse spirituelle',
   },
 
   en: {
@@ -8276,6 +8312,36 @@ var LANG = {
 
     logout:      'Sign out',
     profile:     'Profile',
+    pray_adhan_settings: 'Adhan Settings',
+    pray_adhan_auto: 'Automatic call to prayer',
+    pray_adhan_play: 'Play adhan at each prayer time',
+    pray_alert: 'Alert before prayer',
+    pray_disabled: 'Disabled',
+    pray_5min: '5 min before',
+    pray_10min: '10 min before',
+    pray_15min: '15 min before',
+    pray_30min: '30 min before',
+    pray_per_prayer: 'Enable per prayer',
+    pray_save: 'Save Settings',
+    pray_verse_day: 'Verse of the day',
+    pray_quote_baye: 'Word of Baye Niass',
+    live_choose: 'Choose a channel',
+    live_choose_sub: 'Select a channel below',
+    live_channels: '📺 Channels',
+    live_chat: '💬 Chat',
+    live_qa: '❓ Q&A',
+    live_mic: '🎤 Mic',
+    radio_hint: 'Press ▶ to listen',
+    radio_sleep: 'Sleep Mode',
+    qibla_flat: 'Place flat or enter your city',
+    qibla_direction: 'Direction',
+    qibla_distance: 'Distance',
+    moon_hint: 'Enter your city for precise calculation',
+    moon_calc: '🌙 Calculate now',
+    moon_age: 'Age',
+    moon_illum: 'Illumination',
+    ai_analyze: '🔮 Analyze',
+    ai_istikhara_btn: '🌙 Request spiritual analysis',
   },
 
   ar: {
@@ -8363,6 +8429,36 @@ var LANG = {
 
     logout:      'تسجيل الخروج',
     profile:     'الملف الشخصي',
+    pray_adhan_settings: 'إعدادات الأذان',
+    pray_adhan_auto: 'الأذان التلقائي',
+    pray_adhan_play: 'تشغيل الأذان عند وقت كل صلاة',
+    pray_alert: 'تنبيه قبل الصلاة',
+    pray_disabled: 'معطل',
+    pray_5min: 'قبل 5 دقائق',
+    pray_10min: 'قبل 10 دقائق',
+    pray_15min: 'قبل 15 دقيقة',
+    pray_30min: 'قبل 30 دقيقة',
+    pray_per_prayer: 'تفعيل لكل صلاة',
+    pray_save: 'حفظ الإعدادات',
+    pray_verse_day: 'آية اليوم',
+    pray_quote_baye: 'كلمة باي نياس',
+    live_choose: 'اختر قناة',
+    live_choose_sub: 'اختر قناة أدناه',
+    live_channels: '📺 القنوات',
+    live_chat: '💬 دردشة',
+    live_qa: '❓ أسئلة',
+    live_mic: '🎤 مايكرو',
+    radio_hint: 'اضغط ▶ للاستماع',
+    radio_sleep: 'وضع النوم',
+    qibla_flat: 'ضع الهاتف أفقيًا أو أدخل مدينتك',
+    qibla_direction: 'الاتجاه',
+    qibla_distance: 'المسافة',
+    moon_hint: 'أدخل مدينتك لحساب دقيق',
+    moon_calc: '🌙 احسب الآن',
+    moon_age: 'العمر',
+    moon_illum: 'الإضاءة',
+    ai_analyze: '🔮 تحليل',
+    ai_istikhara_btn: '🌙 طلب التحليل الروحاني',
   }
 };
 
@@ -8479,20 +8575,211 @@ function applyTranslations() {
     document.querySelectorAll('.ab-input-wrap').forEach(function(m){ m.style.direction = ''; });
   }
 
-  /* Mettre à jour le calendrier si visible */
-  if (typeof icalRender === 'function') {
-    if (typeof GREG_MONTHS_FR !== 'undefined') {
-      var m = t('cal_months_greg');
-      if (Array.isArray(m)) GREG_MONTHS_FR.splice.apply(GREG_MONTHS_FR, [0, 12].concat(m));
-    }
+  /* ══ SECTION PRIÈRES ══ */
+  _tx('wlc-prayer-loc', 'pray_loc');
+  /* Prochaine prière badge */
+  document.querySelectorAll('[style*="background:var(--g1)"][style*="border-radius:100px"]').forEach(function(el){
+    if(el.textContent.trim()==='Prochaine'||el.textContent.trim()==='Next'||el.textContent.trim()==='التالية') el.textContent=t('pray_next_badge');
+  });
+  /* Paramètres Adhan */
+  _txQ('.wlc-settings-title','⚙️ '+(_lang==='ar'?'إعدادات الأذان':_lang==='en'?'Adhan Settings':'Paramètres Adhan'));
+  _txQ('[onclick="wlcCloseSettings()"]',_lang==='ar'?'✕ إغلاق':_lang==='en'?'✕ Close':'✕ Fermer');
+  /* Labels toggle auto adhan */
+  var autoLbl=document.querySelector('[for="wlc-toggle-auto"]');
+  if(autoLbl) autoLbl.textContent=_lang==='ar'?'أذان تلقائي':_lang==='en'?'Auto Adhan':'Appel à la prière automatique';
+  /* Bouton sauvegarder adhan */
+  _txQ('[onclick="wlcSaveSettings()"]',_lang==='ar'?'حفظ الإعدادات':_lang==='en'?'Save Settings':'حفظ الإعدادات · Sauvegarder');
+  /* Onglets pratique Wird/Zikr */
+  var ptTabs=document.querySelectorAll('.pratique-tab');
+  var ptLabels=[t('tab_wird'),t('tab_zikr'),t('tab_cal')];
+  ptTabs.forEach(function(tab,i){ var l=tab.querySelector('.pt-label'); if(l&&ptLabels[i]) l.textContent=ptLabels[i]; });
+  /* Refresh prayer btn */
+  var refBtn=document.getElementById('prayerRefreshBtn');
+  if(refBtn) refBtn.textContent=(_lang==='ar'?'🔄 تحديث':_lang==='en'?'🔄 Refresh':'🔄 Actualiser');
+
+  /* ══ SECTION RADIO ══ */
+  _txQ('.rp-wrap .rp-title','Radio Al-Faydha');
+  var rpSub=document.querySelector('.rp-subtitle');
+  if(rpSub) rpSub.textContent=_lang==='ar'?'راديو الفيضة · مدينة باي':_lang==='en'?'Al-Faydha Radio · Medina Baye':'Radio Al-Faydha · Médina Baye';
+  var rpPlay=document.querySelector('.rp-hint');
+  if(rpPlay) rpPlay.textContent=_lang==='ar'?'اضغط ▶ للاستماع':_lang==='en'?'Press ▶ to listen':'Appuyez ▶ pour écouter';
+  /* Sleep mode */
+  _txQ('.rp-sleep-title',_lang==='ar'?'وضع النوم':_lang==='en'?'Sleep Mode':'Mode Sommeil');
+  /* Onglets Radio/Studio */
+  var etSubRadio=document.querySelector('#ensTabRadio .et-sub');
+  if(etSubRadio) etSubRadio.textContent=t('radio_live');
+  var etSubStudio=document.querySelector('#ensTabStudio .et-sub');
+  if(etSubStudio) etSubStudio.textContent=t('studio_rec');
+  /* Studio */
+  _txQ('.studio-title',_lang==='ar'?'🎙 استوديو التسجيل':_lang==='en'?'🎙 Recording Studio':'🎙 Studio d'enregistrement');
+  _txQ('.studio-quality-label',_lang==='ar'?'الجودة':_lang==='en'?'Quality':'Qualité');
+
+  /* ══ SECTION LIVE ══ */
+  var liveTitle=document.querySelector('.lt-title');
+  if(liveTitle) liveTitle.textContent=_lang==='ar'?'📡 مدينة باي مباشر':_lang==='en'?'📡 Médina Baye Live':'📡 Médina Baye Live';
+  var liveSub=document.querySelector('.lt-sub');
+  if(liveSub) liveSub.textContent=_lang==='ar'?'البث العالمي · مدينة باي · التاليبي باي':_lang==='en'?'Worldwide broadcasts · Médina Baye · Taalibé Baye':'Diffusions mondiales · مدينة باي · Taalibé Baye';
+  var liveChoose=document.querySelector('.lt-choose-title');
+  if(liveChoose) liveChoose.textContent=_lang==='ar'?'اختر قناة':_lang==='en'?'Choose a channel':'Choisissez une chaîne';
+  var liveChooseSub=document.querySelector('.lt-choose-sub');
+  if(liveChooseSub) liveChooseSub.textContent=_lang==='ar'?'اختر قناة أدناه':_lang==='en'?'Select a channel below':'Sélectionnez une chaîne ci-dessous';
+  var liveChTab=document.getElementById('ltab-channels');
+  if(liveChTab){ var ct=liveChTab.childNodes[0]; if(ct&&ct.nodeType===3) ct.textContent=_lang==='ar'?'📺 القنوات':_lang==='en'?'📺 Channels':'📺 Chaînes'; }
+  var liveChatTab=document.getElementById('ltab-chat');
+  if(liveChatTab){ var ct2=liveChatTab.childNodes[0]; if(ct2&&ct2.nodeType===3) ct2.textContent=_lang==='ar'?'💬 دردشة':_lang==='en'?'💬 Chat':'💬 Chat'; }
+  var liveQATab=document.getElementById('ltab-qa');
+  if(liveQATab){ var ct3=liveQATab.childNodes[0]; if(ct3&&ct3.nodeType===3) ct3.textContent=_lang==='ar'?'❓ أسئلة':_lang==='en'?'❓ Q&A':'❓ Q&A'; }
+  var liveMicTab=document.getElementById('ltab-mic');
+  if(liveMicTab){ var ct4=liveMicTab.childNodes[0]; if(ct4&&ct4.nodeType===3) ct4.textContent=_lang==='ar'?'🎤 مايكرو':_lang==='en'?'🎤 Mic':'🎤 Micro'; }
+
+  /* ══ SECTION QIBLA ══ */
+  var qiblaHead=document.querySelector('#ql-panel-qibla .qibla-head-title');
+  if(qiblaHead) qiblaHead.textContent=_lang==='ar'?'🕋 اتجاه القبلة':_lang==='en'?'🕋 Qibla Direction':'🕋 Direction de La Mecque';
+  var qiblaHint=document.querySelector('#ql-panel-qibla .qibla-hint');
+  if(qiblaHint) qiblaHint.textContent=_lang==='ar'?'ضع الهاتف أفقيًا أو أدخل مدينتك':_lang==='en'?'Place flat or enter your city':'Posez à plat ou entrez votre ville';
+  var qiblaInput=document.getElementById('qiblaInput');
+  if(qiblaInput) qiblaInput.placeholder=_lang==='ar'?'مثال: كاولاك، داكار...':_lang==='en'?'Ex: Kaolack, Dakar...':'Ex: Thiès, Dakar, Kaolack...';
+  var qiblaGPSBtn=document.querySelector('[onclick="qiblaGPS()"]');
+  if(qiblaGPSBtn) qiblaGPSBtn.innerHTML=_lang==='ar'?'📍 GPS تلقائي':_lang==='en'?'📍 GPS auto':'📍 GPS auto';
+  /* Bouton Qibla chercher */
+  var qiblaSearchBtn=document.querySelector('.qibla-search-btn');
+  if(qiblaSearchBtn) qiblaSearchBtn.title=_lang==='ar'?'بحث':_lang==='en'?'Search':'Chercher';
+  /* Labels résultat Qibla */
+  var qiblaDir=document.querySelector('.qibla-result-direction-label');
+  if(qiblaDir) qiblaDir.textContent=_lang==='ar'?'الاتجاه':_lang==='en'?'Direction':'Direction';
+  var qiblaDist=document.querySelector('.qibla-result-distance-label');
+  if(qiblaDist) qiblaDist.textContent=_lang==='ar'?'المسافة':_lang==='en'?'Distance':'Distance';
+  /* Lune Hilal */
+  var luneTitleEl=document.querySelector('#ql-panel-lune .moon-title');
+  if(luneTitleEl) luneTitleEl.textContent=_lang==='ar'?'🌙 رؤية الهلال':_lang==='en'?'🌙 Hilal Visibility':'🌙 Visibilité du Croissant';
+  var luneHint=document.querySelector('#ql-panel-lune .moon-city-hint');
+  if(luneHint) luneHint.textContent=_lang==='ar'?'أدخل مدينتك لحساب دقيق':_lang==='en'?'Enter your city for precise calculation':'Entrez votre ville pour un calcul précis';
+  var luneInput=document.getElementById('moonCityInput');
+  if(luneInput) luneInput.placeholder=_lang==='ar'?'مثال: كاولاك، داكار...':_lang==='en'?'Ex: Kaolack, Dakar...':'Ex: Thiès, Dakar, Kaolack...';
+  var luneCalcBtn=document.querySelector('[onclick*="_moonRun"]');
+  if(luneCalcBtn) luneCalcBtn.innerHTML=_lang==='ar'?'🌙 احسب الآن':_lang==='en'?'🌙 Calculate now':'🌙 Calculer maintenant';
+  /* Calendrier onglet tabs labels */
+  var qltab=document.getElementById('qltab-qibla');
+  if(qltab){var ql=qltab.querySelector('.qt-label');if(ql)ql.textContent=t('qibla_tab');}
+  var qltab2=document.getElementById('qltab-lune');
+  if(qltab2){var ql2=qltab2.querySelector('.qt-label');if(ql2)ql2.textContent=t('lune_tab');}
+  var qltab3=document.getElementById('qltab-cal');
+  if(qltab3){var ql3=qltab3.querySelector('.qt-label');if(ql3)ql3.textContent=t('cal_tab');}
+  /* Calendrier stats */
+  document.querySelectorAll('.ical-stat-l').forEach(function(el){
+    var txt=el.textContent.trim();
+    if(txt==='Vendredis'||txt==='Fridays'||txt==='الجمعات') el.textContent=t('cal_fridays');
+    else if(txt==='Jours saints'||txt==='Holy days'||txt==='الأيام المقدسة') el.textContent=t('cal_holy');
+    else if(txt==='Jours restants'||txt==='Days left'||txt==='أيام متبقية') el.textContent=t('cal_left');
+    else if(txt==='Ramadan'||txt==='رمضان') el.textContent=t('cal_ramadan');
+  });
+
+  /* ══ SECTION BAYE IA ══ */
+  _tx('abInput','ai_placeholder','placeholder');
+  var abClrBtn=document.querySelector('.ab-clr-btn');
+  if(abClrBtn) abClrBtn.textContent=t('ai_clear');
+  var abSugTitle=document.querySelector('.ab-sug-title');
+  if(abSugTitle) abSugTitle.textContent=t('ai_sugs');
+  var abCfgTitle=document.querySelector('.ab-config-title');
+  if(abCfgTitle) abCfgTitle.textContent=t('ai_key_title');
+  var abCfgSub=document.querySelector('.ab-config-sub');
+  if(abCfgSub) abCfgSub.textContent=t('ai_key_sub');
+  /* Moteurs IA */
+  var engMap2={
+    'eng-baye':{lbl:t('eng_baye'),sub:_lang==='ar'?'تعاليم التيجانية':_lang==='en'?'Tijaniyya Teachings':'Enseignements Tijaniyya'},
+    'eng-quran':{lbl:t('eng_quran'),sub:_lang==='ar'?'التفسير · الحفظ':_lang==='en'?'Tafsir · Memorization':'Tafsir · Mémorisation'},
+    'eng-tasaw':{lbl:t('eng_tasaw'),sub:_lang==='ar'?'الروحانية · الذكر':_lang==='en'?'Spirituality · Zikr':'Spiritualité · Zikr'},
+    'eng-istikh':{lbl:t('eng_istikh'),sub:_lang==='ar'?'صلاة الاستخارة':_lang==='en'?'Prayer of Guidance':'Prière de guidance'},
+    'eng-conseil':{lbl:t('eng_conseil'),sub:_lang==='ar'?'إرشاد روحاني':_lang==='en'?'Spiritual guidance':'Guidance spirituelle'},
+    'eng-reve':{lbl:t('eng_reve'),sub:_lang==='ar'?'تفسير إسلامي':_lang==='en'?'Islamic interpretation':'Interprétation islamique'},
+    'eng-sensible':{lbl:t('eng_sensible'),sub:_lang==='ar'?'أسئلة خاصة':_lang==='en'?'Private questions':'Questions privées'},
+    'eng-islam':{lbl:t('eng_islam'),sub:_lang==='ar'?'دليل عالمي · يحل كل شيء':_lang==='en'?'Universal guide · Solves everything':'Guide universel · Résout tout · Nouvelle génération'},
+    'eng-asrar':{lbl:t('eng_asrar'),sub:_lang==='ar'?'أبجد · أرقام · أسرار إلهية · وفق':_lang==='en'?'Abjad · Numbers · Divine secrets · Wafq':'Abjad · Nombres · Secrets divins · Wafq'}
+  };
+  Object.keys(engMap2).forEach(function(id){
+    var el=document.getElementById(id); if(!el) return;
+    var lbl=el.querySelector('.ab-mode-label'); if(lbl) lbl.textContent=engMap2[id].lbl;
+    var sub=el.querySelector('.ab-mode-sub'); if(sub) sub.textContent=engMap2[id].sub;
+  });
+  /* Istikhara form labels */
+  var istikhLabels=document.querySelectorAll('.ab-istikh-label');
+  if(istikhLabels.length>=5){
+    istikhLabels[0].childNodes[0].textContent=_lang==='ar'?'اسمك ':_lang==='en'?'Your first name ':'Votre prénom ';
+    istikhLabels[1].childNodes[0].textContent=_lang==='ar'?'اسم أمك ':_lang==='en'?'Your mother's name ':'Prénom de votre mère ';
+    istikhLabels[2].childNodes[0].textContent=_lang==='ar'?'القرار / السؤال ':_lang==='en'?'Decision / Question ':'Décision / Question ';
+    if(istikhLabels[3]) istikhLabels[3].textContent=_lang==='ar'?'ما تشعر به في قلبك':_lang==='en'?'Your heart's feeling':'Ressenti du cœur après la prière';
+    if(istikhLabels[4]) istikhLabels[4].textContent=_lang==='ar'?'تطور الوضع':_lang==='en'?'Evolution of situation':'Évolution de votre situation';
+  }
+  var istikhBtn=document.querySelector('.ab-istikh-btn');
+  if(istikhBtn) istikhBtn.textContent=_lang==='ar'?'🌙 طلب التحليل الروحاني':_lang==='en'?'🌙 Request spiritual analysis':'🌙 Demander l'analyse spirituelle';
+  /* Nour IA tabs */
+  var nourTabA=document.getElementById('nourTabAbjad');
+  if(nourTabA) nourTabA.textContent=_lang==='ar'?'🔢 أبجد':_lang==='en'?'🔢 Abjad':'🔢 Abjad';
+  var nourTabI=document.getElementById('nourTabIstikh');
+  if(nourTabI) nourTabI.textContent=_lang==='ar'?'🌙 استخارة':_lang==='en'?'🌙 Istikhara':'🌙 Istikhara';
+  /* Nour IA type buttons */
+  var istikhTypeBtns=document.querySelectorAll('.istikh-type-btn');
+  var istikhTypeLabels={
+    fr:['💍 Mariage','💼 Travail','✈️ Voyage','🤝 Association','⚖️ Décision'],
+    en:['💍 Marriage','💼 Work','✈️ Travel','🤝 Partnership','⚖️ Decision'],
+    ar:['💍 زواج','💼 عمل','✈️ سفر','🤝 شراكة','⚖️ قرار']
+  };
+  istikhTypeBtns.forEach(function(btn,i){
+    if(istikhTypeLabels[_lang]&&istikhTypeLabels[_lang][i]) btn.textContent=istikhTypeLabels[_lang][i];
+  });
+  /* Input placeholders Nour IA */
+  var istikhN1=document.getElementById('istikhName1');
+  if(istikhN1) istikhN1.placeholder=_lang==='ar'?'مثال: إبراهيم':_lang==='en'?'Ex: Ibrahim':'Ex: Ibrahim';
+  var istikhN2=document.getElementById('istikhName2');
+  if(istikhN2) istikhN2.placeholder=_lang==='ar'?'مثال: فاطمة':_lang==='en'?'Ex: Fatima':'Ex: Fatima';
+  var asrarInp=document.getElementById('asrarInput');
+  if(asrarInp) asrarInp.placeholder=_lang==='ar'?'اكتب اسمًا أو كلمة...':_lang==='en'?'Enter a name or word...':'Écrivez un nom ou mot...';
+  /* Bouton analyser */
+  var asrarBtn=document.querySelector('.asrar-calc-btn');
+  if(asrarBtn) asrarBtn.textContent=_lang==='ar'?'🔮 تحليل':_lang==='en'?'🔮 Analyze':'🔮 Analyser';
+
+  /* ══ WELCOME PAGE ══ */
+  var wDescEl=document.querySelector('#welcome [style*="font-size:13px"]');
+  if(wDescEl) wDescEl.textContent=t('wlc_connect_desc');
+  var wVerse=document.querySelector('.wlc-verse-fr');
+  if(wVerse) wVerse.textContent=t('wlc_verse_fr');
+  var wFeat1=document.querySelector('#welcome [style*="font-size:13px;color:rgba(251,248,232,.7)"]:nth-child(1)');
+  /* Features */
+  document.querySelectorAll('#welcome [style*="rgba(251,248,232,.7)"]').forEach(function(el,i){
+    var feats=[t('wlc_feat1'),t('wlc_feat2'),t('wlc_feat3')];
+    if(feats[i]) el.textContent=feats[i];
+  });
+
+  /* ══ USER AVATAR BAR ══ */
+  var logoutBtn=document.querySelector('[onclick="signOut()"]');
+  if(logoutBtn) logoutBtn.textContent=t('logout');
+
+  /* ══ BOUTON LANGUE ══ */
+  var flags={fr:'🇫🇷 FR',en:'🇬🇧 EN',ar:'🇸🇦 ع'};
+  var langBtn2=document.getElementById('langSwitchBtn');
+  if(langBtn2) langBtn2.textContent=flags[_lang]||'🌐';
+
+  /* ══ CALENDRIER ══ */
+  if(typeof GREG_MONTHS_FR!=='undefined'){
+    var m=t('cal_months_greg');
+    if(Array.isArray(m)) GREG_MONTHS_FR.splice.apply(GREG_MONTHS_FR,[0,12].concat(m));
   }
 
-  /* Mettre à jour les prompts IA selon la langue */
-  if (typeof AB_SYSTEMS !== 'undefined') {
-    var langNote = _lang === 'ar' ? '\n\nRéponds en arabe (العربية).' :
-                   _lang === 'en' ? '\n\nRespond in English.' : '';
-    window._langNote = langNote;
-  }
+  /* ══ PROMPTS IA ══ */
+  var langNote=_lang==='ar'?'\n\nمهم جداً: أجب دائمًا باللغة العربية الفصحى الكاملة.':
+               _lang==='en'?'\n\nIMPORTANT: Always respond entirely in English.':'';
+  window._langNote=langNote;
+  window._lang=_lang;
+}
+
+/* Helper : traduire un élément par ID */
+function _tx(id, key, attr) {
+  var el=document.getElementById(id); if(!el) return;
+  if(attr) el[attr]=t(key); else { var txt=t(key); if(txt) el.textContent=txt; }
+}
+/* Helper : traduire premier querySelector */
+function _txQ(selector, text) {
+  var el=document.querySelector(selector); if(el&&text) el.textContent=text;
 }
 
 /* Appliquer au chargement — après que TOUT le DOM soit prêt */
