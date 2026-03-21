@@ -5287,7 +5287,7 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
       <span id="abSpeedLabel" style="font-size:11px;color:var(--g1);font-weight:700;min-width:28px;text-align:center">×1.0</span>
       <button onclick="abSpeedUp()" style="background:none;border:none;cursor:pointer;font-size:13px;color:var(--g1);padding:0 2px;line-height:1" title="Accélérer">🐇</button>
     </div>
-    <button class="ab-key-btn" onclick="abToggleConfig()" title="Clé API Ask Baye" id="abKeyBtn" style="display:none">&#x1F511;</button>
+    <button class="ab-key-btn" onclick="abToggleConfig()" title="Clé API Ask Baye" id="abKeyBtn">&#x1F511;</button>
     <button class="ab-clr-btn" onclick="abClear()">&#x2715; Vider</button>
   </div>
 </div>
@@ -9590,7 +9590,8 @@ function abSpeak(text) {
   window.speechSynthesis.cancel();
   var clean = text.replace(/(<([^>]+)>)/gi,'').replace(/[*#_~\x60]/g,'');
   var utt = new SpeechSynthesisUtterance(clean);
-  utt.lang = (window._abLang === 'ar') ? 'ar-SA' : 'fr-FR';
+  var l = window._abLang || window._lang || 'fr';
+  utt.lang = l==='ar' ? 'ar-SA' : l==='en' ? 'en-GB' : 'fr-FR';
   utt.rate = window._abSpeed || 1.0;
   window.speechSynthesis.speak(utt);
 }
@@ -13789,6 +13790,109 @@ window.admSendNotifToUser = function() {
       else showToast('\uD83D\uDCE8 Message envoy\u00e9 \u00e0 ' + name);
     });
   });
+};
+</script>
+
+<script>
+/* ══════════════════════════════════════════
+   LUMIÈRE IA — Langue & Vocal 3 langues
+   FR 🇫🇷 / EN 🇬🇧 / AR 🇸🇦
+══════════════════════════════════════════ */
+
+/* Init langue depuis préférence globale */
+window._abLang = window._lang || localStorage.getItem('faydha_lang') || 'fr';
+
+/* Mettre à jour le bouton au démarrage */
+document.addEventListener('DOMContentLoaded', function() {
+  var l = window._abLang;
+  var labels = { fr:'🇫🇷 FR', en:'🇬🇧 EN', ar:'🇸🇦 AR' };
+  var btn = document.getElementById('abLangBtn');
+  if (btn) btn.textContent = labels[l] || '🇫🇷 FR';
+});
+
+/* ── Cycle FR → EN → AR → FR ── */
+window.abToggleLang = function() {
+  var order = ['fr','en','ar'];
+  var labels = { fr:'🇫🇷 FR', en:'🇬🇧 EN', ar:'🇸🇦 AR' };
+  var names  = { fr:'Français', en:'English', ar:'العربية' };
+  var idx = order.indexOf(window._abLang);
+  idx = (idx + 1) % order.length;
+  window._abLang = order[idx];
+  /* Sync avec langue globale de l'app */
+  window._lang = window._abLang;
+  var btn = document.getElementById('abLangBtn');
+  if (btn) btn.textContent = labels[window._abLang];
+  /* Forcer la direction du textarea */
+  var inp = document.getElementById('abInput');
+  if (inp) inp.dir = (window._abLang === 'ar') ? 'rtl' : 'ltr';
+  if (typeof showToast === 'function') showToast('🌐 ' + names[window._abLang]);
+};
+
+/* ── Message vocal 3 langues ── */
+var _abMicRecog = null;
+var _abMicActive = false;
+
+window.abToggleMic = function() {
+  var btn = document.getElementById('abMicBtn');
+  var inp = document.getElementById('abInput');
+
+  if (_abMicActive) {
+    if (_abMicRecog) { try { _abMicRecog.stop(); } catch(e) {} }
+    _abMicActive = false;
+    if (btn) { btn.textContent = '🎤'; btn.classList.remove('listening'); }
+    return;
+  }
+
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    if (typeof showToast === 'function') showToast('⚠️ Utilisez Chrome ou Edge');
+    return;
+  }
+
+  var l = window._abLang || 'fr';
+  var langMap  = { fr:'fr-FR', en:'en-GB', ar:'ar-SA' };
+  var prompts  = { fr:'🎤 Parlez en français...', en:'🎤 Speak in English...', ar:'🎤 تحدث بالعربية...' };
+
+  _abMicRecog = new SR();
+  _abMicRecog.continuous     = false;
+  _abMicRecog.interimResults = true;
+  _abMicRecog.lang           = langMap[l] || 'fr-FR';
+
+  _abMicRecog.onstart = function() {
+    _abMicActive = true;
+    if (btn) { btn.textContent = '⏹️'; btn.classList.add('listening'); }
+    if (typeof showToast === 'function') showToast(prompts[l] || '🎤 Parlez...');
+  };
+
+  _abMicRecog.onresult = function(e) {
+    var t = '';
+    for (var i = 0; i < e.results.length; i++) t += e.results[i][0].transcript;
+    if (inp) {
+      inp.value = t;
+      inp.dir   = (l === 'ar') ? 'rtl' : 'ltr';
+    }
+  };
+
+  _abMicRecog.onerror = function(e) {
+    _abMicActive = false;
+    if (btn) { btn.textContent = '🎤'; btn.classList.remove('listening'); }
+    var errs = {
+      'not-allowed': { fr:'⚠️ Autorisez le microphone', en:'⚠️ Allow microphone access', ar:'⚠️ السماح بالميكروفون' },
+      'no-speech':   { fr:'Aucune voix détectée',       en:'No speech detected',           ar:'لم يتم اكتشاف صوت' }
+    };
+    var msg = errs[e.error] ? (errs[e.error][l]||errs[e.error]['fr']) : ('Erreur: '+e.error);
+    if (typeof showToast === 'function') showToast(msg);
+  };
+
+  _abMicRecog.onend = function() {
+    _abMicActive = false;
+    if (btn) { btn.textContent = '🎤'; btn.classList.remove('listening'); }
+    if (inp && inp.value.trim() && typeof abSend === 'function') abSend();
+  };
+
+  try { _abMicRecog.start(); } catch(e) {
+    if (typeof showToast === 'function') showToast('⚠️ Impossible de démarrer le micro');
+  }
 };
 </script>
 </body>
