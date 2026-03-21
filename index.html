@@ -1110,7 +1110,7 @@ body{
 .ab-hero-ar{font-family:'Amiri',serif;font-size:16px;color:var(--gold2);direction:rtl;margin-bottom:.4rem}
 .ab-hero-sub{font-size:13px;color:var(--gold3);font-style:italic;line-height:1.5;margin-bottom:1rem}
 .ab-engine-row{display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap}
-.ab-eng{background:rgba(255,255,255,.08);border:1px solid rgba(212,175,55,.3);border-radius:100px;padding:.35rem .9rem;font-family:'Roboto',sans-serif;font-size:13px;color:rgba(251,248,232,.7);cursor:pointer;transition:all .2s}
+.ab-eng{background:rgba(255,255,255,.08);border:1px solid rgba(212,175,55,.3);border-radius:100px;padding:.35rem .9rem;font-family:'Roboto',sans-serif;font-size:13px;color:rgba(251,248,232,.9);cursor:pointer;transition:all .2s}
 .ab-eng.active{background:var(--gold);border-color:var(--gold);color:var(--g1);font-weight:700}
 .ab-eng:hover:not(.active){background:rgba(212,175,55,.2)}
 .ab-eng-istikh{border-color:rgba(147,112,219,.6) !important;color:rgba(216,191,255,.85) !important}
@@ -1903,11 +1903,12 @@ html { background: #0a0a0a; }
 }
 .ab-eng {
   border-radius: 20px !important;
-  font-size: 12px !important;
-  font-weight: 600 !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
   letter-spacing: .02em !important;
+  color: rgba(251,248,232,.85) !important;
   transition: all .2s cubic-bezier(.34,1.56,.64,1) !important;
-  border: 1px solid rgba(212,175,55,.25) !important;
+  border: 1px solid rgba(212,175,55,.4) !important;
 }
 .ab-eng.active {
   background: linear-gradient(135deg,var(--g1),var(--g2)) !important;
@@ -2232,11 +2233,12 @@ button[onclick="qiblaGPS()"]:hover {
 }
 .ab-eng {
   border-radius: 20px !important;
-  font-size: 11.5px !important;
-  font-weight: 600 !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
   padding: .35rem .8rem !important;
   letter-spacing: .02em !important;
-  border: 1px solid rgba(212,175,55,.2) !important;
+  color: rgba(251,248,232,.85) !important;
+  border: 1px solid rgba(212,175,55,.38) !important;
   transition: all .2s cubic-bezier(.34,1.56,.64,1) !important;
 }
 .ab-eng.active {
@@ -2569,6 +2571,14 @@ button[onclick="qiblaGPS()"] {
           <div style="font-size:11px;color:rgba(251,248,232,.55);margin-top:3px" id="wlc-prayer-loc">📍 Détection GPS…</div>
         </div>
       </div>
+
+      <!-- ═══ DATE FR + HIJRI — centre ═══ -->
+      <div id="hijri-badge" style="display:flex;flex-direction:column;align-items:center;gap:2px;background:rgba(0,0,0,.2);border:1px solid rgba(212,175,55,.22);border-radius:12px;padding:.3rem .75rem;min-width:72px">
+        <div id="hijri-fr-date" style="font-family:'Roboto',sans-serif;font-size:11px;font-weight:600;color:rgba(251,248,232,.65);letter-spacing:.03em;line-height:1">—</div>
+        <div id="hijri-day" style="font-family:'Amiri',serif;font-size:20px;font-weight:700;color:var(--gold);line-height:1.05">—</div>
+        <div id="hijri-month" style="font-family:'Amiri',serif;font-size:11px;color:rgba(212,175,55,.85);line-height:1;text-align:center;direction:rtl">—</div>
+      </div>
+
       <div style="display:flex;align-items:center;gap:.6rem">
         <!-- Bouton paramètres adhan -->
         <button onclick="wlcOpenSettings()" style="background:rgba(212,175,55,.18);border:1.5px solid rgba(212,175,55,.35);border-radius:100px;color:var(--gold2);font-size:13px;padding:.3rem .7rem;cursor:pointer;font-family:'Roboto',sans-serif;display:flex;align-items:center;gap:.3rem">⚙️</button>
@@ -2601,6 +2611,17 @@ button[onclick="qiblaGPS()"] {
     "></div>
     <div id="wlc-prayer-list" style="background:rgba(255,255,255,.04);padding:.7rem .9rem;display:flex;flex-direction:column;gap:.45rem;position:relative;z-index:1">
       <div style="color:var(--text3);font-size:13px;text-align:center;padding:.5rem">Chargement…</div>
+    </div>
+  </div>
+
+  <!-- ① Prochain événement islamique — sous le tableau des prières -->
+  <div id="umma-next-event-block" style="margin:.45rem .8rem .3rem;border-radius:14px;overflow:hidden;border:1px solid rgba(212,175,55,.25);background:linear-gradient(135deg,rgba(5,18,10,.85),rgba(3,12,7,.9));flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:.45rem;padding:.42rem .8rem .32rem;border-bottom:1px solid rgba(212,175,55,.14)">
+      <span style="font-size:13px">🗓</span>
+      <span style="font-size:9.5px;color:rgba(212,175,55,.75);text-transform:uppercase;letter-spacing:.1em;font-weight:700">Prochain événement islamique</span>
+    </div>
+    <div id="umma-next-event-content" style="padding:.45rem .8rem .55rem">
+      <span style="font-size:12px;color:rgba(255,255,255,.3);font-style:italic">Calcul en cours…</span>
     </div>
   </div>
 
@@ -4803,8 +4824,8 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
   align-items: center;
   gap: .6rem;
   padding: .7rem .85rem;
-  background: rgba(255,255,255,.04);
-  border: 1.5px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.07);
+  border: 1.5px solid rgba(255,255,255,.15);
   border-radius: 14px;
   cursor: pointer;
   transition: all .2s cubic-bezier(.34,1.56,.64,1);
@@ -4834,20 +4855,20 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
   background: rgba(212,175,55,.15);
 }
 .ab-mode-label {
-  font-size: 13.5px;
-  font-weight: 700;
-  color: rgba(255,255,255,.75);
-  line-height: 1.15;
-  letter-spacing: .01em;
+  font-size:14px;
+  font-weight:700;
+  color:rgba(255,255,255,.92);
+  line-height:1.15;
+  letter-spacing:.01em;
 }
 .ab-mode-btn.active .ab-mode-label { color: #F0DC82; }
 .ab-mode-sub {
-  font-size: 10.5px;
-  color: rgba(255,255,255,.3);
-  margin-top: 2px;
-  line-height: 1.3;
+  font-size:11px;
+  color:rgba(255,255,255,.5);
+  margin-top:2px;
+  line-height:1.3;
 }
-.ab-mode-btn.active .ab-mode-sub { color: rgba(212,175,55,.5); }
+.ab-mode-btn.active .ab-mode-sub { color: rgba(212,175,55,.7); }
 
 /* ── Islam IA — bouton spécial ── */
 #eng-islam {
@@ -4947,15 +4968,15 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
 /* Calculatrice Abjad */
 .asrar-calc-wrap { background:linear-gradient(160deg,#0a0800,#150e00); border-bottom:1px solid rgba(212,175,55,.15); padding:.8rem 1rem; display:none; }
 .asrar-calc-wrap.visible { display:block; }
-.asrar-calc-title { font-family:'Amiri',serif; font-size:14px; color:var(--gold2); margin-bottom:.5rem; text-align:center; letter-spacing:.05em; }
+.asrar-calc-title { font-family:'Amiri',serif; font-size:15px; color:#F0DC82; margin-bottom:.5rem; text-align:center; letter-spacing:.05em; }
 .asrar-calc-input-row { display:flex; gap:.4rem; }
-.asrar-calc-input { flex:1; background:rgba(212,175,55,.07); border:1.5px solid rgba(212,175,55,.3); border-radius:10px; padding:.5rem .8rem; color:#fff; font-family:'Amiri',serif; font-size:15px; outline:none; direction:rtl; }
-.asrar-calc-input::placeholder { color:rgba(212,175,55,.3); }
+.asrar-calc-input { flex:1; background:rgba(212,175,55,.09); border:1.5px solid rgba(212,175,55,.4); border-radius:10px; padding:.5rem .8rem; color:#fff; font-family:'Amiri',serif; font-size:16px; outline:none; direction:rtl; }
+.asrar-calc-input::placeholder { color:rgba(212,175,55,.5); }
 .asrar-calc-btn { background:linear-gradient(135deg,#7a4500,#D4AF37); border:none; border-radius:10px; padding:.5rem .9rem; color:#fff; font-weight:700; font-size:13px; cursor:pointer; white-space:nowrap; }
 .asrar-calc-result { margin-top:.6rem; background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.2); border-radius:10px; padding:.6rem .9rem; display:none; text-align:center; }
 .asrar-calc-result.visible { display:block; }
 .asrar-result-num { font-family:'Amiri',serif; font-size:32px; font-weight:700; color:var(--gold); line-height:1; }
-.asrar-result-label { font-size:11px; color:rgba(212,175,55,.5); margin-top:3px; letter-spacing:.08em; text-transform:uppercase; }
+.asrar-result-label { font-size:12px; color:rgba(212,175,55,.75); margin-top:3px; letter-spacing:.08em; text-transform:uppercase; }
 
 /* ── Istikhara Numérique ── */
 .nour-tabs {
@@ -4966,12 +4987,12 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
 }
 .nour-tab {
   flex:1; padding:.55rem .4rem; text-align:center;
-  font-size:11.5px; font-weight:600; color:rgba(212,175,55,.4);
+  font-size:12px; font-weight:700; color:rgba(212,175,55,.65);
   cursor:pointer; border:none; background:none;
   font-family:'Roboto',sans-serif; border-bottom:2px solid transparent;
-  transition:all .2s; letter-spacing:.02em;
+  transition:all .2s; letter-spacing:.03em;
 }
-.nour-tab.active { color:var(--gold); border-bottom-color:var(--gold); }
+.nour-tab.active { color:#F0DC82; border-bottom-color:var(--gold); }
 .nour-panel { display:none; }
 .nour-panel.active { display:block; }
 
@@ -4983,19 +5004,19 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
 }
 .istikh-num-row { display:flex; gap:.4rem; margin-bottom:.5rem; }
 .istikh-num-label {
-  font-size:10px; font-weight:700; color:rgba(212,175,55,.4);
+  font-size:11.5px; font-weight:700; color:rgba(212,175,55,.8);
   text-transform:uppercase; letter-spacing:.08em;
   margin-bottom:.25rem; font-family:'Roboto',sans-serif;
 }
 .istikh-num-input {
-  flex:1; background:rgba(212,175,55,.07);
-  border:1.5px solid rgba(212,175,55,.25); border-radius:10px;
+  flex:1; background:rgba(212,175,55,.09);
+  border:1.5px solid rgba(212,175,55,.35); border-radius:10px;
   padding:.45rem .75rem; color:#fff; font-family:'Amiri',serif;
-  font-size:15px; outline:none; direction:rtl;
+  font-size:16px; outline:none; direction:rtl;
   transition:border-color .2s;
 }
-.istikh-num-input:focus { border-color:rgba(212,175,55,.55); }
-.istikh-num-input::placeholder { color:rgba(212,175,55,.25); }
+.istikh-num-input:focus { border-color:rgba(212,175,55,.7); }
+.istikh-num-input::placeholder { color:rgba(212,175,55,.45); }
 .istikh-num-val {
   flex-shrink:0; width:52px; background:rgba(212,175,55,.1);
   border:1px solid rgba(212,175,55,.25); border-radius:10px;
@@ -5008,14 +5029,14 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
 }
 .istikh-type-btn {
   flex:1; min-width:80px; padding:.35rem .5rem;
-  background:rgba(212,175,55,.06); border:1px solid rgba(212,175,55,.2);
-  border-radius:20px; font-size:11px; font-weight:600;
-  color:rgba(212,175,55,.5); cursor:pointer;
+  background:rgba(212,175,55,.09); border:1px solid rgba(212,175,55,.3);
+  border-radius:20px; font-size:12px; font-weight:700;
+  color:rgba(212,175,55,.75); cursor:pointer;
   font-family:'Roboto',sans-serif; transition:all .2s; text-align:center;
 }
 .istikh-type-btn.active {
-  background:rgba(212,175,55,.18); border-color:rgba(212,175,55,.6);
-  color:var(--gold);
+  background:rgba(212,175,55,.22); border-color:rgba(212,175,55,.75);
+  color:#F0DC82;
 }
 .istikh-result-bar {
   background:rgba(212,175,55,.06); border:1px solid rgba(212,175,55,.15);
@@ -5032,7 +5053,7 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
   color:var(--gold);
 }
 .istikh-score-vs {
-  font-size:11px; color:rgba(212,175,55,.35);
+  font-size:13px; color:rgba(212,175,55,.7); font-weight:600;
 }
 .istikh-compat-bar {
   height:6px; border-radius:3px; overflow:hidden;
@@ -5043,14 +5064,14 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
   transition:width .6s cubic-bezier(.34,1.56,.64,1);
 }
 .istikh-verdict {
-  font-size:12px; font-weight:700; letter-spacing:.05em;
+  font-size:13px; font-weight:700; letter-spacing:.05em; color:rgba(255,255,255,.9);
 }
 .istikh-analyse-btn {
   width:100%; margin-top:.6rem;
   background:linear-gradient(135deg,#3d1f00,#7a4500);
-  border:1px solid rgba(212,175,55,.4); border-radius:12px;
-  padding:.6rem; color:var(--gold); font-weight:700;
-  font-size:13px; cursor:pointer; font-family:'Roboto',sans-serif;
+  border:1px solid rgba(212,175,55,.55); border-radius:12px;
+  padding:.65rem; color:#F0DC82; font-weight:700;
+  font-size:14px; cursor:pointer; font-family:'Roboto',sans-serif;
   transition:opacity .2s; letter-spacing:.04em;
 }
 .istikh-analyse-btn:hover { opacity:.85; }
@@ -5141,7 +5162,7 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
 
   <!-- Panel Abjad -->
   <div class="nour-panel active" id="nourPanelAbjad" style="padding:.8rem 1rem">
-    <div class="asrar-calc-title" style="font-size:13px;margin-bottom:.5rem">&#x62D;&#x633;&#x627;&#x628; &#x627;&#x644;&#x62C;&#x64F;&#x645;&#x651;&#x644; — Calculatrice Abjad</div>
+    <div class="asrar-calc-title" style="font-size:16px;margin-bottom:.5rem">&#x62D;&#x633;&#x627;&#x628; &#x627;&#x644;&#x62C;&#x64F;&#x645;&#x651;&#x644; — Calculatrice Abjad</div>
     <div class="asrar-calc-input-row">
       <input class="asrar-calc-input" id="asrarInput" type="text"
         placeholder="&#x627;&#x643;&#x62A;&#x628; &#x627;&#x633;&#x645;&#x627;&#x64B; &#x623;&#x648; &#x643;&#x644;&#x645;&#x629;..."
@@ -5160,8 +5181,8 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
   <div class="istikh-num-wrap">
 
     <div style="text-align:center;margin-bottom:.8rem">
-      <div style="font-family:'Amiri',serif;font-size:17px;color:var(--gold2);margin-bottom:2px">&#x627;&#x633;&#x62A;&#x634;&#x627;&#x631;&#x629; &#x627;&#x644;&#x623;&#x631;&#x642;&#x627;&#x645;</div>
-      <div style="font-size:11px;color:rgba(212,175,55,.4);letter-spacing:.05em">Compatibilité par les nombres sacrés</div>
+      <div style="font-family:'Amiri',serif;font-size:19px;color:#F0DC82;margin-bottom:3px">&#x627;&#x633;&#x62A;&#x634;&#x627;&#x631;&#x629; &#x627;&#x644;&#x623;&#x631;&#x642;&#x627;&#x645;</div>
+      <div style="font-size:12px;color:rgba(212,175,55,.7);letter-spacing:.05em">Compatibilité par les nombres sacrés</div>
     </div>
 
     <!-- Type de question -->
@@ -5303,12 +5324,12 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
 
   <button class="nav-btn" id="nav-ens" onclick="showSec('ens',this)">
     <span class="nav-icon">📡</span>
-    <span class="nav-label">Radio AlFaydha</span>
+    <span class="nav-label">AlFaydha</span>
   </button>
 
   <button class="nav-btn" id="nav-live" onclick="showSec('live',this)">
     <span class="nav-icon">🔴</span>
-    <span class="nav-label">Live</span>
+    <span class="nav-label">Direct</span>
     <span class="nav-live-badge">LIVE</span>
   </button>
 
@@ -5319,7 +5340,7 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
 
   <button class="nav-btn" id="nav-ai" onclick="showSec('ai',this)">
     <span class="nav-icon">✨</span>
-    <span class="nav-label">Kashf AI</span>
+    <span class="nav-label">Éveil IA</span>
   </button>
 
 </nav>
@@ -8092,10 +8113,10 @@ var LANG = {
   fr: {
     /* Navigation */
     nav_salat:   'Salat',
-    nav_radio:   'Radio AlFaydha',
-    nav_live:    'Live',
+    nav_radio:   'AlFaydha',
+    nav_live:    'Direct',
     nav_qibla:   'Qibla',
-    nav_ai:      'Kashf AI',
+    nav_ai:      'Éveil IA',
 
     /* Splash / Welcome */
     app_name:    'Faydha',
@@ -8228,10 +8249,10 @@ var LANG = {
 
   en: {
     nav_salat:   'Prayer',
-    nav_radio:   'Radio AlFaydha',
-    nav_live:    'Live',
+    nav_radio:   'AlFaydha',
+    nav_live:    'Direct',
     nav_qibla:   'Qibla',
-    nav_ai:      'Kashf AI',
+    nav_ai:      'Awakening AI',
 
     app_name:    'Faydha',
     app_sub:     'The worldwide app for Taalibé Baye',
@@ -8345,10 +8366,10 @@ var LANG = {
 
   ar: {
     nav_salat:   'صلاة',
-    nav_radio:   'راديو',
+    nav_radio:   'الفيضة',
     nav_live:    'مباشر',
     nav_qibla:   'قبلة',
-    nav_ai:      'كشف AI',
+    nav_ai:      'صحوة AI',
 
     app_name:    'عالَم بَايِ نِيَاسٍ',
     app_sub:     'تطبيق التاليبي باي في العالم',
@@ -12526,6 +12547,136 @@ async function _prayerReverseGeocode(lat, lng) {
   }
 })();
 
+
+/* ══════════════════════════════════════════════
+   DATE HIJRI — Affichage dans le header prière
+   Algorithme de conversion grégorien → hijri
+══════════════════════════════════════════════ */
+(function(){
+  var MOIS_AR = [
+    'مُحَرَّم','صَفَر','رَبِيعُ الأَوَّل','رَبِيعُ الثَّانِي',
+    'جُمَادَى الأُولَى','جُمَادَى الآخِرَة','رَجَب','شَعْبَان',
+    'رَمَضَان','شَوَّال','ذُو القَعْدَة','ذُو الحِجَّة'
+  ];
+
+  function toHijri(d) {
+    var jd = Math.floor((14 + d.getMonth() + 1) / 12);
+    var y  = d.getFullYear() + 4800 - jd;
+    var m  = (d.getMonth() + 1) + 12 * jd - 3;
+    var jdn = d.getDate()
+      + Math.floor((153 * m + 2) / 5)
+      + 365 * y
+      + Math.floor(y / 4)
+      - Math.floor(y / 100)
+      + Math.floor(y / 400)
+      - 32045;
+
+    var l  = jdn - 1948440 + 10632;
+    var n  = Math.floor((l - 1) / 10631);
+    l      = l - 10631 * n + 354;
+    var j  = Math.floor((10985 - l) / 5316) * Math.floor((50 * l) / 17719)
+           + Math.floor(l / 5670) * Math.floor((43 * l) / 15238);
+    l      = l - Math.floor((30 - j) / 15) * Math.floor((17719 * j) / 50)
+           - Math.floor(j / 16) * Math.floor((15238 * j) / 43) + 29;
+    var hM = Math.floor((24 * l) / 709);
+    var hD = l - Math.floor((709 * hM) / 24);
+    var hY = 30 * n + j - 30;
+    return { d: hD, m: hM, y: hY };
+  }
+
+  function updateHijri() {
+    var now = new Date();
+    var h = toHijri(now);
+
+    // Date française courte : "21 mars"
+    var MOIS_FR = ['jan.','fév.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+    var frDate = now.getDate() + ' ' + MOIS_FR[now.getMonth()];
+
+    var frEl    = document.getElementById('hijri-fr-date');
+    var dayEl   = document.getElementById('hijri-day');
+    var monthEl = document.getElementById('hijri-month');
+    if (frEl)    frEl.textContent    = frDate;
+    if (dayEl)   dayEl.textContent   = h.d;
+    if (monthEl) monthEl.textContent = MOIS_AR[h.m - 1] || '';
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updateHijri);
+  } else {
+    updateHijri();
+  }
+  // Mise à jour à minuit
+  var now = new Date();
+  var msToMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1) - now;
+  setTimeout(function(){ updateHijri(); setInterval(updateHijri, 86400000); }, msToMidnight);
+})();
+
+
+/* ══════════════════════════════════════════
+   PROCHAIN ÉVÉNEMENT ISLAMIQUE — header Salat
+══════════════════════════════════════════ */
+(function(){
+  var MOIS_FR_COURT = ['jan','fév','mars','avr','mai','juin','juil','août','sept','oct','nov','déc'];
+  var MOIS_HIJRI_FR = [
+    'Mouharram','Safar','Rabi al-Awwal','Rabi ath-Thani',
+    'Joumada al-Oula','Joumada al-Akhira','Rajab','Chaabân',
+    'Ramadan','Chawwâl','Dhul Qaada','Dhul Hijja'
+  ];
+
+  function g2h(d) {
+    var jd = Math.floor((14 + d.getMonth() + 1) / 12);
+    var y  = d.getFullYear() + 4800 - jd;
+    var m  = (d.getMonth() + 1) + 12 * jd - 3;
+    var jdn = d.getDate()
+      + Math.floor((153*m+2)/5) + 365*y
+      + Math.floor(y/4) - Math.floor(y/100)
+      + Math.floor(y/400) - 32045;
+    var l = jdn - 1948440 + 10632;
+    var n = Math.floor((l-1)/10631);
+    l = l - 10631*n + 354;
+    var j = Math.floor((10985-l)/5316)*Math.floor((50*l)/17719)
+          + Math.floor(l/5670)*Math.floor((43*l)/15238);
+    l = l - Math.floor((30-j)/15)*Math.floor((17719*j)/50)
+          - Math.floor(j/16)*Math.floor((15238*j)/43) + 29;
+    return { d: l - Math.floor(709*Math.floor((24*l)/709)/24), m: Math.floor((24*l)/709), y: 30*n+j-30 };
+  }
+
+  function renderNextEvent() {
+    var el = document.getElementById('umma-next-event-content');
+    if (!el || typeof ISLAMIC_EVENTS === 'undefined') return;
+    var today = new Date(); today.setHours(0,0,0,0);
+    var found = null;
+    for (var i = 0; i <= 365; i++) {
+      var d = new Date(today); d.setDate(d.getDate() + i);
+      var h = g2h(d);
+      var key = h.m + '-' + h.d;
+      if (ISLAMIC_EVENTS[key]) { found = { ev: ISLAMIC_EVENTS[key], date: d, days: i, h: h }; break; }
+    }
+    if (!found) { el.innerHTML = ''; return; }
+
+    var label = found.days === 0 ? "Aujourd'hui !" : found.days === 1 ? 'Demain' : 'Dans ' + found.days + ' j';
+    var frDate = found.date.getDate() + ' ' + MOIS_FR_COURT[found.date.getMonth()];
+    var hijriStr = found.h.d + ' ' + (MOIS_HIJRI_FR[found.h.m - 1] || '');
+
+    el.innerHTML =
+      '<div style="display:flex;align-items:center;gap:.65rem">'
+      + '<span style="font-size:26px;line-height:1">' + found.ev.icon + '</span>'
+      + '<div style="flex:1;min-width:0">'
+        + '<div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.92);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + found.ev.fr + '</div>'
+        + '<div style="font-size:10.5px;color:rgba(212,175,55,.65);margin-top:2px">' + frDate + ' · ' + hijriStr + '</div>'
+      + '</div>'
+      + '<div style="flex-shrink:0;background:' + found.ev.color + '22;border:1px solid ' + found.ev.color + '66;border-radius:20px;padding:.18rem .6rem;font-size:10.5px;font-weight:700;color:' + found.ev.color + ';white-space:nowrap">' + label + '</div>'
+      + '</div>';
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderNextEvent);
+  } else {
+    renderNextEvent();
+  }
+  /* Raffraîchir aussi quand ISLAMIC_EVENTS est dispo (chargement différé) */
+  setTimeout(renderNextEvent, 800);
+})();
 
 (function(){
   var orig = window.switchPratiqueTab;
