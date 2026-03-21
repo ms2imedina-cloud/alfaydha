@@ -6030,32 +6030,43 @@ function enterApp(profile) {
 
 var _phoneConfirmation = null;
 var _recaptchaVerifier = null;
+var _recaptchaReady = false;
 
 function _initInvisibleRecaptcha(callback) {
   _fbInit(function() {
+    /* Si déjà prêt — réutiliser */
+    if (_recaptchaReady && _recaptchaVerifier) {
+      if (typeof callback === 'function') callback();
+      return;
+    }
+    /* Nettoyer l'ancien */
+    if (_recaptchaVerifier) {
+      try { _recaptchaVerifier.clear(); } catch(e) {}
+      _recaptchaVerifier = null;
+      _recaptchaReady = false;
+    }
+    /* Supprimer et recréer le div proprement */
+    var oldDiv = document.getElementById('rc-invis');
+    if (oldDiv && oldDiv.parentNode) oldDiv.parentNode.removeChild(oldDiv);
+    var rc = document.createElement('div');
+    rc.id = 'rc-invis';
+    rc.style.cssText = 'position:fixed;bottom:-9999px;left:-9999px;z-index:-1;opacity:0;pointer-events:none';
+    document.body.appendChild(rc);
     try {
-      /* Supprimer l'ancien si existe */
-      if (_recaptchaVerifier) {
-        try { _recaptchaVerifier.clear(); } catch(e) {}
-        _recaptchaVerifier = null;
-      }
-      /* Créer un div temporaire invisible pour reCAPTCHA */
-      var rc = document.getElementById('rc-invis');
-      if (!rc) {
-        rc = document.createElement('div');
-        rc.id = 'rc-invis';
-        rc.style.cssText = 'position:fixed;bottom:0;right:0;z-index:-1;opacity:0;pointer-events:none';
-        document.body.appendChild(rc);
-      }
       _recaptchaVerifier = new firebase.auth.RecaptchaVerifier('rc-invis', {
         size: 'invisible',
         callback: function() {}
       });
       _recaptchaVerifier.render().then(function() {
+        _recaptchaReady = true;
+        if (typeof callback === 'function') callback();
+      }).catch(function(e) {
+        console.warn('[reCAPTCHA]', e);
+        _recaptchaReady = true;
         if (typeof callback === 'function') callback();
       });
     } catch(e) {
-      console.warn('[reCAPTCHA]', e);
+      console.warn('[reCAPTCHA init]', e);
       if (typeof callback === 'function') callback();
     }
   });
@@ -6122,6 +6133,8 @@ function sendSMS() {
             }
             try { _recaptchaVerifier.clear(); } catch(e) {}
             _recaptchaVerifier = null;
+            _recaptchaReady = false;
+            _recaptchaReady = false;
           });
       } catch(e) {
         if (btn) { btn.disabled = false; btn.textContent = '📲 Recevoir le code SMS'; }
