@@ -511,14 +511,14 @@ body{
 #langSwitchBtn {
   position: fixed; bottom: calc(var(--nav-h) + var(--safe-b) + 10px);
   right: 12px; z-index: 400;
-  background: rgba(15,123,63,.9);
+  background: rgba(15,123,63,.92);
   border: 1px solid rgba(212,175,55,.4);
-  border-radius: 100px; padding: 5px 10px;
-  font-size: 13px; cursor: pointer;
-  color: rgba(212,175,55,.9); font-weight: 700;
-  display: none; /* affiché après connexion */
+  border-radius: 100px; padding: 5px 12px;
+  font-size: 14px; cursor: pointer;
+  color: rgba(212,175,55,.95); font-weight: 700;
+  display: block; /* toujours visible */
   transition: all .2s;
-  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 10px rgba(0,0,0,.3);
 }
 #langSwitchBtn:hover { background: rgba(212,175,55,.2); }
 
@@ -8375,6 +8375,7 @@ function t(key) {
 
 function setLang(lang) {
   _lang = lang;
+  window._lang = lang;
   try { localStorage.setItem('faydha_lang', lang); } catch(e) {}
   /* RTL pour l'arabe */
   document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
@@ -8383,6 +8384,12 @@ function setLang(lang) {
 }
 
 function applyTranslations() {
+  /* Sync window._lang */
+  window._lang = _lang;
+  /* RTL immédiat */
+  document.documentElement.setAttribute('dir', _lang === 'ar' ? 'rtl' : 'ltr');
+  document.documentElement.setAttribute('lang', _lang === 'ar' ? 'ar' : _lang === 'en' ? 'en' : 'fr');
+
   /* Navigation */
   var navMap = {
     'nav-umma': t('nav_salat'),
@@ -8488,20 +8495,36 @@ function applyTranslations() {
   }
 }
 
-/* Appliquer au chargement */
-document.addEventListener('DOMContentLoaded', function() {
+/* Appliquer au chargement — après que TOUT le DOM soit prêt */
+(function _initLang() {
   var saved = localStorage.getItem('faydha_lang');
   if (saved && LANG[saved]) {
     _lang = saved;
+    window._lang = saved;
     document.documentElement.setAttribute('dir', saved === 'ar' ? 'rtl' : 'ltr');
+    document.documentElement.setAttribute('lang', saved);
   }
-  /* Montrer sélecteur si première visite */
-  if (!saved) {
-    _showLangSelector();
+  /* Lancer applyTranslations dès que DOM est prêt */
+  function _doApply() {
+    if (!saved) {
+      _showLangSelector();
+    } else {
+      applyTranslations();
+    }
+    /* Bouton flottant toujours visible (même sans connexion) */
+    var langBtn = document.getElementById('langSwitchBtn');
+    if (langBtn) {
+      langBtn.style.display = 'block';
+      var flags = {fr:'🇫🇷 FR', en:'🇬🇧 EN', ar:'🇸🇦 ع'};
+      langBtn.textContent = flags[_lang] || '🌐';
+    }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', _doApply);
   } else {
-    applyTranslations();
+    _doApply();
   }
-});
+})();
 
 function _showLangSelector() {
   var overlay = document.getElementById('langSelectorOverlay');
@@ -8531,7 +8554,10 @@ window.confirmLang = function() {
   /* Mettre à jour le bouton flottant */
   var flags = {fr:'🇫🇷 FR', en:'🇬🇧 EN', ar:'🇸🇦 ع'};
   var btn = document.getElementById('langSwitchBtn');
-  if (btn) btn.textContent = flags[lang] || '🌐';
+  if (btn) { btn.style.display = 'block'; btn.textContent = flags[lang] || '🌐'; }
+  /* Toast de confirmation */
+  var msgs = {fr:'🌍 Langue : Français', en:'🌍 Language: English', ar:'🌍 اللغة: العربية'};
+  if (typeof showToast === 'function') showToast(msgs[lang] || '🌍');
 };
 
 var _abEngine = 'baye';
