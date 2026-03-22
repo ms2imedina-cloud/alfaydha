@@ -2687,51 +2687,183 @@ button[onclick="qiblaGPS()"] {
 .ql-panel { display: none; flex: 1; flex-direction: column; overflow-y: auto; }
 .ql-panel.active { display: flex; }
 
-.ical-wrap{display:flex;flex-direction:column;min-height:100%;background:#F7F6F2}
-.ical-head{background:linear-gradient(160deg,#0a3d1e 0%,#0F7B3F 55%,#126b37 100%);padding:1rem 1.1rem .8rem;flex-shrink:0}
-.ical-nav-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
-.ical-nav-btn{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);border-radius:10px;width:34px;height:34px;cursor:pointer;color:#fff;font-size:17px;display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0}
-.ical-nav-btn:hover{background:rgba(255,255,255,.23)}
-.ical-head-center{text-align:center;flex:1;min-width:0}
-.ical-hijri-m{font-family:'Amiri',serif;font-size:21px;color:#fff;line-height:1.1}
-.ical-hijri-y{font-family:'Amiri',serif;font-size:12px;color:rgba(212,175,55,.8);direction:rtl;margin-top:1px}
-.ical-greg-s{font-size:10px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
-.ical-evbar{display:flex;gap:.35rem;overflow-x:auto;padding:.45rem .9rem .4rem;background:rgba(0,0,0,.18);-webkit-overflow-scrolling:touch;flex-shrink:0}
+/* ══ CALENDRIER ISLAMIQUE — Design moderne léger ══ */
+.ical-wrap{display:flex;flex-direction:column;min-height:100%;background:#F5F3EE}
+
+/* ── En-tête ── */
+.ical-head{
+ background:linear-gradient(145deg,#1E5C3A 0%,#2E7D52 60%,#3A9463 100%);
+ padding:1.1rem 1.1rem .7rem;flex-shrink:0;
+ position:relative;overflow:hidden;
+}
+.ical-head::before{
+ content:'';position:absolute;top:-30px;right:-20px;
+ width:130px;height:130px;border-radius:50%;
+ background:rgba(255,255,255,.05);pointer-events:none;
+}
+.ical-head::after{
+ content:'☽';position:absolute;top:8px;right:14px;
+ font-size:28px;opacity:.15;color:#fff;pointer-events:none;
+}
+.ical-nav-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
+.ical-nav-btn{
+ background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);
+ border-radius:50%;width:36px;height:36px;cursor:pointer;color:#fff;
+ font-size:18px;display:flex;align-items:center;justify-content:center;
+ transition:all .2s;flex-shrink:0;
+}
+.ical-nav-btn:hover{background:rgba(255,255,255,.28);transform:scale(1.08)}
+.ical-head-center{text-align:center;flex:1;min-width:0;padding:0 .5rem}
+
+/* Mois Hijri grand */
+.ical-hijri-m{
+ font-family:'Amiri',serif;font-size:24px;color:#fff;
+ line-height:1.1;font-weight:700;letter-spacing:.02em;
+ text-shadow:0 1px 8px rgba(0,0,0,.2);
+}
+/* Année Hijri */
+.ical-hijri-y{
+ font-family:'Amiri',serif;font-size:13px;
+ color:rgba(232,201,122,.9);direction:rtl;margin-top:2px;
+}
+/* Mois grégorien */
+.ical-greg-s{
+ font-size:11px;color:rgba(255,255,255,.6);
+ text-transform:uppercase;letter-spacing:.12em;margin-top:3px;
+ font-weight:500;
+}
+
+/* ── Barre événements scrollable ── */
+.ical-evbar{
+ display:flex;gap:.4rem;overflow-x:auto;
+ padding:.5rem .9rem .45rem;
+ background:rgba(0,0,0,.15);
+ -webkit-overflow-scrolling:touch;flex-shrink:0;
+}
 .ical-evbar::-webkit-scrollbar{display:none}
-.ical-ep{flex-shrink:0;border-radius:20px;padding:3px 9px;font-size:9.5px;font-weight:700;letter-spacing:.04em;white-space:nowrap;border:1px solid transparent}
-.ical-ep.holy{background:rgba(212,175,55,.22);border-color:rgba(212,175,55,.42);color:#E8B96A}
-.ical-ep.gamou{background:rgba(147,112,219,.2);border-color:rgba(147,112,219,.4);color:#C39BD3}
-.ical-ep.none{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.35)}
-.ical-wdays{display:grid;grid-template-columns:repeat(7,1fr);background:#fff;border-bottom:1px solid #EAE8DF;padding:.3rem .5rem .2rem}
-.ical-wd{text-align:center;font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#bbb}
-.ical-wd.fri{color:#0F7B3F}
-.ical-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:.35rem .5rem .5rem;background:#F7F6F2}
-.ical-cell{background:#fff;border-radius:9px;border:1px solid #EAE8DF;padding:.28rem .1rem .22rem;display:flex;flex-direction:column;align-items:center;gap:1px;transition:.12s;cursor:pointer;min-height:48px;justify-content:center;position:relative}
-.ical-cell:hover{border-color:#0F7B3F;background:#f0fbf4}
-.ical-cell.other{opacity:.32;pointer-events:none}
-.ical-cell.today{background:linear-gradient(135deg,#0F7B3F,#1A9650) !important;border-color:#0F7B3F !important;box-shadow:0 2px 8px rgba(15,123,63,.3)}
-.ical-cell.today .gc,.ical-cell.today .hc{color:#fff !important}
-.ical-cell.today .hc{color:rgba(255,255,255,.7) !important}
-.ical-cell.fri-cell .gc{color:#0F7B3F;font-weight:700}
-.ical-cell.holy-cell{background:linear-gradient(135deg,#FBF3E2,#FFF8EE);border-color:rgba(212,175,55,.4)}
-.ical-cell.holy-cell .gc{color:#7a4a00;font-weight:700}
-.ical-cell.gamou-cell{background:linear-gradient(135deg,#F0EBF8,#F8F4FF);border-color:rgba(147,112,219,.35)}
-.ical-cell.gamou-cell .gc{color:#4a2d7a;font-weight:700}
-.ical-cell.ramadan-cell{background:linear-gradient(135deg,#EAF8EE,#F0FBF3);border-color:rgba(15,123,63,.25)}
-.gc{font-size:14px;font-weight:500;color:#1A1A1A;line-height:1}
-.hc{font-size:8.5px;color:#aaa;line-height:1;font-family:'Amiri',serif}
-.ical-cell .ev-dot{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:#D4AF37}
-.ical-infobar{background:#fff;border-top:1px solid #EAE8DF;padding:.6rem 1rem;display:flex;align-items:flex-start;gap:.6rem;flex-shrink:0;min-height:52px}
-.ical-info-ic{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#0F7B3F,#1A9650);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:1px}
+.ical-ep{
+ flex-shrink:0;border-radius:20px;padding:4px 10px;
+ font-size:10px;font-weight:700;letter-spacing:.04em;
+ white-space:nowrap;border:1px solid transparent;cursor:default;
+}
+.ical-ep.holy{background:rgba(200,151,58,.25);border-color:rgba(200,151,58,.5);color:#E8C97A}
+.ical-ep.gamou{background:rgba(147,112,219,.22);border-color:rgba(147,112,219,.45);color:#C8A8E8}
+.ical-ep.mawlid{background:rgba(46,160,100,.2);border-color:rgba(46,160,100,.4);color:#6EE8A0}
+.ical-ep.none{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.4)}
+
+/* ── Jours de la semaine ── */
+.ical-wdays{
+ display:grid;grid-template-columns:repeat(7,1fr);
+ background:#fff;border-bottom:1px solid #E8E4DA;
+ padding:.4rem .5rem .3rem;
+}
+.ical-wd{
+ text-align:center;font-size:9.5px;font-weight:700;
+ letter-spacing:.06em;text-transform:uppercase;color:#C0B89A;
+}
+.ical-wd.fri{color:#2E7D52;font-weight:800}
+
+/* ── Grille ── */
+.ical-grid{
+ display:grid;grid-template-columns:repeat(7,1fr);
+ gap:4px;padding:.4rem .5rem .5rem;background:#F5F3EE;
+}
+
+/* ── Cellule jour ── */
+.ical-cell{
+ background:#fff;border-radius:10px;
+ border:1px solid #EDE9DF;
+ padding:.3rem .05rem .25rem;
+ display:flex;flex-direction:column;align-items:center;
+ gap:1px;transition:all .15s;cursor:pointer;
+ min-height:52px;justify-content:center;position:relative;
+ box-shadow:0 1px 2px rgba(0,0,0,.04);
+}
+.ical-cell:hover{border-color:#2E7D52;background:#F0FAF5;transform:scale(1.04);z-index:2}
+.ical-cell:active{transform:scale(.97)}
+
+/* Jour autre mois */
+.ical-cell.other{opacity:.28;pointer-events:none}
+
+/* Aujourd'hui */
+.ical-cell.today{
+ background:linear-gradient(145deg,#2E7D52,#3A9463) !important;
+ border-color:#2E7D52 !important;
+ box-shadow:0 3px 12px rgba(46,125,82,.35);
+}
+.ical-cell.today .gc{color:#fff !important;font-weight:800}
+.ical-cell.today .hc{color:rgba(255,255,255,.75) !important}
+
+/* Vendredi */
+.ical-cell.fri-cell .gc{color:#2E7D52;font-weight:700}
+
+/* Jour saint islamique */
+.ical-cell.holy-cell{
+ background:linear-gradient(145deg,#FDF7EC,#FFF9F0);
+ border-color:rgba(200,151,58,.45);
+}
+.ical-cell.holy-cell .gc{color:#8B5A00;font-weight:700}
+
+/* Gamou / événement spécial */
+.ical-cell.gamou-cell{
+ background:linear-gradient(145deg,#F3EEF9,#F8F4FF);
+ border-color:rgba(147,112,219,.4);
+}
+.ical-cell.gamou-cell .gc{color:#5A3A8A;font-weight:700}
+
+/* Ramadan */
+.ical-cell.ramadan-cell{
+ background:linear-gradient(145deg,#EBF7F1,#F2FBF6);
+ border-color:rgba(46,125,82,.3);
+}
+
+/* Numéros */
+.gc{font-size:15px;font-weight:500;color:#2C2A26;line-height:1}
+.hc{font-size:8px;color:#B8B0A0;line-height:1;font-family:'Amiri',serif;margin-top:1px}
+
+/* Point événement */
+.ical-cell .ev-dot{
+ position:absolute;bottom:4px;left:50%;transform:translateX(-50%);
+ width:5px;height:5px;border-radius:50%;background:#C8973A;
+ box-shadow:0 0 4px rgba(200,151,58,.6);
+}
+
+/* ── Panneau info date cliquée ── */
+.ical-infobar{
+ background:#fff;border-top:1px solid #EDE9DF;
+ padding:.75rem 1rem;display:flex;align-items:flex-start;
+ gap:.75rem;flex-shrink:0;min-height:60px;
+}
+.ical-info-ic{
+ width:36px;height:36px;border-radius:10px;
+ background:linear-gradient(135deg,#2E7D52,#3A9463);
+ display:flex;align-items:center;justify-content:center;
+ font-size:17px;flex-shrink:0;margin-top:1px;
+ box-shadow:0 2px 8px rgba(46,125,82,.3);
+}
 .ical-info-body{flex:1;min-width:0}
-.ical-info-date{font-size:13px;font-weight:700;color:#1A1A1A;font-family:'Amiri',serif}
-.ical-info-sub{font-size:11px;color:#888;margin-top:1px}
-.ical-info-ev{font-size:11.5px;font-weight:700;color:#0F7B3F;margin-top:2px}
-.ical-stats{display:flex;background:#fff;border-top:1px solid #EAE8DF}
-.ical-stat{flex:1;padding:.55rem .3rem;text-align:center;border-right:1px solid #EAE8DF}
+.ical-info-date{font-size:14px;font-weight:700;color:#1C2B22;font-family:'Amiri',serif;line-height:1.3}
+.ical-info-sub{font-size:11px;color:#7A9085;margin-top:2px;letter-spacing:.02em}
+.ical-info-ev{
+ font-size:12px;font-weight:700;color:#2E7D52;
+ margin-top:4px;padding:3px 8px;
+ background:rgba(46,125,82,.08);border-radius:20px;
+ display:inline-block;border:1px solid rgba(46,125,82,.2);
+}
+
+/* ── Stats du mois ── */
+.ical-stats{
+ display:flex;background:#fff;
+ border-top:1px solid #EDE9DF;
+ border-radius:0 0 0 0;
+}
+.ical-stat{
+ flex:1;padding:.65rem .3rem;text-align:center;
+ border-right:1px solid #EDE9DF;
+}
 .ical-stat:last-child{border-right:none}
-.ical-stat-n{font-size:20px;font-weight:700;color:#0F7B3F;line-height:1}
-.ical-stat-l{font-size:8.5px;text-transform:uppercase;letter-spacing:.06em;color:#aaa;margin-top:2px}
+.ical-stat-n{font-size:22px;font-weight:800;color:#2E7D52;line-height:1;font-family:'Amiri',serif}
+.ical-stat-l{font-size:8px;text-transform:uppercase;letter-spacing:.07em;color:#B8B0A0;margin-top:3px;font-weight:600}
 
 .ab-hero-v2 {
  background: linear-gradient(160deg,#08061a 0%,#120a30 50%,#08061a 100%);
@@ -4749,6 +4881,8 @@ window.toggleStudioPanel = function() {
 <!-- ═══════════════ PANEL CALENDRIER ISLAMIQUE ═══════════════ -->
 <div class="ql-panel" id="ql-panel-cal">
 <div class="ical-wrap">
+
+ <!-- ── EN-TÊTE ── -->
  <div class="ical-head">
  <div class="ical-nav-row">
  <button class="ical-nav-btn" onclick="icalPrev()">&#8249;</button>
@@ -4759,28 +4893,75 @@ window.toggleStudioPanel = function() {
  </div>
  <button class="ical-nav-btn" onclick="icalNext()">&#8250;</button>
  </div>
+ <!-- Aujourd'hui rapide -->
+ <div style="text-align:center;margin-top:.3rem">
+ <button onclick="icalToday()" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;color:#fff;font-size:10px;padding:3px 12px;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;font-weight:600">📍 Aujourd'hui</button>
  </div>
- <div class="ical-evbar" id="icalEvBar"><span class="ical-ep none">Chargement...</span></div>
+ </div>
+
+ <!-- ── ÉVÉNEMENTS DU MOIS (scroll horizontal) ── -->
+ <div class="ical-evbar" id="icalEvBar"><span class="ical-ep none">Chargement…</span></div>
+
+ <!-- ── JOURS ── -->
  <div class="ical-wdays">
- <div class="ical-wd">Dim</div><div class="ical-wd">Lun</div><div class="ical-wd">Mar</div>
- <div class="ical-wd">Mer</div><div class="ical-wd">Jeu</div><div class="ical-wd fri">Ven</div>
+ <div class="ical-wd">Dim</div>
+ <div class="ical-wd">Lun</div>
+ <div class="ical-wd">Mar</div>
+ <div class="ical-wd">Mer</div>
+ <div class="ical-wd">Jeu</div>
+ <div class="ical-wd fri">Ven ★</div>
  <div class="ical-wd">Sam</div>
  </div>
+
+ <!-- ── GRILLE ── -->
  <div class="ical-grid" id="icalGrid"></div>
+
+ <!-- ── LÉGENDE ── -->
+ <div style="display:flex;gap:.5rem;padding:.4rem .8rem;background:#fff;border-top:1px solid #EDE9DF;flex-wrap:wrap">
+ <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:#7A9085">
+ <div style="width:10px;height:10px;border-radius:3px;background:linear-gradient(135deg,#2E7D52,#3A9463)"></div>Aujourd'hui
+ </div>
+ <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:#7A9085">
+ <div style="width:10px;height:10px;border-radius:3px;background:linear-gradient(135deg,#FDF7EC,#FFF9F0);border:1px solid rgba(200,151,58,.4)"></div>Fête islamique
+ </div>
+ <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:#7A9085">
+ <div style="width:10px;height:10px;border-radius:3px;background:linear-gradient(135deg,#F3EEF9,#F8F4FF);border:1px solid rgba(147,112,219,.4)"></div>Gamou
+ </div>
+ <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:#7A9085">
+ <div style="width:10px;height:10px;border-radius:3px;background:linear-gradient(135deg,#EBF7F1,#F2FBF6);border:1px solid rgba(46,125,82,.3)"></div>Ramadan
+ </div>
+ </div>
+
+ <!-- ── INFO DATE CLIQUÉE ── -->
  <div class="ical-infobar" id="icalInfoBar">
- <div class="ical-info-ic">&#x1F4C5;</div>
+ <div class="ical-info-ic">📅</div>
  <div class="ical-info-body">
  <div class="ical-info-date" id="icalInfoDate">Appuyez sur une date</div>
- <div class="ical-info-sub" id="icalInfoSub">Double date Grégorien • Hijri</div>
- <div class="ical-info-ev" id="icalInfoEv"></div>
+ <div class="ical-info-sub" id="icalInfoSub">Date grégorienne · Date hijri</div>
+ <div id="icalInfoEv"></div>
  </div>
  </div>
+
+ <!-- ── STATISTIQUES DU MOIS ── -->
  <div class="ical-stats">
- <div class="ical-stat"><div class="ical-stat-n" id="icalStFri">0</div><div class="ical-stat-l">Vendredis</div></div>
- <div class="ical-stat"><div class="ical-stat-n" id="icalStHoly">0</div><div class="ical-stat-l">Jours saints</div></div>
- <div class="ical-stat"><div class="ical-stat-n" id="icalStLeft">0</div><div class="ical-stat-l">Jours restants</div></div>
- <div class="ical-stat"><div class="ical-stat-n" id="icalStRam">-</div><div class="ical-stat-l">Ramadan</div></div>
+ <div class="ical-stat">
+ <div class="ical-stat-n" id="icalStFri">0</div>
+ <div class="ical-stat-l">Vendredis</div>
  </div>
+ <div class="ical-stat">
+ <div class="ical-stat-n" id="icalStHoly">0</div>
+ <div class="ical-stat-l">Fêtes</div>
+ </div>
+ <div class="ical-stat">
+ <div class="ical-stat-n" id="icalStLeft">0</div>
+ <div class="ical-stat-l">Restants</div>
+ </div>
+ <div class="ical-stat">
+ <div class="ical-stat-n" id="icalStRam">—</div>
+ <div class="ical-stat-l">Ramadan</div>
+ </div>
+ </div>
+
 </div>
 </div><!-- /ql-panel-cal -->
 
@@ -5040,6 +5221,7 @@ function icalRender() {
 
 function icalPrev() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMonth()-1, 1); icalRender(); }
 function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMonth()+1, 1); icalRender(); }
+function icalToday() { _icalCur = new Date(); icalRender(); showToast('📅 Aujourd\'hui'); }
 
 </script>
 
