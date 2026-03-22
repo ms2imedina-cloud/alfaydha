@@ -5411,6 +5411,12 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
  <input class="dp-field" id="lkApiSecret" type="password" placeholder="Secret LiveKit..." style="margin-bottom:.35rem;font-size:13px">
  <!-- Token JWT caché — généré automatiquement -->
  <input id="lkToken" type="hidden" value="">
+ <!-- Code d'accès privé -->
+ <div style="margin-top:.8rem;padding:.6rem;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.25);border-radius:10px">
+ <div style="font-size:12px;color:var(--gold2);margin-bottom:.4rem;font-weight:600">🔐 Code d'accès privé (optionnel)</div>
+ <div style="font-size:11px;color:rgba(251,248,232,.5);margin-bottom:.5rem">Si renseigné, les spectateurs devront entrer ce code pour rejoindre le live</div>
+ <input class="dp-field" id="lkAccessCode" type="text" placeholder="Ex: BAYE2025 — laisser vide = live public" style="font-size:13px;text-transform:uppercase">
+ </div>
  </div>
 
  <!-- Caméra preview pour LiveKit -->
@@ -6208,6 +6214,17 @@ function playDirect(){
  showToast('📡 Aucun direct en cours — isLive=' + (d?d.isLive:'null'));
  return;
  }
+
+ /* ── Code d'accès privé ── */
+ if (d.liveCode) {
+ var entered = prompt('🔐 Ce live est privé\nEntrez le code d\'accès :');
+ if (!entered || entered.trim().toLowerCase() !== String(d.liveCode).toLowerCase()) {
+ showToast('❌ Code incorrect — accès refusé');
+ return;
+ }
+ showToast('✅ Accès autorisé — Bienvenue !');
+ }
+
  try { localStorage.setItem('faydha_direct', JSON.stringify(d)); } catch(e) {}
 
  fbJoinViewers();
@@ -7456,8 +7473,13 @@ function lkOnConnected(){
  var tokenVal=_lkStreamerToken||'';
  if(!apiKey||!apiSecret){try{var _lkc=JSON.parse(localStorage.getItem(LK_KEY)||'{}');if(!apiKey)apiKey=_lkc.apiKey||'';if(!apiSecret)apiSecret=_lkc.apiSecret||'';if(!urlVal)urlVal=_lkc.url||'';}catch(e){}}
 
- save(DIR_KEY,{isLive:true, url:urlVal, mode:'livekit', startedAt:Date.now()});
- fbSetLive(true,{isLive:true,url:urlVal,mode:'livekit',startedAt:Date.now()});
+ var _accessCode=(document.getElementById('lkAccessCode')||{}).value||'';
+ _accessCode=_accessCode.trim().toUpperCase();
+ var _liveData={isLive:true, url:urlVal, mode:'livekit', startedAt:Date.now()};
+ if(_accessCode) _liveData.liveCode=_accessCode;
+ save(DIR_KEY,_liveData);
+ fbSetLive(true,_liveData);
+ if(_accessCode) showToast('🔐 Live privé — Code : '+_accessCode);
 
  /* Extraire roomName depuis le token streamer (variable globale) */
  var _streamRoomName = 'faydha-live';
@@ -9789,7 +9811,9 @@ async function abSend() {
  if (q === '1900') {
  if (inp) inp.value = '';
  _adminIn = true; window._adminIn = true;
+ window._streamerOnly = false;
  if (typeof interactUpdateRole === 'function') interactUpdateRole();
+ ['atab-streamers','atab-params','atab-notif','atab-users'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='';});
  /* Charger les configs depuis Firebase avant d\'ouvrir */
  _fbInit(function() {
  lkLoadConfig();
@@ -9797,6 +9821,20 @@ async function abSend() {
  });
  document.getElementById('adminOverlay').classList.add('open');
  showToast('🔑 Session admin activée');
+ return;
+ }
+
+ /* ── Déclencheur secret streamer : tape '1975' ── */
+ if (q === '1975') {
+ if (inp) inp.value = '';
+ _adminIn = true; window._adminIn = true;
+ window._streamerOnly = true;
+ if (typeof interactUpdateRole === 'function') interactUpdateRole();
+ ['atab-streamers','atab-params','atab-notif','atab-users'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
+ _fbInit(function() { lkLoadConfig(); showAdminContent(); });
+ document.getElementById('adminOverlay').classList.add('open');
+ switchAdmTab('direct');
+ showToast('🎙 Accès streamer activé');
  return;
  }
 
