@@ -86,7 +86,7 @@ body{
  line-height:1.5;
  letter-spacing:0.5px;
  font-weight:400;
- background:#F9F9F7;color:#1A1A1A;
+ background:var(--ivory);color:#1A1A1A;
  max-width:480px;margin:0 auto;min-height:100vh;
  display:flex;flex-direction:column;overflow-x:hidden;
  box-shadow:0 0 80px rgba(0,0,0,.3);
@@ -95,7 +95,7 @@ body{
 
 #splash{
  position:fixed;inset:0;z-index:9999;
- background:linear-gradient(160deg,#063d1e 0%,#0F7B3F 55%,#0a5c2e 100%);
+ background:linear-gradient(160deg,#063d1e 0%,var(--g1) 55%,#0a5c2e 100%);
  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9rem;
  transition:opacity .3s ease,visibility .3s ease;
  overflow:hidden;
@@ -128,7 +128,7 @@ body{
  border-radius:100px;overflow:hidden;
  animation:spFadeUp .45s .25s ease both;
 }
-.sp-fill{height:100%;background:linear-gradient(90deg,var(--gold),#F0DC82);border-radius:100px;animation:spBar 0.7s .3s ease forwards;width:0}
+.sp-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:100px;animation:spBar 0.7s .3s ease forwards;width:0}
 @keyframes spBar{from{width:0}to{width:100%}}
 .sp-sub{
  font-size:12px;color:rgba(251,248,232,.55);font-style:italic;letter-spacing:.12em;
@@ -273,7 +273,7 @@ body{
 /* ══ ZIKR ══ */
 .zikr-choice{display:flex;align-items:center;justify-content:space-between;background:var(--white);border:1.5px solid var(--gold3);border-radius:16px;padding:.85rem 1.2rem;cursor:pointer;transition:all .2s;width:100%;text-align:right;gap:.8rem}
 .zikr-choice:hover{border-color:rgba(212,175,55,.6);box-shadow:0 2px 10px rgba(212,175,55,.1)}
-.zikr-choice.active{background:linear-gradient(135deg,var(--g1),#1A9650);border-color:var(--gold);box-shadow:0 4px 16px rgba(15,123,63,.25)}
+.zikr-choice.active{background:linear-gradient(135deg,var(--g1),var(--g2));border-color:var(--gold);box-shadow:0 4px 16px rgba(15,123,63,.25)}
 .zikr-choice.active .zc-ar{color:var(--gold2)}
 .zikr-choice.active .zc-target{color:rgba(251,248,232,.7)}
 .zc-ar{font-family:'Amiri',serif;font-size:22px;color:var(--g1);direction:rtl;line-height:1.3}
@@ -403,7 +403,7 @@ body{
  display:none;flex-direction:column;flex:1;
  overflow-y:auto;overflow-x:hidden;
  padding-bottom:calc(var(--nav-h) + var(--safe-b) + 8px);
- animation:fadeUp .3s ease;scrollbar-width:none;background:#F9F9F7;
+ animation:fadeUp .3s ease;scrollbar-width:none;background:var(--ivory);
 }
 .sec::-webkit-scrollbar{display:none}
 .sec.active{display:flex}
@@ -460,7 +460,7 @@ body{
  right: 12px; z-index: 400;
  background: rgba(15,123,63,.92);
  border: 1px solid rgba(212,175,55,.4);
- border-radius: 100px; padding: 5px 12px;
+ border-radius: 100px; padding:5px 12px;
  font-size: 14px; cursor: pointer;
  color: rgba(212,175,55,.95); font-weight: 700;
  display: block; /* toujours visible */
@@ -1228,7 +1228,7 @@ body{
 .pratique-tabs {
  display: flex;
  gap: 8px;
- padding: .75rem 1rem;
+ padding:.75rem 1rem;
  background: var(--white);
  border-bottom: 1px solid var(--gold3);
  position: sticky;
@@ -1242,7 +1242,7 @@ body{
  flex-direction: column;
  align-items: center;
  gap: 5px;
- padding: .65rem .3rem;
+ padding:.65rem .3rem;
  border-radius: 12px;
  border: 1.5px solid transparent;
  background: none;
@@ -1285,7 +1285,7 @@ body{
 /* Calendrier hégirien */
 .cal-header {
  background: linear-gradient(160deg, var(--g1) 0%, var(--g2) 100%);
- padding: 1.4rem 1.2rem 1rem;
+ padding:1.4rem 1.2rem 1rem;
  text-align: center;
  position: relative;
  overflow: hidden;
@@ -1320,7 +1320,7 @@ body{
  font-weight: 300;
  color: rgba(255,255,255,.9);
  line-height: 1;
- margin: .5rem 0 .2rem;
+ margin:.5rem 0 .2rem;
  position: relative;
  z-index: 1;
 }
@@ -1342,7 +1342,7 @@ body{
 
 /* Grille calendrier */
 .cal-grid-wrap {
- padding: .8rem 1rem;
+ padding:.8rem 1rem;
  background: var(--white);
  border-bottom: 1px solid var(--gold3);
  flex-shrink: 0;
@@ -1383,7 +1383,7 @@ body{
  font-size: 11px;
  font-weight: 700;
  color: var(--text3);
- padding: 2px 0;
+ padding:2px 0;
  text-transform: uppercase;
  letter-spacing: 0.5px;
 }
@@ -1436,13 +1436,13 @@ body{
 
 /* Événements du mois */
 .cal-events-section {
- padding: .7rem 1rem .5rem;
+ padding:.7rem 1rem .5rem;
 }
 .cal-event-item {
  display: flex;
  align-items: center;
  gap: .7rem;
- padding: .65rem 0;
+ padding:.65rem 0;
  border-bottom: 1px solid var(--gold3);
 }
 .cal-event-item:last-child { border-bottom: none; }
@@ -1459,7 +1459,7 @@ body{
  text-align: center;
  background: var(--G-light);
  border-radius: 6px;
- padding: 2px 5px;
+ padding:2px 5px;
 }
 .cal-event-name {
  flex: 1;
@@ -1504,8 +1504,8 @@ html { background: #0a0a0a; }
  }
  .nav-label { font-size: 11px; }
  .nav-icon { font-size: 32px; }
- .player-container { border-radius: 16px; margin: .8rem 1.2rem .4rem; }
- .channel-card { padding: .85rem 1.1rem; }
+ .player-container { border-radius: 16px; margin:.8rem 1.2rem .4rem; }
+ .channel-card { padding:.85rem 1.1rem; }
  .ch-name { font-size: 15px; }
  .ch-avatar { width: 46px; height: 46px; }
  .admin-panel { max-width: 580px; border-radius: 24px 24px 0 0; }
@@ -1524,28 +1524,28 @@ html { background: #0a0a0a; }
  .nav-icon { font-size: 28px; }
  .nav-btn { gap: 5px; }
  .player-container {
- margin: 1rem 1.4rem .5rem;
+ margin:1rem 1.4rem .5rem;
  border-radius: 18px;
  }
- .channels-list { gap: .6rem; padding: .5rem 1.3rem 1rem; }
- .channel-card { padding: .95rem 1.2rem; border-radius: 16px; }
+ .channels-list { gap: .6rem; padding:.5rem 1.3rem 1rem; }
+ .channel-card { padding:.95rem 1.2rem; border-radius: 16px; }
  .ch-name { font-size: 16px; }
  .ch-meta { font-size: 13px; }
  .ch-avatar { width: 50px; height: 50px; border-radius: 13px; }
  .admin-panel { max-width: 680px; border-radius: 28px 28px 0 0; }
  .sec-title { font-size: 17px; }
- .dp-field { font-size: 15px; padding: .65rem .9rem; }
- .dp-btn { font-size: 15px; padding: .7rem 1.1rem; }
+ .dp-field { font-size: 15px; padding:.65rem .9rem; }
+ .dp-btn { font-size: 15px; padding:.7rem 1.1rem; }
  .chat-wrap { height: 380px; }
  .ab-bubble { font-size: 15px; max-width: 78%; }
  #playerLogoOverlay img { width: 50px; height: 50px; }
  #fsLogoImg { width: 60px !important; height: 60px !important; }
  .fs-title { font-size: 20px; }
- .fs-btn { font-size: 15px; padding: .4rem .8rem; }
+ .fs-btn { font-size: 15px; padding:.4rem .8rem; }
  .fs-close { width: 40px; height: 40px; font-size: 18px; }
  .wlc-title { font-size: 48px; }
- .wlc-cards { padding: 0 1.5rem; }
- .wlc-card { padding: 1.1rem 1.3rem; }
+ .wlc-cards { padding:0 1.5rem; }
+ .wlc-card { padding:1.1rem 1.3rem; }
 }
 
 /* ── Grand PC / TV 24-42" : 1440px+ ── */
@@ -1556,15 +1556,15 @@ html { background: #0a0a0a; }
  .nav-label { font-size: 13px; }
  .nav-icon { font-size: 32px; }
  .player-container {
- margin: 1.2rem 1.6rem .6rem;
+ margin:1.2rem 1.6rem .6rem;
  border-radius: 20px;
  }
- .channel-card { padding: 1.1rem 1.4rem; border-radius: 18px; }
+ .channel-card { padding:1.1rem 1.4rem; border-radius: 18px; }
  .ch-name { font-size: 17px; }
  .ch-meta { font-size: 14px; }
  .ch-avatar { width: 56px; height: 56px; border-radius: 14px; font-size: 20px; }
  .admin-panel { max-width: 860px; }
- .live-tabs .lt-btn { font-size: 14px; padding: .65rem .5rem .55rem; }
+ .live-tabs .lt-btn { font-size: 14px; padding:.65rem .5rem .55rem; }
  .chat-wrap { height: 440px; }
  .chat-bubble { font-size: 15px; }
  .chat-inp { font-size: 15px; }
@@ -1572,7 +1572,7 @@ html { background: #0a0a0a; }
  #playerLogoOverlay img { width: 58px; height: 58px; }
  #fsLogoImg { width: 70px !important; height: 70px !important; }
  .fs-title { font-size: 22px; }
- .fs-btn { font-size: 16px; padding: .5rem 1rem; }
+ .fs-btn { font-size: 16px; padding:.5rem 1rem; }
  .fs-close { width: 46px; height: 46px; font-size: 20px; top: 16px; right: 16px; }
  .wlc-title { font-size: 56px; }
  .sp-logo { width: 90px; height: 90px; }
@@ -1586,32 +1586,32 @@ html { background: #0a0a0a; }
  .nav, #userAvatarBar { max-width: 1200px !important; }
  .nav-label { font-size: 14px; letter-spacing: .08em; }
  .nav-icon { font-size: 32px; }
- .nav-btn { gap: 7px; padding: .7rem .15rem .5rem; }
+ .nav-btn { gap: 7px; padding:.7rem .15rem .5rem; }
  .player-container {
- margin: 1.5rem 2rem .8rem;
+ margin:1.5rem 2rem .8rem;
  border-radius: 24px;
  border-width: 2px;
  }
- .channels-list { gap: .8rem; padding: .6rem 1.8rem 1.2rem; }
- .channel-card { padding: 1.3rem 1.6rem; border-radius: 20px; }
+ .channels-list { gap: .8rem; padding:.6rem 1.8rem 1.2rem; }
+ .channel-card { padding:1.3rem 1.6rem; border-radius: 20px; }
  .ch-name { font-size: 20px; }
  .ch-meta { font-size: 16px; }
  .ch-avatar { width: 68px; height: 68px; border-radius: 16px; font-size: 24px; }
  .ch-arrow { font-size: 22px; }
  .admin-panel { max-width: 1100px; max-height: 90vh; }
- .admin-tabs { gap: .5rem; padding: .5rem 1.2rem; }
- .adm-tab { font-size: 15px; padding: .6rem .9rem; }
+ .admin-tabs { gap: .5rem; padding:.5rem 1.2rem; }
+ .adm-tab { font-size: 15px; padding:.6rem .9rem; }
  .sec-title { font-size: 22px; }
- .f-input { font-size: 18px; padding: .75rem 1rem; }
- .dp-field { font-size: 17px; padding: .75rem 1rem; }
- .dp-btn { font-size: 18px; padding: .85rem 1.3rem; }
+ .f-input { font-size: 18px; padding:.75rem 1rem; }
+ .dp-field { font-size: 17px; padding:.75rem 1rem; }
+ .dp-btn { font-size: 18px; padding:.85rem 1.3rem; }
  .dp-note { font-size: 14px; }
- .live-tabs .lt-btn { font-size: 16px; padding: .75rem .6rem .65rem; }
+ .live-tabs .lt-btn { font-size: 16px; padding:.75rem .6rem .65rem; }
  .chat-wrap { height: 560px; }
  .chat-bubble { font-size: 17px; border-radius: 0 14px 14px 14px; }
  .chat-name { font-size: 14px; }
  .chat-text { font-size: 16px; }
- .chat-inp { font-size: 17px; padding: .6rem 1.1rem; }
+ .chat-inp { font-size: 17px; padding:.6rem 1.1rem; }
  .chat-send { width: 42px; height: 42px; font-size: 18px; }
  .ab-bubble { font-size: 19px; max-width: 68%; line-height: 1.7; }
  .ab-textarea { font-size: 18px; }
@@ -1619,16 +1619,16 @@ html { background: #0a0a0a; }
  #playerLogoOverlay img { width: 72px; height: 72px; }
  #fsLogoImg { width: 90px !important; height: 90px !important; }
  .fs-title { font-size: 28px; }
- .fs-btn { font-size: 18px; padding: .6rem 1.2rem; border-radius: 10px; }
+ .fs-btn { font-size: 18px; padding:.6rem 1.2rem; border-radius: 10px; }
  .fs-close { width: 56px; height: 56px; font-size: 24px; top: 20px; right: 20px; }
  .wlc-title { font-size: 72px; }
- .wlc-card { padding: 1.4rem 1.6rem; border-radius: 20px; }
+ .wlc-card { padding:1.4rem 1.6rem; border-radius: 20px; }
  .wlc-card-icon { width: 66px; height: 66px; font-size: 30px; border-radius: 18px; }
  .wlc-card-title { font-size: 20px; }
  .wlc-card-desc { font-size: 14px; }
  .sp-logo { width: 110px; height: 110px; }
  .sp-name { font-size: 60px; }
- .prog-item { padding: .85rem 1.4rem; }
+ .prog-item { padding:.85rem 1.4rem; }
  .prog-title { font-size: 18px; }
  .prog-desc { font-size: 14px; }
  #userAvatarBar img { width: 38px; height: 38px; }
@@ -1642,14 +1642,14 @@ html { background: #0a0a0a; }
  :root { --nav-h: 110px; }
  .nav-label { font-size: 15px; }
  .nav-icon { font-size: 34px; }
- .player-container { margin: 2rem 2.5rem 1rem; border-radius: 28px; }
- .channel-card { padding: 1.6rem 2rem; border-radius: 24px; }
+ .player-container { margin:2rem 2.5rem 1rem; border-radius: 28px; }
+ .channel-card { padding:1.6rem 2rem; border-radius: 24px; }
  .ch-name { font-size: 24px; }
  .ch-avatar { width: 82px; height: 82px; }
  #playerLogoOverlay img { width: 90px; height: 90px; }
  #fsLogoImg { width: 110px !important; height: 110px !important; }
  .fs-title { font-size: 36px; }
- .fs-btn { font-size: 22px; padding: .8rem 1.6rem; }
+ .fs-btn { font-size: 22px; padding:.8rem 1.6rem; }
  .fs-close { width: 70px; height: 70px; font-size: 30px; }
  .chat-wrap { height: 700px; }
  .chat-text { font-size: 20px; }
@@ -1691,7 +1691,7 @@ html { background: #0a0a0a; }
 /* ── Navigation TV : touches fléchées ── */
 @media (min-width: 1920px) {
  .nav-btn { min-width: 80px; }
- .nav-live-badge { font-size: 10px; padding: 1px 5px; }
+ .nav-live-badge { font-size: 10px; padding:1px 5px; }
  .lt-btn { min-width: 80px; }
 }
 
@@ -1711,14 +1711,14 @@ html { background: #0a0a0a; }
 #umma-verset-block {
  background: linear-gradient(135deg,rgba(15,123,63,.04) 0%,rgba(212,175,55,.04) 100%);
  border-bottom: 1px solid rgba(212,175,55,.18) !important;
- margin: .6rem .8rem 0;
+ margin:.6rem .8rem 0;
  border-radius: 16px;
  border: 1px solid rgba(212,175,55,.18) !important;
  box-shadow: 0 2px 12px rgba(0,0,0,.04);
 }
 #umma-citation-block {
  background: linear-gradient(135deg,rgba(212,175,55,.05) 0%,rgba(15,123,63,.03) 100%);
- margin: .5rem .8rem .8rem;
+ margin:.5rem .8rem .8rem;
  border-radius: 16px;
  border: 1px solid rgba(212,175,55,.15);
  box-shadow: 0 2px 12px rgba(0,0,0,.04);
@@ -1728,13 +1728,13 @@ html { background: #0a0a0a; }
 #sec-wird > div:first-child {
  background: linear-gradient(160deg,#063d1e 0%,var(--g1) 50%,#0a5c2e 100%) !important;
  border-bottom: 1px solid rgba(212,175,55,.2);
- padding: 1.3rem 1.2rem 1rem !important;
+ padding:1.3rem 1.2rem 1rem !important;
 }
 
 /* ── Pratique Tabs améliorés ── */
 .pratique-tabs {
  background: #fff !important;
- padding: .5rem .7rem !important;
+ padding:.5rem .7rem !important;
  gap: .35rem !important;
  border-bottom: 1.5px solid rgba(212,175,55,.15);
  box-shadow: 0 2px 8px rgba(0,0,0,.04);
@@ -1772,7 +1772,7 @@ html { background: #0a0a0a; }
 .rp-btn:active { transform: scale(.93) !important; }
 .rp-ctrl {
  background: linear-gradient(180deg,#0a130c 0%,#060e08 100%) !important;
- padding: 1.4rem 1.4rem 1.2rem !important;
+ padding:1.4rem 1.4rem 1.2rem !important;
 }
 .rp-status { font-size: 13px !important; letter-spacing: .03em; }
 .rp-status.on { color: #4ade80 !important; }
@@ -1780,7 +1780,7 @@ html { background: #0a0a0a; }
 /* ── Live TV hero amélioré ── */
 .live-hero {
  background: linear-gradient(170deg,#020a04 0%,#063d1e 50%,#0a5c2e 100%) !important;
- padding: 1.4rem 1.3rem 1.5rem !important;
+ padding:1.4rem 1.3rem 1.5rem !important;
 }
 .live-hero-title {
  font-size: 30px !important;
@@ -1791,13 +1791,13 @@ html { background: #0a0a0a; }
  background: rgba(7,16,10,.98) !important;
  border-bottom: 1px solid rgba(212,175,55,.12) !important;
  gap: 0 !important;
- padding: 0 .2rem !important;
+ padding:0 .2rem !important;
 }
 .lt-btn {
  font-size: 11.5px !important;
  font-weight: 600 !important;
  letter-spacing: .02em !important;
- padding: .65rem .3rem !important;
+ padding:.65rem .3rem !important;
  color: rgba(255,255,255,.4) !important;
  border-bottom: 2.5px solid transparent !important;
  transition: all .18s !important;
@@ -1846,7 +1846,7 @@ html { background: #0a0a0a; }
 }
 #qiblaCompassBtn {
  font-size: 11px !important;
- padding: .4rem .8rem !important;
+ padding:.4rem .8rem !important;
  letter-spacing: .02em;
  box-shadow: 0 3px 12px rgba(15,123,63,.3);
  transition: all .2s !important;
@@ -1941,14 +1941,14 @@ button[onclick="qiblaGPS()"]:hover {
  color: rgba(255,255,255,.7) !important;
 }
 .nav-btn.active {
- color: #F0DC82 !important;
+ color: var(--gold2) !important;
  transform: translateY(-2px) !important;
 }
 .nav-btn.active .nav-icon {
  filter: drop-shadow(0 0 10px rgba(240,220,130,.6)) !important;
 }
 .nav-btn::before {
- background: linear-gradient(90deg,transparent,#F0DC82,transparent) !important;
+ background: linear-gradient(90deg,transparent,var(--gold2),transparent) !important;
  height: 2.5px !important;
 }
 .nav-label {
@@ -1961,7 +1961,7 @@ button[onclick="qiblaGPS()"]:hover {
 /* ══ UMMA ══ */
 #umma-prayer-hero {
  background: linear-gradient(155deg,#051c0c 0%,#0a4a22 45%,#073818 100%) !important;
- padding: 1rem 1.3rem .95rem !important;
+ padding:1rem 1.3rem .95rem !important;
  box-shadow: 0 3px 20px rgba(0,0,0,.25) !important;
 }
 
@@ -1970,15 +1970,15 @@ button[onclick="qiblaGPS()"]:hover {
  background: linear-gradient(135deg,rgba(15,123,63,.05),rgba(212,175,55,.04)) !important;
  border-radius: var(--radius-sm) !important;
  border: 1px solid rgba(212,175,55,.15) !important;
- margin: .7rem .8rem 0 !important;
- padding: .9rem 1rem !important;
+ margin:.7rem .8rem 0 !important;
+ padding:.9rem 1rem !important;
 }
 #umma-citation-block {
  background: linear-gradient(135deg,rgba(212,175,55,.05),rgba(15,123,63,.03)) !important;
  border-radius: var(--radius-sm) !important;
  border: 1px solid rgba(212,175,55,.12) !important;
- margin: .5rem .8rem .9rem !important;
- padding: .9rem 1rem !important;
+ margin:.5rem .8rem .9rem !important;
+ padding:.9rem 1rem !important;
 }
 #umma-verset-ar, #umma-citation-ar {
  font-size: 22px !important;
@@ -1989,14 +1989,14 @@ button[onclick="qiblaGPS()"]:hover {
 /* ══ PRATIQUE ══ */
 #sec-wird > div:first-child {
  background: linear-gradient(155deg,#051c0c 0%,#0a4a22 50%,#073818 100%) !important;
- padding: 1.1rem 1.3rem .9rem !important;
+ padding:1.1rem 1.3rem .9rem !important;
  box-shadow: 0 3px 20px rgba(0,0,0,.2) !important;
 }
 
 /* Tabs pratique */
 .pratique-tabs {
  background: #fff !important;
- padding: .55rem .6rem !important;
+ padding:.55rem .6rem !important;
  gap: .3rem !important;
  border-bottom: 1px solid rgba(212,175,55,.15) !important;
  flex-wrap: nowrap !important;
@@ -2010,13 +2010,13 @@ button[onclick="qiblaGPS()"]:hover {
  font-size: 11.5px !important;
  font-weight: 600 !important;
  white-space: nowrap !important;
- padding: .42rem .75rem !important;
+ padding:.42rem .75rem !important;
  flex-shrink: 0 !important;
  transition: all .2s cubic-bezier(.34,1.56,.64,1) !important;
 }
 .pratique-tab.active {
  background: linear-gradient(135deg,var(--g1),#0d6035) !important;
- color: #F0DC82 !important;
+ color: var(--gold2) !important;
  box-shadow: 0 3px 12px rgba(15,123,63,.35) !important;
  transform: translateY(-1px) !important;
 }
@@ -2025,7 +2025,7 @@ button[onclick="qiblaGPS()"]:hover {
 .rp-wrap { background: #040c06 !important; }
 .rp-hero {
  background: linear-gradient(170deg,#020805 0%,#071510 50%,#040d07 100%) !important;
- padding: 1.6rem 1.4rem 1.2rem !important;
+ padding:1.6rem 1.4rem 1.2rem !important;
 }
 .rp-disc {
  box-shadow:
@@ -2046,7 +2046,7 @@ button[onclick="qiblaGPS()"]:hover {
 .rp-btn:active { transform: scale(.9) !important; }
 .rp-ctrl {
  background: linear-gradient(180deg,#060f08 0%,#030806 100%) !important;
- padding: 1.3rem 1.4rem 1.2rem !important;
+ padding:1.3rem 1.4rem 1.2rem !important;
  gap: 1rem !important;
 }
 .rp-status { font-size: 12px !important; letter-spacing: .04em !important; }
@@ -2056,7 +2056,7 @@ button[onclick="qiblaGPS()"]:hover {
  background: linear-gradient(135deg,#071510,#040d07) !important;
  border: 1px solid rgba(212,175,55,.18) !important;
  border-radius: var(--radius-sm) !important;
- margin: .5rem .9rem !important;
+ margin:.5rem .9rem !important;
 }
 .rp-vol {
  height: 5px !important;
@@ -2070,7 +2070,7 @@ button[onclick="qiblaGPS()"]:hover {
 /* ══ LIVE TV ══ */
 .live-hero {
  background: linear-gradient(160deg,#020804 0%,#052210 45%,#073618 100%) !important;
- padding: 1.3rem 1.3rem 1.4rem !important;
+ padding:1.3rem 1.3rem 1.4rem !important;
  box-shadow: 0 3px 20px rgba(0,0,0,.3) !important;
 }
 .live-hero-title {
@@ -2084,7 +2084,7 @@ button[onclick="qiblaGPS()"]:hover {
 .live-tabs {
  background: #050e07 !important;
  border-bottom: 1px solid rgba(212,175,55,.1) !important;
- padding: 0 .3rem !important;
+ padding:0 .3rem !important;
  gap: 0 !important;
  overflow-x: auto !important;
  -webkit-overflow-scrolling: touch !important;
@@ -2094,7 +2094,7 @@ button[onclick="qiblaGPS()"]:hover {
 .lt-btn {
  font-size: 11px !important;
  font-weight: 600 !important;
- padding: .6rem .5rem !important;
+ padding:.6rem .5rem !important;
  color: rgba(255,255,255,.35) !important;
  border-bottom: 2px solid transparent !important;
  letter-spacing: .02em !important;
@@ -2104,8 +2104,8 @@ button[onclick="qiblaGPS()"]:hover {
  background: none !important;
 }
 .lt-btn.active {
- color: #D4AF37 !important;
- border-bottom-color: #D4AF37 !important;
+ color: var(--gold) !important;
+ border-bottom-color: var(--gold) !important;
 }
 .lt-btn:hover:not(.active) { color: rgba(255,255,255,.6) !important; }
 
@@ -2113,7 +2113,7 @@ button[onclick="qiblaGPS()"]:hover {
 .player-container {
  border-radius: var(--radius-sm) !important;
  overflow: hidden !important;
- margin: .5rem .8rem !important;
+ margin:.5rem .8rem !important;
  border: 1px solid rgba(212,175,55,.12) !important;
  box-shadow: 0 4px 24px rgba(0,0,0,.3) !important;
 }
@@ -2141,7 +2141,7 @@ button[onclick="qiblaGPS()"]:hover {
  padding-bottom: .2rem !important;
 }
 .ab-engine-row {
- padding: .3rem .7rem .8rem !important;
+ padding:.3rem .7rem .8rem !important;
  gap: .35rem !important;
  flex-wrap: wrap !important;
 }
@@ -2149,7 +2149,7 @@ button[onclick="qiblaGPS()"]:hover {
  border-radius: 20px !important;
  font-size: 12px !important;
  font-weight: 700 !important;
- padding: .35rem .8rem !important;
+ padding:.35rem .8rem !important;
  letter-spacing: .02em !important;
  color: rgba(251,248,232,.85) !important;
  border: 1px solid rgba(212,175,55,.38) !important;
@@ -2202,7 +2202,7 @@ button { -webkit-tap-highlight-color: transparent; }
 #qiblaCompassBtn {
  background: linear-gradient(135deg,#0f7b3f,#1a9650) !important;
  font-size: 11px !important;
- padding: .38rem .9rem !important;
+ padding:.38rem .9rem !important;
  box-shadow: 0 3px 12px rgba(15,123,63,.3) !important;
  border: none !important;
  border-radius: 20px !important;
@@ -2231,7 +2231,7 @@ button[onclick="qiblaGPS()"] {
  background: rgba(180,40,30,.85) !important;
  border-radius: 20px !important;
  font-size: 11px !important;
- padding: .25rem .75rem !important;
+ padding:.25rem .75rem !important;
  letter-spacing: .06em !important;
  backdrop-filter: blur(4px) !important;
 }
@@ -2245,11 +2245,11 @@ button[onclick="qiblaGPS()"] {
 
 #langSelectorOverlay {
  position: fixed; inset: 0; z-index: 10000;
- background: linear-gradient(160deg, #0a3d1e 0%, #0F7B3F 55%, #126b37 100%);
+ background: linear-gradient(160deg, #0a3d1e 0%, var(--g1) 55%, #126b37 100%);
  display: flex; flex-direction: column;
  align-items: center; justify-content: center;
  gap: 0; transition: opacity .3s ease;
- padding: 1.5rem 1.2rem;
+ padding:1.5rem 1.2rem;
 }
 #langSelectorOverlay.hidden { opacity: 0; pointer-events: none; }
 
@@ -2280,7 +2280,7 @@ button[onclick="qiblaGPS()"] {
 .lang-sel-btn {
  background: rgba(255,255,255,.07);
  border: 1.5px solid rgba(255,255,255,.12);
- border-radius: 16px; padding: 1rem .5rem;
+ border-radius: 16px; padding:1rem .5rem;
  text-align: center; cursor: pointer;
  transition: all .2s ease; display: flex;
  flex-direction: column; align-items: center; gap: 5px;
@@ -2294,12 +2294,12 @@ button[onclick="qiblaGPS()"] {
 .lang-sel-flag { font-size: 28px; line-height: 1; }
 .lang-sel-name { font-size: 13px; font-weight: 700; color: rgba(255,255,255,.8); }
 .lang-sel-native { font-size: 11px; color: rgba(255,255,255,.4); }
-.lang-sel-btn.active .lang-sel-name { color: #F0DC82; }
+.lang-sel-btn.active .lang-sel-name { color: var(--gold2); }
 .lang-sel-btn.active .lang-sel-native { color: rgba(212,175,55,.6); }
 .lang-sel-confirm {
  width: 100%; max-width: 320px;
- padding: .95rem; border: none; border-radius: 16px;
- background: linear-gradient(135deg, #D4AF37, #B8962E);
+ padding:.95rem; border: none; border-radius: 16px;
+ background: linear-gradient(135deg, var(--gold), #B8962E);
  color: #0a1a0e; font-size: 16px; font-weight: 800;
  cursor: pointer; font-family: 'Roboto', sans-serif;
  letter-spacing: .02em; transition: opacity .2s; margin-bottom: .8rem;
@@ -2311,7 +2311,7 @@ button[onclick="qiblaGPS()"] {
 }
 .lang-sel-divider {
  width: 60px; height: 1px; background: rgba(212,175,55,.25);
- margin: .8rem auto;
+ margin:.8rem auto;
 }
 
 /* ══ Layout vertical — Radio en haut, Studio en bas ══ */
@@ -2319,7 +2319,7 @@ button[onclick="qiblaGPS()"] {
 /* Bouton accordéon Studio */
 .studio-toggle-btn {
  display: flex; align-items: center; justify-content: space-between;
- width: 100%; padding: .85rem 1.2rem;
+ width: 100%; padding:.85rem 1.2rem;
  background: linear-gradient(135deg,#1a1608 0%,#221c0a 100%);
  border: none; border-top: 2px solid rgba(212,175,55,.35);
  cursor: pointer; font-family: 'Roboto', sans-serif;
@@ -2383,7 +2383,7 @@ button[onclick="qiblaGPS()"] {
 @keyframes rpRing{0%,100%{transform:scale(1);opacity:.18}50%{transform:scale(1.05);opacity:.55}}
 .rp-disc-wrap{position:relative;width:110px;height:110px;margin:0 auto .9rem;z-index:2;}
 .rp-disc{width:110px;height:110px;border-radius:50%;
- background:conic-gradient(from 0deg,#0F7B3F 0%,#1a9650 12%,#D4AF37 12%,#b8962e 25%,#0F7B3F 25%,#145a32 38%,#D4AF37 38%,#f0dc82 50%,#0F7B3F 50%,#0a5c2e 62%,#D4AF37 62%,#c8a200 75%,#0F7B3F 75%,#1a9650 88%,#D4AF37 88%,#b8962e 100%);
+ background:conic-gradient(from 0deg,var(--g1) 0%,#1a9650 12%,var(--gold) 12%,#b8962e 25%,var(--g1) 25%,#145a32 38%,var(--gold) 38%,#f0dc82 50%,var(--g1) 50%,#0a5c2e 62%,var(--gold) 62%,#c8a200 75%,var(--g1) 75%,#1a9650 88%,var(--gold) 88%,#b8962e 100%);
  box-shadow:0 0 28px rgba(15,123,63,.5);display:flex;align-items:center;justify-content:center;}
 .rp-disc.spin{animation:rpSpin 5s linear infinite;}
 @keyframes rpSpin{to{transform:rotate(360deg)}}
@@ -2434,7 +2434,7 @@ button[onclick="qiblaGPS()"] {
 }
 .studio-header {
  background: linear-gradient(135deg,#1a1608,#221c0a);
- padding: 1rem 1.2rem .85rem;
+ padding:1rem 1.2rem .85rem;
  display: flex; align-items: center; justify-content: space-between;
  border-bottom: 1px solid rgba(212,175,55,.2);
 }
@@ -2449,7 +2449,7 @@ button[onclick="qiblaGPS()"] {
 .studio-badge {
  background: rgba(212,175,55,.12);
  border: 1px solid rgba(212,175,55,.3);
- border-radius: 20px; padding: .2rem .65rem;
+ border-radius: 20px; padding:.2rem .65rem;
  font-size: 10px; font-weight: 700; color: rgba(212,175,55,.75);
  letter-spacing: .06em;
 }
@@ -2457,7 +2457,7 @@ button[onclick="qiblaGPS()"] {
 .studio-viz-wrap {
  position: relative;
  background: #141209;
- padding: .7rem 1rem;
+ padding:.7rem 1rem;
  border-bottom: 1px solid rgba(212,175,55,.08);
 }
 #studioCanvas {
@@ -2470,7 +2470,7 @@ button[onclick="qiblaGPS()"] {
  transform: translateY(-50%);
  font-size: 22px; font-weight: 700;
  font-variant-numeric: tabular-nums;
- color: #D4AF37; letter-spacing: .05em;
+ color: var(--gold); letter-spacing: .05em;
  text-shadow: 0 0 12px rgba(212,175,55,.4);
  pointer-events: none;
 }
@@ -2486,7 +2486,7 @@ button[onclick="qiblaGPS()"] {
 @keyframes recPulse { 0%,100%{opacity:1;transform:translateY(-50%) scale(1)} 50%{opacity:.3;transform:translateY(-50%) scale(.7)} }
 /* Contrôles */
 .studio-controls {
- padding: .9rem 1.1rem;
+ padding:.9rem 1.1rem;
  display: flex; align-items: center; justify-content: center;
  gap: .7rem;
  background: #16130a;
@@ -2520,16 +2520,16 @@ button[onclick="qiblaGPS()"] {
  display: flex; align-items: center; justify-content: center;
 }
 .studio-btn-sm:active { transform: scale(.88); background: rgba(255,255,255,.12); }
-.studio-btn-sm.active { border-color: rgba(212,175,55,.5); color: #D4AF37; background: rgba(212,175,55,.1); }
+.studio-btn-sm.active { border-color: rgba(212,175,55,.5); color: var(--gold); background: rgba(212,175,55,.1); }
 /* Qualité */
 .studio-quality {
- padding: .5rem 1.1rem;
+ padding:.5rem 1.1rem;
  display: flex; align-items: center; gap: .5rem;
  background: #16130a;
  border-bottom: 1px solid rgba(212,175,55,.08);
 }
 .studio-q-btn {
- flex: 1; padding: .35rem .3rem;
+ flex: 1; padding:.35rem .3rem;
  background: rgba(255,255,255,.04);
  border: 1px solid rgba(255,255,255,.08);
  border-radius: 8px;
@@ -2541,11 +2541,11 @@ button[onclick="qiblaGPS()"] {
 .studio-q-btn.active {
  background: rgba(212,175,55,.12);
  border-color: rgba(212,175,55,.4);
- color: #D4AF37;
+ color: var(--gold);
 }
 /* Bibliothèque */
 .studio-lib-header {
- padding: .6rem 1.1rem .4rem;
+ padding:.6rem 1.1rem .4rem;
  display: flex; align-items: center; justify-content: space-between;
  background: #1a180e;
 }
@@ -2559,7 +2559,7 @@ button[onclick="qiblaGPS()"] {
  font-weight: 600;
 }
 .studio-lib {
- padding: 0 .7rem .8rem;
+ padding:0 .7rem .8rem;
  display: flex; flex-direction: column; gap: .4rem;
  max-height: 260px; overflow-y: auto;
  background: #1a180e;
@@ -2570,7 +2570,7 @@ button[onclick="qiblaGPS()"] {
  background: rgba(255,255,255,.04);
  border: 1px solid rgba(255,255,255,.07);
  border-radius: 12px;
- padding: .55rem .8rem;
+ padding:.55rem .8rem;
  display: flex; align-items: center; gap: .7rem;
  transition: all .18s;
 }
@@ -2605,14 +2605,14 @@ button[onclick="qiblaGPS()"] {
  display: flex; align-items: center; justify-content: center;
  transition: all .18s;
 }
-.studio-track-btn.play-btn { background: rgba(212,175,55,.12); color: #D4AF37; }
+.studio-track-btn.play-btn { background: rgba(212,175,55,.12); color: var(--gold); }
 .studio-track-btn.play-btn:active { background: rgba(212,175,55,.25); }
-.studio-track-btn.dl-btn { background: rgba(212,175,55,.1); color: #D4AF37; }
+.studio-track-btn.dl-btn { background: rgba(212,175,55,.1); color: var(--gold); }
 .studio-track-btn.dl-btn:active { background: rgba(212,175,55,.2); }
 .studio-track-btn.del-btn { background: rgba(239,68,68,.1); color: #f87171; }
 .studio-track-btn.del-btn:active { background: rgba(239,68,68,.2); }
 .studio-empty {
- text-align: center; padding: 1.5rem 1rem;
+ text-align: center; padding:1.5rem 1rem;
  color: rgba(255,255,255,.2); font-size: 13px;
  font-style: italic;
 }
@@ -2639,7 +2639,7 @@ button[onclick="qiblaGPS()"] {
  transform: translateX(-50%) translateY(20px);
  background: rgba(30,25,10,.95);
  color: rgba(212,175,55,.95); border-radius: 12px;
- padding: .5rem 1.1rem; font-size: 12px; font-weight: 600;
+ padding:.5rem 1.1rem; font-size: 12px; font-weight: 600;
  opacity: 0; transition: all .25s ease;
  z-index: 600; pointer-events: none; white-space: nowrap;
  backdrop-filter: blur(12px);
@@ -2660,7 +2660,7 @@ button[onclick="qiblaGPS()"] {
 .ql-tab {
  flex: 1; display: flex; flex-direction: column;
  align-items: center; justify-content: center;
- gap: 4px; padding: .65rem .5rem .55rem;
+ gap: 4px; padding:.65rem .5rem .55rem;
  cursor: pointer; border: none; background: none;
  font-family: 'Roboto', sans-serif;
  transition: all .2s;
@@ -2673,7 +2673,7 @@ button[onclick="qiblaGPS()"] {
 }
 /* Qibla — vert doré */
 .ql-tab.qibla-tab { color: rgba(255,255,255,.4); }
-.ql-tab.qibla-tab.active { color: #D4AF37; border-bottom-color: #D4AF37; background: rgba(212,175,55,.05); }
+.ql-tab.qibla-tab.active { color: var(--gold); border-bottom-color: var(--gold); background: rgba(212,175,55,.05); }
 .ql-tab.qibla-tab.active .qt-icon { filter: drop-shadow(0 0 8px rgba(212,175,55,.6)); }
 /* Lune — bleu argenté */
 .ql-tab.lune-tab { color: rgba(255,255,255,.4); }
@@ -2681,7 +2681,7 @@ button[onclick="qiblaGPS()"] {
 .ql-tab.lune-tab.active .qt-icon { filter: drop-shadow(0 0 8px rgba(168,216,240,.5)); }
 /* Calendrier — or */
 .ql-tab.cal-tab { color: rgba(255,255,255,.4); }
-.ql-tab.cal-tab.active { color: #F0DC82; border-bottom-color: #D4AF37; background: rgba(212,175,55,.06); }
+.ql-tab.cal-tab.active { color: var(--gold2); border-bottom-color: var(--gold); background: rgba(212,175,55,.06); }
 .ql-tab.cal-tab.active .qt-icon { filter: drop-shadow(0 0 8px rgba(212,175,55,.7)); }
 
 .ql-panel { display: none; flex: 1; flex-direction: column; overflow-y: auto; }
@@ -2878,7 +2878,7 @@ button[onclick="qiblaGPS()"] {
  display: grid;
  grid-template-columns: 1fr 1fr;
  gap: 8px;
- padding: .85rem .85rem .75rem;
+ padding:.85rem .85rem .75rem;
  box-sizing: border-box;
  width: 100%;
 }
@@ -2886,7 +2886,7 @@ button[onclick="qiblaGPS()"] {
  display: flex;
  align-items: center;
  gap: .5rem;
- padding: .7rem .75rem;
+ padding:.7rem .75rem;
  background: rgba(255,255,255,.07);
  border: 1.5px solid rgba(255,255,255,.12);
  border-radius: 12px;
@@ -2927,7 +2927,7 @@ button[onclick="qiblaGPS()"] {
  line-height:1.2;
  letter-spacing:.01em;
 }
-.ab-mode-btn.active .ab-mode-label { color: #F0DC82; }
+.ab-mode-btn.active .ab-mode-label { color: var(--gold2); }
 .ab-mode-sub {
  font-size:10px;
  color:rgba(255,255,255,.45);
@@ -2988,7 +2988,7 @@ button[onclick="qiblaGPS()"] {
  background: linear-gradient(90deg,#00c878,#0096ff);
  border-radius: 100px;
  font-size: 9px; font-weight: 800;
- color: #fff; padding: 2px 7px;
+ color: #fff; padding:2px 7px;
  letter-spacing: .08em;
  text-transform: uppercase;
 }
@@ -3013,7 +3013,7 @@ button[onclick="qiblaGPS()"] {
 }
 @keyframes asrarGlow { 0%,100%{box-shadow:0 0 10px rgba(212,175,55,.3)} 50%{box-shadow:0 0 22px rgba(212,175,55,.6)} }
 #eng-asrar .ab-mode-label {
- background: linear-gradient(90deg,#D4AF37,#F0DC82,#b8962e);
+ background: linear-gradient(90deg,var(--gold),var(--gold2),#b8962e);
  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
  background-clip:text; font-size:15px !important; font-family:'Amiri',serif !important;
 }
@@ -3025,20 +3025,20 @@ button[onclick="qiblaGPS()"] {
 }
 .ab-asrar-badge {
  position:absolute; top:8px; right:10px;
- background: linear-gradient(90deg,#8B6914,#D4AF37);
+ background: linear-gradient(90deg,#8B6914,var(--gold));
  border-radius:100px; font-size:9px; font-weight:800;
  color:#fff; padding:2px 7px; letter-spacing:.08em; text-transform:uppercase;
 }
-.ab-sug-asrar { border-left-color:#D4AF37 !important; background:linear-gradient(135deg,rgba(212,175,55,.04),rgba(180,120,0,.04)) !important; }
+.ab-sug-asrar { border-left-color:var(--gold) !important; background:linear-gradient(135deg,rgba(212,175,55,.04),rgba(180,120,0,.04)) !important; }
 .ab-sug-asrar:hover { border-color:rgba(212,175,55,.6) !important; box-shadow:0 2px 16px rgba(212,175,55,.12) !important; }
 /* Calculatrice Abjad */
 .asrar-calc-wrap { background:linear-gradient(160deg,#0a0800,#150e00); border-bottom:1px solid rgba(212,175,55,.15); padding:.85rem 1rem; display:none; }
 .asrar-calc-wrap.visible { display:block; }
-.asrar-calc-title { font-family:'Amiri',serif; font-size:16px; color:#F0DC82; margin-bottom:.65rem; text-align:center; letter-spacing:.05em; }
+.asrar-calc-title { font-family:'Amiri',serif; font-size:16px; color:var(--gold2); margin-bottom:.65rem; text-align:center; letter-spacing:.05em; }
 .asrar-calc-input-row { display:flex; gap:.5rem; align-items:stretch; width:100%; box-sizing:border-box; }
 .asrar-calc-input { flex:1; min-width:0; background:rgba(212,175,55,.09); border:1.5px solid rgba(212,175,55,.4); border-radius:10px; padding:.55rem .8rem; color:#fff; font-family:'Amiri',serif; font-size:16px; outline:none; direction:rtl; box-sizing:border-box; }
 .asrar-calc-input::placeholder { color:rgba(212,175,55,.5); }
-.asrar-calc-btn { flex-shrink:0; background:linear-gradient(135deg,#7a4500,#D4AF37); border:none; border-radius:10px; padding:.55rem 1rem; color:#fff; font-weight:700; font-size:13px; cursor:pointer; white-space:nowrap; }
+.asrar-calc-btn { flex-shrink:0; background:linear-gradient(135deg,#7a4500,var(--gold)); border:none; border-radius:10px; padding:.55rem 1rem; color:#fff; font-weight:700; font-size:13px; cursor:pointer; white-space:nowrap; }
 .asrar-calc-result { margin-top:.7rem; background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.2); border-radius:10px; padding:.75rem .9rem; display:none; text-align:center; box-sizing:border-box; }
 .asrar-calc-result.visible { display:block; }
 .asrar-result-num { font-family:'Amiri',serif; font-size:36px; font-weight:700; color:var(--gold); line-height:1.1; }
@@ -3067,7 +3067,7 @@ button[onclick="qiblaGPS()"] {
  white-space:nowrap;
 }
 .nour-tab.active {
- color:#F0DC82;
+ color:var(--gold2);
  border-bottom-color:var(--gold);
  background:rgba(212,175,55,.08);
 }
@@ -3119,7 +3119,7 @@ button[onclick="qiblaGPS()"] {
 }
 .istikh-type-btn.active {
  background:rgba(212,175,55,.22); border-color:rgba(212,175,55,.75);
- color:#F0DC82;
+ color:var(--gold2);
 }
 .istikh-result-bar {
  background:rgba(212,175,55,.06); border:1px solid rgba(212,175,55,.15);
@@ -3153,7 +3153,7 @@ button[onclick="qiblaGPS()"] {
  width:100%; margin-top:.7rem;
  background:linear-gradient(135deg,#3d1f00,#7a4500);
  border:1.5px solid rgba(212,175,55,.6); border-radius:12px;
- padding:.7rem 1rem; color:#F0DC82; font-weight:700;
+ padding:.7rem 1rem; color:var(--gold2); font-weight:700;
  font-size:14px; cursor:pointer; font-family:'Roboto',sans-serif;
  transition:opacity .2s; letter-spacing:.04em;
  box-sizing:border-box; text-align:center;
@@ -3544,7 +3544,7 @@ document.addEventListener('DOMContentLoaded', function(){
 <!-- SECTION WIRD -->
 
 <!-- SECTION RADIO AL-FAYDHA -->
-<section <section id="sec-ens" class="sec">
+<section id="sec-ens" class="sec">
 
 <!-- Panel Radio -->
 <div id="ensPanelRadio">
@@ -5025,10 +5025,7 @@ window.switchQlTab = function(tab) {
  }
 };
 
-/* ══════════════════════════════════════════════════════
- CALENDRIER ISLAMIQUE — Moteur complet
- Double date Grégorien + Hijri · 600+ événements islamiques
-══════════════════════════════════════════════════════ */
+
 
 var GREG_MONTHS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 var HIJRI_MONTHS_FR = ['Muharram','Safar','Rabiʼ al-Awwal','Rabiʼ al-Thâni','Jumadâ al-Úla','Jumadâ al-Thâniya','Rajab','Shaʼbân','Ramadhân','Shawwâl','Dhu al-Qiʼda','Dhu al-Hijja'];
@@ -6460,7 +6457,6 @@ async function _playLiveKitViewer(d) {
  });
  } else if(pub.token){
  /* Pas d'API key — on utilise le token mais on avertit */
- console.warn('Token pré-stocké utilisé — canPublish peut être false — le micro viewer peut ne pas fonctionner');
  lkJoinAsViewer(pub.url,pub.token).catch(function(e){_showLiveError(wrap,e.message||'Erreur connexion');});
  } else _showLiveError(wrap,'Configuration incomplète — ajoutez API Key et Secret LiveKit');
  });
@@ -9853,8 +9849,7 @@ async function abSpeak(text) {
  } catch(e) {
   /* Fallback navigateur si ElevenLabs échoue */
   _abSpeechActive = false;
-  console.warn('ElevenLabs TTS erreur:', e);
-  if (window.speechSynthesis) {
+ if (window.speechSynthesis) {
    var utt = new SpeechSynthesisUtterance(clean);
    utt.lang = 'fr-FR'; utt.rate = 0.92; utt.pitch = 1.1; utt.volume = 1.0;
    utt.onend = function() { _abSpeechActive = false; };
