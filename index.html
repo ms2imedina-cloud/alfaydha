@@ -10367,21 +10367,41 @@ function zikrGroupInit() {
 window._isStreaming = false;
 
 function fbSetLive(isLive, data) {
- _fbInit(function() {
  var payload = isLive ? {
- isLive: true,
- url: data.url || '',
- mode: data.mode || 'youtube',
- startedAt: data.startedAt || Date.now(),
- updatedAt: firebase.database.ServerValue.TIMESTAMP
+  isLive: true,
+  url: data.url || '',
+  mode: data.mode || 'youtube',
+  liveCode: data.liveCode || null,
+  startedAt: data.startedAt || Date.now(),
+  updatedAt: firebase.database.ServerValue.TIMESTAMP
  } : {
- isLive: false, url: '', mode: '', startedAt: null,
- updatedAt: firebase.database.ServerValue.TIMESTAMP
+  isLive: false, url: '', mode: '', liveCode: null, startedAt: null,
+  updatedAt: firebase.database.ServerValue.TIMESTAMP
  };
- firebase.database().ref('faydha_direct').set(payload);
- /* Aussi sauvegarder localement */
+ /* Sauvegarder localement d'abord */
  try { localStorage.setItem('faydha_direct', JSON.stringify(payload)); } catch(e) {}
- });
+
+ function doWrite() {
+  firebase.database().ref('faydha_direct').set(payload)
+   .then(function(){ if(isLive) showToast('✅ Live diffusé — spectateurs connectés'); })
+   .catch(function(err){
+    showToast('❌ Erreur Firebase : ' + err.message);
+    console.error('fbSetLive error:', err);
+   });
+ }
+
+ /* S'assurer d'être connecté Firebase avant d'écrire */
+ var user = firebase.auth().currentUser;
+ if (user) {
+  doWrite();
+ } else {
+  firebase.auth().signInAnonymously()
+   .then(function(){ doWrite(); })
+   .catch(function(err){
+    showToast('❌ Auth Firebase : ' + err.message);
+    console.error('signInAnonymously error:', err);
+   });
+ }
 }
 
 function fbStopLive() { fbSetLive(false, {}); }
