@@ -11346,6 +11346,10 @@ function interactInit() {
  });
  if (window._adminIn || window._isStreamer) _micAdminRender(requests);
  _spRenderMicQueue(requests, lkData.active || null);
+ /* ── DÉCLENCHER l'activation micro si le Cheikh a accepté ── */
+ if (!window._adminIn && !window._isStreamer) {
+ if (typeof _micCheckMyStatus === 'function') _micCheckMyStatus(lkData);
+ }
  });
  });
 }
