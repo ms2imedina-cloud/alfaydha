@@ -2791,25 +2791,28 @@ button[onclick="qiblaGPS()"] {
  border-color:#2E7D52 !important;
  box-shadow:0 3px 12px rgba(46,125,82,.35);
 }
-.ical-cell.today .gc{color:#fff !important;font-weight:800}
-.ical-cell.today .hc{color:rgba(255,255,255,.75) !important}
+.ical-cell.today .gc{color:rgba(255,255,255,.7) !important;font-weight:400}
+.ical-cell.today .hc{color:#fff !important;font-weight:800}
 
 /* Vendredi */
-.ical-cell.fri-cell .gc{color:#2E7D52;font-weight:700}
+.ical-cell.fri-cell .hc{color:#2E7D52;font-weight:800}
+.ical-cell.fri-cell .gc{color:#2E7D52;font-weight:500}
 
 /* Jour saint islamique */
 .ical-cell.holy-cell{
  background:linear-gradient(145deg,#FDF7EC,#FFF9F0);
  border-color:rgba(200,151,58,.45);
 }
-.ical-cell.holy-cell .gc{color:#8B5A00;font-weight:700}
+.ical-cell.holy-cell .hc{color:#8B5A00;font-weight:800}
+.ical-cell.holy-cell .gc{color:#8B5A00;font-weight:500}
 
 /* Gamou / événement spécial */
 .ical-cell.gamou-cell{
  background:linear-gradient(145deg,#F3EEF9,#F8F4FF);
  border-color:rgba(147,112,219,.4);
 }
-.ical-cell.gamou-cell .gc{color:#5A3A8A;font-weight:700}
+.ical-cell.gamou-cell .hc{color:#5A3A8A;font-weight:800}
+.ical-cell.gamou-cell .gc{color:#5A3A8A;font-weight:500}
 
 /* Ramadan */
 .ical-cell.ramadan-cell{
@@ -2818,8 +2821,8 @@ button[onclick="qiblaGPS()"] {
 }
 
 /* Numéros */
-.gc{font-size:15px;font-weight:500;color:#2C2A26;line-height:1}
-.hc{font-size:8px;color:#B8B0A0;line-height:1;font-family:'Amiri',serif;margin-top:1px}
+.gc{font-size:11px;font-weight:400;color:#A0998A;line-height:1}
+.hc{font-size:17px;font-weight:700;color:#1C2B22;line-height:1;font-family:'Amiri',serif}
 
 /* Point événement */
 .ical-cell .ev-dot{
@@ -5129,7 +5132,7 @@ function icalRender() {
  if (dayNum < 1 || dayNum > last.getDate()) {
  cell.className = 'ical-cell other';
  var od = gregToHijri(curDate);
- cell.innerHTML = '<span class="gc" style="font-size:12px">' + curDate.getDate() + '</span><span class="hc">' + od.d + '</span>';
+ cell.innerHTML = '<span class="hc" style="font-size:13px;opacity:.4">' + od.d + '</span><span class="gc" style="font-size:10px;opacity:.4">' + curDate.getDate() + '</span>';
  grid.appendChild(cell);
  continue;
  }
@@ -5147,8 +5150,8 @@ function icalRender() {
  (ev && ev.type === 'gamou' && !isToday ? ' gamou-cell' : '') +
  (isRam && !ev && !isToday ? ' ramadan-cell' : '');
 
- cell.innerHTML = '<span class="gc">' + dayNum + '</span>' +
- '<span class="hc">' + h.d + '</span>' +
+ cell.innerHTML = '<span class="hc">' + h.d + '</span>' +
+ '<span class="gc">' + dayNum + '</span>' +
  (ev ? '<span class="ev-dot"></span>' : '');
 
  if (dow === 5 && curDate.getMonth() === mo) friCount++;
