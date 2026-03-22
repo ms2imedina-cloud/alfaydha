@@ -5414,10 +5414,10 @@ function icalNext() { _icalCur = new Date(_icalCur.getFullYear(), _icalCur.getMo
  </div>
 
  <!-- Code d'accès privé — toujours visible -->
- <div id="lkAccessBlock" style="margin:.8rem 0;padding:.7rem;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.25);border-radius:10px">
- <div style="font-size:12px;color:var(--gold2);margin-bottom:.4rem;font-weight:600">🔐 Code d'accès privé (optionnel)</div>
- <div style="font-size:11px;color:rgba(251,248,232,.5);margin-bottom:.5rem">Laisse vide = live public. Sinon les spectateurs doivent entrer ce code pour rejoindre.</div>
- <input class="dp-field" id="lkAccessCode" type="text" placeholder="Ex: BAYE2025" style="font-size:13px;text-transform:uppercase">
+ <div id="lkAccessBlock" style="margin:.8rem 0;padding:.9rem;background:rgba(0,0,0,.35);border:2px solid var(--gold);border-radius:12px">
+ <div style="font-size:14px;color:#FFD700;margin-bottom:.5rem;font-weight:700;letter-spacing:.05em">🔐 Code d'accès privé (optionnel)</div>
+ <div style="font-size:12px;color:#fff;margin-bottom:.7rem;opacity:.85">Laisse vide = live public. Sinon les spectateurs doivent entrer ce code pour rejoindre.</div>
+ <input class="dp-field" id="lkAccessCode" type="text" placeholder="Ex: BAYE2025" style="font-size:15px;text-transform:uppercase;background:rgba(255,255,255,.15);color:#fff;border:1.5px solid var(--gold);font-weight:700;letter-spacing:.1em">
  </div>
 
  <!-- Caméra preview pour LiveKit -->
@@ -9581,6 +9581,11 @@ var _abCurrentAudio = null;
 function abStopSpeak() {
  _abSpeechActive = false;
  if (window.speechSynthesis) window.speechSynthesis.cancel();
+ /* Stopper ElevenLabs audio */
+ if (window._elAudio) {
+ window._elAudio.pause();
+ window._elAudio.currentTime = 0;
+ }
  if (_abCurrentAudio) {
  _abCurrentAudio.pause();
  _abCurrentAudio.currentTime = 0;
@@ -9609,42 +9614,64 @@ function abGetFemaleVoice(lang) {
  return null;
 }
 
-function abSpeak(text) {
+/* ── ElevenLabs TTS — Voix Baye Niass ── */
+var _EL_VOICE_ID = 'h0TwoFQf7NYsiJYrhYf8';
+var _EL_API_KEY  = 'sk_33096af56cf58525bb31731e31d4bd91fe468901b682cbc0';
+var _elAudio = null;
+
+async function abSpeak(text) {
  abStopSpeak();
  _abSpeechActive = true;
 
  var clean = text.replace(/(<([^>]+)>)/gi, '').replace(/[*#_~`]/g, '').trim();
  if (!clean) { _abSpeechActive = false; return; }
- var l = window._abLang || window._lang || 'fr';
 
- if (!window.speechSynthesis) { _abSpeechActive = false; return; }
+ /* Tronquer à 2500 caractères max pour ElevenLabs */
+ if (clean.length > 2500) clean = clean.substring(0, 2500) + '…';
 
- function doSpeak() {
- var utt = new SpeechSynthesisUtterance(clean);
- utt.lang = l === 'ar' ? 'ar-SA' : l === 'en' ? 'en-GB' : 'fr-FR';
- utt.rate = window._abSpeed || 0.92;
- utt.pitch = 1.1;
- utt.volume = 1.0;
- var femaleVoice = abGetFemaleVoice(l);
- if (femaleVoice) utt.voice = femaleVoice;
- utt.onend = function() {
- _abSpeechActive = false;
- document.querySelectorAll('.ab-tts-btn.speaking').forEach(function(b){
- b.classList.remove('speaking'); b.innerHTML = '&#x1F508;';
- });
- };
- utt.onerror = function() { _abSpeechActive = false; };
- window.speechSynthesis.speak(utt);
- }
+ try {
+  var resp = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + _EL_VOICE_ID + '/stream', {
+   method: 'POST',
+   headers: {
+    'xi-api-key': _EL_API_KEY,
+    'Content-Type': 'application/json',
+    'Accept': 'audio/mpeg'
+   },
+   body: JSON.stringify({
+    text: clean,
+    model_id: 'eleven_multilingual_v2',
+    voice_settings: { stability: 0.5, similarity_boost: 0.85, style: 0.2, use_speaker_boost: true }
+   })
+  });
 
- /* Les voix peuvent ne pas être chargées immédiatement */
- if (window.speechSynthesis.getVoices().length === 0) {
- window.speechSynthesis.onvoiceschanged = function() {
- window.speechSynthesis.onvoiceschanged = null;
- doSpeak();
- };
- } else {
- doSpeak();
+  if (!resp.ok) throw new Error('ElevenLabs ' + resp.status);
+
+  var blob = await resp.blob();
+  var url  = URL.createObjectURL(blob);
+
+  if (_elAudio) { _elAudio.pause(); URL.revokeObjectURL(_elAudio.src); }
+  _elAudio = new Audio(url);
+  _elAudio.volume = 1.0;
+  _elAudio.onended = function() {
+   _abSpeechActive = false;
+   URL.revokeObjectURL(url);
+   document.querySelectorAll('.ab-tts-btn.speaking').forEach(function(b){
+    b.classList.remove('speaking'); b.innerHTML = '&#x1F508;';
+   });
+  };
+  _elAudio.onerror = function() { _abSpeechActive = false; };
+  _elAudio.play();
+
+ } catch(e) {
+  /* Fallback navigateur si ElevenLabs échoue */
+  _abSpeechActive = false;
+  console.warn('ElevenLabs TTS erreur:', e);
+  if (window.speechSynthesis) {
+   var utt = new SpeechSynthesisUtterance(clean);
+   utt.lang = 'fr-FR'; utt.rate = 0.92; utt.pitch = 1.1; utt.volume = 1.0;
+   utt.onend = function() { _abSpeechActive = false; };
+   window.speechSynthesis.speak(utt);
+  }
  }
 }
 
