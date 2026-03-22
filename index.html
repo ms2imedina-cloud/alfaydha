@@ -3356,13 +3356,12 @@ document.addEventListener('DOMContentLoaded', function(){
 
  <!-- Description -->
  <div style="text-align:center;font-size:13px;color:rgba(251,248,232,.55);line-height:1.7;padding:0 .5rem">
- Connectez-vous pour accéder à toutes les fonctionnalités de la communauté Taalibé Baye mondiale
+ Bienvenue dans l'application de la communauté Taalibé Baye mondiale
  </div>
 
- <!-- Bouton Google -->
- <button class="wlc-google-btn" onclick="signInWithGoogle()" style="width:100%;margin:0">
- <svg width="22" height="22" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-3.59-13.46-8.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
- Se connecter avec Google
+ <!-- Bouton Entrer -->
+ <button class="wlc-google-btn" onclick="enterApp('visiteur')" style="width:100%;margin:0;background:linear-gradient(135deg,var(--g1),var(--g2));border:none;font-size:16px;font-weight:700;letter-spacing:.05em">
+ ☽ &nbsp;Entrer dans la Faydha
  </button>
 
  </div>
@@ -6166,18 +6165,26 @@ document.addEventListener('DOMContentLoaded', function(){
  setTimeout(function(){ if(al && al.parentNode) al.parentNode.removeChild(al); }, 200);
  }
  /* Afficher welcome si pas connecté */
- setTimeout(function(){ _showWelcomeForced(); }, 300);
+ setTimeout(function(){ _showWelcomeForced(); }, 150);
  }
 
  function _showWelcomeForced(){
- /* Entrée automatique sans connexion obligatoire */
- _fbInit(function(){
- var user = firebase.auth().currentUser;
- if(!user){
- firebase.auth().signInAnonymously().catch(function(){});
+ /* Entrée automatique immédiate — sans attendre Firebase */
+ var w = document.getElementById('welcome');
+ /* Si la page welcome est visible → entrer directement */
+ if (w && !w.classList.contains('hidden')) {
  enterApp('visiteur');
  }
+ /* Connexion anonyme en arrière-plan sans bloquer */
+ if (typeof _fbInit === 'function') {
+ _fbInit(function(){
+ try {
+ if (!firebase.auth().currentUser) {
+ firebase.auth().signInAnonymously().catch(function(){});
+ }
+ } catch(e){}
  });
+ }
  }
 
  /* Callback direct via _fbInit — supprime le poll setInterval 80ms */
@@ -8261,7 +8268,7 @@ var LANG = {
  lang_skip: 'Passer',
 
  /* Welcome / Connexion */
- wlc_connect_desc: 'Connectez-vous pour accéder à toutes les fonctionnalités de la communauté Taalibé Baye mondiale',
+ wlc_connect_desc: 'Bienvenue dans l'application de la communauté Taalibé Baye mondiale',
  wlc_feat1: 'Accès à la communauté mondiale Taalibé Baye',
  wlc_feat2: 'Accès aux groupes Zikr en temps réel',
  wlc_feat3: 'Chat en direct avec la communauté',
@@ -9201,9 +9208,14 @@ window.confirmLang = function() {
  var flags = {fr:'🇫🇷 FR', en:'🇬🇧 EN', ar:'🇸🇦 ع'};
  var btn = document.getElementById('langSwitchBtn');
  if (btn) { btn.style.display = 'block'; btn.textContent = flags[lang] || '🌐'; }
- /* Toast de confirmation */
- var msgs = {fr:'🌍 Langue : Français', en:'🌍 Language: English', ar:'🌍 اللغة: العربية'};
- if (typeof showToast === 'function') showToast(msgs[lang] || '🌍');
+ /* Entrer directement dans l'app sans passer par welcome */
+ enterApp('visiteur');
+ /* Connexion anonyme en arrière-plan */
+ if (typeof _fbInit === 'function') {
+  _fbInit(function(){
+   try { if (!firebase.auth().currentUser) firebase.auth().signInAnonymously().catch(function(){}); } catch(e){}
+  });
+ }
 };
 
 var _abEngine = 'baye';
