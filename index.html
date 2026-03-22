@@ -6268,12 +6268,20 @@ async function _playLiveKitViewer(d) {
  var pub=snap.val();
  if(!pub||!pub.url)return;
  _vDone=true;clearTimeout(_vTO);_vRef.off('value');
+ /* Toujours regénérer le token avec canPublish:true pour permettre le micro */
  if(pub.apiKey&&pub.apiSecret){
  lkGenerateViewerToken(pub.apiKey,pub.apiSecret,pub.room||'faydha-live')
  .then(function(vt){lkJoinAsViewer(pub.url,vt);})
- .catch(function(e){if(pub.token)lkJoinAsViewer(pub.url,pub.token);else _showLiveError(wrap,e.message);});
- } else if(pub.token){lkJoinAsViewer(pub.url,pub.token).catch(function(e){_showLiveError(wrap,e.message||'Erreur connexion');});}
- else _showLiveError(wrap,'Configuration incomplète');
+ .catch(function(e){
+  /* Fallback : token pré-stocké */
+  if(pub.token) lkJoinAsViewer(pub.url,pub.token);
+  else _showLiveError(wrap,e.message);
+ });
+ } else if(pub.token){
+ /* Pas d'API key — on utilise le token mais on avertit */
+ console.warn('Token pré-stocké utilisé — canPublish peut être false — le micro viewer peut ne pas fonctionner');
+ lkJoinAsViewer(pub.url,pub.token).catch(function(e){_showLiveError(wrap,e.message||'Erreur connexion');});
+ } else _showLiveError(wrap,'Configuration incomplète — ajoutez API Key et Secret LiveKit');
  });
  });
 }
