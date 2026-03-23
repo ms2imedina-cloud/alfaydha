@@ -3826,7 +3826,7 @@ document.addEventListener('DOMContentLoaded', function(){
  /* Player officiel Muses — identique à radioalfayda.net */
  var musesUrl = 'https://hosted.muses.org/player.html?' +
  'url=http%3A%2F%2Fusa5.fastcast4u.com%2Fproxy%2Flyartech%3Fmp%3D%2F1' +
- '&codec=mp3&volume=80&autoplay=true' +
+ '&codec=mp3&volume=100&autoplay=true' +
  '&title=RADIO+AL+FAYDA+90.1+KAOLACK' +
  '&welcome=BIENVENUE' +
  '&skin=mcclean&width=280&height=60&wmode=transparent';
@@ -3889,22 +3889,50 @@ document.addEventListener('DOMContentLoaded', function(){
  tryStream(streamIdx + 1);
  });
 
- /* ── Volume ── */
- audio.volume = 0.8;
+ /* ── Volume max + boost WebAudio ── */
+ audio.volume = 1.0;
+
+ /* Boost via WebAudio API (amplifie au-delà du volume natif) */
+ var _rpAC = null, _rpGain = null, _rpSource = null;
+ function _rpBoostInit() {
+   try {
+     if (_rpAC) return;
+     var AC = window.AudioContext || window.webkitAudioContext;
+     if (!AC) return;
+     _rpAC = new AC();
+     _rpSource = _rpAC.createMediaElementSource(audio);
+     _rpGain   = _rpAC.createGain();
+     _rpGain.gain.value = 2.5; /* boost ×2.5 — fort mais sans distorsion */
+     _rpSource.connect(_rpGain);
+     _rpGain.connect(_rpAC.destination);
+   } catch(e) {}
+ }
+ /* Lancer le boost dès le premier play */
+ audio.addEventListener('playing', function _rpFirstPlay(){
+   _rpBoostInit();
+   if (_rpAC && _rpAC.state === 'suspended') _rpAC.resume();
+ }, {once: false});
+
  volEl.addEventListener('input', function(){
- var v = this.value / 100;
- audio.volume = v;
- this.style.background =
- 'linear-gradient(90deg,#1a9650 ' + this.value + '%,' +
- 'rgba(255,255,255,.1) ' + this.value + '%)';
- volIco.textContent = v === 0 ? '🔇' : v < 0.5 ? '🔈' : '🔊';
+   var v = this.value / 100;
+   audio.volume = Math.min(v, 1.0);
+   /* Ajuster aussi le gain boost proportionnellement */
+   if (_rpGain) _rpGain.gain.value = 1.0 + v * 2.0; /* 1x→3x selon slider */
+   this.style.background =
+   'linear-gradient(90deg,#1a9650 ' + this.value + '%,' +
+   'rgba(255,255,255,.1) ' + this.value + '%)';
+   volIco.textContent = v === 0 ? '🔇' : v < 0.5 ? '🔈' : '🔊';
  });
+ /* Initialiser l'affichage du slider à 100% */
+ volEl.value = 100;
+ volEl.style.background = 'linear-gradient(90deg,#1a9650 100%,rgba(255,255,255,.1) 100%)';
 
  /* ── iOS AudioContext unlock ── */
  document.addEventListener('touchstart', function u(){
- var C = window.AudioContext || window.webkitAudioContext;
- if(C){ try{ new C().resume(); }catch(e){} }
- document.removeEventListener('touchstart', u);
+   var C = window.AudioContext || window.webkitAudioContext;
+   if(C){ try{ var ctx=new C(); ctx.resume(); }catch(e){} }
+   if (_rpAC && _rpAC.state === 'suspended') _rpAC.resume();
+   document.removeEventListener('touchstart', u);
  }, {once:true, passive:true});
 
 })();
