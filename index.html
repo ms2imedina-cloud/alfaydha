@@ -3166,6 +3166,164 @@ button[onclick="qiblaGPS()"] {
 <meta property="og:description" content="L'application mondiale des Taalibé Baye">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ms2imedina-cloud.github.io/alfaydha/">
+
+<!-- ══ PWA MANIFEST embarqué ══ -->
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Faydha%20%E2%80%94%20M%C3%A9dina%20Baye%22%2C%22short_name%22%3A%22Faydha%22%2C%22description%22%3A%22L%E2%80%99application%20mondiale%20des%20Taalib%C3%A9%20Baye%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23063d1e%22%2C%22theme_color%22%3A%22%230F7B3F%22%2C%22orientation%22%3A%22portrait%22%2C%22lang%22%3A%22fr%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%2520viewBox%3D%270%200%20512%20512%27%253E%253Crect%2520width%3D%27512%27%2520height%3D%27512%27%2520rx%3D%27100%27%2520fill%3D%27%230F7B3F%27%2F%253E%253Ctext%2520x%3D%27256%27%2520y%3D%27340%27%2520text-anchor%3D%27middle%27%2520font-size%3D%27300%27%253E%25F0%259F%2595%258C%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
+
+<!-- ══ Icône Apple Touch ══ -->
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%230F7B3F'/><text x='256' y='340' text-anchor='middle' font-size='300'>🕌</text></svg>">
+
+<!-- ══ SERVICE WORKER inline ══ -->
+<script>
+if('serviceWorker' in navigator){
+  var _swBlob = new Blob([
+    'var CACHE="faydha-v1";' +
+    'self.addEventListener("install",function(e){' +
+    '  self.skipWaiting();' +
+    '});' +
+    'self.addEventListener("activate",function(e){' +
+    '  e.waitUntil(clients.claim());' +
+    '});' +
+    'self.addEventListener("fetch",function(e){' +
+    '  if(e.request.method!=="GET")return;' +
+    '  e.respondWith(fetch(e.request).catch(function(){' +
+    '    return caches.match(e.request);' +
+    '  }));' +
+    '});'
+  ], {type:'application/javascript'});
+  var _swUrl = URL.createObjectURL(_swBlob);
+  navigator.serviceWorker.register(_swUrl).catch(function(){});
+}
+</script>
+
+<!-- ══ BANDEAU INSTALLER L'APP ══ -->
+<style>
+#pwa-install-bar {
+  display:none;
+  position:fixed;
+  bottom:calc(var(--nav-h,72px) + env(safe-area-inset-bottom,0px) + 8px);
+  left:50%; transform:translateX(-50%);
+  z-index:9990;
+  background:linear-gradient(135deg,#063d1e,#0F7B3F);
+  border:1.5px solid rgba(212,175,55,.5);
+  border-radius:18px;
+  padding:.65rem 1.1rem;
+  display:none;
+  align-items:center;
+  gap:.8rem;
+  box-shadow:0 8px 32px rgba(0,0,0,.45);
+  max-width:340px;
+  width:90%;
+  animation: pwaSlideUp .4s ease;
+}
+@keyframes pwaSlideUp{from{transform:translateX(-50%) translateY(30px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
+#pwa-install-bar .pwa-icon { font-size:28px; flex-shrink:0; }
+#pwa-install-bar .pwa-texts { flex:1; }
+#pwa-install-bar .pwa-title { font-size:13px; font-weight:800; color:#fff; }
+#pwa-install-bar .pwa-sub   { font-size:11px; color:rgba(255,255,255,.6); margin-top:1px; }
+#pwa-install-btn {
+  background:linear-gradient(135deg,#C8973A,#E8C97A);
+  color:#1a1a1a; border:none; border-radius:20px;
+  padding:.4rem .9rem; font-size:12px; font-weight:800;
+  cursor:pointer; white-space:nowrap; flex-shrink:0;
+}
+#pwa-close-btn {
+  background:none; border:none; color:rgba(255,255,255,.5);
+  font-size:18px; cursor:pointer; padding:0; flex-shrink:0; line-height:1;
+}
+/* Bandeau iOS spécial */
+#pwa-ios-bar {
+  display:none;
+  position:fixed;
+  bottom:calc(var(--nav-h,72px) + env(safe-area-inset-bottom,0px) + 8px);
+  left:50%; transform:translateX(-50%);
+  z-index:9990;
+  background:#fff;
+  border:1px solid rgba(0,0,0,.12);
+  border-radius:16px;
+  padding:.8rem 1rem;
+  max-width:320px; width:90%;
+  box-shadow:0 8px 32px rgba(0,0,0,.25);
+  animation: pwaSlideUp .4s ease;
+}
+#pwa-ios-bar .ios-title { font-size:13px; font-weight:700; color:#1a1a1a; margin-bottom:4px; }
+#pwa-ios-bar .ios-steps { font-size:12px; color:#444; line-height:1.7; }
+#pwa-ios-bar .ios-close { position:absolute; top:8px; right:10px; background:none; border:none; font-size:18px; color:#888; cursor:pointer; }
+</style>
+
+<div id="pwa-install-bar">
+  <span class="pwa-icon">🕌</span>
+  <div class="pwa-texts">
+    <div class="pwa-title">Installer Faydha</div>
+    <div class="pwa-sub">Accès rapide depuis votre écran d'accueil</div>
+  </div>
+  <button id="pwa-install-btn">Installer</button>
+  <button id="pwa-close-btn" onclick="document.getElementById('pwa-install-bar').style.display='none'">✕</button>
+</div>
+
+<div id="pwa-ios-bar">
+  <button class="ios-close" onclick="document.getElementById('pwa-ios-bar').style.display='none'">✕</button>
+  <div class="ios-title">🕌 Installer Faydha sur iPhone</div>
+  <div class="ios-steps">
+    1. Appuyez sur <strong>⬆ Partager</strong> en bas<br>
+    2. Choisissez <strong>« Sur l'écran d'accueil »</strong><br>
+    3. Appuyez sur <strong>Ajouter</strong> ✓
+  </div>
+</div>
+
+<script>
+(function(){
+  var _pwaPrompt = null;
+  var _pwaInstalled = false;
+
+  /* Android / Chrome — événement beforeinstallprompt */
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    _pwaPrompt = e;
+    if(!_pwaInstalled){
+      var bar = document.getElementById('pwa-install-bar');
+      if(bar){ bar.style.display='flex'; }
+    }
+  });
+
+  /* Bouton Installer (Android) */
+  document.addEventListener('DOMContentLoaded', function(){
+    var btn = document.getElementById('pwa-install-btn');
+    if(btn){
+      btn.addEventListener('click', function(){
+        if(!_pwaPrompt) return;
+        _pwaPrompt.prompt();
+        _pwaPrompt.userChoice.then(function(r){
+          if(r.outcome==='accepted'){ _pwaInstalled=true; }
+          document.getElementById('pwa-install-bar').style.display='none';
+          _pwaPrompt=null;
+        });
+      });
+    }
+
+    /* iOS Safari — afficher instructions si pas déjà installé */
+    var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    var isStandalone = window.navigator.standalone === true;
+    var shownIOS = false;
+    try{ shownIOS = !!localStorage.getItem('_pwaIOSshown'); }catch(e){}
+    if(isIOS && !isStandalone && !shownIOS){
+      setTimeout(function(){
+        var bar = document.getElementById('pwa-ios-bar');
+        if(bar){ bar.style.display='block'; }
+        try{ localStorage.setItem('_pwaIOSshown','1'); }catch(e){}
+      }, 3500);
+    }
+  });
+
+  /* Détection installation réussie */
+  window.addEventListener('appinstalled', function(){
+    _pwaInstalled = true;
+    var bar = document.getElementById('pwa-install-bar');
+    if(bar) bar.style.display='none';
+    if(typeof showToast==='function') showToast('✅ Faydha installée sur votre écran d\'accueil !');
+  });
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
