@@ -6836,22 +6836,22 @@ function showAdminContent(){
  var d=snap.val();
  try{ if(d&&d.hash) localStorage.setItem(PWD_KEY, d.hash); }catch(e){}
  });
- /* Chaînes depuis Firebase → editors */
- firebase.database().ref('app_config/channels').once('value',function(snap){
+ /* Chaînes depuis Firebase → editors (écoute temps réel) */
+ firebase.database().ref('app_config/channels').on('value',function(snap){
  var d=snap.val();
  if(!d||!d.data) return;
  try{
  var chs=JSON.parse(d.data);
- if(Array.isArray(chs)){ localStorage.setItem(CH_KEY,JSON.stringify(chs)); buildChEditors(); }
+ if(Array.isArray(chs)){ localStorage.setItem(CH_KEY,JSON.stringify(chs)); buildChEditors(); renderChannels && renderChannels(); }
  }catch(e){}
  });
- /* Programme depuis Firebase → admin list */
- firebase.database().ref('app_config/programme').once('value',function(snap){
+ /* Programme depuis Firebase → admin list (écoute temps réel) */
+ firebase.database().ref('app_config/programme').on('value',function(snap){
  var d=snap.val();
  if(!d||!d.data) return;
  try{
  var prog=JSON.parse(d.data);
- if(Array.isArray(prog)){ localStorage.setItem(PROG_KEY,JSON.stringify(prog)); buildProgAdmin(); }
+ if(Array.isArray(prog)){ localStorage.setItem(PROG_KEY,JSON.stringify(prog)); buildProgAdmin(); renderProgramme && renderProgramme(); }
  }catch(e){}
  });
  });
@@ -10807,6 +10807,70 @@ document.addEventListener('DOMContentLoaded', function() {
  /* Firebase Auth + Sync */
  _fbInit(function() {
 
+ /* ════════════════════════════════════════════════════════════
+    SYNC GLOBAL — toutes les mises à jour admin sont appliquées
+    instantanément à TOUS les utilisateurs sans exception.
+    Ces listeners s'activent dès Firebase prêt, avant même
+    l'authentification, pour couvrir utilisateurs anonymes
+    et connectés de manière identique.
+    ════════════════════════════════════════════════════════════ */
+
+ /* ── 1. Chaînes TV ── */
+ firebase.database().ref('app_config/channels').on('value', function(snap) {
+   var d = snap.val();
+   if (!d || !d.data) return;
+   try {
+     var chs = JSON.parse(d.data);
+     if (!Array.isArray(chs)) return;
+     try { localStorage.setItem('faydha_ch5', JSON.stringify(chs)); } catch(e) {}
+     renderChannels && renderChannels();
+   } catch(e) {}
+ });
+
+ /* ── 2. Programme / Agenda ── */
+ firebase.database().ref('app_config/programme').on('value', function(snap) {
+   var d = snap.val();
+   if (!d || !d.data) return;
+   try {
+     var prog = JSON.parse(d.data);
+     if (!Array.isArray(prog)) return;
+     try { localStorage.setItem('faydha_prog', JSON.stringify(prog)); } catch(e) {}
+     renderProgramme && renderProgramme();
+     renderNextEvent && renderNextEvent();
+   } catch(e) {}
+ });
+
+ /* ── 3. Paramètre Chat (activé / désactivé) ── */
+ firebase.database().ref('app_config/settings/chat').on('value', function(snap) {
+   var d = snap.val();
+   if (!d) return;
+   var wrap = document.querySelector('.chat-input-row, .chat-input-wrap');
+   if (wrap) wrap.style.display = d.enabled !== false ? '' : 'none';
+ });
+
+ /* ── 4. Direct live (état du stream en temps réel) ── */
+ firebase.database().ref('faydha_direct').on('value', function(snap) {
+   if (window._isStreaming) return; /* le streamer ignore ses propres updates */
+   var d = snap.val();
+   if (!d) return;
+   try { localStorage.setItem('faydha_direct', JSON.stringify(d)); } catch(e) {}
+   renderChannels && renderChannels();
+ });
+
+ /* ── 5. Clé AI Anthropic partagée ── */
+ firebase.database().ref('app_config/ab_key').on('value', function(snap) {
+   var d = snap.val();
+   if (!d || !d.key) return;
+   try { localStorage.setItem('ab_anthropic_key', d.key); } catch(e) {}
+ });
+
+ /* ── 6. Config viewer LiveKit (URL du stream pour spectateurs) ── */
+ firebase.database().ref('app_config/livekit_viewer').on('value', function(snap) {
+   var d = snap.val();
+   if (!d) return;
+   try { localStorage.setItem('faydha_lk_viewer', JSON.stringify(d)); } catch(e) {}
+ });
+
  /* Récupérer résultat redirect (iOS Safari) */
  firebase.auth().getRedirectResult().then(function(result) {
  if (result && result.user) {
@@ -10863,12 +10927,11 @@ document.addEventListener('DOMContentLoaded', function() {
 function _fbSyncUser(user) {
  var isAdmin = (user.email === ADMIN_EMAIL);
 
- /* ─── LISTENER UNIQUE : faydha_direct ─── */
+ /* ─── LISTENER : faydha_direct — logique live (bannière, navigation, chat) ─── */
+ /* Note : le sync simple (localStorage + renderChannels) est géré par le listener global */
  var _wasLive = null;
  firebase.database().ref('faydha_direct').on('value', function(snap) {
- /* PROTECTION ABSOLUE : le streamer ignore ses propres updates */
  if (window._isStreaming) return;
-
  var d = snap.val();
  if (!d) { _wasLive = (_wasLive === null) ? false : _wasLive; return; }
 
@@ -10879,19 +10942,13 @@ function _fbSyncUser(user) {
  if (!_fbChatEnabled) fbWatchChat();
  if (_wasLive === null) {
  _wasLive = true;
- /* Live déjà actif à l\'arrivée → bannière discrète uniquement */
  setTimeout(function() {
- if (!window._isStreaming && typeof _fbShowLiveBanner === 'function') {
- _fbShowLiveBanner(d);
- }
+ if (!window._isStreaming && typeof _fbShowLiveBanner === 'function') _fbShowLiveBanner(d);
  }, 1500);
  } else if (_wasLive === false) {
  _wasLive = true;
- /* Live vient de démarrer → bannière + navigation */
  setTimeout(function() {
- if (!window._isStreaming && typeof _fbShowLiveBanner === 'function') {
- _fbShowLiveBanner(d);
- }
+ if (!window._isStreaming && typeof _fbShowLiveBanner === 'function') _fbShowLiveBanner(d);
  }, 800);
  setTimeout(function() {
  if (!window._isStreaming) {
@@ -10902,7 +10959,6 @@ function _fbSyncUser(user) {
  }
  } else {
  if (_wasLive === true) {
- /* Live terminé → déconnecter proprement la room viewer */
  if (window._lkViewerRoom) {
  try { window._lkViewerRoom.disconnect(); } catch(e) {}
  window._lkViewerRoom = null;
@@ -10916,45 +10972,40 @@ function _fbSyncUser(user) {
  '<div style="font-size:40px;margin-bottom:.5rem">📺</div>' +
  '<div class="pp-txt" style="color:var(--gold2)">Direct terminé</div>' +
  '<div class="pp-sub">Le streamer a arrêté la diffusion</div>' +
- '<div style="margin-top:.5rem;font-size:12px;color:rgba(255,255,255,.3)">بَارَكَ اللهُ فِيكُمْ</div>' +
+ '<div style="margin-top:.5rem;font-size:12px;color:rgba(255,255,255,.3)">\u0628\u064e\u0627\u0631\u064e\u0643\u064e \u0627\u0644\u0644\u0647\u064f \u0641\u0650\u064a\u0643\u064f\u0645\u0652</div>' +
  '</div>';
  showControls(false);
  _currentCh = -1; _currentChData = null;
  }
- showToast('📺 Le direct est terminé');
+ showToast('\u{1F4FA} Le direct est termin\u00e9');
  }
  _wasLive = false;
  }
  });
 
- /* ─── LISTENER : chaînes ─── */
+ /* ─── LISTENERS ADMIN UNIQUEMENT : interface + config streamer ─── */
+ if (isAdmin) {
+ /* Mettre à jour les éditeurs admin quand les chaînes changent */
  firebase.database().ref('app_config/channels').on('value', function(snap) {
  var d = snap.val();
  if (!d || !d.data) return;
  try {
  var chs = JSON.parse(d.data);
  if (!Array.isArray(chs)) return;
- localStorage.setItem('faydha_ch5', JSON.stringify(chs));
- renderChannels && renderChannels();
- if (isAdmin && window._adminIn) buildChEditors && buildChEditors();
+ if (window._adminIn) buildChEditors && buildChEditors();
  } catch(e) {}
  });
-
- /* ─── LISTENER : programme ─── */
+ /* Mettre à jour l'éditeur programme admin */
  firebase.database().ref('app_config/programme').on('value', function(snap) {
  var d = snap.val();
  if (!d || !d.data) return;
  try {
  var prog = JSON.parse(d.data);
  if (!Array.isArray(prog)) return;
- localStorage.setItem('faydha_prog', JSON.stringify(prog));
- renderProgramme && renderProgramme();
- if (isAdmin && window._adminIn) buildProgAdmin && buildProgAdmin();
+ if (window._adminIn) buildProgAdmin && buildProgAdmin();
  } catch(e) {}
  });
-
- /* ─── LISTENERS ADMIN UNIQUEMENT ─── */
- if (isAdmin) {
+ /* Clé streamer privée */
  firebase.database().ref('streamer_config/ab_key').on('value', function(snap) {
  var d = snap.val();
  if (!d || !d.key || !d.key.startsWith('sk-ant')) return;
@@ -10962,6 +11013,7 @@ function _fbSyncUser(user) {
  var inp = document.getElementById('abApiKey');
  if (inp) inp.value = d.key;
  });
+ /* Config LiveKit admin */
  firebase.database().ref('streamer_config/livekit').on('value', function(snap) {
  var d = snap.val();
  if (!d || !d.apiKey) return;
@@ -10970,16 +11022,10 @@ function _fbSyncUser(user) {
  })); } catch(e) {}
  fillLkFields(d);
  });
- firebase.database().ref('app_config/settings/chat').on('value', function(snap) {
- var d = snap.val();
- if (!d) return;
- var wrap = document.querySelector('.chat-input-row, .chat-input-wrap');
- if (wrap) wrap.style.display = d.enabled !== false ? '' : 'none';
- });
  }
 }
 
-var _zAudioPlaying=false,_zAudioCount=0,_zAudioTarget=100,_zAudioSpeed=3000,_zVizTimer=null;
+ar _zAudioPlaying=false,_zAudioCount=0,_zAudioTarget=100,_zAudioSpeed=3000,_zVizTimer=null;
 var _zCurAudioKey='lahila';
 var _zAudioZikrs={
  lahila:{ar:'لَا إِلَهَ إِلَّا اللهُ',target:100,rate:.75},
