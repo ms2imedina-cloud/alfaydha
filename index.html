@@ -4995,21 +4995,8 @@ window.toggleStudioPanel = function() {
 
   <!-- STATUT -->
   <div id="qp-status"></div>
-
-  <!-- RECHERCHE VILLE -->
-  <div id="qp-city-wrap">
-    <input id="qiblaCityIn" placeholder="Votre ville..." onkeydown="if(event.key==='Enter')qiblaGo()">
-    <button id="qp-search-btn" onclick="qiblaGo()">🔍</button>
-  </div>
-  <div id="qp-chips">
-    <span class="qp-chip" onclick="_qiblaRun(14.6928,-17.4467,'Dakar')">Dakar</span>
-    <span class="qp-chip" onclick="_qiblaRun(14.7886,-16.9228,'Thiès')">Thiès</span>
-    <span class="qp-chip" onclick="_qiblaRun(14.152,-16.0765,'Kaolack')">Kaolack</span>
-    <span class="qp-chip" onclick="_qiblaRun(14.8669,-15.8825,'Touba')">Touba</span>
-    <span class="qp-chip" onclick="_qiblaRun(13.4531,-15.4543,'Ziguinchor')">Ziguinchor</span>
-    <span class="qp-chip" onclick="_qiblaRun(15.6,-16.0,'Saint-Louis')">Saint-Louis</span>
-  </div>
   <div id="qiblaMsg"></div>
+  <input id="qiblaCityIn" style="display:none">
 
 </div><!-- /qp -->
 
