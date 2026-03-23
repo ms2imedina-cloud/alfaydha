@@ -4820,408 +4820,496 @@ window.toggleStudioPanel = function() {
  </button>
 </div>
 
-<!-- ═══ PANEL QIBLA ═══ -->
+<!-- ═══ PANEL QIBLA — Style AR Boussole ═══ -->
 <div class="ql-panel active" id="ql-panel-qibla">
-
 <style>
-/* ══ QIBLA PRO SYSTEM ══ */
-#qibla-pro-wrap {
-  background: linear-gradient(160deg,#063d1e 0%,#1a5c38 60%,#0a3d22 100%);
-  border-radius: 18px;
-  margin: 1rem;
+/* ══ QIBLA AR STYLE ══ */
+#qibla-ar-root {
+  position: relative;
+  width: 100%;
+  background: #000;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0,0,0,.35);
+  display: flex;
+  flex-direction: column;
+  min-height: 520px;
 }
-#qibla-header {
-  text-align:center;
-  padding: 1.1rem 1rem .7rem;
-  border-bottom: 1px solid rgba(212,175,55,.2);
-}
-#qibla-header .qh-title {
-  font-family:'Amiri',serif;
-  font-size:20px;
-  color:#fff;
-  letter-spacing:.5px;
-}
-#qibla-header .qh-ar {
-  font-family:'Amiri',serif;
-  font-size:13px;
-  color:#E8C97A;
-  direction:rtl;
-  margin-top:2px;
-}
-/* Indicateur de précision */
-#qibla-accuracy-bar {
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-  padding:.4rem .8rem;
-  margin:.7rem auto 0;
-  width:fit-content;
-  border-radius:20px;
-  font-size:11px;
-  font-weight:700;
-  letter-spacing:.06em;
-  transition: all .4s;
-}
-#qibla-accuracy-bar.acc-wait { background:rgba(255,255,255,.08); color:rgba(255,255,255,.5); }
-#qibla-accuracy-bar.acc-ok   { background:rgba(46,125,82,.35); color:#7aefab; border:1px solid rgba(46,205,82,.3); }
-#qibla-accuracy-bar.acc-warn { background:rgba(212,175,55,.2); color:#E8C97A; border:1px solid rgba(212,175,55,.3); }
-#qibla-accuracy-bar.acc-err  { background:rgba(192,57,43,.25); color:#ff8a7a; border:1px solid rgba(192,57,43,.4); }
 
-/* Cercle boussole principal */
-#qibla-compass-wrap {
-  position:relative;
-  width:260px;
-  height:260px;
-  margin: 1rem auto .6rem;
+/* Fond caméra ou dégradé sombre */
+#qibla-camera-bg {
+  position: absolute;
+  inset: 0;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  opacity: .55;
+  background: #1a1a1a;
 }
-#qibla-compass-wrap canvas {
-  position:absolute;
-  inset:0;
-  border-radius:50%;
+
+/* Tout ce qui est au-dessus */
+#qibla-ar-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  flex: 1;
 }
-/* Anneau pulsant quand aligné */
+
+/* Barre supérieure titre */
+#qibla-ar-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .7rem 1rem .4rem;
+}
+#qibla-ar-title {
+  font-family: 'Amiri', serif;
+  font-size: 17px;
+  color: #fff;
+  font-weight: 700;
+  text-shadow: 0 1px 8px rgba(0,0,0,.8);
+}
+#qibla-ar-ar {
+  font-family: 'Amiri', serif;
+  font-size: 13px;
+  color: #E8C97A;
+  direction: rtl;
+  text-shadow: 0 1px 6px rgba(0,0,0,.8);
+}
+#qibla-cam-btn {
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 50%;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; cursor: pointer;
+  backdrop-filter: blur(4px);
+}
+
+/* ══ BOUSSOLE PRINCIPALE ══ */
+#qibla-compass-outer {
+  position: relative;
+  margin: .4rem auto .3rem;
+  width: 270px;
+  height: 270px;
+  flex-shrink: 0;
+}
+
+/* Le disque qui TOURNE — contient N/E/S/W et les graduations */
+#qibla-disc {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+  /* transition douce */
+}
+
+/* Flèche Mecque FIXE au centre (ne tourne pas) */
+#qibla-arrow-fixed {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 4;
+}
+
+/* Indicateur Nord fixe en haut (triangle blanc) */
+#qibla-north-marker {
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  width: 0; height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 14px solid rgba(255,255,255,.9);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.6));
+  pointer-events: none;
+}
+
+/* Anneau pulsant alignement */
 #qibla-pulse-ring {
-  position:absolute;
-  inset:-8px;
-  border-radius:50%;
-  border:3px solid transparent;
-  transition:border-color .3s, box-shadow .3s;
-  pointer-events:none;
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  transition: border-color .3s, box-shadow .3s;
+  pointer-events: none;
+  z-index: 6;
 }
 #qibla-pulse-ring.aligned {
-  border-color: rgba(100,255,150,.6);
-  box-shadow: 0 0 24px rgba(60,220,100,.5), inset 0 0 12px rgba(60,220,100,.15);
-  animation: qiblaPulse 1.2s ease-in-out infinite;
+  border-color: rgba(100,255,150,.7);
+  box-shadow: 0 0 28px rgba(60,220,100,.6), 0 0 60px rgba(60,220,100,.25);
+  animation: qAR_pulse 1.1s ease-in-out infinite;
 }
-@keyframes qiblaPulse {
-  0%,100%{ box-shadow:0 0 16px rgba(60,220,100,.5); }
-  50%{ box-shadow:0 0 36px rgba(60,220,100,.8), 0 0 60px rgba(60,220,100,.3); }
-}
-
-/* Aiguille SVG rotative */
-#qibla-needle-wrap {
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  will-change:transform;
-  /* transition appliquée dynamiquement */
+@keyframes qAR_pulse {
+  0%,100%{ box-shadow:0 0 20px rgba(60,220,100,.5); }
+  50%{ box-shadow:0 0 40px rgba(60,220,100,.9), 0 0 80px rgba(60,220,100,.3); }
 }
 
-/* Données en bas */
+/* ══ BADGE ALIGNÉ ══ */
+#qibla-aligned-badge {
+  display: none;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem .9rem;
+  margin: .2rem auto .3rem;
+  background: linear-gradient(135deg,rgba(46,125,82,.7),rgba(30,180,80,.3));
+  border: 1.5px solid rgba(100,255,150,.5);
+  border-radius: 20px;
+  backdrop-filter: blur(6px);
+  animation: qAR_badgeIn .4s ease;
+}
+@keyframes qAR_badgeIn { from{transform:scale(.9);opacity:0} to{transform:scale(1);opacity:1} }
+#qibla-aligned-badge .ab-icon { font-size: 20px; }
+#qibla-aligned-badge .ab-text { font-size: 12px; font-weight: 800; color: #7aefab; letter-spacing:.04em; }
+
+/* ══ DONNÉES ══ */
 #qibla-data-row {
-  display:flex;
-  justify-content:center;
-  gap:.8rem;
-  padding:.6rem 1rem;
+  display: flex;
+  gap: .6rem;
+  padding: .3rem .8rem;
+  width: 100%;
+  justify-content: center;
 }
 .qd-box {
-  background:rgba(255,255,255,.07);
-  border:1px solid rgba(212,175,55,.2);
-  border-radius:14px;
-  padding:.5rem .85rem;
-  text-align:center;
-  min-width:72px;
+  background: rgba(0,0,0,.45);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 12px;
+  padding: .4rem .7rem;
+  text-align: center;
+  min-width: 68px;
+  backdrop-filter: blur(6px);
 }
 .qd-label {
-  font-size:9px;
-  font-weight:700;
-  color:rgba(255,255,255,.45);
-  letter-spacing:.1em;
-  text-transform:uppercase;
+  font-size: 9px; font-weight: 700;
+  color: rgba(255,255,255,.45);
+  letter-spacing: .1em; text-transform: uppercase;
 }
-.qd-val {
-  font-size:20px;
-  font-weight:800;
-  color:#fff;
-  line-height:1.2;
-  margin-top:1px;
-}
-.qd-val.gold { color:#E8C97A; }
-.qd-val.green { color:#7aefab; }
+.qd-val { font-size: 18px; font-weight: 800; color: #fff; line-height: 1.2; }
+.qd-val.gold { color: #E8C97A; }
+.qd-val.green { color: #7aefab; }
 
-/* Barre de progression alignement */
-#qibla-align-bar-wrap {
-  padding:0 1.2rem .6rem;
+/* ══ BARRE CALIBRATION — exactement comme la photo ══ */
+#qibla-calib-bar {
+  width: 100%;
+  background: rgba(255,255,255,.97);
+  border-top: 1px solid rgba(0,0,0,.08);
+  padding: .75rem 1rem .7rem;
+  display: flex;
+  flex-direction: column;
+  gap: .15rem;
 }
-#qibla-align-bar-bg {
-  height:8px;
-  background:rgba(255,255,255,.1);
-  border-radius:4px;
-  overflow:hidden;
+#qibla-calib-bar.hidden { display: none; }
+#qibla-calib-msg {
+  font-size: 13.5px;
+  color: #1a1a1a;
+  font-weight: 400;
+  line-height: 1.45;
 }
-#qibla-align-bar {
-  height:100%;
-  width:0%;
-  border-radius:4px;
-  background:linear-gradient(90deg,#C8973A,#7aefab);
-  transition:width .25s ease, background .25s;
+#qibla-calib-link {
+  font-size: 13.5px;
+  color: #1a73e8;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 1px;
 }
-#qibla-align-label {
-  font-size:10px;
-  color:rgba(255,255,255,.5);
-  text-align:center;
-  margin-top:3px;
-  font-weight:600;
-  letter-spacing:.05em;
+#qibla-calib-close {
+  position: absolute;
+  right: 1rem;
+  font-size: 18px;
+  color: #555;
+  cursor: pointer;
+  line-height: 1;
+  background: none;
+  border: none;
+  padding: 0;
 }
 
-/* Section contrôles */
-#qibla-controls {
-  padding:.5rem 1rem .9rem;
-  border-top:1px solid rgba(255,255,255,.07);
+/* ══ STATUT / LOC ══ */
+#qibla-status-bar {
+  width: 100%;
+  padding: .25rem .8rem .4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+}
+#qiblaCompassStatus {
+  font-size: 11px; color: rgba(255,255,255,.7);
+  font-weight: 600; flex: 1;
+  text-shadow: 0 1px 4px rgba(0,0,0,.8);
+}
+#qiblaMsg { font-size: 11px; color: #ff8a7a; font-weight: 600; }
+
+/* ══ CONTRÔLES BAS ══ */
+#qibla-bottom-controls {
+  width: 100%;
+  padding: .35rem .8rem .7rem;
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
 }
 #qibla-city-row {
-  display:flex;
-  gap:.45rem;
-  margin-bottom:.55rem;
+  display: flex; gap: .4rem;
 }
 #qiblaCityIn {
-  flex:1;
-  padding:.5rem .8rem;
-  border:1.5px solid rgba(212,175,55,.4);
-  border-radius:10px;
-  font-size:13px;
-  background:rgba(255,255,255,.07);
-  color:#fff;
-  outline:none;
+  flex: 1; padding: .45rem .75rem;
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 10px;
+  font-size: 13px;
+  background: rgba(0,0,0,.4);
+  color: #fff; outline: none;
+  backdrop-filter: blur(6px);
 }
-#qiblaCityIn::placeholder { color:rgba(255,255,255,.3); }
-#qiblaCityIn:focus { border-color:rgba(212,175,55,.8); background:rgba(255,255,255,.1); }
+#qiblaCityIn::placeholder { color: rgba(255,255,255,.35); }
+#qiblaCityIn:focus { border-color: rgba(212,175,55,.7); }
 #qibla-search-btn {
-  background:linear-gradient(135deg,var(--gold),#b8962e);
-  color:#1c2b22;
-  border:none;
-  border-radius:10px;
-  padding:.5rem .9rem;
-  font-size:15px;
-  font-weight:800;
-  cursor:pointer;
-}
-#qibla-btns-row {
-  display:flex;
-  gap:.4rem;
-  justify-content:center;
-  flex-wrap:wrap;
-  margin-bottom:.5rem;
-}
-.qibla-pill-btn {
-  border-radius:20px;
-  padding:.35rem .85rem;
-  font-size:12px;
-  font-weight:700;
-  cursor:pointer;
-  border:none;
-  transition:all .2s;
-}
-#qibla-gps-btn {
-  background:rgba(46,125,82,.3);
-  border:1.5px solid rgba(46,205,82,.4);
-  color:#7aefab;
-}
-#qibla-gps-btn:active { background:rgba(46,125,82,.6); }
-#qiblaCompassBtn {
-  background:linear-gradient(135deg,var(--g1),var(--g2));
-  color:#fff;
-  border:none;
-}
-#qiblaCompassBtn.active-compass {
-  background:linear-gradient(135deg,#c0392b,#e74c3c) !important;
-  animation: btnPulse .9s ease-in-out infinite;
-}
-@keyframes btnPulse {
-  0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,.4)}
-  50%{box-shadow:0 0 0 6px rgba(192,57,43,0)}
+  background: rgba(212,175,55,.9);
+  color: #1a1a1a; border: none;
+  border-radius: 10px; padding: .45rem .85rem;
+  font-size: 15px; font-weight: 800; cursor: pointer;
 }
 #qibla-cities-row {
-  display:flex;
-  gap:.3rem;
-  justify-content:center;
-  flex-wrap:wrap;
-  margin-bottom:.4rem;
+  display: flex; gap: .3rem;
+  justify-content: center; flex-wrap: wrap;
 }
 .qibla-city-chip {
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(212,175,55,.2);
-  border-radius:16px;
-  padding:.22rem .6rem;
-  font-size:11px;
-  color:rgba(255,255,255,.7);
-  cursor:pointer;
-  transition:all .18s;
+  background: rgba(0,0,0,.35);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 14px;
+  padding: .2rem .55rem;
+  font-size: 11px; color: rgba(255,255,255,.8);
+  cursor: pointer; transition: all .18s;
+  backdrop-filter: blur(4px);
 }
-.qibla-city-chip:hover { background:rgba(212,175,55,.15); color:#E8C97A; }
-#qiblaCompassStatus {
-  font-size:11px;
-  color:rgba(255,255,255,.5);
-  text-align:center;
-  margin-top:.3rem;
-  min-height:15px;
-  font-weight:600;
-}
-#qiblaMsg {
-  font-size:12px;
-  color:#ff8a7a;
-  text-align:center;
-  margin-top:.2rem;
-  min-height:16px;
-}
-/* Tip téléphone plat */
-#qibla-flat-tip {
-  display:flex;
-  align-items:center;
-  gap:.5rem;
-  background:rgba(212,175,55,.1);
-  border:1px solid rgba(212,175,55,.25);
-  border-radius:10px;
-  padding:.45rem .7rem;
-  margin:0 1rem .4rem;
-  font-size:11.5px;
-  color:#E8C97A;
-  font-weight:600;
-}
-/* Localisation affichée */
-#qibla-loc-display {
-  text-align:center;
-  padding:0 1rem .6rem;
-  font-size:11px;
-  color:rgba(255,255,255,.45);
-  font-style:italic;
-  min-height:16px;
-}
-/* GRAND INDICATEUR ALIGNEMENT */
-#qibla-aligned-badge {
-  display:none;
-  flex-direction:column;
-  align-items:center;
-  gap:.15rem;
-  padding:.55rem .9rem;
-  margin:.3rem 1rem .5rem;
-  background:linear-gradient(135deg,rgba(46,125,82,.4),rgba(60,220,100,.15));
-  border:1.5px solid rgba(60,220,100,.5);
-  border-radius:14px;
-  animation: alignedAnim .5s ease;
-}
-@keyframes alignedAnim {
-  0%{transform:scale(.92);opacity:0}
-  100%{transform:scale(1);opacity:1}
-}
-#qibla-aligned-badge .ab-icon { font-size:26px; }
-#qibla-aligned-badge .ab-text { font-size:13px;font-weight:800;color:#7aefab;letter-spacing:.05em; }
-#qibla-aligned-badge .ab-sub  { font-size:10px;color:rgba(255,255,255,.55); }
+.qibla-city-chip:active { background: rgba(212,175,55,.4); color: #E8C97A; }
 </style>
 
-<div id="qibla-pro-wrap">
+<div id="qibla-ar-root">
 
-  <!-- EN-TÊTE -->
-  <div id="qibla-header">
-    <div class="qh-title">🕋 Direction de La Mecque</div>
-    <div class="qh-ar">القِبْلَة — اتِّجَاهُ مَكَّةَ المُكَرَّمَة</div>
-    <div id="qibla-accuracy-bar" class="acc-wait">
-      <span id="qibla-acc-dot">⬤</span>
-      <span id="qibla-acc-text">📱 Ouvrez cet onglet — détection auto...</span>
+  <!-- FOND VIDEO CAMÉRA (optionnel) -->
+  <video id="qibla-camera-bg" autoplay muted playsinline style="display:none;"></video>
+  <!-- Fond de secours sombre -->
+  <canvas id="qibla-bg-canvas" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
+
+  <div id="qibla-ar-content">
+
+    <!-- EN-TÊTE -->
+    <div id="qibla-ar-header">
+      <div>
+        <div id="qibla-ar-title">🕋 Direction de La Mecque</div>
+        <div id="qibla-ar-ar">القِبْلَة — اتِّجَاهُ مَكَّةَ المُكَرَّمَة</div>
+      </div>
+      <button id="qibla-cam-btn" onclick="_qiblaToggleCamera()" title="Activer caméra">📷</button>
     </div>
+
+    <!-- BOUSSOLE AR -->
+    <div id="qibla-compass-outer">
+      <!-- Disque qui tourne -->
+      <canvas id="qiblaRingCanvas" width="270" height="270"
+        style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
+      <!-- Anneau pulsant -->
+      <div id="qibla-pulse-ring"></div>
+      <!-- Marqueur Nord fixe en haut -->
+      <div id="qibla-north-marker"></div>
+      <!-- Flèche Mecque FIXE -->
+      <div id="qibla-arrow-fixed">
+        <svg viewBox="0 0 44 130" style="width:40px;height:130px;filter:drop-shadow(0 3px 10px rgba(0,0,0,.7))">
+          <defs>
+            <linearGradient id="arNG1" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#b8962e"/>
+              <stop offset="50%" stop-color="#FFD97A"/>
+              <stop offset="100%" stop-color="#b8962e"/>
+            </linearGradient>
+            <linearGradient id="arNG2" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#444"/>
+              <stop offset="50%" stop-color="#999"/>
+              <stop offset="100%" stop-color="#444"/>
+            </linearGradient>
+          </defs>
+          <!-- Pointe dorée vers Mecque -->
+          <polygon points="22,2 30,58 22,51 14,58" fill="url(#arNG1)"/>
+          <!-- Pointe grise opposée -->
+          <polygon points="22,128 30,72 22,79 14,72" fill="url(#arNG2)"/>
+          <!-- Cercle centre -->
+          <circle cx="22" cy="65" r="10" fill="rgba(0,0,0,.6)" stroke="#E8C97A" stroke-width="2.5"/>
+          <!-- Icône Kaaba -->
+          <text x="22" y="27" text-anchor="middle" font-size="13" style="user-select:none">🕋</text>
+        </svg>
+      </div>
+      <!-- Aiguille rotative (compatibilité) — invisible ici -->
+      <div id="qibla-needle-wrap" style="position:absolute;inset:0;pointer-events:none;opacity:0;"></div>
+    </div>
+
+    <!-- BADGE ALIGNÉ -->
+    <div id="qibla-aligned-badge">
+      <span class="ab-icon">✅</span>
+      <span class="ab-text">ALIGNÉ VERS LA MECQUE — PRIEZ MAINTENANT</span>
+    </div>
+
+    <!-- DONNÉES -->
+    <div id="qibla-data-row">
+      <div class="qd-box">
+        <div class="qd-label">Direction</div>
+        <div class="qd-val gold" id="qiblaDeg">—°</div>
+      </div>
+      <div class="qd-box">
+        <div class="qd-label">Distance</div>
+        <div class="qd-val" id="qiblaDist">— km</div>
+      </div>
+      <div class="qd-box">
+        <div class="qd-label">Écart</div>
+        <div class="qd-val green" id="qiblaDeviation">—°</div>
+      </div>
+    </div>
+
+    <!-- STATUT + LOC -->
+    <div id="qibla-status-bar">
+      <div id="qiblaCompassStatus">🛰️ Localisation en cours...</div>
+      <div id="qiblaMsg"></div>
+    </div>
+
+    <!-- CONTRÔLES VILLE -->
+    <div id="qibla-bottom-controls">
+      <div id="qibla-city-row">
+        <input id="qiblaCityIn" placeholder="Thiès, Dakar, Touba..."
+          onkeydown="if(event.key==='Enter') qiblaGo()">
+        <button id="qibla-search-btn" onclick="qiblaGo()">🔍</button>
+      </div>
+      <div id="qibla-cities-row">
+        <span class="qibla-city-chip" onclick="_qiblaRun(14.6928,-17.4467,'Dakar')">Dakar</span>
+        <span class="qibla-city-chip" onclick="_qiblaRun(14.7886,-16.9228,'Thiès')">Thiès</span>
+        <span class="qibla-city-chip" onclick="_qiblaRun(14.152,-16.0765,'Kaolack')">Kaolack</span>
+        <span class="qibla-city-chip" onclick="_qiblaRun(14.8669,-15.8825,'Touba')">Touba</span>
+        <span class="qibla-city-chip" onclick="_qiblaRun(13.4531,-15.4543,'Ziguinchor')">Ziguinchor</span>
+        <span class="qibla-city-chip" onclick="_qiblaRun(15.6,-16.0,'Saint-Louis')">Saint-Louis</span>
+      </div>
+    </div>
+
+  </div><!-- /ar-content -->
+
+  <!-- BARRE CALIBRATION (bas, fond blanc comme la photo) -->
+  <div id="qibla-calib-bar" style="position:relative;">
+    <button id="qibla-calib-close" onclick="document.getElementById('qibla-calib-bar').classList.add('hidden')">✕</button>
+    <div id="qibla-calib-msg">Réglez votre boussole pour qu'elle pointe dans la bonne direction.</div>
+    <div id="qibla-calib-link" onclick="_qiblaCalibrate()">Calibrer la boussole</div>
   </div>
 
-  <!-- BOUSSOLE -->
-  <div id="qibla-compass-wrap">
-    <canvas id="qiblaRingCanvas" width="260" height="260"></canvas>
-    <div id="qibla-pulse-ring"></div>
-    <div id="qibla-needle-wrap" id="qiblaCompass">
-      <svg id="qiblaNeedleSvg" viewBox="0 0 44 140" style="width:44px;height:140px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.5))">
-        <!-- Pointe MECQUE (haut — doré) -->
-        <defs>
-          <linearGradient id="ng1" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stop-color="#b8962e"/>
-            <stop offset="50%" stop-color="#E8C97A"/>
-            <stop offset="100%" stop-color="#b8962e"/>
-          </linearGradient>
-          <linearGradient id="ng2" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stop-color="#555"/>
-            <stop offset="50%" stop-color="#aaa"/>
-            <stop offset="100%" stop-color="#555"/>
-          </linearGradient>
-        </defs>
-        <polygon points="22,4 30,62 22,55 14,62" fill="url(#ng1)" stroke="rgba(255,255,255,.2)" stroke-width=".5"/>
-        <polygon points="22,136 30,78 22,85 14,78" fill="url(#ng2)" stroke="rgba(0,0,0,.2)" stroke-width=".5"/>
-        <circle cx="22" cy="70" r="9" fill="#1a5c38" stroke="#E8C97A" stroke-width="2.5"/>
-        <text x="22" y="31" text-anchor="middle" font-size="14" style="user-select:none">🕋</text>
-      </svg>
-    </div>
-  </div>
+</div><!-- /qibla-ar-root -->
 
-  <!-- BADGE ALIGNÉ -->
-  <div id="qibla-aligned-badge">
-    <span class="ab-icon">✅</span>
-    <span class="ab-text">VOUS ÊTES ALIGNÉ VERS LA MECQUE</span>
-    <span class="ab-sub">Faites votre prière maintenant • إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَّوْقُوتًا</span>
-  </div>
+<!-- Compat JS -->
+<div id="qiblaResult" style="display:none;"><div id="qiblaLoc" style="display:none;"></div></div>
 
-  <!-- DONNÉES -->
-  <div id="qibla-data-row">
-    <div class="qd-box">
-      <div class="qd-label">Direction</div>
-      <div class="qd-val gold" id="qiblaDeg">—°</div>
-    </div>
-    <div class="qd-box">
-      <div class="qd-label">Distance</div>
-      <div class="qd-val" id="qiblaDist">— km</div>
-    </div>
-    <div class="qd-box">
-      <div class="qd-label">Écart</div>
-      <div class="qd-val green" id="qiblaDeviation">—°</div>
-    </div>
-  </div>
+<script>
+/* ══ AR : disque qui tourne + flèche Mecque fixe ══
+   LOGIQUE : contrairement à une boussole classique,
+   ici le DISQUE (avec N/E/S/W) tourne selon le cap du téléphone,
+   et la FLÈCHE reste fixe pointant vers la Mecque.
+   Ainsi posé à plat, la flèche dorée montre La Mecque. */
 
-  <!-- BARRE D'ALIGNEMENT -->
-  <div id="qibla-align-bar-wrap">
-    <div id="qibla-align-bar-bg"><div id="qibla-align-bar"></div></div>
-    <div id="qibla-align-label">Tournez-vous pour aligner la flèche 🕋 vers le Nord de la boussole</div>
-  </div>
+function _qiblaDrawARDisc(headingDeg) {
+  var cv = document.getElementById('qiblaRingCanvas');
+  if (!cv) return;
+  var ctx = cv.getContext('2d');
+  var W=270, H=270, cx=135, cy=135, R=130;
+  ctx.clearRect(0,0,W,H);
 
-  <!-- TIP PLAT -->
-  <div id="qibla-flat-tip">
-    <span style="font-size:20px">📱</span>
-    <span>Posez le téléphone <b>à plat</b> sur une surface plane — la flèche indique automatiquement La Mecque</span>
-  </div>
+  /* Fond circulaire sombre semi-transparent */
+  var grad = ctx.createRadialGradient(cx,cy,50,cx,cy,R);
+  grad.addColorStop(0,'rgba(10,20,10,.82)');
+  grad.addColorStop(1,'rgba(0,0,0,.88)');
+  ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2);
+  ctx.fillStyle=grad; ctx.fill();
 
-  <!-- LOC -->
-  <div id="qibla-loc-display" id="qiblaLoc"></div>
+  /* Anneau extérieur */
+  ctx.beginPath(); ctx.arc(cx,cy,R-1,0,Math.PI*2);
+  ctx.strokeStyle='rgba(255,255,255,.35)'; ctx.lineWidth=2; ctx.stroke();
 
-  <!-- CONTRÔLES -->
-  <div id="qibla-controls">
-    <div id="qibla-city-row">
-      <input id="qiblaCityIn" placeholder="Ex: Thiès, Dakar, Touba..."
-        onkeydown="if(event.key==='Enter') qiblaGo()">
-      <button id="qibla-search-btn" onclick="qiblaGo()">🔍</button>
-    </div>
-    <div id="qibla-btns-row">
-      <button id="qibla-gps-btn" class="qibla-pill-btn" onclick="qiblaGPS()">📍 GPS auto</button>
-      <button id="qiblaCompassBtn" class="qibla-pill-btn" onclick="qiblaCompassToggle()">🧭 Boussole live</button>
-      <button class="qibla-pill-btn" style="background:rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.3);color:#E8C97A;" onclick="_qiblaCalibrate()">⚙️ Calibrer</button>
-    </div>
-    <div id="qibla-cities-row">
-      <span class="qibla-city-chip" onclick="_qiblaRun(14.6928,-17.4467,'Dakar')">Dakar</span>
-      <span class="qibla-city-chip" onclick="_qiblaRun(14.7886,-16.9228,'Thiès')">Thiès</span>
-      <span class="qibla-city-chip" onclick="_qiblaRun(14.152,-16.0765,'Kaolack')">Kaolack</span>
-      <span class="qibla-city-chip" onclick="_qiblaRun(14.8669,-15.8825,'Touba')">Touba</span>
-      <span class="qibla-city-chip" onclick="_qiblaRun(13.4531,-15.4543,'Ziguinchor')">Ziguinchor</span>
-      <span class="qibla-city-chip" onclick="_qiblaRun(15.6,-16.0,'Saint-Louis')">Saint-Louis</span>
-    </div>
-    <div id="qiblaCompassStatus"></div>
-    <div id="qiblaMsg"></div>
-  </div>
+  ctx.save();
+  ctx.translate(cx,cy);
+  /* Rotation du disque selon heading */
+  ctx.rotate(-(headingDeg||0)*Math.PI/180);
 
-</div><!-- /qibla-pro-wrap -->
+  /* Graduations 360° */
+  for (var d=0; d<360; d+=5) {
+    var rad=(d-90)*Math.PI/180;
+    var isMaj=d%90===0, isMed=d%45===0, isMin=d%10===0;
+    var len=isMaj?16:isMed?12:isMin?7:4;
+    var r0=R-3, r1=R-3-len;
+    ctx.beginPath();
+    ctx.moveTo(r0*Math.cos(rad), r0*Math.sin(rad));
+    ctx.lineTo(r1*Math.cos(rad), r1*Math.sin(rad));
+    ctx.strokeStyle=isMaj?'rgba(255,255,255,.95)':isMed?'rgba(255,255,255,.55)':'rgba(255,255,255,.22)';
+    ctx.lineWidth=isMaj?2.2:1; ctx.stroke();
+  }
 
-<!-- Résultat masqué pour compatibilité JS existant -->
-<div id="qiblaResult" style="display:none;">
-  <div id="qiblaLoc" style="display:none;"></div>
-</div>
+  /* Lettres cardinales */
+  var cards=[['N',0,'#fff','bold 22px sans-serif'],
+             ['E',90,'rgba(255,255,255,.7)','bold 16px sans-serif'],
+             ['S',180,'rgba(255,255,255,.7)','bold 16px sans-serif'],
+             ['W',270,'rgba(255,255,255,.7)','bold 16px sans-serif']];
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  cards.forEach(function(c){
+    var a=(c[1]-90)*Math.PI/180, rr=R-34;
+    ctx.font=c[3]; ctx.fillStyle=c[2];
+    /* Ombre */
+    ctx.shadowColor='rgba(0,0,0,.9)'; ctx.shadowBlur=6;
+    ctx.fillText(c[0], rr*Math.cos(a), rr*Math.sin(a));
+    ctx.shadowBlur=0;
+  });
+
+  /* Cercle intérieur lumineux */
+  ctx.beginPath(); ctx.arc(0,0,52,0,Math.PI*2);
+  ctx.strokeStyle='rgba(255,255,255,.12)'; ctx.lineWidth=1; ctx.stroke();
+
+  ctx.restore();
+
+  /* Point central */
+  ctx.beginPath(); ctx.arc(cx,cy,5,0,Math.PI*2);
+  ctx.fillStyle='rgba(212,175,55,.9)'; ctx.fill();
+}
+
+/* Fond sombre animé (si pas de caméra) */
+(function _qiblaBgAnim(){
+  var cv = document.getElementById('qibla-bg-canvas');
+  if (!cv) return;
+  cv.width=480; cv.height=520;
+  var ctx=cv.getContext('2d');
+  function draw(){
+    ctx.fillStyle='#0d0d0d';
+    ctx.fillRect(0,0,480,520);
+    /* Subtil effet grain */
+    for(var i=0;i<600;i++){
+      var x=Math.random()*480, y=Math.random()*520;
+      var a=Math.random()*.04;
+      ctx.fillStyle='rgba(255,255,255,'+a+')';
+      ctx.fillRect(x,y,1,1);
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* Caméra toggle */
+function _qiblaToggleCamera(){
+  var vid=document.getElementById('qibla-camera-bg');
+  var bgcv=document.getElementById('qibla-bg-canvas');
+  if(!vid) return;
+  if(vid.style.display==='none'||!vid.style.display){
+    navigator.mediaDevices && navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})
+      .then(function(s){ vid.srcObject=s; vid.style.display='block'; if(bgcv) bgcv.style.opacity='.2'; document.getElementById('qibla-cam-btn').textContent='🔴'; })
+      .catch(function(){ var s=document.getElementById('qiblaCompassStatus'); if(s) s.textContent='Caméra non autorisée'; });
+  } else {
+    if(vid.srcObject) vid.srcObject.getTracks().forEach(function(t){t.stop();});
+    vid.style.display='none'; if(bgcv) bgcv.style.opacity='1';
+    document.getElementById('qibla-cam-btn').textContent='📷';
+  }
+}
+</script>
 
 </div><!-- /ql-panel-qibla -->
 
@@ -13881,24 +13969,18 @@ function _qiblaRun(lat, lng, label) {
   var em = document.getElementById('qiblaMsg');
   if (em) em.textContent = '';
 
-  /* Si boussole inactive → afficher aiguille statique */
+  /* Si boussole inactive → afficher disque statique */
   if (!_qiblaCompassActive) {
-    var needle = document.getElementById('qibla-needle-wrap');
-    if (needle) {
-      needle.style.transition = 'transform 1.2s cubic-bezier(.34,1.56,.64,1)';
-      needle.style.transform = 'rotate(0deg)';
-    }
-    _qiblaDrawRing(null);
-    _qiblaSetAccuracy('ok', '✅ Position obtenue — activez la boussole pour temps réel');
+    if (typeof _qiblaDrawARDisc === 'function') _qiblaDrawARDisc(0);
+    var st = document.getElementById('qiblaCompassStatus');
+    if (st) st.textContent = '✅ Position trouvée — boussole live en cours...';
   }
 }
 
-/* ── Indicateur précision ── */
+/* ── Indicateur précision (compat) ── */
 function _qiblaSetAccuracy(type, text) {
-  var bar = document.getElementById('qibla-accuracy-bar');
-  var txt = document.getElementById('qibla-acc-text');
-  if (bar) { bar.className = 'acc-' + type; }
-  if (txt) txt.textContent = text;
+  var st = document.getElementById('qiblaCompassStatus');
+  if (st) st.textContent = text;
 }
 
 /* ── Statut ── */
@@ -13990,54 +14072,88 @@ function _qiblaOrientProcess(e) {
   if (!_qiblaCompassActive) return;
 
   var heading = null;
-
-  /* Priorité 1 : webkitCompassHeading (iOS — le plus précis) */
   if (e.webkitCompassHeading != null && !isNaN(e.webkitCompassHeading)) {
     heading = e.webkitCompassHeading + _qiblaCalibOffset;
-  }
-  /* Priorité 2 : absolute=true (Android) */
-  else if (e.absolute === true && e.alpha != null) {
+  } else if (e.absolute === true && e.alpha != null) {
+    heading = (360 - e.alpha + _qiblaCalibOffset + 360) % 360;
+  } else if (e.alpha != null) {
     heading = (360 - e.alpha + _qiblaCalibOffset + 360) % 360;
   }
-  /* Priorité 3 : alpha brut */
-  else if (e.alpha != null) {
-    heading = (360 - e.alpha + _qiblaCalibOffset + 360) % 360;
-  }
-
   if (heading === null || isNaN(heading)) return;
 
   /* Buffer de lissage (moyenne circulaire sur 6 mesures) */
   _qiblaAlphaBuf.push(heading);
   if (_qiblaAlphaBuf.length > 6) _qiblaAlphaBuf.shift();
-  /* Moyenne circulaire correcte */
   var sinSum=0, cosSum=0;
   _qiblaAlphaBuf.forEach(function(h){ sinSum+=Math.sin(h*Math.PI/180); cosSum+=Math.cos(h*Math.PI/180); });
   var smoothed = (Math.atan2(sinSum, cosSum)*180/Math.PI+360)%360;
 
-  /* Lissage EMA léger sur la valeur smoothed */
+  /* EMA */
   if (_qiblaSmoothedH === null) {
     _qiblaSmoothedH = smoothed;
   } else {
     var diff = smoothed - _qiblaSmoothedH;
     if (diff > 180) diff -= 360;
     if (diff < -180) diff += 360;
-    /* alpha=0.12 → très stable, réactif mais sans tremblement */
     _qiblaSmoothedH = (_qiblaSmoothedH + 0.12*diff + 360) % 360;
   }
 
   if (_qiblaTargetBearing === null) return;
 
+  /* Angle du disque = cap du téléphone (le disque suit le téléphone) */
+  var discAngle = _qiblaSmoothedH;
+
+  /* Angle de la flèche Mecque dans le référentiel FIXE = bearing vers Mecque */
+  /* La flèche est fixe, elle ne tourne pas — le disque tourne autour d'elle */
+  /* needleAngle pour compat = bearing - heading (pour ancien code) */
   var needleAngle = (_qiblaTargetBearing - _qiblaSmoothedH + 360) % 360;
 
-  /* Filtre micro-tremblements < 0.3° */
-  if (_qiblaLastNeedle !== null && Math.abs(needleAngle - _qiblaLastNeedle) < 0.3) return;
-  _qiblaLastNeedle = needleAngle;
+  /* Filtre micro-tremblements */
+  if (_qiblaLastNeedle !== null && Math.abs(discAngle - _qiblaLastNeedle) < 0.3) return;
+  _qiblaLastNeedle = discAngle;
 
-  /* Transition fluide */
-  var nw = document.getElementById('qibla-needle-wrap');
-  if (nw) nw.style.transition = 'transform .18s linear';
+  /* ── Faire tourner le DISQUE ── */
+  _qiblaDrawARDisc(discAngle);
 
-  _qiblaUpdateNeedle(needleAngle);
+  /* ── La flèche Mecque reste FIXE — pas de rotation ── */
+  /* (elle pointe toujours vers le haut = vers La Mecque dans le ref téléphone posé à plat) */
+
+  /* Mise à jour UI écart */
+  var dev = Math.abs(((needleAngle+180)%360)-180);
+  var devEl = document.getElementById('qiblaDeviation');
+  if (devEl) devEl.textContent = Math.round(dev)+'°';
+
+  /* Statut */
+  var st = document.getElementById('qiblaCompassStatus');
+  if (st) {
+    if (dev < 8) st.textContent = '✅ Vous êtes aligné vers La Mecque !';
+    else if (dev < 25) st.textContent = '↻ Presque aligné — encore '+ Math.round(dev) +'°';
+    else st.textContent = '🧭 Tournez-vous — écart '+ Math.round(dev) +'°';
+  }
+
+  /* Anneau + badge */
+  var ring = document.getElementById('qibla-pulse-ring');
+  var badge = document.getElementById('qibla-aligned-badge');
+  if (dev < 8) {
+    if (ring) ring.classList.add('aligned');
+    if (badge) badge.style.display='flex';
+    if (!_qiblaAlignedPlayed) {
+      _qiblaAlignedPlayed = true;
+      if (navigator.vibrate) navigator.vibrate([60,30,60]);
+      try {
+        var ac = new (window.AudioContext||window.webkitAudioContext)();
+        var osc=ac.createOscillator(), gn=ac.createGain();
+        osc.connect(gn); gn.connect(ac.destination);
+        osc.frequency.value=880; gn.gain.setValueAtTime(.15,ac.currentTime);
+        gn.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.4);
+        osc.start(); osc.stop(ac.currentTime+.4);
+      } catch(e){}
+    }
+  } else {
+    if (ring) ring.classList.remove('aligned');
+    if (badge) badge.style.display='none';
+    _qiblaAlignedPlayed = false;
+  }
 }
 
 function _qiblaBindOrientation() {
@@ -14152,11 +14268,11 @@ function qiblaCompassToggle() {
   }
 }
 
-/* ── Auto-init boussole canvas au chargement ── */
+/* ── Auto-init canvas au chargement ── */
 (function _qiblaInitCanvas(){
   var tryDraw = function(){
     var cv = document.getElementById('qiblaRingCanvas');
-    if (cv) { _qiblaDrawRing(null); }
+    if (cv && typeof _qiblaDrawARDisc === 'function') { _qiblaDrawARDisc(0); }
     else { setTimeout(tryDraw, 400); }
   };
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',tryDraw);
