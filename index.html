@@ -3244,6 +3244,9 @@ document.addEventListener('DOMContentLoaded', function(){
 <!-- Stubs anticipés — évite ReferenceError si l'utilisateur interagit avant la fin du chargement -->
 <script>
 (function() {
+  // escH — fonction critique utilisée partout, définie en avance
+  window.escH = function(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
+
   // _hideSplash défini en dur (fonction critique utilisée avant chargement complet)
   window._hideSplash = function(){
     var s=document.getElementById('splash');
@@ -11095,7 +11098,7 @@ function _fbSyncUser(user) {
  }
 }
 
-ar _zAudioPlaying=false,_zAudioCount=0,_zAudioTarget=100,_zAudioSpeed=3000,_zVizTimer=null;
+var _zAudioPlaying=false,_zAudioCount=0,_zAudioTarget=100,_zAudioSpeed=3000,_zVizTimer=null;
 var _zCurAudioKey='lahila';
 var _zAudioZikrs={
  lahila:{ar:'لَا إِلَهَ إِلَّا اللهُ',target:100,rate:.75},
