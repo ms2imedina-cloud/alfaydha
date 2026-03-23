@@ -5123,7 +5123,7 @@ window.toggleStudioPanel = function() {
     <div class="qh-ar">القِبْلَة — اتِّجَاهُ مَكَّةَ المُكَرَّمَة</div>
     <div id="qibla-accuracy-bar" class="acc-wait">
       <span id="qibla-acc-dot">⬤</span>
-      <span id="qibla-acc-text">En attente de position...</span>
+      <span id="qibla-acc-text">📱 Ouvrez cet onglet — détection auto...</span>
     </div>
   </div>
 
@@ -5370,60 +5370,123 @@ window.toggleStudioPanel = function() {
 </div><!-- /ql-panel-cal -->
 
 <script>
-/* Auto-init lune quand section Qibla s'ouvre */
+/* ══════════════════════════════════════════════════════════════
+   AUTO-INIT QIBLA — 100% automatique, zéro manipulation
+   Dès que la section s'ouvre : GPS → boussole live immédiatement
+   ══════════════════════════════════════════════════════════════ */
+var _qiblaAutoLaunched = false;
+
+function _qiblaFullAuto() {
+  /* GPS + boussole live en une seule séquence automatique */
+  if (!_qiblaAutoLaunched) {
+    _qiblaAutoLaunched = true;
+    /* Dessiner le canvas d'abord */
+    if (typeof _qiblaDrawRing === 'function') _qiblaDrawRing(null);
+    /* Lancer GPS puis boussole enchaîné */
+    _qiblaAutoSequence();
+  }
+}
+
+function _qiblaAutoSequence() {
+  if (typeof _qiblaSetAccuracy === 'function')
+    _qiblaSetAccuracy('wait', '🛰️ Localisation automatique...');
+
+  var startCompassAfterPos = function(lat, lng, label) {
+    /* 1. Calculer et afficher la direction */
+    if (typeof _qiblaRun === 'function') _qiblaRun(lat, lng, label);
+    /* 2. Lancer la boussole live automatiquement */
+    if (!_qiblaCompassActive) {
+      _qiblaCompassActive = true;
+      var btn = document.getElementById('qiblaCompassBtn');
+      if (btn) { btn.textContent = '⏹ Arrêter'; btn.classList.add('active-compass'); }
+      var nw = document.getElementById('qibla-needle-wrap');
+      if (nw) nw.style.transition = 'transform .18s linear';
+      if (typeof _qiblaStartCompass === 'function') _qiblaStartCompass();
+    }
+  };
+
+  /* Essai GPS haute précision */
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      function(p) {
+        startCompassAfterPos(p.coords.latitude, p.coords.longitude, 'Ma position');
+      },
+      function() {
+        /* Fallback IP silencieux */
+        fetch('https://ipapi.co/json/')
+          .then(function(r){ return r.json(); })
+          .then(function(d){
+            if (d && d.latitude) startCompassAfterPos(d.latitude, d.longitude, d.city || 'Ma position');
+            else startCompassAfterPos(14.7886, -16.9228, 'Thiès');
+          })
+          .catch(function(){ startCompassAfterPos(14.7886, -16.9228, 'Thiès'); });
+      },
+      { timeout: 7000, maximumAge: 300000, enableHighAccuracy: true }
+    );
+  } else {
+    fetch('https://ipapi.co/json/')
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if (d && d.latitude) startCompassAfterPos(d.latitude, d.longitude, d.city || '');
+        else startCompassAfterPos(14.7886, -16.9228, 'Thiès');
+      })
+      .catch(function(){ startCompassAfterPos(14.7886, -16.9228, 'Thiès'); });
+  }
+}
+
+/* Observer : lance tout dès que sec-qibla devient active */
 (function() {
- var tries = 0;
- var iv = setInterval(function() {
- var sec = document.getElementById('sec-qibla');
- if (!sec) { if(++tries > 30) clearInterval(iv); return; }
- clearInterval(iv);
- /* Observer activation */
- var observer = new MutationObserver(function(muts) {
- muts.forEach(function(m) {
- if (m.target.classList.contains('active')) {
- /* Section ouverte — auto-GPS Qibla */
- setTimeout(function(){
- var res = document.getElementById('qiblaResult');
- if (res && res.style.display === 'none' && typeof qiblaGPS === 'function') qiblaGPS();
- }, 400);
- }
- });
- });
- observer.observe(sec, { attributes: true, attributeFilter: ['class'] });
- }, 200);
+  var tries = 0;
+  var iv = setInterval(function() {
+    var sec = document.getElementById('sec-qibla');
+    if (!sec) { if(++tries > 30) clearInterval(iv); return; }
+    clearInterval(iv);
+
+    /* Si déjà active au chargement */
+    if (sec.classList.contains('active')) {
+      setTimeout(_qiblaFullAuto, 500);
+    }
+
+    var observer = new MutationObserver(function(muts) {
+      muts.forEach(function(m) {
+        if (m.target.classList.contains('active')) {
+          setTimeout(_qiblaFullAuto, 300);
+        }
+      });
+    });
+    observer.observe(sec, { attributes: true, attributeFilter: ['class'] });
+  }, 200);
 })();
 
 window.switchQlTab = function(tab) {
- var tabs = ['qibla','lune','cal'];
- tabs.forEach(function(t){
- var te = document.getElementById('qltab-'+t);
- var pe = document.getElementById('ql-panel-'+t);
- if(te) te.classList.toggle('active', t===tab);
- if(pe) pe.classList.toggle('active', t===tab);
- });
- if(tab === 'cal'){ icalInit(); return; }
- var isQibla = tab === 'qibla';
- if (!isQibla) {
- /* Lune : auto-calcul */
- var moonData = document.getElementById('moonData');
- if (!moonData || moonData.style.display === 'none') {
- if (navigator.geolocation) {
- navigator.geolocation.getCurrentPosition(
- function(p) { if (typeof _moonRun === 'function') _moonRun(p.coords.latitude, p.coords.longitude, 'Ma position'); },
- function() { if (typeof _moonRun === 'function') _moonRun(14.15, -16.08, 'Senegal'); },
- { timeout: 8000, maximumAge: 60000, enableHighAccuracy: false }
- );
- } else {
- if (typeof _moonRun === 'function') _moonRun(14.15, -16.08, 'Senegal');
- }
- }
- } else {
- /* Qibla : auto-lancer GPS/IP */
- var result = document.getElementById('qiblaResult');
- if (result && result.style.display === 'none') {
- setTimeout(function(){ if(typeof qiblaGPS === 'function') qiblaGPS(); }, 300);
- }
- }
+  var tabs = ['qibla','lune','cal'];
+  tabs.forEach(function(t){
+    var te = document.getElementById('qltab-'+t);
+    var pe = document.getElementById('ql-panel-'+t);
+    if(te) te.classList.toggle('active', t===tab);
+    if(pe) pe.classList.toggle('active', t===tab);
+  });
+  if(tab === 'cal'){ if(typeof icalInit==='function') icalInit(); return; }
+  if (tab !== 'qibla') {
+    /* Lune : auto-calcul */
+    var moonData = document.getElementById('moonData');
+    if (!moonData || moonData.style.display === 'none') {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function(p) { if (typeof _moonRun === 'function') _moonRun(p.coords.latitude, p.coords.longitude, 'Ma position'); },
+          function() { if (typeof _moonRun === 'function') _moonRun(14.15, -16.08, 'Senegal'); },
+          { timeout: 8000, maximumAge: 60000, enableHighAccuracy: false }
+        );
+      } else {
+        if (typeof _moonRun === 'function') _moonRun(14.15, -16.08, 'Senegal');
+      }
+    }
+  } else {
+    /* Retour sur Qibla : relancer si boussole pas active */
+    if (!_qiblaCompassActive) {
+      setTimeout(_qiblaFullAuto, 300);
+    }
+  }
 };
 
 
@@ -13978,43 +14041,54 @@ function _qiblaOrientProcess(e) {
 }
 
 function _qiblaBindOrientation() {
-  _qiblaSetStatus('Obtention GPS pour calcul...','rgba(122,239,171,.8)');
-
-  var doStart = function(lat, lng, locLabel) {
-    _qiblaCompassLat = lat; _qiblaCompassLng = lng;
-    _qiblaTargetBearing = _qiblaCalcBearing(lat, lng);
-    _qiblaRun(lat, lng, locLabel);
-    _qiblaSetStatus('🧭 Boussole LIVE — posez le téléphone à plat','rgba(122,239,171,.9)');
-    _qiblaSetAccuracy('ok','✅ Boussole active — précision maximale');
-
-    /* Écouter absolute en priorité */
+  var doBindEvents = function() {
+    _qiblaSetStatus('🧭 Boussole LIVE — posez à plat pour prier','rgba(122,239,171,.9)');
+    _qiblaSetAccuracy('ok','✅ Boussole active — pointez vers La Mecque');
     window.addEventListener('deviceorientationabsolute', _qiblaOrientProcess, true);
     window.addEventListener('deviceorientation',         _qiblaOrientProcess, true);
   };
 
-  /* Si on a déjà une position */
-  if (_qiblaCompassLat !== null) {
-    doStart(_qiblaCompassLat, _qiblaCompassLng, 'GPS');
+  /* Si position déjà connue, pas besoin de re-GPS */
+  if (_qiblaCompassLat !== null && _qiblaTargetBearing !== null) {
+    doBindEvents();
     return;
   }
 
+  _qiblaSetStatus('Obtention position...','rgba(122,239,171,.8)');
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
-      function(pos){ doStart(pos.coords.latitude, pos.coords.longitude, 'GPS'); },
-      function(){
-        /* Fallback IP pour la boussole */
+      function(pos) {
+        _qiblaCompassLat = pos.coords.latitude;
+        _qiblaCompassLng = pos.coords.longitude;
+        _qiblaTargetBearing = _qiblaCalcBearing(_qiblaCompassLat, _qiblaCompassLng);
+        _qiblaRun(_qiblaCompassLat, _qiblaCompassLng, 'GPS');
+        doBindEvents();
+      },
+      function() {
         fetch('https://ipapi.co/json/')
           .then(function(r){return r.json();})
           .then(function(d){
-            if(d&&d.latitude) doStart(d.latitude, d.longitude, d.city||'Réseau');
-            else doStart(14.7886,-16.9228,'Thiès (défaut)');
+            var lat = (d&&d.latitude)?d.latitude:14.7886;
+            var lng = (d&&d.longitude)?d.longitude:-16.9228;
+            _qiblaCompassLat = lat; _qiblaCompassLng = lng;
+            _qiblaTargetBearing = _qiblaCalcBearing(lat, lng);
+            _qiblaRun(lat, lng, (d&&d.city)||'Thiès');
+            doBindEvents();
           })
-          .catch(function(){ doStart(14.7886,-16.9228,'Thiès (défaut)'); });
+          .catch(function(){
+            _qiblaCompassLat = 14.7886; _qiblaCompassLng = -16.9228;
+            _qiblaTargetBearing = _qiblaCalcBearing(14.7886, -16.9228);
+            _qiblaRun(14.7886, -16.9228, 'Thiès');
+            doBindEvents();
+          });
       },
       {timeout:8000, enableHighAccuracy:true}
     );
   } else {
-    doStart(14.7886,-16.9228,'Thiès (défaut)');
+    _qiblaCompassLat = 14.7886; _qiblaCompassLng = -16.9228;
+    _qiblaTargetBearing = _qiblaCalcBearing(14.7886, -16.9228);
+    _qiblaRun(14.7886, -16.9228, 'Thiès');
+    doBindEvents();
   }
 }
 
