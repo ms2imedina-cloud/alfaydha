@@ -4905,7 +4905,7 @@ window.toggleStudioPanel = function() {
   /* transition douce */
 }
 
-/* Flèche Mecque FIXE au centre (ne tourne pas) */
+/* Flèche Mecque ROTATIVE (tourne vers La Mecque) */
 #qibla-arrow-fixed {
   position: absolute;
   inset: 0;
@@ -4914,6 +4914,8 @@ window.toggleStudioPanel = function() {
   justify-content: center;
   pointer-events: none;
   z-index: 4;
+  will-change: transform;
+  transform-origin: center center;
 }
 
 /* Indicateur Nord fixe en haut (triangle blanc) */
@@ -14081,62 +14083,69 @@ function _qiblaOrientProcess(e) {
   }
   if (heading === null || isNaN(heading)) return;
 
-  /* Buffer de lissage (moyenne circulaire sur 6 mesures) */
+  /* Lissage : moyenne circulaire sur 6 mesures */
   _qiblaAlphaBuf.push(heading);
   if (_qiblaAlphaBuf.length > 6) _qiblaAlphaBuf.shift();
   var sinSum=0, cosSum=0;
   _qiblaAlphaBuf.forEach(function(h){ sinSum+=Math.sin(h*Math.PI/180); cosSum+=Math.cos(h*Math.PI/180); });
-  var smoothed = (Math.atan2(sinSum, cosSum)*180/Math.PI+360)%360;
+  var smoothed = (Math.atan2(sinSum,cosSum)*180/Math.PI+360)%360;
 
-  /* EMA */
+  /* EMA léger */
   if (_qiblaSmoothedH === null) {
     _qiblaSmoothedH = smoothed;
   } else {
     var diff = smoothed - _qiblaSmoothedH;
     if (diff > 180) diff -= 360;
     if (diff < -180) diff += 360;
-    _qiblaSmoothedH = (_qiblaSmoothedH + 0.12*diff + 360) % 360;
+    _qiblaSmoothedH = (_qiblaSmoothedH + 0.15*diff + 360) % 360;
   }
 
   if (_qiblaTargetBearing === null) return;
 
-  /* Angle du disque = cap du téléphone (le disque suit le téléphone) */
-  var discAngle = _qiblaSmoothedH;
-
-  /* Angle de la flèche Mecque dans le référentiel FIXE = bearing vers Mecque */
-  /* La flèche est fixe, elle ne tourne pas — le disque tourne autour d'elle */
-  /* needleAngle pour compat = bearing - heading (pour ancien code) */
+  /* ──────────────────────────────────────────────────────
+     LOGIQUE PRINCIPALE :
+     needleAngle = angle dont l'aiguille doit tourner
+     depuis le "haut" (12h) pour pointer vers La Mecque.
+     = bearing Mecque  −  cap actuel du téléphone
+  ────────────────────────────────────────────────────── */
   var needleAngle = (_qiblaTargetBearing - _qiblaSmoothedH + 360) % 360;
 
   /* Filtre micro-tremblements */
-  if (_qiblaLastNeedle !== null && Math.abs(discAngle - _qiblaLastNeedle) < 0.3) return;
-  _qiblaLastNeedle = discAngle;
+  if (_qiblaLastNeedle !== null && Math.abs(needleAngle - _qiblaLastNeedle) < 0.4) return;
+  _qiblaLastNeedle = needleAngle;
 
-  /* ── Faire tourner le DISQUE ── */
-  _qiblaDrawARDisc(discAngle);
+  /* ── Faire tourner l'aiguille (flèche Mecque) ── */
+  var arrow = document.getElementById('qibla-arrow-fixed');
+  if (arrow) {
+    arrow.style.transition = 'transform .18s linear';
+    arrow.style.transform  = 'rotate(' + needleAngle + 'deg)';
+  }
+  /* Compat ancienne structure */
+  var nw = document.getElementById('qibla-needle-wrap');
+  if (nw) { nw.style.transition='transform .18s linear'; nw.style.transform='rotate('+needleAngle+'deg)'; }
 
-  /* ── La flèche Mecque reste FIXE — pas de rotation ── */
-  /* (elle pointe toujours vers le haut = vers La Mecque dans le ref téléphone posé à plat) */
+  /* Redessiner le disque statique (il ne tourne PAS) */
+  if (typeof _qiblaDrawARDisc === 'function') _qiblaDrawARDisc(0);
 
-  /* Mise à jour UI écart */
-  var dev = Math.abs(((needleAngle+180)%360)-180);
+  /* ── Écart ── */
+  var dev = Math.abs(((needleAngle + 180) % 360) - 180);
   var devEl = document.getElementById('qiblaDeviation');
-  if (devEl) devEl.textContent = Math.round(dev)+'°';
+  if (devEl) devEl.textContent = Math.round(dev) + '°';
 
-  /* Statut */
+  /* ── Statut ── */
   var st = document.getElementById('qiblaCompassStatus');
   if (st) {
-    if (dev < 8) st.textContent = '✅ Vous êtes aligné vers La Mecque !';
-    else if (dev < 25) st.textContent = '↻ Presque aligné — encore '+ Math.round(dev) +'°';
-    else st.textContent = '🧭 Tournez-vous — écart '+ Math.round(dev) +'°';
+    if (dev < 8)       st.textContent = '✅ Parfaitement aligné vers La Mecque !';
+    else if (dev < 25) st.textContent = '↻ Presque aligné — encore ' + Math.round(dev) + '°';
+    else               st.textContent = '🧭 Tournez-vous — écart ' + Math.round(dev) + '°';
   }
 
-  /* Anneau + badge */
-  var ring = document.getElementById('qibla-pulse-ring');
+  /* ── Anneau + badge alignement ── */
+  var ring  = document.getElementById('qibla-pulse-ring');
   var badge = document.getElementById('qibla-aligned-badge');
   if (dev < 8) {
-    if (ring) ring.classList.add('aligned');
-    if (badge) badge.style.display='flex';
+    if (ring)  ring.classList.add('aligned');
+    if (badge) badge.style.display = 'flex';
     if (!_qiblaAlignedPlayed) {
       _qiblaAlignedPlayed = true;
       if (navigator.vibrate) navigator.vibrate([60,30,60]);
@@ -14144,14 +14153,15 @@ function _qiblaOrientProcess(e) {
         var ac = new (window.AudioContext||window.webkitAudioContext)();
         var osc=ac.createOscillator(), gn=ac.createGain();
         osc.connect(gn); gn.connect(ac.destination);
-        osc.frequency.value=880; gn.gain.setValueAtTime(.15,ac.currentTime);
-        gn.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.4);
+        osc.frequency.value = 880;
+        gn.gain.setValueAtTime(.15, ac.currentTime);
+        gn.gain.exponentialRampToValueAtTime(.001, ac.currentTime+.4);
         osc.start(); osc.stop(ac.currentTime+.4);
-      } catch(e){}
+      } catch(err){}
     }
   } else {
-    if (ring) ring.classList.remove('aligned');
-    if (badge) badge.style.display='none';
+    if (ring)  ring.classList.remove('aligned');
+    if (badge) badge.style.display = 'none';
     _qiblaAlignedPlayed = false;
   }
 }
