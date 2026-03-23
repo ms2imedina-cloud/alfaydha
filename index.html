@@ -3241,6 +3241,76 @@ document.addEventListener('DOMContentLoaded', function(){
 </head>
 <body>
 
+<!-- Stubs anticipés — évite ReferenceError si l'utilisateur interagit avant la fin du chargement -->
+<script>
+(function() {
+  // _hideSplash défini en dur (fonction critique utilisée avant chargement complet)
+  window._hideSplash = function(){
+    var s=document.getElementById('splash');
+    if(!s||s._hiding) return;
+    s._hiding=true;
+    s.style.cssText+='opacity:0!important;visibility:hidden!important;pointer-events:none!important;transition:opacity .25s ease!important;';
+    setTimeout(function(){ if(s&&s.parentNode) s.parentNode.removeChild(s); }, 300);
+  };
+  if(!window._hideSplash) window._hideSplash = function(){ console.warn('_hideSplash pas encore chargé'); };
+  if(!window._showLangSelector) window._showLangSelector = function(){ console.warn('_showLangSelector pas encore chargé'); };
+  if(!window._qiblaRun) window._qiblaRun = function(){ console.warn('_qiblaRun pas encore chargé'); };
+  if(!window.selectLang) window.selectLang = function(){ console.warn('selectLang pas encore chargé'); };
+  if(!window.confirmLang) window.confirmLang = function(){ console.warn('confirmLang pas encore chargé'); };
+  if(!window.enterApp) window.enterApp = function(){ console.warn('enterApp pas encore chargé'); };
+  if(!window.signOutGoogle) window.signOutGoogle = function(){ console.warn('signOutGoogle pas encore chargé'); };
+  if(!window.wlcOpenSettings) window.wlcOpenSettings = function(){ console.warn('wlcOpenSettings pas encore chargé'); };
+  if(!window.wlcCloseSettings) window.wlcCloseSettings = function(){ console.warn('wlcCloseSettings pas encore chargé'); };
+  if(!window.wlcPreview) window.wlcPreview = function(){ console.warn('wlcPreview pas encore chargé'); };
+  if(!window.wlcStopAdhan) window.wlcStopAdhan = function(){ console.warn('wlcStopAdhan pas encore chargé'); };
+  if(!window.rpToggle) window.rpToggle = function(){ console.warn('rpToggle pas encore chargé'); };
+  if(!window.setSleep) window.setSleep = function(){ console.warn('setSleep pas encore chargé'); };
+  if(!window.cancelSleep) window.cancelSleep = function(){ console.warn('cancelSleep pas encore chargé'); };
+  if(!window.toggleStudioPanel) window.toggleStudioPanel = function(){ console.warn('toggleStudioPanel pas encore chargé'); };
+  if(!window.switchLiveTab) window.switchLiveTab = function(){ console.warn('switchLiveTab pas encore chargé'); };
+  if(!window.switchAdmTab) window.switchAdmTab = function(){ console.warn('switchAdmTab pas encore chargé'); };
+  if(!window.sendReaction) window.sendReaction = function(){ console.warn('sendReaction pas encore chargé'); };
+  if(!window.sendChatMsg) window.sendChatMsg = function(){ console.warn('sendChatMsg pas encore chargé'); };
+  if(!window.interactRaiseHand) window.interactRaiseHand = function(){ console.warn('interactRaiseHand pas encore chargé'); };
+  if(!window.interactAskQuestion) window.interactAskQuestion = function(){ console.warn('interactAskQuestion pas encore chargé'); };
+  if(!window.interactClearAll) window.interactClearAll = function(){ console.warn('interactClearAll pas encore chargé'); };
+  if(!window.interactRequestMic) window.interactRequestMic = function(){ console.warn('interactRequestMic pas encore chargé'); };
+  if(!window.lkRequestMic) window.lkRequestMic = function(){ console.warn('lkRequestMic pas encore chargé'); };
+  if(!window.interactSendQuestion) window.interactSendQuestion = function(){ console.warn('interactSendQuestion pas encore chargé'); };
+  if(!window.qaSendQuestion) window.qaSendQuestion = function(){ console.warn('qaSendQuestion pas encore chargé'); };
+  if(!window.stopPlayer) window.stopPlayer = function(){ console.warn('stopPlayer pas encore chargé'); };
+  if(!window.openFullscreen) window.openFullscreen = function(){ console.warn('openFullscreen pas encore chargé'); };
+  if(!window.closeFullscreen) window.closeFullscreen = function(){ console.warn('closeFullscreen pas encore chargé'); };
+  if(!window.shareCurrentChannel) window.shareCurrentChannel = function(){ console.warn('shareCurrentChannel pas encore chargé'); };
+  if(!window.toggleFavCurrentChannel) window.toggleFavCurrentChannel = function(){ console.warn('toggleFavCurrentChannel pas encore chargé'); };
+  if(!window.studioToggleRec) window.studioToggleRec = function(){ console.warn('studioToggleRec pas encore chargé'); };
+  if(!window.studioToggleMono) window.studioToggleMono = function(){ console.warn('studioToggleMono pas encore chargé'); };
+  if(!window.studioToggleNoise) window.studioToggleNoise = function(){ console.warn('studioToggleNoise pas encore chargé'); };
+  if(!window.studioSetQuality) window.studioSetQuality = function(){ console.warn('studioSetQuality pas encore chargé'); };
+  if(!window.studioNormalize) window.studioNormalize = function(){ console.warn('studioNormalize pas encore chargé'); };
+  if(!window.studioTranscribe) window.studioTranscribe = function(){ console.warn('studioTranscribe pas encore chargé'); };
+  if(!window.studioCycleGain) window.studioCycleGain = function(){ console.warn('studioCycleGain pas encore chargé'); };
+  if(!window.studioToggleFx) window.studioToggleFx = function(){ console.warn('studioToggleFx pas encore chargé'); };
+  if(!window.copyTranscript) window.copyTranscript = function(){ console.warn('copyTranscript pas encore chargé'); };
+  if(!window.qiblaGPS) window.qiblaGPS = function(){ console.warn('qiblaGPS pas encore chargé'); };
+  if(!window.qiblaGo) window.qiblaGo = function(){ console.warn('qiblaGo pas encore chargé'); };
+  if(!window.qiblaCompassToggle) window.qiblaCompassToggle = function(){ console.warn('qiblaCompassToggle pas encore chargé'); };
+  if(!window.moonGPS) window.moonGPS = function(){ console.warn('moonGPS pas encore chargé'); };
+  if(!window.moonGo) window.moonGo = function(){ console.warn('moonGo pas encore chargé'); };
+  if(!window.moonGoNow) window.moonGoNow = function(){ console.warn('moonGoNow pas encore chargé'); };
+  if(!window.icalNext) window.icalNext = function(){ console.warn('icalNext pas encore chargé'); };
+  if(!window.icalPrev) window.icalPrev = function(){ console.warn('icalPrev pas encore chargé'); };
+  if(!window.icalToday) window.icalToday = function(){ console.warn('icalToday pas encore chargé'); };
+  if(!window.switchQlTab) window.switchQlTab = function(){ console.warn('switchQlTab pas encore chargé'); };
+  if(!window.admSetRole) window.admSetRole = function(){ console.warn('admSetRole pas encore chargé'); };
+  if(!window.admToggleBan) window.admToggleBan = function(){ console.warn('admToggleBan pas encore chargé'); };
+  if(!window.admSendNotifToUser) window.admSendNotifToUser = function(){ console.warn('admSendNotifToUser pas encore chargé'); };
+  if(!window.admCloseUserModal) window.admCloseUserModal = function(){ console.warn('admCloseUserModal pas encore chargé'); };
+  if(!window.showSec) window.showSec = function(){ console.warn('showSec pas encore chargé'); };
+})();
+</script>
+
+
 <!-- SPLASH -->
 <div id="splash" onclick="_hideSplash()" style="cursor:pointer">
  <div class="sp-logo-wrap">
