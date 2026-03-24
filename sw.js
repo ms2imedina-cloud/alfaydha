@@ -1,38 +1,70 @@
-/* Faydha — Service Worker PWA */
-var CACHE_NAME = 'faydha-v1';
+/* ════════════════════════════════════════════════════
+   BAYE NIASS WORLD — Service Worker PWA
+   Cache stratégie : Cache First pour assets statiques
+   Network First pour Firebase / API
+════════════════════════════════════════════════════ */
 
-self.addEventListener('install', function(e) {
-  self.skipWaiting();
-});
+const CACHE_NAME = 'bayen-v1';
+const CACHE_STATIC = [
+  '/alfaydha/',
+  '/alfaydha/index.html',
+  '/alfaydha/manifest.json',
+  'https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap',
+];
 
-self.addEventListener('activate', function(e) {
-  e.waitUntil(clients.claim());
-  /* Nettoyer anciens caches */
-  e.waitUntil(
-    caches.keys().then(function(keys) {
-      return Promise.all(
-        keys.filter(function(k){ return k !== CACHE_NAME; })
-            .map(function(k){ return caches.delete(k); })
-      );
-    })
+/* ── Installation : mise en cache des ressources statiques ── */
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(CACHE_STATIC);
+    }).then(() => self.skipWaiting())
   );
 });
 
-self.addEventListener('fetch', function(e) {
-  if (e.request.method !== 'GET') return;
-  e.respondWith(
-    fetch(e.request)
-      .then(function(res) {
-        /* Mettre en cache la page principale */
-        if (e.request.url.includes('alfaydha.pages.dev')) {
-          var clone = res.clone();
-          caches.open(CACHE_NAME).then(function(c){ c.put(e.request, clone); });
+/* ── Activation : suppression des anciens caches ── */
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(
+        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+      )
+    ).then(() => self.clients.claim())
+  );
+});
+
+/* ── Fetch : stratégie selon la requête ── */
+self.addEventListener('fetch', event => {
+  const url = new URL(event.request.url);
+
+  /* Firebase, Google APIs → Network First (pas de cache) */
+  if (
+    url.hostname.includes('firebase') ||
+    url.hostname.includes('googleapis.com') ||
+    url.hostname.includes('gstatic.com') ||
+    url.hostname.includes('firebaseio.com')
+  ) {
+    event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
+    return;
+  }
+
+  /* Assets statiques → Cache First */
+  event.respondWith(
+    caches.match(event.request).then(cached => {
+      if (cached) return cached;
+      return fetch(event.request).then(response => {
+        /* Ne mettre en cache que les réponses valides */
+        if (!response || response.status !== 200 || response.type === 'opaque') {
+          return response;
         }
-        return res;
-      })
-      .catch(function() {
-        /* Hors ligne : servir depuis le cache */
-        return caches.match(e.request);
-      })
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        return response;
+      });
+    }).catch(() => {
+      /* Fallback hors-ligne : retourner la page principale */
+      if (event.request.destination === 'document') {
+        return caches.match('/alfaydha/');
+      }
+    })
   );
 });
