@@ -4854,76 +4854,130 @@ window.toggleStudioPanel = function() {
 <!-- ═══ PANEL QIBLA ═══ -->
 <div class="ql-panel active" id="ql-panel-qibla">
 
- <div style="background:linear-gradient(135deg,var(--g1),var(--g3));padding:1.2rem 1.3rem .9rem;text-align:center;">
- <div style="font-family:'Amiri',serif;font-size:22px;color:#fff;margin-bottom:.1rem">🕋 Direction de La Mecque</div>
- <div style="font-family:'Amiri',serif;font-size:14px;color:var(--gold2);direction:rtl">القِبْلَة — اتِّجَاهُ مَكَّةَ المُكَرَّمَة</div>
- </div>
+<!-- En-tête -->
+<div style="background:linear-gradient(160deg,#0a2e18 0%,#1a5233 50%,#0d3320 100%);padding:1.1rem 1.3rem .8rem;text-align:center;position:relative;overflow:hidden;">
+  <div style="position:absolute;inset:0;background-image:radial-gradient(circle,rgba(212,175,55,.06) 1px,transparent 1px);background-size:20px 20px;pointer-events:none;"></div>
+  <div style="font-family:'Amiri',serif;font-size:20px;color:#fff;margin-bottom:.15rem;position:relative;">🕋 Qibla — Direction de La Mecque</div>
+  <div style="font-family:'Amiri',serif;font-size:13px;color:var(--gold2);direction:rtl;position:relative;">القِبْلَة · اتِّجَاهُ مَكَّةَ المُكَرَّمَة</div>
+</div>
 
- <div style="padding:1.2rem 1.3rem;background:var(--white);border-bottom:1px solid var(--gold3);">
- <!-- Boussole -->
- <div style="position:relative;width:200px;height:200px;margin:0 auto 1rem;">
- <svg viewBox="0 0 200 200" style="position:absolute;inset:0;width:100%;height:100%;">
- <circle cx="100" cy="100" r="95" fill="none" stroke="var(--gold3)" stroke-width="2"/>
- <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(15,123,63,.1)" stroke-width="1"/>
- <text x="100" y="16" text-anchor="middle" font-size="13" font-weight="700" fill="var(--g1)" font-family="sans-serif">N</text>
- <text x="186" y="104" text-anchor="middle" font-size="13" font-weight="700" fill="var(--text3)" font-family="sans-serif">E</text>
- <text x="100" y="196" text-anchor="middle" font-size="13" font-weight="700" fill="var(--text3)" font-family="sans-serif">S</text>
- <text x="14" y="104" text-anchor="middle" font-size="13" font-weight="700" fill="var(--text3)" font-family="sans-serif">O</text>
- <line x1="100" y1="6" x2="100" y2="18" stroke="var(--g1)" stroke-width="2"/>
- <line x1="100" y1="182" x2="100" y2="194" stroke="var(--text3)" stroke-width="1.5"/>
- <line x1="6" y1="100" x2="18" y2="100" stroke="var(--text3)" stroke-width="1.5"/>
- <line x1="182" y1="100" x2="194" y2="100" stroke="var(--text3)" stroke-width="1.5"/>
- </svg>
- <!-- Aiguille -->
- <div id="qiblaCompass" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transition:transform .8s cubic-bezier(.34,1.56,.64,1);">
- <svg viewBox="0 0 40 120" style="width:40px;height:120px;">
- <polygon points="20,5 28,55 20,48 12,55" fill="#D4AF37"/>
- <polygon points="20,115 28,65 20,72 12,65" fill="#ccc"/>
- <circle cx="20" cy="60" r="6" fill="var(--g1)" stroke="var(--gold)" stroke-width="2"/>
- <text x="20" y="35" text-anchor="middle" font-size="12">🕋</text>
- </svg>
- </div>
- </div>
+<!-- Instruction posé à plat -->
+<div id="qiblaInstruction" style="background:linear-gradient(135deg,rgba(212,175,55,.12),rgba(15,123,63,.08));border-bottom:1px solid rgba(212,175,55,.2);padding:.6rem 1rem;display:flex;align-items:center;gap:.6rem;">
+  <span style="font-size:20px;">📱</span>
+  <div>
+    <div style="font-size:12px;font-weight:700;color:var(--g1);">Posez votre téléphone à plat</div>
+    <div style="font-size:11px;color:var(--text3);">L'aiguille pointe automatiquement vers La Mecque</div>
+  </div>
+</div>
 
- <!-- Infos + recherche -->
- <div id="qiblaInfo" style="text-align:center;">
- <div style="display:flex;align-items:center;justify-content:center;gap:.4rem;margin-bottom:.7rem;padding:.4rem .8rem;background:linear-gradient(135deg,rgba(15,123,63,.08),rgba(212,175,55,.06));border-radius:10px;border:1px solid rgba(212,175,55,.15)">
- <span style="font-size:14px">🕋</span>
- <span style="font-size:12px;color:var(--text2);font-style:italic;">Posez à plat ou entrez votre ville</span>
- </div>
- <div style="display:flex;gap:.5rem;margin-bottom:.6rem;">
- <input id="qiblaCityIn" placeholder="Ex: Thiès, Dakar, Kaolack..."
- style="flex:1;padding:.55rem .8rem;border:1.5px solid var(--g1);border-radius:10px;font-size:14px;outline:none;"
- onkeydown="if(event.key==='Enter') qiblaGo()">
- <button onclick="qiblaGo()" style="background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;border:none;border-radius:10px;padding:.55rem 1rem;font-size:14px;font-weight:700;cursor:pointer;">🔍</button>
- </div>
- <div style="display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap;margin-bottom:.5rem">
- <button onclick="qiblaGPS()" style="background:none;border:1px solid var(--g1);border-radius:20px;padding:.4rem 1rem;font-size:12px;color:var(--g1);cursor:pointer;">📍 GPS auto</button>
- <button id="qiblaCompassBtn" onclick="qiblaCompassToggle()" style="background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;border:none;border-radius:20px;padding:.4rem 1rem;font-size:12px;font-weight:700;cursor:pointer;">🧭 Boussole</button>
- </div>
- <!-- Ville rapide -->
- <div style="display:flex;gap:.35rem;justify-content:center;flex-wrap:wrap">
- <button onclick="_qiblaRun(14.152,-16.0765,'Kaolack')" style="background:rgba(15,123,63,.08);border:1px solid rgba(15,123,63,.2);border-radius:20px;padding:.25rem .65rem;font-size:11px;color:var(--g1);cursor:pointer;">Kaolack</button>
- </div>
- <div id="qiblaCompassStatus" style="font-size:11px;color:var(--text3);margin-top:.3rem;min-height:15px;font-weight:600;"></div>
- <div id="qiblaMsg" style="font-size:12px;color:var(--red);margin-top:.2rem;min-height:16px;"></div>
- </div>
+<!-- Boussole principale -->
+<div style="background:var(--white);padding:1.4rem 1rem 1rem;display:flex;flex-direction:column;align-items:center;">
 
- <!-- Résultat -->
- <div id="qiblaResult" style="display:none;text-align:center;margin-top:.8rem;">
- <div style="display:flex;justify-content:center;gap:1.5rem;margin-bottom:.6rem;">
- <div style="background:var(--gold3);border-radius:12px;padding:.5rem .9rem;">
- <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase">Direction</div>
- <div id="qiblaDeg" style="font-size:22px;font-weight:700;color:var(--g1)">—°</div>
- </div>
- <div style="background:var(--gold3);border-radius:12px;padding:.5rem .9rem;">
- <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase">Distance</div>
- <div id="qiblaDist" style="font-size:22px;font-weight:700;color:var(--g1)">— km</div>
- </div>
- </div>
- <div id="qiblaLoc" style="font-size:12px;color:var(--text3);font-style:italic;"></div>
- </div>
- </div>
+  <!-- Cercle boussole SVG -->
+  <div id="qiblaCompassWrap" style="position:relative;width:260px;height:260px;margin:0 auto .8rem;">
+
+    <!-- Cadran extérieur décoratif (tourne avec le Nord magnétique) -->
+    <div id="qiblaRosette" style="position:absolute;inset:0;transition:transform .25s ease-out;">
+      <svg viewBox="0 0 260 260" width="260" height="260" style="position:absolute;inset:0;">
+        <!-- Anneau extérieur -->
+        <circle cx="130" cy="130" r="126" fill="none" stroke="rgba(212,175,55,.3)" stroke-width="1.5"/>
+        <circle cx="130" cy="130" r="120" fill="#f9f5eb" stroke="rgba(212,175,55,.2)" stroke-width="1"/>
+        <!-- Graduations toutes les 10° -->
+        <g id="qiblaGrads">
+          <!-- Generated by JS -->
+        </g>
+        <!-- Points cardinaux -->
+        <text x="130" y="22" text-anchor="middle" font-size="15" font-weight="900" fill="#c0392b" font-family="sans-serif">N</text>
+        <text x="130" y="248" text-anchor="middle" font-size="13" font-weight="700" fill="#666" font-family="sans-serif">S</text>
+        <text x="247" y="135" text-anchor="middle" font-size="13" font-weight="700" fill="#666" font-family="sans-serif">E</text>
+        <text x="13" y="135" text-anchor="middle" font-size="13" font-weight="700" fill="#666" font-family="sans-serif">O</text>
+        <!-- Points intermédiaires -->
+        <text x="212" y="42" text-anchor="middle" font-size="10" fill="#999" font-family="sans-serif">NE</text>
+        <text x="212" y="225" text-anchor="middle" font-size="10" fill="#999" font-family="sans-serif">SE</text>
+        <text x="48" y="225" text-anchor="middle" font-size="10" fill="#999" font-family="sans-serif">SO</text>
+        <text x="48" y="42" text-anchor="middle" font-size="10" fill="#999" font-family="sans-serif">NO</text>
+        <!-- Cercle intérieur fond -->
+        <circle cx="130" cy="130" r="88" fill="white" stroke="rgba(212,175,55,.15)" stroke-width="1"/>
+        <!-- Anneau décoratif islamique -->
+        <circle cx="130" cy="130" r="95" fill="none" stroke="rgba(212,175,55,.25)" stroke-width="2" stroke-dasharray="4 3"/>
+      </svg>
+    </div>
+
+    <!-- Aiguille Qibla (pointe vers La Mecque, fixe par rapport au sol) -->
+    <div id="qiblaCompass" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transition:transform .25s ease-out;">
+      <svg viewBox="0 0 60 180" width="60" height="180" style="filter:drop-shadow(0 4px 12px rgba(0,0,0,.2));">
+        <!-- Aiguille haut = direction Mecque (or) -->
+        <defs>
+          <linearGradient id="needleTopGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#b8860b"/>
+            <stop offset="50%" stop-color="#FFD700"/>
+            <stop offset="100%" stop-color="#b8860b"/>
+          </linearGradient>
+          <linearGradient id="needleBotGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#888"/>
+            <stop offset="50%" stop-color="#ccc"/>
+            <stop offset="100%" stop-color="#888"/>
+          </linearGradient>
+        </defs>
+        <!-- Moitié haute : vers La Mecque (or/doré) -->
+        <polygon points="30,8 38,78 30,70 22,78" fill="url(#needleTopGrad)" stroke="#996600" stroke-width=".5"/>
+        <!-- Moitié basse (gris) -->
+        <polygon points="30,172 38,102 30,110 22,102" fill="url(#needleBotGrad)" stroke="#666" stroke-width=".5"/>
+        <!-- Centre pivot -->
+        <circle cx="30" cy="90" r="10" fill="white" stroke="rgba(212,175,55,.6)" stroke-width="2"/>
+        <circle cx="30" cy="90" r="5" fill="var(--g1)"/>
+        <circle cx="30" cy="90" r="2" fill="white"/>
+        <!-- Icône Kaaba sur la pointe dorée -->
+        <text x="30" y="50" text-anchor="middle" font-size="14" style="user-select:none;">🕋</text>
+      </svg>
+    </div>
+
+    <!-- Cercle central fixe (ne tourne pas) -->
+    <div style="position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center;">
+      <div style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.9);border:2px solid rgba(212,175,55,.4);box-shadow:0 2px 8px rgba(0,0,0,.15);"></div>
+    </div>
+  </div>
+
+  <!-- Statut boussole -->
+  <div id="qiblaCompassStatus" style="font-size:12px;font-weight:700;color:var(--g1);min-height:18px;text-align:center;margin-bottom:.5rem;"></div>
+
+  <!-- Boutons d'action -->
+  <div style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:.8rem;">
+    <button id="qiblaCompassBtn" onclick="qiblaCompassToggle()" style="background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;border:none;border-radius:22px;padding:.5rem 1.2rem;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(15,123,63,.35);display:flex;align-items:center;gap:.4rem;">
+      <span>🧭</span><span id="qiblaCompassBtnLabel">Activer boussole</span>
+    </button>
+    <button onclick="qiblaGPS()" style="background:none;border:1.5px solid var(--g1);border-radius:22px;padding:.5rem 1rem;font-size:12px;font-weight:700;color:var(--g1);cursor:pointer;display:flex;align-items:center;gap:.3rem;">
+      <span>📍</span><span>GPS</span>
+    </button>
+  </div>
+
+  <!-- Infos résultat -->
+  <div id="qiblaResult" style="display:none;width:100%;max-width:280px;">
+    <div style="display:flex;gap:.6rem;justify-content:center;margin-bottom:.5rem;">
+      <div style="flex:1;background:linear-gradient(135deg,rgba(15,123,63,.08),rgba(212,175,55,.06));border:1px solid rgba(212,175,55,.2);border-radius:12px;padding:.5rem .7rem;text-align:center;">
+        <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.15rem;">Direction</div>
+        <div id="qiblaDeg" style="font-size:20px;font-weight:800;color:var(--g1);">—°</div>
+      </div>
+      <div style="flex:1;background:linear-gradient(135deg,rgba(15,123,63,.08),rgba(212,175,55,.06));border:1px solid rgba(212,175,55,.2);border-radius:12px;padding:.5rem .7rem;text-align:center;">
+        <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.15rem;">Distance</div>
+        <div id="qiblaDist" style="font-size:20px;font-weight:800;color:var(--g1);">— km</div>
+      </div>
+    </div>
+    <div id="qiblaLoc" style="font-size:11px;color:var(--text3);font-style:italic;text-align:center;"></div>
+  </div>
+
+  <!-- Recherche ville (repliée par défaut, visible si GPS indisponible) -->
+  <div id="qiblaCityBox" style="width:100%;max-width:280px;margin-top:.6rem;">
+    <div style="display:flex;gap:.4rem;">
+      <input id="qiblaCityIn" placeholder="Entrez une ville..."
+        style="flex:1;padding:.48rem .75rem;border:1.5px solid rgba(15,123,63,.3);border-radius:10px;font-size:13px;outline:none;background:var(--gold4);"
+        onkeydown="if(event.key==='Enter') qiblaGo()">
+      <button onclick="qiblaGo()" style="background:var(--g1);color:#fff;border:none;border-radius:10px;padding:.48rem .9rem;font-size:13px;font-weight:700;cursor:pointer;">🔍</button>
+    </div>
+    <div id="qiblaMsg" style="font-size:11px;color:var(--red);margin-top:.25rem;min-height:14px;text-align:center;"></div>
+  </div>
+
+</div><!-- /boussole -->
 
 </div><!-- /ql-panel-qibla -->
 
@@ -5083,11 +5137,12 @@ window.toggleStudioPanel = function() {
  var observer = new MutationObserver(function(muts) {
  muts.forEach(function(m) {
  if (m.target.classList.contains('active')) {
- /* Section ouverte — auto-GPS Qibla */
- setTimeout(function(){
- var res = document.getElementById('qiblaResult');
- if (res && res.style.display === 'none' && typeof qiblaGPS === 'function') qiblaGPS();
- }, 400);
+            /* Section ouverte — auto-GPS + boussole Qibla */
+            setTimeout(function(){
+              var res = document.getElementById('qiblaResult');
+              if (res && res.style.display === 'none' && typeof qiblaGPS === 'function') qiblaGPS();
+              if (!window._qiblaCompassActive && typeof qiblaCompassToggle === 'function' && typeof DeviceOrientationEvent !== 'undefined') { setTimeout(qiblaCompassToggle, 800); }
+            }, 500);
  }
  });
  });
@@ -10920,17 +10975,27 @@ document.addEventListener('DOMContentLoaded', function() {
     et connectés de manière identique.
     ════════════════════════════════════════════════════════════ */
 
- /* ── 1. Chaînes TV ── */
- firebase.database().ref('app_config/channels').on('value', function(snap) {
-   var d = snap.val();
-   if (!d || !d.data) return;
-   try {
-     var chs = JSON.parse(d.data);
-     if (!Array.isArray(chs)) return;
-     try { localStorage.setItem('faydha_ch5', JSON.stringify(chs)); } catch(e) {}
-     renderChannels && renderChannels();
-   } catch(e) {}
- });
+ /* ── 1. Chaînes TV — sync temps réel pour TOUS les agents ── */
+ (function() {
+   var _chRef = firebase.database().ref('app_config/channels');
+   /* Détacher tout listener précédent pour éviter les doublons */
+   _chRef.off('value');
+   _chRef.on('value', function(snap) {
+     var d = snap.val();
+     if (!d || !d.data) return;
+     try {
+       var chs = JSON.parse(d.data);
+       if (!Array.isArray(chs)) return;
+       try { localStorage.setItem('faydha_ch5', JSON.stringify(chs)); } catch(e) {}
+       /* Forcer le rendu immédiat pour tous les utilisateurs */
+       if (typeof renderChannels === 'function') {
+         renderChannels();
+         /* Second appel après un court délai pour s'assurer que le DOM est prêt */
+         setTimeout(renderChannels, 300);
+       }
+     } catch(e) {}
+   });
+ })();
 
  /* ── 2. Programme / Agenda ── */
  firebase.database().ref('app_config/programme').on('value', function(snap) {
@@ -13344,15 +13409,21 @@ function _qiblaRun(lat,lng,label){
  var R=6371,dLa=(MLAT-lat)*Math.PI/180,dLo=(MLNG-lng)*Math.PI/180;
  var a=Math.sin(dLa/2)*Math.sin(dLa/2)+Math.cos(lat*Math.PI/180)*Math.cos(MLAT*Math.PI/180)*Math.sin(dLo/2)*Math.sin(dLo/2);
  var dist=Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
+ /* Aiguille pointe vers La Mecque (angle statique quand pas de boussole) */
  var el=document.getElementById("qiblaCompass");
  if(el) el.style.transform="rotate("+b+"deg)";
- var ed=document.getElementById("qiblaDeg"); if(ed) ed.textContent=Math.round(b)+"deg";
+ /* Cadran : pas de rotation en mode statique */
+ var rose=document.getElementById("qiblaRosette");
+ if(rose) rose.style.transform="rotate(0deg)";
+ var ed=document.getElementById("qiblaDeg"); if(ed) ed.textContent=Math.round(b)+"°";
  var edi=document.getElementById("qiblaDist"); if(edi) edi.textContent=dist.toLocaleString()+" km";
  var dirs=["Nord","Nord-Est","Est","Sud-Est","Sud","Sud-Ouest","Ouest","Nord-Ouest"];
  var el2=document.getElementById("qiblaLoc");
- if(el2) el2.textContent="Depuis "+label+" - Direction: "+dirs[Math.round(b/45)%8];
+ if(el2) el2.textContent="📍 "+label+" → "+dirs[Math.round(b/45)%8];
  var er=document.getElementById("qiblaResult"); if(er) er.style.display="block";
  var em=document.getElementById("qiblaMsg"); if(em) em.textContent="";
+ /* Stocker le bearing pour la boussole magnétique */
+ _qiblaTargetBearing = b;
 }
 
 function qiblaGo(){
@@ -13459,13 +13530,13 @@ function _qiblaStartCompass() {
 }
 
 function _qiblaBindOrientation() {
- _qiblaSetStatus('Localisation...', 'var(--g1)');
+ _qiblaSetStatus('Localisation GPS...', 'var(--g1)');
  navigator.geolocation.getCurrentPosition(function(pos) {
  _qiblaCompassLat = pos.coords.latitude;
  _qiblaCompassLng = pos.coords.longitude;
  _qiblaTargetBearing = _qiblaCalcBearing(_qiblaCompassLat, _qiblaCompassLng);
  _qiblaRun(_qiblaCompassLat, _qiblaCompassLng, 'GPS');
- _qiblaSetStatus('Boussole active - posez le telephone a plat', 'var(--g1)');
+ _qiblaSetStatus('✅ Boussole active — posez à plat', 'var(--g1)');
  var _smoothedHeading = null;
  var _lastNeedle = null;
  _qiblaOrientHandler = function(e) {
@@ -13477,34 +13548,37 @@ function _qiblaBindOrientation() {
  heading = (360 - e.alpha) % 360;
  }
  if (heading === null) return;
-
- /* Lissage exponentiel sur l'angle (low-pass filter, alpha=0.15) */
+ /* Lissage low-pass */
  if (_smoothedHeading === null) {
  _smoothedHeading = heading;
  } else {
- /* Correction pour éviter le saut 359°→0° */
  var diff = heading - _smoothedHeading;
  if (diff > 180) diff -= 360;
  if (diff < -180) diff += 360;
  _smoothedHeading = (_smoothedHeading + 0.15 * diff + 360) % 360;
  }
-
+ /* Stratégie boussole magnétique :
+ - Le cadran (rosette) tourne dans le sens OPPOSÉ à la rotation du téléphone
+ - L'aiguille reste fixe en indiquant toujours La Mecque */
+ if (_lastNeedle !== null && Math.abs(_smoothedHeading - _lastNeedle) < 0.4) return;
+ _lastNeedle = _smoothedHeading;
+ /* Cadran tourne pour compenser la rotation du téléphone */
+ var rose = document.getElementById('qiblaRosette');
+ if (rose) rose.style.transform = 'rotate(' + (-_smoothedHeading) + 'deg)';
+ /* Aiguille pointe vers La Mecque par rapport au sol */
  var needleAngle = (_qiblaTargetBearing - _smoothedHeading + 360) % 360;
-
- /* Ne redessiner que si changement > 0.5° pour éviter micro-tremblements */
- if (_lastNeedle !== null && Math.abs(needleAngle - _lastNeedle) < 0.5) return;
- _lastNeedle = needleAngle;
-
  var el = document.getElementById('qiblaCompass');
  if (el) el.style.transform = 'rotate(' + needleAngle + 'deg)';
  };
  window.addEventListener('deviceorientationabsolute', _qiblaOrientHandler, true);
  window.addEventListener('deviceorientation', _qiblaOrientHandler, true);
  }, function() {
- _qiblaSetStatus('GPS necessaire - autorisez la localisation', 'var(--red)');
+ _qiblaSetStatus('GPS requis — autorisez la localisation', 'var(--red)');
  _qiblaCompassActive = false;
  var btn = document.getElementById('qiblaCompassBtn');
  if(btn) btn.style.background='linear-gradient(135deg,var(--g1),var(--g2))';
+ var lbl = document.getElementById('qiblaCompassBtnLabel');
+ if(lbl) lbl.textContent='Activer boussole';
  }, {timeout:10000, enableHighAccuracy:true});
 }
 
@@ -13515,22 +13589,31 @@ function _qiblaStopCompass() {
  _qiblaOrientHandler = null;
  }
  _qiblaSetStatus('', '');
+ /* Réinitialiser le cadran */
+ var rose = document.getElementById('qiblaRosette');
+ if (rose) { rose.style.transition = 'transform .4s ease'; rose.style.transform = 'rotate(0deg)'; }
  var el = document.getElementById('qiblaCompass');
  if (el) el.style.transition = 'transform .8s cubic-bezier(.34,1.56,.64,1)';
  var btn = document.getElementById('qiblaCompassBtn');
- if (btn) { btn.textContent = 'Boussole auto'; btn.style.background='linear-gradient(135deg,var(--g1),var(--g2))'; }
+ if (btn) btn.style.background='linear-gradient(135deg,var(--g1),var(--g2))';
+ var lbl = document.getElementById('qiblaCompassBtnLabel');
+ if(lbl) lbl.textContent='Activer boussole';
 }
 
 function qiblaCompassToggle() {
  var btn = document.getElementById('qiblaCompassBtn');
+ var lbl = document.getElementById('qiblaCompassBtnLabel');
  if (_qiblaCompassActive) {
  _qiblaCompassActive = false;
  _qiblaStopCompass();
  } else {
  _qiblaCompassActive = true;
- if (btn) { btn.textContent = 'Arreter'; btn.style.background='linear-gradient(135deg,#c0392b,#e74c3c)'; }
+ if (btn) btn.style.background='linear-gradient(135deg,#c0392b,#e74c3c)';
+ if (lbl) lbl.textContent='Arrêter';
  var el = document.getElementById('qiblaCompass');
- if (el) el.style.transition = 'transform .3s ease-out';
+ if (el) el.style.transition = 'transform .25s ease-out';
+ var rose = document.getElementById('qiblaRosette');
+ if (rose) rose.style.transition = 'transform .25s ease-out';
  _qiblaStartCompass();
  }
 }
