@@ -7179,8 +7179,12 @@ function _doRenderChannels(){
 ════════════════════════════════════════ */
 function extractYTId(url){
  if(!url)return null;
- var m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|live\/|shorts\/))([A-Za-z0-9_-]{11})/);
- return m?m[1]:null;
+ /* Supporte: watch?v=, /live/, /embed/, /shorts/, youtu.be/, ?si= partage */
+ var m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|live\/|shorts\/|v\/))([A-Za-z0-9_-]{11})/);
+ if(m)return m[1];
+ /* Fallback: v= paramètre seul */
+ var v=url.match(/[?&]v=([A-Za-z0-9_-]{11})/);
+ return v?v[1]:null;
 }
 
 function playChannel(ch,idx){
@@ -7650,13 +7654,13 @@ function showAdminContent(){
  var d=snap.val();
  try{ if(d&&d.hash) localStorage.setItem(PWD_KEY, d.hash); }catch(e){}
  });
- /* Chaînes depuis Firebase → editors (écoute temps réel) */
- firebase.database().ref('app_config/channels').on('value',function(snap){
+ /* Rafraîchir les éditeurs admin une seule fois depuis Firebase */
+ firebase.database().ref('app_config/channels').once('value',function(snap){
  var d=snap.val();
  if(!d||!d.data) return;
  try{
  var chs=JSON.parse(d.data);
- if(Array.isArray(chs)){ localStorage.setItem(CH_KEY,JSON.stringify(chs)); buildChEditors(); renderChannels && renderChannels(); }
+ if(Array.isArray(chs)){ localStorage.setItem(CH_KEY,JSON.stringify(chs)); buildChEditors(); }
  }catch(e){}
  });
  /* Programme depuis Firebase → admin list (écoute temps réel) */
@@ -7852,6 +7856,9 @@ function buildChEditors(){
  var container=document.getElementById('chEditors');
  if(!container)return;
  var chs=getChannels();
+ /* Garantir exactement 5 chaînes — compléter si Firebase en renvoie moins */
+ while(chs.length<5) chs.push({name:'',url:'',badge:'',isLive:false});
+ chs=chs.slice(0,5);
  container.innerHTML='';
  chs.forEach(function(ch,i){
   var card=document.createElement('div');
@@ -7914,25 +7921,41 @@ function chToggleLive(i, cb){
 }
 
 function saveChannels(){
- var chs=getChannels();
- chs.forEach(function(ch,i){
- ch.name=(document.getElementById('chN'+i)||{}).value||'';
- ch.url =(document.getElementById('chU'+i)||{}).value||'';
- ch.badge=(document.getElementById('chB'+i)||{}).value||'';
- ch.isLive=!!(document.getElementById('chL'+i)||{}).checked;
- });
+ /* Construire un tableau propre depuis les inputs DOM — 5 chaînes fixes */
+ var chs=[];
+ var base=getChannels();
+ for(var i=0;i<5;i++){
+  var prev=base[i]||{name:'',url:'',badge:'',isLive:false};
+  var nameEl=document.getElementById('chN'+i);
+  var urlEl =document.getElementById('chU'+i);
+  var badgeEl=document.getElementById('chB'+i);
+  var liveEl =document.getElementById('chL'+i);
+  chs.push({
+   name : nameEl  ? nameEl.value.trim()  : (prev.name||''),
+   url  : urlEl   ? urlEl.value.trim()   : (prev.url||''),
+   badge: badgeEl ? badgeEl.value.trim() : (prev.badge||''),
+   isLive: liveEl ? !!liveEl.checked     : !!prev.isLive
+  });
+ }
+ /* Sauvegarder localement */
  save(CH_KEY,chs);
- /* Sync Firebase → tous les spectateurs reçoivent les chaînes à jour */
+ /* Sync Firebase → TOUS les utilisateurs reçoivent les chaînes immédiatement */
  _fbInit(function(){
- firebase.database().ref('app_config/channels').set({
- data: JSON.stringify(chs),
- updatedAt: Date.now()
+  firebase.database().ref('app_config/channels').set({
+   data: JSON.stringify(chs),
+   updatedAt: Date.now()
+  }, function(err){
+   var msg=document.getElementById('ch-status-msg');
+   if(err){
+    if(msg) msg.textContent='\u274C Erreur Firebase';
+    showToast('\u274C Erreur de sauvegarde Firebase');
+   } else {
+    renderChannels();
+    if(msg){ msg.textContent='\u2705 Enregistr\u00e9 & synchronis\u00e9'; setTimeout(function(){msg.textContent='';},2500); }
+    showToast('\u2705 5 cha\u00eenes enregistr\u00e9es & envoy\u00e9es \u00e0 tous');
+   }
+  });
  });
- });
- renderChannels();
- var msg=document.getElementById('ch-status-msg');
- if(msg){ msg.textContent='✅ Enregistré'; setTimeout(function(){msg.textContent='';},2500); }
- showToast('✅ 5 chaînes enregistrées');
 }
 
 /* ════════════════════════════════════════
@@ -11670,14 +11693,12 @@ document.addEventListener('DOMContentLoaded', function() {
      if (!d || !d.data) return;
      try {
        var chs = JSON.parse(d.data);
-       if (!Array.isArray(chs)) return;
+       if (!Array.isArray(chs) || chs.length !== 5) return;
        try { localStorage.setItem('faydha_ch5', JSON.stringify(chs)); } catch(e) {}
-       /* Forcer le rendu immédiat pour tous les utilisateurs */
-       if (typeof renderChannels === 'function') {
-         renderChannels();
-         /* Second appel après un court délai pour s'assurer que le DOM est prêt */
-         setTimeout(renderChannels, 300);
-       }
+       /* Mise à jour immédiate pour TOUS les utilisateurs (admin + invité + connecté) */
+       if (typeof renderChannels === 'function') renderChannels();
+       /* Mettre à jour les éditeurs admin si le panneau est ouvert */
+       if (window._adminIn && typeof buildChEditors === 'function') buildChEditors();
      } catch(e) {}
    });
  })();
@@ -15128,8 +15149,7 @@ window.abToggleMic = function() {
     '    }).catch(() => caches.match(e.request).then(r => r || caches.match("./")))',
     '  );',
     '});'
-  ].join("
-");
+  ].join("\n");
 
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", function() {
