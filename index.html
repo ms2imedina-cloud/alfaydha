@@ -3232,7 +3232,7 @@ function _fbInit(cb) {
  if (typeof cb === 'function') cb();
  return;
  }
- /* Firebase pas encore chargé — retry jusqu'à 2s max */
+ /* Firebase pas encore chargé — retry jusqu'à 5s max (defer peut prendre du temps) */
  if (typeof firebase === 'undefined' || !firebase.apps) {
  var tries = 0;
  var iv = setInterval(function() {
@@ -3240,10 +3240,12 @@ function _fbInit(cb) {
  if (typeof firebase !== 'undefined' && firebase.apps !== undefined) {
  clearInterval(iv);
  _fbInit(cb);
- } else if (tries > 20) {
- /* Firebase non disponible (offline/bloqué) — ne pas appeler cb avec firebase indéfini */
+ } else if (tries > 50) {
+ /* Firebase non disponible après 5s — uniquement si page déjà chargée */
  clearInterval(iv);
+ if (document.readyState === 'complete') {
  console.warn('[Faydha] Firebase non disponible — fonctions dépendantes désactivées');
+ }
  }
  }, 100);
  return;
@@ -7941,20 +7943,38 @@ function saveChannels(){
  save(CH_KEY,chs);
  /* Sync Firebase → TOUS les utilisateurs reçoivent les chaînes immédiatement */
  _fbInit(function(){
-  firebase.database().ref('app_config/channels').set({
-   data: JSON.stringify(chs),
-   updatedAt: Date.now()
-  }, function(err){
+  function _doSave(){
+   firebase.database().ref('app_config/channels').set({
+    data: JSON.stringify(chs),
+    updatedAt: Date.now()
+   }, function(err){
+    var msg=document.getElementById('ch-status-msg');
+    if(err){
+     if(msg) msg.textContent='\u274C Erreur Firebase: '+err.message;
+     showToast('\u274C '+err.message);
+     console.error('[saveChannels]',err);
+    } else {
+     renderChannels();
+     if(msg){ msg.textContent='\u2705 Enregistr\u00e9 & synchronis\u00e9'; setTimeout(function(){msg.textContent='';},2500); }
+     showToast('\u2705 5 cha\u00eenes enregistr\u00e9es & envoy\u00e9es \u00e0 tous');
+    }
+   });
+  }
+  /* S'assurer qu'un utilisateur est authentifié avant d'écrire */
+  var user=firebase.auth().currentUser;
+  if(user){
+   _doSave();
+  } else {
    var msg=document.getElementById('ch-status-msg');
-   if(err){
-    if(msg) msg.textContent='\u274C Erreur Firebase';
-    showToast('\u274C Erreur de sauvegarde Firebase');
-   } else {
-    renderChannels();
-    if(msg){ msg.textContent='\u2705 Enregistr\u00e9 & synchronis\u00e9'; setTimeout(function(){msg.textContent='';},2500); }
-    showToast('\u2705 5 cha\u00eenes enregistr\u00e9es & envoy\u00e9es \u00e0 tous');
-   }
-  });
+   if(msg) msg.textContent='\u23F3 Connexion Firebase...';
+   firebase.auth().signInAnonymously().then(function(){
+    _doSave();
+   }).catch(function(e){
+    if(msg) msg.textContent='\u274C Auth \u00e9chou\u00e9e: '+e.message;
+    showToast('\u274C Auth Firebase: '+e.message);
+    console.error('[saveChannels auth]',e);
+   });
+  }
  });
 }
 
@@ -15153,6 +15173,12 @@ window.abToggleMic = function() {
 
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", function() {
+      /* Le Service Worker via Blob URL nécessite http:// ou https:// */
+      var scheme = location.protocol;
+      if (scheme !== 'http:' && scheme !== 'https:') {
+        console.log('[Faydha PWA] SW ignoré — schéma non supporté (' + scheme + ')');
+        return;
+      }
       try {
         var blob = new Blob([SW_CODE], { type: "application/javascript" });
         var swUrl = URL.createObjectURL(blob);
