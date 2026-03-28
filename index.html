@@ -7939,43 +7939,60 @@ function saveChannels(){
    isLive: liveEl ? !!liveEl.checked     : !!prev.isLive
   });
  }
- /* Sauvegarder localement */
- save(CH_KEY,chs);
- /* Sync Firebase → TOUS les utilisateurs reçoivent les chaînes immédiatement */
- _fbInit(function(){
-  function _doSave(){
+
+ /* ── 1. Sauvegarde locale IMMÉDIATE — fonctionne sans Firebase ── */
+ save(CH_KEY, chs);
+ renderChannels();
+ var msg = document.getElementById('ch-status-msg');
+
+ /* ── 2. Sync Firebase en arrière-plan (silencieux si erreur) ── */
+ function _doFirebaseSave(){
+  try {
    firebase.database().ref('app_config/channels').set({
     data: JSON.stringify(chs),
     updatedAt: Date.now()
    }, function(err){
-    var msg=document.getElementById('ch-status-msg');
     if(err){
-     if(msg) msg.textContent='\u274C Erreur Firebase: '+err.message;
-     showToast('\u274C '+err.message);
-     console.error('[saveChannels]',err);
+     /* Firebase échoue mais la sauvegarde locale est déjà faite */
+     if(msg){ msg.textContent='✅ Sauvegardé localement (Firebase hors ligne)'; setTimeout(function(){msg.textContent='';},3000); }
+     showToast('✅ 5 chaînes sauvegardées (mode local)');
+     console.warn('[saveChannels] Firebase err:', err.message);
     } else {
-     renderChannels();
-     if(msg){ msg.textContent='\u2705 Enregistr\u00e9 & synchronis\u00e9'; setTimeout(function(){msg.textContent='';},2500); }
-     showToast('\u2705 5 cha\u00eenes enregistr\u00e9es & envoy\u00e9es \u00e0 tous');
+     if(msg){ msg.textContent='✅ Enregistré & synchronisé Firebase'; setTimeout(function(){msg.textContent='';},2500); }
+     showToast('✅ 5 chaînes enregistrées & envoyées à tous');
     }
    });
+  } catch(e) {
+   if(msg){ msg.textContent='✅ Sauvegardé localement'; setTimeout(function(){msg.textContent='';},2500); }
+   showToast('✅ 5 chaînes sauvegardées (mode local)');
+   console.warn('[saveChannels] Firebase exception:', e);
   }
-  /* S'assurer qu'un utilisateur est authentifié avant d'écrire */
-  var user=firebase.auth().currentUser;
-  if(user){
-   _doSave();
-  } else {
-   var msg=document.getElementById('ch-status-msg');
-   if(msg) msg.textContent='\u23F3 Connexion Firebase...';
-   firebase.auth().signInAnonymously().then(function(){
-    _doSave();
-   }).catch(function(e){
-    if(msg) msg.textContent='\u274C Auth \u00e9chou\u00e9e: '+e.message;
-    showToast('\u274C Auth Firebase: '+e.message);
-    console.error('[saveChannels auth]',e);
-   });
-  }
- });
+ }
+
+ /* Afficher succès immédiatement */
+ if(msg) msg.textContent='⏳ Synchronisation…';
+
+ try {
+  _fbInit(function(){
+   var user = firebase.auth().currentUser;
+   if(user){
+    _doFirebaseSave();
+   } else {
+    /* Tenter auth anonyme — si ça échoue, on reste en mode local */
+    firebase.auth().signInAnonymously()
+     .then(function(){ _doFirebaseSave(); })
+     .catch(function(e){
+      console.warn('[saveChannels] Auth anonyme échouée:', e.message);
+      if(msg){ msg.textContent='✅ Sauvegardé localement (Firebase non connecté)'; setTimeout(function(){msg.textContent='';},3500); }
+      showToast('✅ 5 chaînes sauvegardées localement');
+     });
+   }
+  });
+ } catch(e) {
+  if(msg){ msg.textContent='✅ Sauvegardé localement'; setTimeout(function(){msg.textContent='';},2500); }
+  showToast('✅ 5 chaînes sauvegardées (mode local)');
+  console.warn('[saveChannels] _fbInit exception:', e);
+ }
 }
 
 /* ════════════════════════════════════════
