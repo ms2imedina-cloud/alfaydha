@@ -3462,12 +3462,13 @@ document.addEventListener('DOMContentLoaded', function(){
 
  <!-- Description -->
  <div style="text-align:center;font-size:13px;color:rgba(251,248,232,.55);line-height:1.7;padding:0 .5rem">
- Bienvenue dans l'application de la communauté Taalibé Baye mondiale
+ Connectez-vous pour accéder à l'application de la communauté Taalibé Baye
  </div>
 
- <!-- Bouton Entrer -->
- <button class="wlc-google-btn" onclick="enterApp('visiteur')" style="width:100%;margin:0;background:linear-gradient(135deg,var(--g1),var(--g2));border:none;font-size:16px;font-weight:700;letter-spacing:.05em">
- ☽ &nbsp;Entrer dans la Faydha
+ <!-- Bouton Google -->
+ <button class="wlc-google-btn" id="wlcGoogleBtn" onclick="signInWithGoogle()" style="width:100%;margin:0">
+ <svg width="22" height="22" viewBox="0 0 48 48" style="flex-shrink:0"><path fill="#FFC107" d="M43.611 20.083H24v4.175h10.8C33.638 29.951 29.249 33.75 24 33.75c-5.642 0-10.193-3.747-11.765-9.343l-7.887 1.931C6.782 35.033 13.902 40 24 40c8.635 0 15.964-4.633 19.706-11.5L43.611 20.083z"/><path fill="#FF3D00" d="M6.306 23.85C3.201 18.334 3.201 11.666 6.306 6.15L.566 1.83C-2.823 8.899-2.823 21.101.566 28.17L6.306 23.85z"/><path fill="#4CAF50" d="M24 7.5c3.845 0 7.236 1.375 9.931 3.617L40.019 5.249C36.013 1.993 30.273 0 24 0 13.902 0 6.782 4.967 3.148 13.443l7.887 1.931C12.656 10.211 17.805 7.5 24 7.5z"/><path fill="#1565C0" d="M24 40c6.273 0 12.013-2.074 16.019-5.613l-7.064-5.612C30.572 31.447 27.443 32.5 24 32.5c-5.292 0-9.725-3.236-11.532-7.8l-7.887 1.931C10.119 35.223 16.316 40 24 40z"/></svg>
+ Se connecter avec Google
  </button>
 
  </div>
@@ -5664,7 +5665,7 @@ function icalToday() { _icalCur = new Date(); icalRender(); showToast('📅 Aujo
  <button class="adm-tab" id="atab-params" onclick="switchAdmTab('params')"><span class="adm-tab-icon">⚙️</span>Params</button>
  <button class="adm-tab" id="atab-notif" onclick="switchAdmTab('notif')"><span class="adm-tab-icon">🔔</span>Notifs</button>
  <button class="adm-tab" id="atab-users" onclick="switchAdmTab('users')"><span class="adm-tab-icon">👤</span>Profils</button>
- <button class="adm-tab" id="atab-asrar" onclick="switchAdmTab('asrar')"><span class="adm-tab-icon">⚡</span>Asrar</button>
+
  </div>
 
  <!-- ── ONGLET CHAÎNES ── -->
@@ -6342,395 +6343,7 @@ function icalToday() { _icalCur = new Date(); icalRender(); showToast('📅 Aujo
  </div>
  </div>
 
- <!-- ── ONGLET ASRAR ── -->
- <div class="adm-panel" id="adm-asrar" style="display:none;background:#050209;color:#F5EFE0;min-height:300px">
 
-  <!-- CSS Asrar intégré (namespace sécurisé) -->
-  <style>
-  #adm-asrar { font-family:'Roboto',sans-serif; }
-  #adm-asrar .as-card { background:#130f22; border:1px solid rgba(212,175,55,.15); border-radius:16px; padding:1rem; margin-bottom:.8rem; position:relative; overflow:hidden; }
-  #adm-asrar .as-card::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(212,175,55,.03),transparent 60%); pointer-events:none; }
-  #adm-asrar .as-card-violet { border-color:rgba(123,47,190,.25); background:linear-gradient(135deg,rgba(75,0,130,.12),#130f22); }
-  #adm-asrar .as-card-gold { border-color:rgba(212,175,55,.28); background:linear-gradient(135deg,rgba(212,175,55,.06),#130f22); }
-  #adm-asrar .as-card-green { border-color:rgba(46,125,82,.3); background:linear-gradient(135deg,rgba(46,125,82,.08),#130f22); }
-  #adm-asrar .as-card-title { font-family:'Amiri',serif; font-size:16px; color:#F0DC82; margin-bottom:.7rem; display:flex; align-items:center; gap:.5rem; }
-  #adm-asrar .as-tabs { display:flex; overflow-x:auto; scrollbar-width:none; border-bottom:1px solid rgba(212,175,55,.15); background:rgba(5,2,9,.8); }
-  #adm-asrar .as-tabs::-webkit-scrollbar { display:none; }
-  #adm-asrar .as-ntab { flex-shrink:0; padding:.55rem .8rem; font-size:11px; font-weight:600; color:rgba(245,239,224,.4); border:none; background:none; cursor:pointer; border-bottom:2px solid transparent; transition:all .2s; white-space:nowrap; font-family:'Roboto',sans-serif; letter-spacing:.04em; }
-  #adm-asrar .as-ntab:hover { color:rgba(245,239,224,.7); }
-  #adm-asrar .as-ntab.active { color:#D4AF37; border-bottom-color:#D4AF37; background:rgba(212,175,55,.05); }
-  #adm-asrar .as-section { display:none; padding:.8rem; animation:asFadeUp .3s ease; }
-  #adm-asrar .as-section.active { display:block; }
-  @keyframes asFadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
-  #adm-asrar .as-f-label { font-size:11px; color:rgba(245,239,224,.4); text-transform:uppercase; letter-spacing:.1em; margin-bottom:.3rem; margin-top:.6rem; display:block; }
-  #adm-asrar .as-f-label:first-child { margin-top:0; }
-  #adm-asrar .as-input { width:100%; background:rgba(255,255,255,.06); border:1.5px solid rgba(212,175,55,.25); border-radius:10px; padding:.55rem .85rem; color:#F5EFE0; font-family:'Roboto',sans-serif; font-size:14px; outline:none; transition:border-color .2s; box-sizing:border-box; }
-  #adm-asrar .as-input:focus { border-color:rgba(212,175,55,.6); }
-  #adm-asrar .as-input::placeholder { color:rgba(245,239,224,.25); }
-  #adm-asrar .as-input-ar { direction:rtl; font-family:'Amiri',serif; font-size:17px; }
-  #adm-asrar .as-textarea { resize:vertical; min-height:65px; }
-  #adm-asrar .as-btn { display:inline-flex; align-items:center; justify-content:center; gap:.4rem; border:none; border-radius:10px; padding:.55rem 1rem; font-family:'Roboto',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all .18s; }
-  #adm-asrar .as-btn-gold { background:linear-gradient(135deg,#7a4500,#D4AF37); color:#fff; box-shadow:0 3px 12px rgba(212,175,55,.25); }
-  #adm-asrar .as-btn-violet { background:linear-gradient(135deg,#4B0082,#7B2FBE); color:#fff; box-shadow:0 3px 12px rgba(123,47,190,.3); }
-  #adm-asrar .as-btn-green { background:linear-gradient(135deg,#1A4030,#2E7D52); color:#fff; }
-  #adm-asrar .as-btn-outline { background:transparent; border:1.5px solid rgba(212,175,55,.2); color:rgba(245,239,224,.6); }
-  #adm-asrar .as-btn-full { width:100%; margin-top:.6rem; }
-  #adm-asrar .as-btn-sm { padding:.32rem .7rem; font-size:12px; border-radius:8px; }
-  #adm-asrar .as-f-row { display:flex; gap:.5rem; }
-  #adm-asrar .as-f-row .as-input { flex:1; }
-  /* Cat buttons */
-  #adm-asrar .as-cat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.4rem; margin:.4rem 0; }
-  #adm-asrar .as-cat-btn { border:1.5px solid rgba(212,175,55,.2); border-radius:10px; padding:.45rem .3rem; background:rgba(255,255,255,.04); color:rgba(245,239,224,.6); font-size:11px; font-weight:600; cursor:pointer; transition:all .18s; text-align:center; font-family:'Roboto',sans-serif; display:flex; flex-direction:column; align-items:center; gap:2px; }
-  #adm-asrar .as-cat-btn .ci { font-size:17px; }
-  #adm-asrar .as-cat-btn.active { background:linear-gradient(135deg,rgba(75,0,130,.4),rgba(123,47,190,.2)); border-color:#9B59B6; color:#F0DC82; }
-  /* Résultat */
-  #adm-asrar .as-result-box { background:linear-gradient(160deg,#0d0418,#160d28); border:1px solid rgba(212,175,55,.22); border-radius:14px; padding:1rem; margin-top:.6rem; display:none; animation:asResultIn .35s ease; }
-  #adm-asrar .as-result-box.visible { display:block; }
-  @keyframes asResultIn { from{opacity:0;transform:scale(.95)} to{opacity:1;transform:scale(1)} }
-  #adm-asrar .as-result-row { display:flex; align-items:center; justify-content:center; gap:.6rem; margin-bottom:.6rem; }
-  #adm-asrar .as-result-num { font-family:'Amiri',serif; font-size:42px; color:#D4AF37; font-weight:700; line-height:1; }
-  #adm-asrar .as-compat-bar { width:100%; height:7px; background:rgba(255,255,255,.08); border-radius:100px; overflow:hidden; margin-bottom:.5rem; }
-  #adm-asrar .as-compat-fill { height:100%; border-radius:100px; transition:width .7s cubic-bezier(.4,0,.2,1); width:0; }
-  #adm-asrar .as-verdict-text { text-align:center; font-family:'Amiri',serif; font-size:14px; color:#F0DC82; line-height:1.55; }
-  /* IA response */
-  #adm-asrar .as-ai-resp { background:rgba(255,255,255,.04); border:1px solid rgba(212,175,55,.12); border-radius:12px; padding:.8rem; margin-top:.6rem; display:none; font-size:13px; line-height:1.8; color:rgba(245,239,224,.75); }
-  #adm-asrar .as-ai-resp.visible { display:block; }
-  #adm-asrar .as-ai-thinking { display:flex; align-items:center; gap:.5rem; color:rgba(245,239,224,.4); font-size:12px; font-style:italic; }
-  #adm-asrar .as-dots span { display:inline-block; width:4px; height:4px; border-radius:50%; background:#D4AF37; animation:asDbounce .9s ease-in-out infinite; }
-  #adm-asrar .as-dots span:nth-child(2){animation-delay:.15s}
-  #adm-asrar .as-dots span:nth-child(3){animation-delay:.3s}
-  @keyframes asDbounce { 0%,80%,100%{transform:scale(0);opacity:.3} 40%{transform:scale(1);opacity:1} }
-  /* Abjad table */
-  #adm-asrar .as-abjad-tbl { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; margin-bottom:.6rem; }
-  #adm-asrar .as-abjad-cell { background:rgba(212,175,55,.06); border:1px solid rgba(212,175,55,.1); border-radius:5px; padding:.25rem .15rem; text-align:center; cursor:pointer; transition:all .12s; }
-  #adm-asrar .as-abjad-cell:hover, #adm-asrar .as-abjad-cell.hl { background:rgba(212,175,55,.2); border-color:#D4AF37; }
-  #adm-asrar .as-abjad-letter { font-family:'Amiri',serif; font-size:16px; color:#F0DC82; display:block; line-height:1.2; }
-  #adm-asrar .as-abjad-val { font-size:9px; color:rgba(245,239,224,.35); display:block; }
-  #adm-asrar .as-big-num { font-family:'Amiri',serif; font-size:52px; color:#D4AF37; font-weight:700; text-align:center; line-height:1; display:block; }
-  #adm-asrar .as-breakdown { display:flex; flex-wrap:wrap; gap:3px; justify-content:center; margin-top:.5rem; }
-  #adm-asrar .as-chip { background:rgba(212,175,55,.1); border:1px solid rgba(212,175,55,.18); border-radius:5px; padding:1px 7px; font-size:11px; color:#F0DC82; }
-  /* Wafq */
-  #adm-asrar .as-wafq { display:grid; grid-template-columns:repeat(3,1fr); gap:4px; max-width:180px; margin:0 auto; }
-  #adm-asrar .as-wafq-cell { background:rgba(212,175,55,.1); border:1px solid rgba(212,175,55,.2); border-radius:8px; padding:.6rem; text-align:center; font-family:'Amiri',serif; font-size:20px; color:#D4AF37; font-weight:700; }
-  /* Match */
-  #adm-asrar .as-scoreboard { display:grid; grid-template-columns:1fr auto 1fr; gap:.6rem; align-items:center; background:linear-gradient(160deg,#060e06,#0d1a1a); border:1px solid rgba(46,125,82,.2); border-radius:16px; padding:.85rem; margin-bottom:.7rem; }
-  #adm-asrar .as-team-block { text-align:center; }
-  #adm-asrar .as-team-input { width:100%; background:transparent; border:none; border-bottom:1.5px solid rgba(212,175,55,.2); color:#F0DC82; font-family:'Amiri',serif; font-size:16px; text-align:center; outline:none; padding:.15rem; transition:border-color .2s; }
-  #adm-asrar .as-team-input:focus { border-bottom-color:#D4AF37; }
-  #adm-asrar .as-score-num { font-size:56px; font-weight:900; color:#D4AF37; line-height:1; text-align:center; font-variant-numeric:tabular-nums; }
-  #adm-asrar .as-score-ctls { display:flex; gap:.35rem; justify-content:center; margin-top:.35rem; }
-  #adm-asrar .as-sbtn { width:30px; height:30px; border-radius:50%; border:none; font-size:18px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-  #adm-asrar .as-sbtn-p { background:#2E7D52; color:#fff; }
-  #adm-asrar .as-sbtn-m { background:rgba(192,57,43,.25); color:rgba(255,100,80,1); border:1px solid rgba(192,57,43,.3); }
-  /* Chrono */
-  #adm-asrar .as-chrono { font-size:38px; font-weight:900; color:#D4AF37; text-align:center; font-variant-numeric:tabular-nums; letter-spacing:.03em; }
-  /* Pred bar */
-  #adm-asrar .as-pred-bar { background:#130f22; border:1px solid rgba(212,175,55,.12); border-radius:12px; overflow:hidden; margin-bottom:.6rem; }
-  #adm-asrar .as-pred-header { padding:.5rem .8rem; font-size:10px; color:rgba(245,239,224,.35); text-transform:uppercase; letter-spacing:.08em; border-bottom:1px solid rgba(212,175,55,.1); }
-  #adm-asrar .as-pred-row { display:flex; height:40px; }
-  #adm-asrar .as-pred-a { background:linear-gradient(90deg,rgba(46,125,82,.5),rgba(46,125,82,.2)); display:flex; align-items:center; padding:0 .7rem; color:#4CAF50; font-weight:800; font-size:13px; transition:flex .7s ease; min-width:36px; }
-  #adm-asrar .as-pred-d { background:rgba(255,255,255,.05); display:flex; align-items:center; justify-content:center; color:rgba(245,239,224,.35); font-size:11px; transition:flex .7s ease; min-width:28px; }
-  #adm-asrar .as-pred-b { background:linear-gradient(90deg,rgba(36,113,163,.2),rgba(36,113,163,.5)); display:flex; align-items:center; justify-content:flex-end; padding:0 .7rem; color:#2471a3; font-weight:800; font-size:13px; transition:flex .7s ease; min-width:36px; }
-  /* Pred form */
-  #adm-asrar .as-choice-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:.4rem; margin:.4rem 0 .6rem; }
-  #adm-asrar .as-choice-btn { border:1.5px solid rgba(212,175,55,.15); border-radius:10px; padding:.5rem .4rem; background:rgba(255,255,255,.03); color:rgba(245,239,224,.5); font-size:11px; cursor:pointer; transition:all .18s; text-align:center; font-family:'Roboto',sans-serif; display:flex; flex-direction:column; align-items:center; gap:2px; }
-  #adm-asrar .as-choice-btn.active { background:linear-gradient(135deg,rgba(75,0,130,.3),rgba(123,47,190,.15)); border-color:#7B2FBE; color:#F0DC82; }
-  #adm-asrar .as-choice-icon { font-size:18px; }
-  #adm-asrar .as-choice-lbl { font-weight:700; font-size:11px; }
-  #adm-asrar .as-choice-sub { font-size:9px; color:rgba(245,239,224,.3); }
-  /* Pred result */
-  #adm-asrar .as-pred-result { background:linear-gradient(160deg,#080418,#120d26); border:1px solid rgba(123,47,190,.3); border-radius:14px; padding:1rem; margin-top:.6rem; display:none; text-align:center; animation:asResultIn .35s ease; }
-  #adm-asrar .as-pred-result.visible { display:block; }
-  #adm-asrar .as-pred-verdict { font-family:'Amiri',serif; font-size:15px; color:#F0DC82; line-height:1.5; margin:.4rem 0; }
-  #adm-asrar .as-conf-bar { height:6px; background:rgba(255,255,255,.08); border-radius:100px; overflow:hidden; margin:.3rem 0; }
-  #adm-asrar .as-conf-fill { height:100%; background:linear-gradient(90deg,#7B2FBE,#D4AF37); border-radius:100px; transition:width .8s ease; }
-  /* Events log */
-  #adm-asrar .as-events-log { max-height:140px; overflow-y:auto; scrollbar-width:none; }
-  #adm-asrar .as-events-log::-webkit-scrollbar { display:none; }
-  #adm-asrar .as-event { display:flex; align-items:center; gap:.5rem; padding:.35rem .4rem; border-bottom:1px solid rgba(255,255,255,.04); font-size:12px; animation:asEvIn .25s ease; }
-  @keyframes asEvIn { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:translateX(0)} }
-  #adm-asrar .as-ev-time { background:rgba(212,175,55,.12); border-radius:5px; padding:1px 6px; font-size:10px; font-weight:700; color:#D4AF37; flex-shrink:0; }
-  #adm-asrar .as-ev-txt-a { color:#4CAF50; font-weight:600; }
-  #adm-asrar .as-ev-txt-b { color:#2471a3; font-weight:600; }
-  /* Stat controls */
-  #adm-asrar .as-stat-inc { flex:1; padding:.3rem .35rem; border:1.5px solid rgba(212,175,55,.12); border-radius:7px; background:rgba(255,255,255,.04); color:rgba(245,239,224,.5); font-size:10px; cursor:pointer; transition:all .15s; font-family:'Roboto',sans-serif; text-align:center; }
-  #adm-asrar .as-stat-inc.a { border-color:rgba(58,148,99,.3); color:rgba(58,148,99,.8); }
-  #adm-asrar .as-stat-inc.b { border-color:rgba(36,113,163,.3); color:rgba(36,113,163,.8); }
-  /* Match type btns */
-  #adm-asrar .as-mtype-row { display:flex; gap:.35rem; flex-wrap:wrap; justify-content:center; margin:.4rem 0; }
-  #adm-asrar .as-mtype-btn { border:1.5px solid rgba(46,125,82,.3); border-radius:100px; padding:.2rem .6rem; background:rgba(46,125,82,.08); color:rgba(46,125,82,.8); font-size:10px; font-weight:700; cursor:pointer; transition:all .18s; font-family:'Roboto',sans-serif; }
-  #adm-asrar .as-mtype-btn.active { background:#2E7D52; color:#fff; border-color:#2E7D52; }
-  /* History */
-  #adm-asrar .as-req-card { background:rgba(255,255,255,.04); border:1px solid rgba(212,175,55,.1); border-radius:10px; padding:.6rem .75rem; margin-bottom:.4rem; }
-  #adm-asrar .as-req-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:.25rem; }
-  #adm-asrar .as-req-name { font-size:13px; font-weight:600; color:#F5EFE0; }
-  #adm-asrar .as-req-badge { font-size:9px; padding:2px 7px; border-radius:100px; }
-  #adm-asrar .as-req-time { font-size:11px; color:rgba(245,239,224,.3); }
-  #adm-asrar .as-req-snippet { font-size:11px; color:rgba(245,239,224,.35); font-style:italic; margin-top:.2rem; }
-  /* Key status */
-  #adm-asrar .as-key-ok { color:#27AE60; font-size:12px; margin-top:.3rem; }
-  #adm-asrar .as-key-err { color:#E74C3C; font-size:12px; margin-top:.3rem; }
-  /* Stats badges */
-  #adm-asrar .as-stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:.4rem; margin-bottom:.7rem; }
-  #adm-asrar .as-stat-badge { text-align:center; background:rgba(255,255,255,.04); border:1px solid rgba(212,175,55,.12); border-radius:10px; padding:.5rem .3rem; }
-  #adm-asrar .as-stat-n { font-size:22px; font-weight:700; color:#D4AF37; font-family:'Amiri',serif; }
-  #adm-asrar .as-stat-l { font-size:10px; color:rgba(245,239,224,.35); }
-  </style>
-
-  <!-- Sous-onglets Asrar -->
-  <div class="as-tabs">
-   <button class="as-ntab active" id="as-tab-istikh" onclick="asrSwitchTab('istikh',this)">🌙 Istikhara</button>
-   <button class="as-ntab" id="as-tab-match" onclick="asrSwitchTab('match',this)">⚽ Match</button>
-   <button class="as-ntab" id="as-tab-abjad" onclick="asrSwitchTab('abjad',this)">🔢 Abjad</button>
-   <button class="as-ntab" id="as-tab-pred" onclick="asrSwitchTab('pred',this)">🔮 Prédiction</button>
-   <button class="as-ntab" id="as-tab-config" onclick="asrSwitchTab('config',this)">⚙️ Config</button>
-  </div>
-
-  <!-- ─── ISTIKHARA ─── -->
-  <div class="as-section active" id="as-sec-istikh">
-   <div class="as-card">
-    <div class="as-card-title">🎯 Type de demande</div>
-    <div class="as-cat-grid" id="asCatGrid">
-     <button class="as-cat-btn active" onclick="asSetCat('mariage',this)"><span class="ci">💍</span>Mariage</button>
-     <button class="as-cat-btn" onclick="asSetCat('travail',this)"><span class="ci">💼</span>Travail</button>
-     <button class="as-cat-btn" onclick="asSetCat('voyage',this)"><span class="ci">✈️</span>Voyage</button>
-     <button class="as-cat-btn" onclick="asSetCat('affaire',this)"><span class="ci">🤝</span>Affaire</button>
-     <button class="as-cat-btn" onclick="asSetCat('sante',this)"><span class="ci">🌿</span>Santé</button>
-     <button class="as-cat-btn" onclick="asSetCat('decision',this)"><span class="ci">⚖️</span>Décision</button>
-    </div>
-   </div>
-   <div class="as-card as-card-violet">
-    <div class="as-card-title">📝 Informations</div>
-    <span class="as-f-label">Prénom (arabe ou latin)*</span>
-    <input class="as-input as-input-ar" id="asIstNom" type="text" placeholder="إبراهيم — Ibrahim" oninput="asIstikhLive()">
-    <span class="as-f-label">Prénom de la mère</span>
-    <input class="as-input as-input-ar" id="asIstMere" type="text" placeholder="فاطمة" oninput="asIstikhLive()">
-    <span class="as-f-label">Sujet / Question*</span>
-    <input class="as-input as-input-ar" id="asIstSujet" type="text" placeholder="Nom ou description" oninput="asIstikhLive()">
-    <span class="as-f-label">Ressenti après Istikhara</span>
-    <textarea class="as-input as-textarea" id="asIstRessenti" placeholder="Décrivez votre ressenti intérieur…"></textarea>
-   </div>
-   <div class="as-result-box" id="asIstikhResult">
-    <div class="as-result-row">
-     <span class="as-result-num" id="asIstScoreA">0</span>
-     <span style="color:rgba(245,239,224,.35);font-size:18px">⚡</span>
-     <span class="as-result-num" id="asIstScoreB">0</span>
-    </div>
-    <div class="as-compat-bar"><div class="as-compat-fill" id="asIstFill"></div></div>
-    <div class="as-verdict-text">
-     <span style="font-size:22px;display:block;margin-bottom:3px" id="asIstIcon">☽</span>
-     <div id="asIstVerdict">En attente…</div>
-    </div>
-   </div>
-   <div style="display:flex;gap:.4rem;margin:.6rem 0">
-    <button class="as-btn as-btn-violet" style="flex:1" onclick="asIstikhAI()">🌙 Analyse IA Complète</button>
-    <button class="as-btn as-btn-outline as-btn-sm" onclick="asIstikhReset()">✕</button>
-   </div>
-   <div class="as-ai-resp" id="asIstikhAIResp">
-    <div class="as-ai-thinking" id="asIstikhThinking" style="display:none">
-     <span>Consultation spirituelle en cours</span>
-     <span class="as-dots"><span></span><span></span><span></span></span>
-    </div>
-    <div id="asIstikhAIText"></div>
-   </div>
-  </div>
-
-  <!-- ─── MATCH ─── -->
-  <div class="as-section" id="as-sec-match">
-   <div class="as-card" style="text-align:center;background:linear-gradient(135deg,#0a1a0a,#111a2e);border-color:rgba(46,125,82,.3)">
-    <div style="font-family:'Amiri',serif;font-size:18px;color:#F0DC82;margin-bottom:.4rem">⚽ Analyse de Match</div>
-    <div class="as-mtype-row">
-     <button class="as-mtype-btn active" onclick="asSetMatchType('football',this)">⚽ Football</button>
-     <button class="as-mtype-btn" onclick="asSetMatchType('basketball',this)">🏀 Basketball</button>
-     <button class="as-mtype-btn" onclick="asSetMatchType('tennis',this)">🎾 Tennis</button>
-     <button class="as-mtype-btn" onclick="asSetMatchType('rugby',this)">🏉 Rugby</button>
-     <button class="as-mtype-btn" onclick="asSetMatchType('boxe',this)">🥊 Boxe</button>
-    </div>
-   </div>
-   <div class="as-scoreboard">
-    <div class="as-team-block">
-     <input class="as-team-input" id="asTeamA" type="text" value="Équipe A" oninput="asUpdateMatchCalc()">
-     <div class="as-score-num" id="asScoreA">0</div>
-     <div class="as-score-ctls">
-      <button class="as-sbtn as-sbtn-p" onclick="asChangeScore('a',1)">+</button>
-      <button class="as-sbtn as-sbtn-m" onclick="asChangeScore('a',-1)">−</button>
-     </div>
-    </div>
-    <div style="text-align:center">
-     <div style="font-family:'Amiri',serif;font-size:40px;color:rgba(245,239,224,.25)">:</div>
-     <div id="asMatchPeriod" style="display:none;font-size:10px;font-weight:700;color:#4CAF50;letter-spacing:.06em" id="asMatchPeriodTxt">LIVE</div>
-    </div>
-    <div class="as-team-block">
-     <input class="as-team-input" id="asTeamB" type="text" value="Équipe B" oninput="asUpdateMatchCalc()">
-     <div class="as-score-num" id="asScoreB">0</div>
-     <div class="as-score-ctls">
-      <button class="as-sbtn as-sbtn-p" onclick="asChangeScore('b',1)">+</button>
-      <button class="as-sbtn as-sbtn-m" onclick="asChangeScore('b',-1)">−</button>
-     </div>
-    </div>
-   </div>
-   <div class="as-card" style="padding:.7rem">
-    <div style="display:flex;align-items:center;gap:.7rem">
-     <div style="flex:1">
-      <div style="font-size:10px;color:rgba(245,239,224,.35);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.15rem">⏱ Chrono</div>
-      <div class="as-chrono" id="asChronoDisp">00:00</div>
-     </div>
-     <div style="display:flex;gap:.35rem">
-      <button class="as-btn as-btn-green as-btn-sm" onclick="asChronoToggle()" id="asChronoBtn">▶ Start</button>
-      <button class="as-btn as-btn-outline as-btn-sm" onclick="asChronoReset()">↺</button>
-     </div>
-    </div>
-   </div>
-   <div class="as-pred-bar">
-    <div class="as-pred-header">✦ Prédiction Asrar — Abjad</div>
-    <div class="as-pred-row">
-     <div class="as-pred-a" id="asPredA" style="flex:1">—%</div>
-     <div class="as-pred-d" id="asPredD" style="flex:.5">Nul</div>
-     <div class="as-pred-b" id="asPredB" style="flex:1">—%</div>
-    </div>
-   </div>
-   <div class="as-card as-card-green">
-    <div class="as-card-title">📊 Statistiques</div>
-    <div id="asStatsGrid"></div>
-    <div id="asStatCtrl" style="margin-top:.4rem"></div>
-   </div>
-   <div class="as-card">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem">
-     <div class="as-card-title" style="margin-bottom:0">📋 Événements</div>
-     <button class="as-btn as-btn-outline as-btn-sm" onclick="asClearEvents()">✕ Effacer</button>
-    </div>
-    <div class="as-events-log" id="asEventsLog"><div style="text-align:center;padding:.8rem;color:rgba(245,239,224,.3);font-size:12px;font-style:italic">Aucun événement</div></div>
-    <div style="display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.5rem" id="asEventBtns"></div>
-   </div>
-   <button class="as-btn as-btn-violet as-btn-full" onclick="asMatchAI()">🔮 Analyse Spirituelle IA du Match</button>
-   <div class="as-ai-resp" id="asMatchAIResp">
-    <div class="as-ai-thinking" id="asMatchThinking" style="display:none"><span>Analyse en cours</span><span class="as-dots"><span></span><span></span><span></span></span></div>
-    <div id="asMatchAIText"></div>
-   </div>
-  </div>
-
-  <!-- ─── ABJAD ─── -->
-  <div class="as-section" id="as-sec-abjad">
-   <div class="as-card as-card-gold">
-    <div class="as-card-title">🔢 Calculatrice Abjad — حساب الجُمَّل</div>
-    <div class="as-f-row">
-     <input class="as-input as-input-ar" id="asAbjInput" type="text" placeholder="اكتب اسماً أو كلمة…" oninput="asAbjLive(this.value)" style="flex:1">
-     <button class="as-btn as-btn-gold" onclick="asAbjAI()">🔮 Analyser</button>
-    </div>
-   </div>
-   <div class="as-result-box" id="asAbjResult">
-    <span class="as-big-num" id="asAbjNum">0</span>
-    <div style="font-size:10px;color:rgba(245,239,224,.35);text-align:center;text-transform:uppercase;letter-spacing:.08em;margin-top:.2rem">Valeur Abjad</div>
-    <div class="as-breakdown" id="asAbjBreakdown"></div>
-    <div style="font-size:12px;color:rgba(245,239,224,.4);margin-top:.5rem;text-align:center" id="asAbjProps"></div>
-   </div>
-   <div class="as-card">
-    <div class="as-card-title">📜 Table Abjad</div>
-    <div class="as-abjad-tbl" id="asAbjadTbl"></div>
-    <div style="font-size:10px;color:rgba(245,239,224,.3);text-align:center">Cliquez pour ajouter</div>
-   </div>
-   <div class="as-card as-card-violet">
-    <div class="as-card-title">🔯 Wafq — الوَفق</div>
-    <div class="as-wafq" id="asWafqGrid">
-     <div class="as-wafq-cell">2</div><div class="as-wafq-cell">9</div><div class="as-wafq-cell">4</div>
-     <div class="as-wafq-cell">7</div><div class="as-wafq-cell">5</div><div class="as-wafq-cell">3</div>
-     <div class="as-wafq-cell">6</div><div class="as-wafq-cell">1</div><div class="as-wafq-cell">8</div>
-    </div>
-    <div style="font-size:10px;color:rgba(245,239,224,.3);text-align:center;margin-top:.4rem">Somme = <span id="asWafqSum" style="color:#D4AF37;font-weight:700">15</span></div>
-   </div>
-   <div class="as-card as-card-violet">
-    <div class="as-card-title">💞 Compatibilité — توافق الأسرار</div>
-    <span class="as-f-label">Premier nom</span>
-    <input class="as-input as-input-ar" id="asCompatA" type="text" placeholder="الاسم الأول" oninput="asCompatCalc()">
-    <span class="as-f-label">Second nom</span>
-    <input class="as-input as-input-ar" id="asCompatB" type="text" placeholder="الاسم الثاني" oninput="asCompatCalc()">
-    <div class="as-result-box" id="asCompatResult" style="margin-top:.6rem">
-     <div class="as-result-row">
-      <span class="as-result-num" id="asCompatNA">0</span>
-      <span style="color:rgba(245,239,224,.3);font-size:16px">🔗</span>
-      <span class="as-result-num" id="asCompatNB">0</span>
-     </div>
-     <div class="as-compat-bar"><div class="as-compat-fill" id="asCompatFill" style="background:#7B2FBE"></div></div>
-     <div class="as-verdict-text" id="asCompatVerdict"></div>
-    </div>
-    <button class="as-btn as-btn-violet as-btn-full" onclick="asCompatAI()">🌙 Analyse Spirituelle de la Compatibilité</button>
-   </div>
-   <div class="as-ai-resp" id="asAbjAIResp">
-    <div class="as-ai-thinking" id="asAbjThinking" style="display:none"><span>Calcul en cours</span><span class="as-dots"><span></span><span></span><span></span></span></div>
-    <div id="asAbjAIText"></div>
-   </div>
-  </div>
-
-  <!-- ─── PRÉDICTION ─── -->
-  <div class="as-section" id="as-sec-pred">
-   <div class="as-card as-card-violet">
-    <div style="font-size:10px;color:#D4AF37;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.4rem">✦ Système Asrar · Prédiction par Nour IA</div>
-    <span class="as-f-label">Type de demande</span>
-    <div class="as-choice-grid" id="asPredTypeGrid">
-     <button class="as-choice-btn active" onclick="asSetPredType('mariage',this)"><span class="as-choice-icon">💍</span><span class="as-choice-lbl">Mariage</span><span class="as-choice-sub">Compatibilité · Timing</span></button>
-     <button class="as-choice-btn" onclick="asSetPredType('business',this)"><span class="as-choice-icon">💼</span><span class="as-choice-lbl">Business</span><span class="as-choice-sub">Succès · Obstacles</span></button>
-     <button class="as-choice-btn" onclick="asSetPredType('match',this)"><span class="as-choice-icon">⚽</span><span class="as-choice-lbl">Match</span><span class="as-choice-sub">Vainqueur · Score</span></button>
-     <button class="as-choice-btn" onclick="asSetPredType('voyage',this)"><span class="as-choice-icon">🌍</span><span class="as-choice-lbl">Voyage</span><span class="as-choice-sub">Succès · Timing</span></button>
-     <button class="as-choice-btn" onclick="asSetPredType('sante',this)"><span class="as-choice-icon">🌿</span><span class="as-choice-lbl">Santé</span><span class="as-choice-sub">Énergie · Récupération</span></button>
-     <button class="as-choice-btn" onclick="asSetPredType('general',this)"><span class="as-choice-icon">⚖️</span><span class="as-choice-lbl">Général</span><span class="as-choice-sub">Toute situation</span></button>
-    </div>
-    <span class="as-f-label">Votre question*</span>
-    <textarea class="as-input as-textarea" id="asPredQuestion" placeholder="Décrivez précisément votre question…" style="min-height:75px"></textarea>
-    <span class="as-f-label">Date de naissance (opt.)</span>
-    <input class="as-input" id="asPredDOB" type="date">
-    <span class="as-f-label">Prénom (pour calcul Abjad)</span>
-    <input class="as-input as-input-ar" id="asPredName" type="text" placeholder="Votre prénom en arabe">
-    <button class="as-btn as-btn-violet as-btn-full" onclick="asPredAI()">🔮 Lancer la Prédiction Spirituelle</button>
-   </div>
-   <div class="as-pred-result" id="asPredResult">
-    <span style="font-size:30px" id="asPredIcon">🌙</span>
-    <div class="as-pred-verdict" id="asPredVerdict">En attente…</div>
-    <div style="font-size:11px;color:rgba(245,239,224,.35)">Confiance</div>
-    <div class="as-conf-bar"><div class="as-conf-fill" id="asPredConfFill" style="width:0%"></div></div>
-    <div style="font-size:13px;font-weight:700;color:#D4AF37" id="asPredConfPct">0%</div>
-   </div>
-   <div class="as-ai-resp" id="asPredAIResp" style="margin-top:.6rem">
-    <div class="as-ai-thinking" id="asPredThinking" style="display:none"><span>Prédiction en cours</span><span class="as-dots"><span></span><span></span><span></span></span></div>
-    <div id="asPredAIText"></div>
-   </div>
-  </div>
-
-  <!-- ─── CONFIG ─── -->
-  <div class="as-section" id="as-sec-config">
-   <div class="as-card">
-    <div class="as-card-title">🔑 Clé API Anthropic</div>
-    <div style="font-size:12px;color:rgba(245,239,224,.4);margin-bottom:.5rem;line-height:1.5">La clé API permet à Nour IA d'analyser les demandes. Elle est stockée localement.</div>
-    <div class="as-f-row">
-     <input class="as-input" id="asApiKeyInput" type="password" placeholder="sk-ant-api03-…" style="flex:1;font-family:monospace;font-size:12px">
-     <button class="as-btn as-btn-gold" onclick="asSaveApiKey()">💾 Sauvegarder</button>
-    </div>
-    <div id="asKeyStatus" style="font-size:12px;color:rgba(245,239,224,.35);margin-top:.35rem;font-style:italic"></div>
-   </div>
-   <div class="as-card">
-    <div class="as-card-title">📊 Statistiques Asrar</div>
-    <div class="as-stats-row">
-     <div class="as-stat-badge"><div class="as-stat-n" id="asStReq">0</div><div class="as-stat-l">Requêtes</div></div>
-     <div class="as-stat-badge"><div class="as-stat-n" id="asStMatch">0</div><div class="as-stat-l">Matchs</div></div>
-     <div class="as-stat-badge"><div class="as-stat-n" id="asStAbjad">0</div><div class="as-stat-l">Abjad</div></div>
-     <div class="as-stat-badge"><div class="as-stat-n" id="asStIstikh">0</div><div class="as-stat-l">Istikharas</div></div>
-    </div>
-   </div>
-   <div class="as-card">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
-     <div class="as-card-title" style="margin-bottom:0">📜 Historique IA</div>
-     <button class="as-btn as-btn-outline as-btn-sm" onclick="asClearHistory()">🗑 Effacer</button>
-    </div>
-    <div id="asHistoryList" style="max-height:220px;overflow-y:auto;scrollbar-width:none">
-     <div style="text-align:center;padding:1rem;color:rgba(245,239,224,.3);font-size:12px;font-style:italic">Aucune requête</div>
-    </div>
-   </div>
-   <div class="as-card" style="border-color:rgba(192,57,43,.25);background:linear-gradient(135deg,rgba(192,57,43,.06),#130f22)">
-    <div class="as-card-title" style="color:rgba(231,76,60,.7)">⚠️ Zone Danger</div>
-    <button class="as-btn as-btn-sm" style="background:linear-gradient(135deg,#6B1010,#C0392B);color:#fff;border:none" onclick="asResetAll()">🗑 Réinitialiser toutes les données Asrar</button>
-   </div>
-  </div>
-
- </div><!-- /adm-asrar -->
 
  </div><!-- /admin-content -->
  </div><!-- /admin-panel -->
@@ -6775,12 +6388,28 @@ function enterApp(profile) {
 /* ═══════════════════════════════════════
  GOOGLE AUTH — Firebase Authentication
 ═══════════════════════════════════════ */
-/* ── Garde-fou : si retour de redirect sans connexion, réactiver le bouton ── */
+/* ── Retour de redirect Google Auth (iOS/Safari) ── */
 (function(){
  document.addEventListener('DOMContentLoaded', function(){
- /* Si on revient d'un redirect Google Auth et Firebase ne répond pas dans 6s */
- var pending = false;
- if (pending) {
+ _fbInit(function(){
+ /* Récupérer le résultat du redirect Google si l'utilisateur revient sur la page */
+ try {
+ firebase.auth().getRedirectResult().then(function(result){
+ if (result && result.user) {
+ /* Connexion réussie via redirect — même traitement que popup */
+ firebase.database().ref('users/' + result.user.uid).set({
+ name: result.user.displayName, email: result.user.email,
+ photo: result.user.photoURL, lastLogin: Date.now(), uid: result.user.uid
+ });
+ _onGoogleUser(result.user);
+ }
+ }).catch(function(err){
+ if (err && err.code !== 'auth/credential-already-in-use') {
+ console.warn('[Google Redirect]', err.message);
+ }
+ });
+ } catch(e){ console.warn('[getRedirectResult]', e); }
+ /* Garde-fou : bouton bloqué après redirect → réactiver après 6s */
  setTimeout(function(){
  var btn = document.querySelector('.wlc-google-btn');
  if (btn && btn.disabled) {
@@ -6788,9 +6417,13 @@ function enterApp(profile) {
  btn.innerHTML = _googleBtnHTML();
  }
  }, 6000);
- }
+ });
  });
 })();
+
+function _googleBtnHTML() {
+ return '<svg width="22" height="22" viewBox="0 0 48 48" style="flex-shrink:0"><path fill="#FFC107" d="M43.611 20.083H24v4.175h10.8C33.638 29.951 29.249 33.75 24 33.75c-5.642 0-10.193-3.747-11.765-9.343l-7.887 1.931C6.782 35.033 13.902 40 24 40c8.635 0 15.964-4.633 19.706-11.5L43.611 20.083z"/><path fill="#FF3D00" d="M6.306 23.85C3.201 18.334 3.201 11.666 6.306 6.15L.566 1.83C-2.823 8.899-2.823 21.101.566 28.17L6.306 23.85z"/><path fill="#4CAF50" d="M24 7.5c3.845 0 7.236 1.375 9.931 3.617L40.019 5.249C36.013 1.993 30.273 0 24 0 13.902 0 6.782 4.967 3.148 13.443l7.887 1.931C12.656 10.211 17.805 7.5 24 7.5z"/><path fill="#1565C0" d="M24 40c6.273 0 12.013-2.074 16.019-5.613l-7.064-5.612C30.572 31.447 27.443 32.5 24 32.5c-5.292 0-9.725-3.236-11.532-7.8l-7.887 1.931C10.119 35.223 16.316 40 24 40z"/></svg> Se connecter avec Google';
+}
 
 function signInWithGoogle() {
  var btn = document.querySelector('.wlc-google-btn');
@@ -6985,21 +6618,16 @@ document.addEventListener('DOMContentLoaded', function(){
  }
 
  function _showWelcomeForced(){
- /* Entrée automatique immédiate — sans attendre Firebase */
+ /* Afficher sélecteur de langue au premier démarrage, sinon page connexion Google */
+ var langChosen = false;
+ try { langChosen = !!localStorage.getItem('faydha_lang'); } catch(e){}
+ if (!langChosen) {
+ /* Premier démarrage → sélection de langue d'abord */
+ _showLangSelector();
+ } else {
+ /* Langue déjà choisie → afficher la page de connexion Google */
  var w = document.getElementById('welcome');
- /* Si la page welcome est visible → entrer directement */
- if (w && !w.classList.contains('hidden')) {
- enterApp('visiteur');
- }
- /* Connexion anonyme en arrière-plan sans bloquer */
- if (typeof _fbInit === 'function') {
- _fbInit(function(){
- try {
- if (!firebase.auth().currentUser) {
- firebase.auth().signInAnonymously().catch(function(){});
- }
- } catch(e){}
- });
+ if (w) { w.classList.remove('hidden'); w.style.opacity = '1'; }
  }
  }
 
@@ -9822,9 +9450,8 @@ function applyTranslations() {
  var wDesc = document.querySelector('#welcome [style*="13px"][style*="rgba(251"]');
  if (wDesc) wDesc.textContent = t('wlc_connect_desc');
  var gBtn = document.querySelector('.wlc-google-btn');
- if (gBtn) {
- var gTxt = gBtn.childNodes[gBtn.childNodes.length - 1];
- if (gTxt && gTxt.nodeType === 3) gTxt.textContent = ' ' + t('wlc_google');
+ if (gBtn && typeof _googleBtnHTML === 'function') {
+ gBtn.innerHTML = _googleBtnHTML();
  }
 
  /* RTL : ajuster les éléments directionnels */
@@ -10107,19 +9734,17 @@ window.selectLang = function(lang) {
 window.confirmLang = function() {
  var lang = window._pendingLang || 'fr';
  setLang(lang);
+ try { localStorage.setItem('faydha_lang', lang); } catch(e){}
  _hideLangSelector();
  /* Mettre à jour le bouton flottant */
  var flags = {fr:'🇫🇷 FR', en:'🇬🇧 EN', ar:'🇸🇦 ع'};
  var btn = document.getElementById('langSwitchBtn');
  if (btn) { btn.style.display = 'block'; btn.textContent = flags[lang] || '🌐'; }
- /* Entrer directement dans l'app sans passer par welcome */
- enterApp('visiteur');
- /* Connexion anonyme en arrière-plan */
- if (typeof _fbInit === 'function') {
-  _fbInit(function(){
-   try { if (!firebase.auth().currentUser) firebase.auth().signInAnonymously().catch(function(){}); } catch(e){}
-  });
- }
+ /* Afficher la page de connexion Google */
+ setTimeout(function(){
+ var w = document.getElementById('welcome');
+ if (w) { w.classList.remove('hidden'); w.style.opacity = '1'; }
+ }, 350);
 };
 
 var _abEngine = 'baye';
@@ -15281,8 +14906,8 @@ var AS_MATCH_STATS_CFG = {
 
 /* ── Navigation ── */
 function asrSwitchTab(id, btn) {
-  document.querySelectorAll('#adm-asrar .as-section').forEach(function(s){s.classList.remove('active');});
-  document.querySelectorAll('#adm-asrar .as-ntab').forEach(function(b){b.classList.remove('active');});
+  document.querySelectorAll('.as-section').forEach(function(s){s.classList.remove('active');});
+  document.querySelectorAll('.as-ntab').forEach(function(b){b.classList.remove('active');});
   var sec = document.getElementById('as-sec-'+id);
   if (sec) sec.classList.add('active');
   if (btn) btn.classList.add('active');
@@ -15426,7 +15051,7 @@ function asIstikhReset(){
 /* ── Match ── */
 function asSetMatchType(type,btn){
   _asMatchType=type;
-  document.querySelectorAll('#adm-asrar .as-mtype-btn').forEach(function(b){b.classList.remove('active');});
+  document.querySelectorAll('.as-mtype-btn').forEach(function(b){b.classList.remove('active');});
   if(btn)btn.classList.add('active');
   asResetMatchState();
   asrBuildMatchStats();
