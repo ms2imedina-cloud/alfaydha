@@ -6451,9 +6451,10 @@ function signInWithGoogle() {
  /* popup partout sauf Chrome Desktop sur domaine Firebase officiel */
  var usePopup = !isChromDesktop || !onFirebaseDomain;
 
+ /* Timeout 3min — la popup Google peut prendre du temps si l'utilisateur hésite */
  var _btnTimeout = setTimeout(function(){
-   if (btn && btn.disabled) _resetBtn('⚠️ Firebase lent — réessayez ou vérifiez votre connexion', true);
- }, 12000);
+   if (btn && btn.disabled) _resetBtn('⚠️ Délai dépassé — réessayez si la fenêtre Google n\'est plus visible', true);
+ }, 180000);
 
  _fbInit(function() {
    clearTimeout(_btnTimeout);
@@ -6464,12 +6465,16 @@ function signInWithGoogle() {
      provider.setCustomParameters({ prompt: 'select_account' });
 
      if (usePopup) {
+       window._popupInProgress = true; /* Empêche welcome de s'afficher pendant la popup */
        if (btn) btn.innerHTML = '<span>⏳</span> Ouverture Google…';
        if (info) { info.style.display = 'block'; info.textContent = '🔐 Fenêtre Google en cours…'; }
        firebase.auth().signInWithPopup(provider).then(function(result) {
          clearTimeout(_btnTimeout);
-         /* onAuthStateChanged se déclenche automatiquement */
+         /* Connexion réussie — onAuthStateChanged prend le relais */
+         if (btn) { btn.disabled = true; btn.innerHTML = '<span>✅</span> Connecté…'; }
+         if (info) { info.style.display = 'block'; info.style.color = '#A8F0C0'; info.textContent = '✅ Connexion réussie — chargement…'; }
        }).catch(function(err) {
+         window._popupInProgress = false;
          console.error('[signInWithPopup]', err);
          if (err.code === 'auth/operation-not-supported-in-this-environment') {
            _resetBtn('⚠️ Ouvrez l\'app via https:// — connexion impossible ici.', true);
@@ -6641,16 +6646,16 @@ document.addEventListener('DOMContentLoaded', function(){
  }
 
  function _showWelcomeForced(){
- /* Ne pas afficher welcome si un redirect Google est en cours */
+ /* Ne pas afficher welcome si une connexion popup/redirect est en cours */
+ if (window._userConnected || window._popupInProgress) return;
  /* onAuthStateChanged dans _fbInit gérera l'affichage après retour redirect */
  var langChosen = false;
  try { langChosen = !!localStorage.getItem('faydha_lang'); } catch(e){}
  if (!langChosen) {
- _showLangSelector();
+   _showLangSelector();
  } else {
- /* Laisser onAuthStateChanged décider — il s'en charge dans _fbInit */
- /* On affiche welcome seulement si Firebase ne répond pas dans 2.5s */
- /* (le fallback _fbTimeout dans le bloc principal gère déjà ça) */
+   /* Laisser onAuthStateChanged décider — il s'en charge dans _fbInit */
+   /* On affiche welcome seulement si Firebase ne répond pas dans 2.5s */
  }
  }
 
@@ -11326,6 +11331,7 @@ document.addEventListener('DOMContentLoaded', function() {
  /* ── Fallback : si Firebase ne répond pas en 5s, afficher welcome quand même ── */
  var _authResolved = false;
  var _userConnected = false;
+ window._userConnected = false; /* Exposer globalement pour _showWelcomeForced */
  function _showWelcome() {
  if (_userConnected) return;
  var loading = document.getElementById('authLoading');
@@ -11479,6 +11485,8 @@ document.addEventListener('DOMContentLoaded', function() {
  if (user) {
  if (_userConnected) return;
  _userConnected = true;
+ window._userConnected = true;
+ window._popupInProgress = false;
  /* Ignorer les sessions anonymes (utilisateurs sans Google) */
  if (user.isAnonymous) return;
  _onGoogleUser(user);
