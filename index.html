@@ -2874,6 +2874,26 @@ button[onclick="qiblaGPS()"] {
 }
 .ab-sug-asrar { border-left-color:var(--gold) !important; background:linear-gradient(135deg,rgba(212,175,55,.04),rgba(180,120,0,.04)) !important; }
 .ab-sug-asrar:hover { border-color:rgba(212,175,55,.6) !important; box-shadow:0 2px 16px rgba(212,175,55,.12) !important; }
+
+/* ── Suggestions uniformes & centrées ── */
+.ab-suggestions { padding:.75rem 1rem .5rem; }
+.ab-sug-title { font-size:12px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:.1em; margin-bottom:.65rem; text-align:center; }
+.ab-sug-grid { display:grid; grid-template-columns:1fr 1fr; gap:.55rem; }
+.ab-sug-card {
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+  text-align:center;
+  background:rgba(255,255,255,.75); border:1px solid var(--gold3);
+  border-radius:14px; padding:.7rem .65rem .65rem;
+  cursor:pointer; transition:all .18s;
+  gap:.3rem; min-height:90px;
+}
+.ab-sug-card:hover { border-color:var(--g2); background:#fff; box-shadow:0 2px 12px rgba(46,125,82,.1); }
+.ab-sug-icon { font-size:22px; line-height:1; flex-shrink:0; }
+.ab-sug-body { display:flex; flex-direction:column; align-items:center; gap:.15rem; }
+.ab-sug-q { font-size:12px; font-weight:600; color:var(--text1); line-height:1.35; }
+.ab-sug-cat { font-size:10px; color:var(--text3); font-style:italic; }
+.ab-sug-islam { border-left:2.5px solid var(--g1); }
+.ab-sug-islam:hover { border-color:var(--g1); box-shadow:0 2px 12px rgba(46,125,82,.15) !important; }
 /* Calculatrice Abjad */
 .asrar-calc-wrap { background:linear-gradient(160deg,#0a0800,#150e00); border-bottom:1px solid rgba(212,175,55,.15); padding:.85rem 1rem; display:none; }
 .asrar-calc-wrap.visible { display:block; }
