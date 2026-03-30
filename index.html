@@ -565,7 +565,7 @@ body{
 .channel-card.live-active{border-color:var(--red);box-shadow:0 0 0 2px rgba(192,57,43,.15)}
 
 .ch-avatar{
- width:40px;height:40px;border-radius:10px;
+ width:40px;height:40px;border-radius:50%;
  background:var(--g1);color:var(--gold2);
  display:flex;align-items:center;justify-content:center;
  font-family:'Amiri',serif;font-size:16px;
@@ -721,31 +721,46 @@ body{
 
 /* ── ADMIN — MODAL ── */
 .admin-overlay{
- position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.7);
+ position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.75);
  display:none;align-items:flex-end;justify-content:center;
- backdrop-filter:blur(4px);
+ backdrop-filter:blur(6px);
 }
 .admin-overlay.open{display:flex}
 .admin-panel{
- background:var(--ivory);width:100%;max-width:100%;
- border-radius:24px 24px 0 0;max-height:90vh;
+ background:linear-gradient(180deg,#0d1f14 0%,#0a1a10 100%);
+ width:100%;max-width:100%;
+ border-radius:28px 28px 0 0;max-height:92vh;
  overflow-y:auto;scrollbar-width:none;
  padding:0 0 calc(var(--nav-h) + 20px);
- animation:slideUp .3s ease;
+ animation:slideUp .3s cubic-bezier(.2,0,.2,1);
+ border-top:1.5px solid rgba(212,175,55,.25);
+ box-shadow:0 -8px 60px rgba(0,0,0,.6);
 }
 .admin-panel::-webkit-scrollbar{display:none}
-@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
-.admin-handle{width:40px;height:4px;background:rgba(0,0,0,.15);border-radius:2px;margin:10px auto 0}
+@keyframes slideUp{from{transform:translateY(50px);opacity:0}to{transform:translateY(0);opacity:1}}
+.admin-handle{width:36px;height:4px;background:rgba(212,175,55,.3);border-radius:2px;margin:12px auto 0}
 .admin-header{
- padding:1rem 1.4rem .7rem;border-bottom:1px solid var(--gold3);
+ padding:1rem 1.4rem .85rem;
+ border-bottom:1px solid rgba(212,175,55,.12);
  display:flex;align-items:center;justify-content:space-between;
+ background:linear-gradient(135deg,rgba(212,175,55,.06),transparent);
 }
-.admin-title{font-family:'Amiri',serif;font-size:22px;color:var(--g1)}
+.admin-title{
+ font-family:'Amiri',serif;font-size:22px;
+ background:linear-gradient(90deg,#E8C97A,#C8973A);
+ -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+ background-clip:text;
+ display:flex;align-items:center;gap:.5rem;
+}
+.admin-title::before{content:'⚙️';font-size:18px;-webkit-text-fill-color:initial;}
 .admin-close{
- width:30px;height:30px;border-radius:50%;
- background:rgba(0,0,0,.07);border:none;cursor:pointer;
- font-size:14px;display:flex;align-items:center;justify-content:center;
+ width:32px;height:32px;border-radius:50%;
+ background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+ cursor:pointer;font-size:15px;color:rgba(255,255,255,.5);
+ display:flex;align-items:center;justify-content:center;
+ transition:all .2s;
 }
+.admin-close:hover{background:rgba(192,57,43,.3);border-color:rgba(192,57,43,.5);color:#fff}
 
 /* Gate */
 @keyframes abDots{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
@@ -1184,7 +1199,7 @@ html { background: #0a0a0a; }
  .channel-card { padding:.95rem 1.2rem; border-radius: 16px; }
  .ch-name { font-size: 16px; }
  .ch-meta { font-size: 13px; }
- .ch-avatar { width: 50px; height: 50px; border-radius: 13px; }
+ .ch-avatar { width: 50px; height: 50px; border-radius: 50%; }
  .admin-panel { max-width: 680px; border-radius: 28px 28px 0 0; }
  .sec-title { font-size: 17px; }
  .dp-field { font-size: 15px; padding:.65rem .9rem; }
@@ -1215,7 +1230,7 @@ html { background: #0a0a0a; }
  .channel-card { padding:1.1rem 1.4rem; border-radius: 18px; }
  .ch-name { font-size: 17px; }
  .ch-meta { font-size: 14px; }
- .ch-avatar { width: 56px; height: 56px; border-radius: 14px; font-size: 20px; }
+ .ch-avatar { width: 56px; height: 56px; border-radius: 50%; font-size: 20px; }
  .admin-panel { max-width: 860px; }
  .live-tabs .lt-btn { font-size: 14px; padding:.65rem .5rem .55rem; }
  .chat-wrap { height: 440px; }
@@ -1249,7 +1264,7 @@ html { background: #0a0a0a; }
  .channel-card { padding:1.3rem 1.6rem; border-radius: 20px; }
  .ch-name { font-size: 20px; }
  .ch-meta { font-size: 16px; }
- .ch-avatar { width: 68px; height: 68px; border-radius: 16px; font-size: 24px; }
+ .ch-avatar { width: 68px; height: 68px; border-radius: 50%; font-size: 24px; }
  .ch-arrow { font-size: 22px; }
  .admin-panel { max-width: 1100px; max-height: 90vh; }
  .admin-tabs { gap: .5rem; padding:.5rem 1.2rem; }
@@ -3190,27 +3205,26 @@ _loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js', 
 
   <div class="pw-wrap">
     <div class="pw-header">
-      <!-- Bloc date islamique Ramadan -->
+      <!-- Bloc date islamique -->
       <div class="pw-date-block">
-        <div style="display:flex;align-items:center;gap:.5rem;flex:1">
-          <div style="font-size:28px;line-height:1">🌙</div>
+        <div style="display:flex;align-items:center;gap:.6rem;flex:1">
+          <div style="font-size:22px;line-height:1">🌙</div>
           <div>
-            <div style="font-family:'Amiri',serif;font-size:22px;color:#E8C97A;direction:rtl;line-height:1.1" id="pw-hijri-month-ar">رَمَضَان</div>
-            <div style="font-size:11px;color:rgba(232,201,122,.6);font-style:italic" id="pw-hijri-month-fr">Ramadan</div>
+            <div style="font-family:'Amiri',serif;font-size:20px;color:#E8C97A;direction:rtl;line-height:1.2" id="pw-hijri-full-ar">…</div>
+            <div style="font-size:12px;color:rgba(232,201,122,.65);margin-top:2px" id="pw-hijri-full-fr">…</div>
           </div>
         </div>
-        <div class="pw-date-sep"></div>
-        <div style="text-align:right">
-          <div style="display:flex;align-items:baseline;gap:4px;justify-content:flex-end">
-            <div style="font-family:'Amiri',serif;font-size:32px;color:#E8C97A;font-weight:700;line-height:1" id="pw-hijri-day">—</div>
-            <div style="font-size:11px;color:rgba(232,201,122,.5)" id="pw-hijri-year"></div>
-          </div>
-          <div style="font-size:10px;color:rgba(245,239,224,.4);margin-top:1px" id="pw-greg-str"></div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:10px;color:rgba(245,239,224,.4)" id="pw-greg-str"></div>
         </div>
       </div>
       <!-- éléments cachés pour compatibilité JS existant -->
       <span id="pw-hijri" style="display:none"></span>
       <span id="pw-greg" style="display:none"></span>
+      <span id="pw-hijri-day" style="display:none"></span>
+      <span id="pw-hijri-month-ar" style="display:none"></span>
+      <span id="pw-hijri-month-fr" style="display:none"></span>
+      <span id="pw-hijri-year" style="display:none"></span>
       <div class="pw-header-row">
         <div>
           <div class="pw-title-ar">مَوَاقِيتُ الصَّلَاة</div>
@@ -5278,12 +5292,245 @@ function icalToday() { _icalCur = new Date(); icalRender(); showToast('📅 Aujo
 
 </nav>
 
+<style>
+/* ════════════════════════════════════════
+   ADMIN PANEL — Design Premium Sombre
+════════════════════════════════════════ */
+
+/* ── Tabs navigation ── */
+.admin-tabs {
+  display:flex;
+  gap:0;
+  padding:0;
+  overflow-x:auto;
+  scrollbar-width:none;
+  background:rgba(0,0,0,.35);
+  border-bottom:1px solid rgba(212,175,55,.12);
+  position:sticky;top:0;z-index:10;
+}
+.admin-tabs::-webkit-scrollbar{display:none}
+
+.adm-tab {
+  flex-shrink:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:3px;
+  padding:.6rem .7rem .5rem;
+  background:none;
+  border:none;
+  border-bottom:2.5px solid transparent;
+  cursor:pointer;
+  font-family:'Roboto',sans-serif;
+  font-size:10px;
+  font-weight:600;
+  color:rgba(245,239,224,.35);
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  transition:all .2s;
+  white-space:nowrap;
+  min-width:56px;
+}
+.adm-tab-icon {
+  font-size:18px;
+  line-height:1;
+  display:block;
+  filter:grayscale(1) opacity(.5);
+  transition:all .2s;
+}
+.adm-tab:hover {
+  color:rgba(232,201,122,.7);
+  background:rgba(212,175,55,.05);
+}
+.adm-tab:hover .adm-tab-icon { filter:grayscale(0) opacity(.8); }
+.adm-tab.active {
+  color:#E8C97A;
+  border-bottom-color:#C8973A;
+  background:rgba(212,175,55,.07);
+}
+.adm-tab.active .adm-tab-icon { filter:grayscale(0) opacity(1); }
+
+/* ── Content area ── */
+.admin-content {
+  background:linear-gradient(180deg,#0d1f14 0%,#091510 100%);
+  min-height:300px;
+}
+
+/* ── Section headers inside admin ── */
+.adm-sec-header {
+  padding:1rem 1.2rem .7rem;
+  border-bottom:1px solid rgba(212,175,55,.1);
+  background:linear-gradient(135deg,rgba(212,175,55,.06),transparent);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.adm-sec-title {
+  font-family:'Amiri',serif;
+  font-size:18px;
+  color:#E8C97A;
+  display:flex;align-items:center;gap:.5rem;
+}
+.adm-sec-sub {
+  font-size:11px;
+  color:rgba(245,239,224,.3);
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  margin-top:2px;
+}
+
+/* ── Cards / rows inside admin ── */
+.adm-card {
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(212,175,55,.1);
+  border-radius:14px;
+  overflow:hidden;
+  transition:border-color .2s;
+}
+.adm-card:hover { border-color:rgba(212,175,55,.25); }
+
+.adm-row {
+  padding:.75rem 1.2rem;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  display:flex;align-items:center;gap:.75rem;
+}
+.adm-row:last-child { border-bottom:none; }
+
+.adm-label {
+  font-size:10px;
+  font-weight:700;
+  color:rgba(245,239,224,.3);
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  margin-bottom:.35rem;
+  font-family:'Roboto',sans-serif;
+}
+
+.adm-input {
+  width:100%;
+  background:rgba(255,255,255,.05);
+  border:1.5px solid rgba(212,175,55,.15);
+  border-radius:10px;
+  padding:.55rem .85rem;
+  color:#F5EFE0;
+  font-family:'Roboto',sans-serif;
+  font-size:13px;
+  outline:none;
+  transition:border-color .2s, background .2s;
+  box-sizing:border-box;
+}
+.adm-input:focus {
+  border-color:rgba(212,175,55,.5);
+  background:rgba(255,255,255,.08);
+  box-shadow:0 0 0 3px rgba(212,175,55,.08);
+}
+.adm-input::placeholder { color:rgba(245,239,224,.2); }
+
+.adm-btn-primary {
+  background:linear-gradient(135deg,#2E7D52,#3A9463);
+  border:1px solid rgba(212,175,55,.3);
+  border-radius:10px;
+  padding:.6rem 1.2rem;
+  color:#E8C97A;
+  font-family:'Roboto',sans-serif;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  transition:all .2s;
+  letter-spacing:.03em;
+}
+.adm-btn-primary:hover {
+  background:linear-gradient(135deg,#3A9463,#48ad76);
+  transform:translateY(-1px);
+  box-shadow:0 4px 16px rgba(46,125,82,.3);
+}
+
+.adm-btn-gold {
+  background:linear-gradient(135deg,rgba(200,151,58,.25),rgba(212,175,55,.15));
+  border:1px solid rgba(212,175,55,.4);
+  border-radius:10px;
+  padding:.55rem 1rem;
+  color:#E8C97A;
+  font-family:'Roboto',sans-serif;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .2s;
+}
+.adm-btn-gold:hover {
+  background:linear-gradient(135deg,rgba(212,175,55,.35),rgba(200,151,58,.25));
+  border-color:rgba(212,175,55,.7);
+}
+
+/* ── Stat chips ── */
+.adm-stat-chip {
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(212,175,55,.1);
+  border-radius:12px;
+  padding:.65rem .9rem;
+  text-align:center;
+  flex:1;
+}
+.adm-stat-num {
+  font-size:24px;
+  font-weight:800;
+  color:#E8C97A;
+  line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.adm-stat-lbl {
+  font-size:10px;
+  color:rgba(245,239,224,.35);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  margin-top:3px;
+  font-family:'Roboto',sans-serif;
+}
+
+/* ── Live badge ── */
+.adm-live-badge {
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(192,57,43,.2);
+  border:1px solid rgba(192,57,43,.5);
+  border-radius:100px;
+  padding:2px 9px;
+  font-size:10px;font-weight:700;
+  color:#ff6b7a;
+  letter-spacing:.06em;
+}
+.adm-live-dot {
+  width:5px;height:5px;border-radius:50%;
+  background:#ff4d5e;
+  animation:admLivePulse 1.2s ease-in-out infinite;
+}
+@keyframes admLivePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+
+/* ── Status pill ── */
+.adm-pill {
+  font-size:10px;font-weight:700;
+  padding:2px 9px;border-radius:100px;
+  letter-spacing:.05em;font-family:'Roboto',sans-serif;
+}
+.adm-pill.green { background:rgba(46,125,82,.25);color:#5dba88;border:1px solid rgba(46,125,82,.4); }
+.adm-pill.gold  { background:rgba(212,175,55,.2);color:#E8C97A;border:1px solid rgba(212,175,55,.35); }
+.adm-pill.red   { background:rgba(192,57,43,.2);color:#ff6b7a;border:1px solid rgba(192,57,43,.4); }
+.adm-pill.gray  { background:rgba(255,255,255,.07);color:rgba(245,239,224,.4);border:1px solid rgba(255,255,255,.1); }
+
+/* ── Divider ── */
+.adm-divider {
+  height:1px;
+  background:rgba(212,175,55,.08);
+  margin:.5rem 1.2rem;
+}
+
+/* ── Section padding ── */
+.adm-section { padding:.8rem 1.2rem; }
+.adm-section + .adm-section { border-top:1px solid rgba(212,175,55,.08); }
+</style>
+
 <div class="admin-overlay" id="adminOverlay">
  <div class="admin-panel">
  <div class="admin-handle"></div>
  <div class="admin-header">
  <div style="display:flex;align-items:center;gap:.6rem">
-
  <div class="admin-title">Faydha — Admin</div>
  </div>
  <button class="admin-close" onclick="closeAdmin()">✕</button>
@@ -5579,114 +5826,130 @@ function icalToday() { _icalCur = new Date(); icalRender(); showToast('📅 Aujo
  </div>
 
  <div style="display:block" id="adm-direct">
- <div class="sec-title" style="flex-direction:column;align-items:flex-start;gap:.2rem">
- <span>Mode de diffusion</span>
- <span style="font-size:12px;color:var(--text3);font-weight:400">Qualité maximale · 1080p FHD · Audio HD 48kHz</span>
- </div>
- <div class="mode-grid">
- <div class="mode-card sel" id="modeYT" onclick="selMode('youtube')">
- <div class="mode-ico">▶</div>
- <div class="mode-nm">YouTube Live</div>
- <div class="mode-cp">∞ viewers</div>
- </div>
- <div class="mode-card" id="modeSFU" onclick="selMode('sfu')">
- <div class="mode-ico">☁</div>
- <div class="mode-nm">LiveKit Cloud</div>
- <div class="mode-cp">100 viewers</div>
- </div>
- </div>
 
- <div class="direct-panel">
- <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.6rem;background:rgba(212,175,55,.07);border:1px solid rgba(212,175,55,.18);border-radius:12px;padding:.6rem .8rem">
- <div style="position:relative;flex-shrink:0">
+  <!-- Header section -->
+  <div class="adm-sec-header">
+    <div>
+      <div class="adm-sec-title">🔴 Mode de diffusion</div>
+      <div class="adm-sec-sub">Qualité maximale · 1080p FHD · Audio HD 48kHz</div>
+    </div>
+    <span id="dpLiveLabel" class="adm-pill gray">⚫ Hors ligne</span>
+  </div>
 
- <div id="dpLiveDot" style="position:absolute;bottom:1px;right:1px;width:12px;height:12px;border-radius:50%;background:#555;border:2px solid #1a1a1a"></div>
- </div>
- <div style="flex:1;min-width:0">
- <div style="font-family:'Amiri',serif;font-size:16px;color:var(--gold2);font-weight:700" id="dpTitle">Faydha</div>
- <div style="font-size:11px;color:rgba(212,175,55,.5);margin-top:2px">Canal officiel · 1080p FHD · AAC 48kHz</div>
- <div style="font-size:11px;color:rgba(251,248,232,.35)" id="dpLiveLabel">⚫ Hors ligne</div>
- </div>
- </div>
+  <!-- Mode selector -->
+  <div style="display:flex;gap:.6rem;padding:.85rem 1.2rem;border-bottom:1px solid rgba(212,175,55,.08)">
+    <div class="mode-card sel" id="modeYT" onclick="selMode('youtube')" style="flex:1;background:rgba(255,0,0,.08);border:1.5px solid rgba(255,80,80,.25);border-radius:14px;padding:.75rem .9rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.6rem">
+      <div style="font-size:22px;line-height:1">▶️</div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#fff">YouTube Live</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:1px">∞ viewers</div>
+      </div>
+    </div>
+    <div class="mode-card" id="modeSFU" onclick="selMode('sfu')" style="flex:1;background:rgba(52,152,219,.06);border:1.5px solid rgba(52,152,219,.2);border-radius:14px;padding:.75rem .9rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.6rem">
+      <div style="font-size:22px;line-height:1">☁️</div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#fff">LiveKit Cloud</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:1px">100 viewers</div>
+      </div>
+    </div>
+  </div>
 
-  <div id="pnYT">
- <div class="dp-row">
- <input class="dp-field" id="ytUrl" type="url" placeholder="https://youtube.com/live/XXXX">
- <button class="dp-btn" id="ytBtn" onclick="goLiveYT()">🔴 Go Live</button>
- </div>
- <div class="dp-note" id="ytNote">Collez l'URL YouTube Live puis Go Live</div>
- <div style="margin-top:.7rem;border-top:1px solid rgba(212,175,55,.2);padding-top:.6rem">
- <div style="font-size:12px;color:var(--gold2);font-weight:600;letter-spacing:.1em;margin-bottom:.45rem">GUIDE RAPIDE</div>
- <div class="dp-step"><span class="dp-step-n">1</span><span class="dp-step-t">YouTube → <strong>+</strong> → <strong>Démarrer un direct</strong></span></div>
- <div class="dp-step"><span class="dp-step-n">2</span><span class="dp-step-t">Titre → <strong>Partager</strong> → copier le lien</span></div>
- <div class="dp-step"><span class="dp-step-n">3</span><span class="dp-step-t">Coller ici → <strong>Go Live</strong> → 1000+ viewers ✅</span></div>
- </div>
- </div>
+  <!-- Status bar -->
+  <div style="display:flex;align-items:center;gap:.75rem;margin:.85rem 1.2rem .3rem;background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.15);border-radius:14px;padding:.7rem 1rem">
+    <div id="dpLiveDot" style="width:10px;height:10px;border-radius:50%;background:#555;border:2px solid rgba(255,255,255,.1);flex-shrink:0"></div>
+    <div style="flex:1;min-width:0">
+      <div style="font-family:'Amiri',serif;font-size:15px;color:#E8C97A;font-weight:700" id="dpTitle">Faydha — Canal officiel</div>
+      <div style="font-size:10px;color:rgba(212,175,55,.4);margin-top:1px;letter-spacing:.04em">1080p FHD · AAC 48kHz · Médina Baye</div>
+    </div>
+    <div class="adm-live-badge" style="display:none" id="dpLiveBadge"><span class="adm-live-dot"></span>LIVE</div>
+  </div>
 
-  <div id="pnSFU" style="display:none">
- <div style="font-size:12px;color:rgba(251,248,232,.7);margin-bottom:.7rem;line-height:1.6">
- <strong class="ui-gold2">LiveKit Cloud</strong> — Gratuit jusqu'à 100 viewers · Exclusif app · Qualité HD
- </div>
+  <!-- YouTube panel -->
+  <div id="pnYT" style="padding:.6rem 1.2rem 1rem">
+    <div class="adm-label">URL YouTube Live</div>
+    <div style="display:flex;gap:.5rem;margin-bottom:.5rem">
+      <input class="adm-input" id="ytUrl" type="url" placeholder="https://youtube.com/live/XXXX" style="flex:1">
+      <button class="adm-btn-primary" id="ytBtn" onclick="goLiveYT()" style="white-space:nowrap;padding:.55rem 1rem">🔴 Go Live</button>
+    </div>
+    <div id="ytNote" style="font-size:11px;color:rgba(245,239,224,.3);font-style:italic;margin-bottom:.9rem">Collez l'URL YouTube Live puis appuyez Go Live</div>
 
-  <div id="lkStatus" style="display:none;background:rgba(76,175,80,.1);border:1px solid rgba(76,175,80,.3);border-radius:10px;padding:.6rem .8rem;margin-bottom:.6rem">
- <div style="display:flex;align-items:center;gap:.5rem;font-size:12px;color:rgba(251,248,232,.9)">
- <div id="lkDot" style="width:8px;height:8px;border-radius:50%;background:#4CAF50;animation:ldPulse 1.4s infinite;flex-shrink:0"></div>
- <span id="lkStatusTxt">Connecté à LiveKit Cloud</span>
- </div>
- <div style="display:flex;gap:.8rem;margin-top:.4rem;font-size:12px;color:rgba(251,248,232,.5)">
- <span>👁 <span id="lkViewers">0</span> viewers</span>
- <span>📡 <span id="lkQuality">HD</span></span>
- <span>⏱ <span id="lkDuration">0:00</span></span>
- </div>
- </div>
+    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(212,175,55,.1);border-radius:12px;padding:.75rem .9rem">
+      <div style="font-size:10px;font-weight:700;color:#E8C97A;letter-spacing:.1em;margin-bottom:.6rem;text-transform:uppercase">Guide rapide</div>
+      <div class="dp-step"><span class="dp-step-n">1</span><span class="dp-step-t">YouTube → <strong>+</strong> → <strong>Démarrer un direct</strong></span></div>
+      <div class="dp-step"><span class="dp-step-n">2</span><span class="dp-step-t">Titre → <strong>Partager</strong> → copier le lien</span></div>
+      <div class="dp-step"><span class="dp-step-n">3</span><span class="dp-step-t">Coller ici → <strong>Go Live</strong> → 1000+ viewers ✅</span></div>
+    </div>
+  </div>
 
-  <div id="lkCredsBlock">
- <div style="font-size:12px;color:rgba(251,248,232,.45);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem">URL LiveKit Cloud</div>
- <input class="dp-field" id="lkUrl" type="url" placeholder="wss://aas-00hwqfg3.livekit.cloud" style="margin-bottom:.35rem">
- <div style="font-size:12px;color:rgba(251,248,232,.45);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem">API Key LiveKit</div>
- <input class="dp-field" id="lkApiKey" type="text" placeholder="APIxxxxxxxxxxxxxxxxxx (LiveKit Dashboard → Keys)" style="margin-bottom:.35rem;font-size:13px">
- <div style="font-size:12px;color:rgba(251,248,232,.45);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem">API Secret LiveKit</div>
- <input class="dp-field" id="lkApiSecret" type="password" placeholder="Secret LiveKit..." style="margin-bottom:.35rem;font-size:13px">
-  <input id="lkToken" type="hidden" value="">
- </div>
+  <!-- LiveKit panel -->
+  <div id="pnSFU" style="display:none;padding:.6rem 1.2rem 1rem">
 
-  <div id="lkAccessBlock" style="margin:.8rem 0;padding:.9rem;background:rgba(46,125,82,.08);border:1.5px solid rgba(200,151,58,.5);border-radius:12px">
- <div style="font-size:14px;color:#FFD700;margin-bottom:.5rem;font-weight:700;letter-spacing:.05em">🔐 Code d'accès privé (optionnel)</div>
- <div style="font-size:12px;color:#fff;margin-bottom:.7rem;opacity:.85">Laisse vide = live public. Sinon les spectateurs doivent entrer ce code pour rejoindre.</div>
- <input class="dp-field" id="lkAccessCode" type="text" placeholder="Ex: BAYE2025" style="font-size:15px;text-transform:uppercase;background:rgba(255,255,255,.15);color:#fff;border:1.5px solid var(--gold);font-weight:700;letter-spacing:.1em">
- </div>
+    <div id="lkStatus" style="display:none;background:rgba(76,175,80,.08);border:1px solid rgba(76,175,80,.25);border-radius:12px;padding:.65rem .9rem;margin-bottom:.7rem">
+      <div style="display:flex;align-items:center;gap:.5rem;font-size:13px;color:rgba(251,248,232,.9)">
+        <div id="lkDot" style="width:8px;height:8px;border-radius:50%;background:#4CAF50;animation:ldPulse 1.4s infinite;flex-shrink:0"></div>
+        <span id="lkStatusTxt">Connecté à LiveKit Cloud</span>
+      </div>
+      <div style="display:flex;gap:1rem;margin-top:.4rem;font-size:11px;color:rgba(251,248,232,.4)">
+        <span>👁 <span id="lkViewers">0</span> viewers</span>
+        <span>📡 <span id="lkQuality">HD</span></span>
+        <span>⏱ <span id="lkDuration">0:00</span></span>
+      </div>
+    </div>
 
-  <div class="cam-preview" id="lkCamPreview" style="display:none">
- <video id="lkLocalVid" autoplay muted playsinline></video>
- <div class="cam-overlay" id="lkCamOvl"><div style="font-size:28px;opacity:.35">📷</div><div style="font-size:12px;color:rgba(255,255,255,.35)">Caméra inactive</div></div>
- <div class="cam-badge" id="lkLiveBadge">● LIVE</div>
- <div class="cam-vcnt" id="lkVcnt">👁 <span id="lkVNum">0</span></div>
-  <div id="viewerCamPip" style="display:none;position:absolute;bottom:8px;left:8px;width:110px;height:80px;border-radius:8px;overflow:hidden;border:2px solid rgba(212,175,55,.9);background:#000;z-index:10">
- <video id="viewerCamVideo" autoplay playsinline style="width:100%;height:100%;object-fit:cover;transform:scaleX(-1)"></video>
- <div id="viewerCamName" style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.65);color:#fff;font-size:10px;padding:2px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center"></div>
- </div>
- </div>
+    <div id="lkCredsBlock" style="display:flex;flex-direction:column;gap:.55rem">
+      <div>
+        <div class="adm-label">URL LiveKit Cloud</div>
+        <input class="adm-input" id="lkUrl" type="url" placeholder="wss://aas-00hwqfg3.livekit.cloud">
+      </div>
+      <div>
+        <div class="adm-label">API Key</div>
+        <input class="adm-input" id="lkApiKey" type="text" placeholder="APIxxxxxxxxxxxxxxxxxx">
+      </div>
+      <div>
+        <div class="adm-label">API Secret</div>
+        <input class="adm-input" id="lkApiSecret" type="password" placeholder="Secret LiveKit…">
+      </div>
+      <input id="lkToken" type="hidden" value="">
+    </div>
 
-  <div class="cam-ctrl-row" id="lkCamCtrl" style="display:none">
- <button class="cam-btn" id="lkCamBtn" onclick="lkToggleCam()">📷 Caméra</button>
- <button class="cam-btn" id="lkMicBtn" onclick="lkToggleMic()">🎤 Micro</button>
- <button class="cam-btn" onclick="lkFlipCam()">🔄</button>
- </div>
+    <div id="lkAccessBlock" style="margin:.75rem 0;padding:.85rem;background:rgba(212,175,55,.05);border:1.5px solid rgba(212,175,55,.25);border-radius:12px">
+      <div style="font-size:12px;font-weight:700;color:#E8C97A;margin-bottom:.35rem;letter-spacing:.04em">🔐 Code d'accès privé <span style="font-weight:400;color:rgba(245,239,224,.35)">(optionnel)</span></div>
+      <div style="font-size:11px;color:rgba(245,239,224,.45);margin-bottom:.55rem;line-height:1.5">Laissez vide = live public. Sinon les spectateurs doivent entrer ce code.</div>
+      <input class="adm-input" id="lkAccessCode" type="text" placeholder="Ex: BAYE2025" style="text-transform:uppercase;font-weight:700;letter-spacing:.1em">
+    </div>
 
- <button class="dp-btn" id="lkBtn" onclick="goLiveLK()" style="width:100%;padding:.52rem;font-size:14px;margin-bottom:.35rem">🔴 Démarrer LiveKit</button>
-<button onclick="lkTestCredentials()" style="width:100%;padding:.4rem;font-size:12px;margin-bottom:.35rem;background:rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.3);color:var(--gold2);border-radius:8px;cursor:pointer">🔑 Tester les credentials LiveKit</button>
- <div class="dp-note" id="lkNote">Entrez l'URL et le Token puis démarrez</div>
+    <div class="cam-preview" id="lkCamPreview" style="display:none">
+      <video id="lkLocalVid" autoplay muted playsinline></video>
+      <div class="cam-overlay" id="lkCamOvl"><div style="font-size:28px;opacity:.35">📷</div><div style="font-size:12px;color:rgba(255,255,255,.35)">Caméra inactive</div></div>
+      <div class="cam-badge" id="lkLiveBadge">● LIVE</div>
+      <div class="cam-vcnt" id="lkVcnt">👁 <span id="lkVNum">0</span></div>
+      <div id="viewerCamPip" style="display:none;position:absolute;bottom:8px;left:8px;width:110px;height:80px;border-radius:8px;overflow:hidden;border:2px solid rgba(212,175,55,.9);background:#000;z-index:10">
+        <video id="viewerCamVideo" autoplay playsinline style="width:100%;height:100%;object-fit:cover;transform:scaleX(-1)"></video>
+        <div id="viewerCamName" style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.65);color:#fff;font-size:10px;padding:2px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center"></div>
+      </div>
+    </div>
 
-  <div id="lkGuide" style="margin-top:.8rem;border-top:1px solid rgba(212,175,55,.2);padding-top:.7rem">
- <div style="font-size:12px;color:var(--gold2);font-weight:600;letter-spacing:.1em;margin-bottom:.5rem">CONFIGURATION LIVEKIT CLOUD</div>
- <div class="dp-step"><span class="dp-step-n" style="background:rgba(52,152,219,.3)">1</span><span class="dp-step-t">Allez sur <strong>livekit.io</strong> → <strong>Get Started Free</strong></span></div>
- <div class="dp-step"><span class="dp-step-n" style="background:rgba(52,152,219,.3)">2</span><span class="dp-step-t">Créez un projet → copiez l'<strong>URL</strong> (wss://…livekit.cloud)</span></div>
- <div class="dp-step"><span class="dp-step-n" style="background:rgba(52,152,219,.3)">3</span><span class="dp-step-t">Dashboard → <strong>Access Tokens</strong> → générez un token <strong>Publisher</strong></span></div>
- <div class="dp-step"><span class="dp-step-n" style="background:rgba(52,152,219,.3)">4</span><span class="dp-step-t">Collez l'URL + Token ici → <strong>Démarrer LiveKit</strong></span></div>
- <div class="dp-step"><span class="dp-step-n" style="background:rgba(76,175,80,.3)">✓</span><span class="dp-step-t" style="color:rgba(251,248,232,.5)">100 viewers exclusifs · Gratuit · Sans YouTube</span></div>
- </div>
- </div>
- </div>
+    <div class="cam-ctrl-row" id="lkCamCtrl" style="display:none">
+      <button class="cam-btn" id="lkCamBtn" onclick="lkToggleCam()">📷 Caméra</button>
+      <button class="cam-btn" id="lkMicBtn" onclick="lkToggleMic()">🎤 Micro</button>
+      <button class="cam-btn" onclick="lkFlipCam()">🔄</button>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:.45rem;margin-top:.75rem">
+      <button class="adm-btn-primary" id="lkBtn" onclick="goLiveLK()" style="width:100%;padding:.65rem;font-size:14px;justify-content:center;display:flex;align-items:center;gap:.5rem">🔴 Démarrer LiveKit</button>
+      <button onclick="lkTestCredentials()" class="adm-btn-gold" style="width:100%;padding:.5rem;display:flex;align-items:center;justify-content:center;gap:.4rem">🔑 Tester les credentials</button>
+    </div>
+    <div class="dp-note" id="lkNote" style="font-size:11px;color:rgba(245,239,224,.3);font-style:italic;margin-top:.5rem;text-align:center">Entrez les credentials puis démarrez</div>
+
+    <div id="lkGuide" style="margin-top:.85rem;background:rgba(255,255,255,.03);border:1px solid rgba(212,175,55,.1);border-radius:12px;padding:.75rem .9rem">
+      <div style="font-size:10px;font-weight:700;color:#E8C97A;letter-spacing:.1em;margin-bottom:.6rem;text-transform:uppercase">Configuration LiveKit Cloud</div>
+      <div class="dp-step"><span class="dp-step-n" style="background:rgba(52,152,219,.3)">1</span><span class="dp-step-t">Allez sur <strong>livekit.io</strong> → <strong>Get Started Free</strong></span></div>
+      <div class="dp-step"><span class="dp-step-n" style="background:rgba(52,152,219,.3)">2</span><span class="dp-step-t">Créez un projet → copiez l'<strong>URL</strong> (wss://…livekit.cloud)</span></div>
+      <div class="dp-step"><span class="dp-step-n" style="background:rgba(52,152,219,.3)">3</span><span class="dp-step-t">Dashboard → <strong>Access Tokens</strong> → générez un token <strong>Publisher</strong></span></div>
+      <div class="dp-step"><span class="dp-step-n" style="background:rgba(52,152,219,.3)">4</span><span class="dp-step-t">Collez l'URL + Token ici → <strong>Démarrer LiveKit</strong></span></div>
+      <div class="dp-step"><span class="dp-step-n" style="background:rgba(76,175,80,.3)">✓</span><span class="dp-step-t" style="color:rgba(251,248,232,.45)">100 viewers exclusifs · Gratuit · Sans YouTube</span></div>
+    </div>
+  </div>
  </div>
 
  <div style="display:none" id="adm-interact">
@@ -12996,19 +13259,20 @@ async function _prayerReverseGeocode(lat, lng) {
     var j=(Math.floor((10985-l2)/5316))*Math.floor((50*l2)/17719)+(Math.floor(l2/5670))*Math.floor((43*l2)/15238);
     l2=l2-(Math.floor((30-j)/15))*Math.floor((17719*j)/50)-(Math.floor(j/16))*Math.floor((15238*j)/43)+29;
     var hmonth=Math.floor((24*(l2-29))/709),hday=l2-Math.floor((709*hmonth)/24),hyear=30*n+j-30;
-    var HM_FR=['Mouharram','Safar','Rabîʿ al-Awwal','Rabîʿ al-Thâni','Jumada al-Ula','Jumada al-Akhira','Rajab','Shaʿbân','Ramadan','Shawwâl','Dhul Qaʿda','Dhul Hijja'];
+    var HM_FR=['Mouharram','Safar','Rabîʿ al-Awwal','Rabîʿ al-Thâni','Jumada al-Ula','Jumada al-Akhira','Rajab','Chaʿbân','Ramadan','Chawwâl','Dhul Qaʿda','Dhul Hijja'];
     var HM_AR=['مُحَرَّم','صَفَر','رَبِيعُ الأَوَّل','رَبِيعُ الثَّانِي','جُمَادَى الأُولَى','جُمَادَى الآخِرَة','رَجَب','شَعْبَان','رَمَضَان','شَوَّال','ذُو القَعْدَة','ذُو الحِجَّة'];
     var JOURS_FR=['dim.','lun.','mar.','mer.','jeu.','ven.','sam.'];
-    var MOIS_FR_LONG=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+    var MOIS_FR=['jan.','fév.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
     var set=function(id,v){var e=document.getElementById(id);if(e)e.textContent=v;};
-    set('pw-hijri-day',   hday);
-    set('pw-hijri-month-ar', HM_AR[hmonth-1]||'');
-    set('pw-hijri-month-fr', HM_FR[hmonth-1]||'');
-    set('pw-hijri-year',  hyear+' هـ');
-    set('pw-greg-str', JOURS_FR[now.getDay()]+' '+d+' '+MOIS_FR_LONG[now.getMonth()]);
-    /* footer */
+    /* Format : "11 Chawwal, 1447" */
+    set('pw-hijri-full-fr', hday + ' ' + HM_FR[hmonth-1] + ', ' + hyear);
+    /* Format arabe : "١١ شَوَّال ١٤٤٧" */
+    set('pw-hijri-full-ar', hday + ' ' + HM_AR[hmonth-1] + ' ' + hyear + ' هـ');
+    /* Date grégorienne */
+    set('pw-greg-str', JOURS_FR[now.getDay()]+' '+d+' '+MOIS_FR[now.getMonth()]);
+    /* Footer */
     var ft=document.getElementById('pw-hijri-footer');
-    if(ft) ft.innerHTML='🌙 '+hday+' '+HM_AR[hmonth-1]+' '+hyear+' هـ';
+    if(ft) ft.textContent = hday+' '+HM_FR[hmonth-1]+', '+hyear+' هـ';
   }
   /* Mise à jour automatique toutes les 60 secondes */
   setInterval(_pwSetHijriDate, 60000);
