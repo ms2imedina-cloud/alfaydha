@@ -1097,7 +1097,7 @@ body{
 .ab-sug-body{flex:1}
 .ab-sug-q{font-size:14px;font-weight:600;color:var(--g1);line-height:1.3}
 .ab-sug-cat{font-size:12px;color:var(--text3);margin-top:.15rem}
-.ab-chat{flex:1;overflow-y:auto;padding:.5rem 1rem 1rem;display:flex;flex-direction:column}
+.ab-chat{flex:1;overflow-y:auto;padding:.5rem 1rem 1rem;display:flex;flex-direction:column;scroll-behavior:smooth}
 .ab-msgs{display:flex;flex-direction:column;gap:.8rem}
 .ab-msg{display:flex;gap:.6rem;animation:fadeUp .25s ease}
 .ab-avatar{width:34px;height:34px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;background:var(--g1);border:1.5px solid rgba(212,175,55,.3)}
@@ -1822,23 +1822,46 @@ html { background: #0a0a0a; }
 }
 .live-tabs {
  background: rgba(7,16,10,.98) !important;
- border-bottom: 1px solid rgba(212,175,55,.12) !important;
+ border-bottom: 2px solid rgba(212,175,55,.25) !important;
  gap: 0 !important;
- padding:0 .2rem !important;
+ padding:0 !important;
 }
 .lt-btn {
- font-size: 11.5px !important;
- font-weight: 600 !important;
- letter-spacing: .02em !important;
- padding:.65rem .3rem !important;
- color: rgba(255,255,255,.4) !important;
- border-bottom: 2.5px solid transparent !important;
+ font-size: 12px !important;
+ font-weight: 700 !important;
+ letter-spacing: .07em !important;
+ padding:.7rem .4rem .6rem !important;
+ color: rgba(255,255,255,.65) !important;
+ border-bottom: 3px solid transparent !important;
  transition: all .18s !important;
+ text-shadow: 0 1px 4px rgba(0,0,0,.5) !important;
+ position: relative !important;
 }
 .lt-btn.active {
  color: var(--gold) !important;
  border-bottom-color: var(--gold) !important;
- background: none !important;
+ background: linear-gradient(to bottom, rgba(212,175,55,.08), transparent) !important;
+ text-shadow: 0 0 12px rgba(212,175,55,.5) !important;
+}
+.lt-btn:hover:not(.active) {
+ color: rgba(255,255,255,.9) !important;
+ background: rgba(255,255,255,.05) !important;
+}
+/* Badge CHAT rouge plus visible */
+.nav-live-badge {
+ background: #e74c3c !important;
+ color: #fff !important;
+ font-size: 10px !important;
+ font-weight: 800 !important;
+ border-radius: 100px !important;
+ padding: 1px 5px !important;
+ margin-left: 3px !important;
+ box-shadow: 0 0 6px rgba(231,76,60,.6) !important;
+ animation: badgePulse .8s ease infinite alternate !important;
+}
+@keyframes badgePulse {
+ from { opacity: .85; transform: scale(.97); }
+ to   { opacity: 1;   transform: scale(1.05); }
 }
 
 /* ── Ask Baye hero amélioré ── */
@@ -4694,7 +4717,7 @@ window.toggleStudioPanel = function() {
  <div class="live-tabs">
  <button class="lt-btn active" id="ltab-channels" onclick="switchLiveTab('channels',this)">📺 Chaînes</button>
  <button class="lt-btn" id="ltab-mic" onclick="switchLiveTab('mic',this)">🎤 Micro</button>
- <button class="lt-btn" id="ltab-chat" onclick="switchLiveTab('chat',this)">💬 Chat <span id="chatBadge" style="display:none;background:var(--red);color:#fff;border-radius:100px;font-size:11px;padding:1px 5px;font-family:sans-serif">0</span></button>
+ <button class="lt-btn" id="ltab-chat" onclick="switchLiveTab('chat',this)">💬 Chat <span id="chatBadge" style="display:none;background:#e74c3c;color:#fff;border-radius:100px;font-size:10px;font-weight:800;padding:1px 6px;font-family:sans-serif;box-shadow:0 0 6px rgba(231,76,60,.7);animation:badgePulse .8s ease infinite alternate">0</span></button>
  <button class="lt-btn" id="ltab-qa" onclick="switchLiveTab('qa',this)" style="display:none">❓ Q&A <span id="qaBadge" style="display:none;background:var(--gold);color:#000;border-radius:100px;font-size:11px;padding:1px 5px;font-family:sans-serif;font-weight:700">0</span></button>
  <button class="lt-btn" id="ltab-prog" onclick="switchLiveTab('prog',this)" style="display:none">📅 Programme</button>
  <button class="lt-btn" id="ltab-favs" onclick="switchLiveTab('favs',this)" style="display:none">⭐ Favoris</button>
@@ -10298,6 +10321,8 @@ function abAddMsg(role, text, engine) {
 
  div.appendChild(bubble);
  msgs.appendChild(div);
+ /* Auto-scroll vers le bas après chaque message */
+ abScrollBottom();
  return div;
 }
 
@@ -10320,8 +10345,21 @@ function abRemoveThinking(id) {
 }
 
 function abScrollBottom() {
+ /* Scroller la section principale (overflow-y:auto sur .sec) */
+ var sec = document.getElementById('sec-ai');
  var chat = document.getElementById('abChat');
- if (chat) { setTimeout(function(){ chat.scrollTop = chat.scrollHeight; }, 60); }
+ function _doScroll() {
+   /* 1. Scroller la section parente qui a overflow-y:auto */
+   if (sec) sec.scrollTo({ top: sec.scrollHeight, behavior: 'smooth' });
+   /* 2. Scroller aussi abChat si lui-même a une hauteur fixe */
+   if (chat) chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
+ }
+ setTimeout(_doScroll, 60);
+ /* Second passage pour s'assurer que le rendu est complet */
+ setTimeout(function(){
+   if (sec) sec.scrollTop = sec.scrollHeight;
+   if (chat) chat.scrollTop = chat.scrollHeight;
+ }, 320);
 }
 
 /* ══ LUMIÈRE IA — Système audio unifié ══
