@@ -3139,9 +3139,21 @@ _loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js', 
   .pw-wrap{background:linear-gradient(175deg,#1a3d28 0%,#2E7D52 60%,#0a5c2e 100%);overflow:hidden;flex-shrink:0;position:relative;}
   .pw-header{padding:1.1rem 1.2rem .8rem;position:relative;overflow:hidden;}
   .pw-header::before{content:'';position:absolute;inset:0;opacity:.05;background-image:radial-gradient(circle,#E8C97A 1px,transparent 1px);background-size:22px 22px;pointer-events:none;}
-  .pw-hijri-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,.18);border:1px solid rgba(212,175,55,.35);border-radius:100px;padding:3px 11px;margin-bottom:.65rem;}
-  .pw-hijri-text{font-size:12px;color:#E8C97A;font-weight:600;letter-spacing:.03em;}
-  .pw-greg{font-size:10px;color:rgba(245,239,224,.45);margin-left:3px;}
+  /* ── Bloc date islamique ── */
+  .pw-hijri-badge{display:none;}
+  .pw-hijri-text{display:none;}
+  .pw-greg{display:none;}
+  .pw-date-block{display:flex;align-items:center;justify-content:space-between;background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.3);border-radius:14px;padding:.55rem .9rem;margin-bottom:.7rem;gap:.5rem;}
+  .pw-date-hijri{display:flex;align-items:center;gap:.4rem;flex:1;}
+  .pw-date-day{font-family:'Amiri',serif;font-size:38px;color:#E8C97A;font-weight:700;line-height:1;min-width:36px;text-align:center;}
+  .pw-date-month-wrap{display:flex;flex-direction:column;gap:2px;}
+  .pw-date-month-ar{font-family:'Amiri',serif;font-size:16px;color:#E8C97A;direction:rtl;line-height:1.2;}
+  .pw-date-month-fr{font-size:10px;color:rgba(232,201,122,.6);font-style:italic;}
+  .pw-date-year-h{font-size:10px;color:rgba(232,201,122,.45);font-weight:600;margin-top:1px;}
+  .pw-date-sep{width:1px;height:34px;background:rgba(212,175,55,.22);flex-shrink:0;margin:0 .3rem;}
+  .pw-date-greg{text-align:right;flex-shrink:0;}
+  .pw-date-greg-num{font-size:24px;font-weight:800;color:rgba(245,239,224,.65);line-height:1;}
+  .pw-date-greg-str{font-size:10px;color:rgba(245,239,224,.4);text-transform:capitalize;margin-top:1px;}
   .pw-header-row{display:flex;align-items:flex-start;justify-content:space-between;position:relative;z-index:1;}
   .pw-title-ar{font-family:'Amiri',serif;font-size:20px;color:#E8C97A;line-height:1;margin-bottom:2px;}
   .pw-loc{font-size:11px;color:rgba(245,239,224,.5);display:flex;align-items:center;gap:4px;}
@@ -3178,9 +3190,25 @@ _loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js', 
 
   <div class="pw-wrap">
     <div class="pw-header">
-      <div class="pw-hijri-badge">
-        🌙 <span class="pw-hijri-text" id="pw-hijri">…</span><span class="pw-greg" id="pw-greg"></span>
+      <!-- Bloc date islamique -->
+      <div class="pw-date-block">
+        <div class="pw-date-hijri">
+          <div class="pw-date-day" id="pw-hijri-day">—</div>
+          <div class="pw-date-month-wrap">
+            <div class="pw-date-month-ar" id="pw-hijri-month-ar">…</div>
+            <div class="pw-date-month-fr" id="pw-hijri-month-fr"></div>
+            <div class="pw-date-year-h" id="pw-hijri-year"></div>
+          </div>
+        </div>
+        <div class="pw-date-sep"></div>
+        <div class="pw-date-greg">
+          <div class="pw-date-greg-num" id="pw-greg-day"></div>
+          <div class="pw-date-greg-str" id="pw-greg-str"></div>
+        </div>
       </div>
+      <!-- éléments cachés pour compatibilité JS existant -->
+      <span id="pw-hijri" style="display:none"></span>
+      <span id="pw-greg" style="display:none"></span>
       <div class="pw-header-row">
         <div>
           <div class="pw-title-ar">مَوَاقِيتُ الصَّلَاة</div>
@@ -12966,19 +12994,21 @@ async function _prayerReverseGeocode(lat, lng) {
     var j=(Math.floor((10985-l2)/5316))*Math.floor((50*l2)/17719)+(Math.floor(l2/5670))*Math.floor((43*l2)/15238);
     l2=l2-(Math.floor((30-j)/15))*Math.floor((17719*j)/50)-(Math.floor(j/16))*Math.floor((15238*j)/43)+29;
     var hmonth=Math.floor((24*(l2-29))/709),hday=l2-Math.floor((709*hmonth)/24),hyear=30*n+j-30;
-    var HM_FR=['Muharram','Safar','Rabîʿ al-Awwal','Rabîʿ al-Thâni','Jumada al-Ula','Jumada al-Akhira','Rajab','Shaʿbân','Ramadan','Shawwâl','Dhul Qiʿda','Dhul Hijja'];
-    var HM_AR=['محرم','صفر','ربيع الأول','ربيع الثاني','جمادى الأولى','جمادى الآخرة','رجب','شعبان','رمضان','شوال','ذو القعدة','ذو الحجة'];
-    var hijriStr = hday+' '+HM_FR[hmonth-1]+' '+hyear+' H';
-    var hijriAr  = hday+' '+HM_AR[hmonth-1]+' '+hyear;
-    var gregStr  = now.toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'long'});
-    /* Badge principal en haut du widget */
-    var el=document.getElementById('pw-hijri');
-    if(el) el.textContent=hijriStr;
-    var ge=document.getElementById('pw-greg');
-    if(ge) ge.textContent='· '+gregStr;
-    /* Ligne islamique dans le footer */
+    var HM_FR=['Mouharram','Safar','Rabîʿ al-Awwal','Rabîʿ al-Thâni','Jumada al-Ula','Jumada al-Akhira','Rajab','Shaʿbân','Ramadan','Shawwâl','Dhul Qaʿda','Dhul Hijja'];
+    var HM_AR=['مُحَرَّم','صَفَر','رَبِيعُ الأَوَّل','رَبِيعُ الثَّانِي','جُمَادَى الأُولَى','جُمَادَى الآخِرَة','رَجَب','شَعْبَان','رَمَضَان','شَوَّال','ذُو القَعْدَة','ذُو الحِجَّة'];
+    var JOURS_FR=['dim.','lun.','mar.','mer.','jeu.','ven.','sam.'];
+    var MOIS_FR_LONG=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+    /* Nouveaux éléments du bloc date */
+    var set=function(id,v){var e=document.getElementById(id);if(e)e.textContent=v;};
+    set('pw-hijri-day', hday);
+    set('pw-hijri-month-ar', HM_AR[hmonth-1]||'');
+    set('pw-hijri-month-fr', HM_FR[hmonth-1]||'');
+    set('pw-hijri-year', hyear+' هـ');
+    set('pw-greg-day', now.getDate());
+    set('pw-greg-str', JOURS_FR[now.getDay()]+' '+MOIS_FR_LONG[now.getMonth()]);
+    /* Footer */
     var ft=document.getElementById('pw-hijri-footer');
-    if(ft) ft.innerHTML='🌙 <span style="direction:rtl;unicode-bidi:embed">'+hijriAr+'</span><br><span style="font-size:9px;opacity:.7">'+gregStr+'</span>';
+    if(ft) ft.innerHTML='🌙 '+hday+' '+HM_AR[hmonth-1]+' '+hyear+' هـ';
   }
   /* Mise à jour automatique toutes les 60 secondes */
   setInterval(_pwSetHijriDate, 60000);
@@ -12994,8 +13024,9 @@ function _wlcInit(){
  }
 
  if(document.readyState==='loading'){
- document.addEventListener('DOMContentLoaded', _wlcInit);
+ document.addEventListener('DOMContentLoaded', function(){ _pwSetHijriDate(); _wlcInit(); });
  } else {
+ _pwSetHijriDate();
  _wlcInit();
  }
 })();
