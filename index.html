@@ -3210,6 +3210,17 @@ button[onclick="qiblaGPS()"] {
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <!-- Firebase config -->
+<!--
+  ══════════════════════════════════════════════════════════
+  ACTION REQUISE DANS FIREBASE CONSOLE :
+  1. Authentication → Sign-in method → Google → Activer ✅
+  2. Authentication → Authorized domains → Ajouter :
+       • ms2imedina-cloud.github.io
+       • localhost  (pour test local)
+  3. Google Cloud Console → OAuth → Redirect URIs → Ajouter :
+       • https://faydha-app.firebaseapp.com/__/auth/handler
+  ══════════════════════════════════════════════════════════
+-->
 <script>
 window._fbConfig={
  apiKey:"AIzaSyDKEVkWM5c2HD5YamSEmYQO1dpeDA4NzKE",
@@ -3222,55 +3233,59 @@ window._fbConfig={
 };
 window._fbReady=false;
 window._adminIn=false; /* guard pour interactInit */
+
+/* ── Diagnostic domaine autorisé ── */
+(function(){
+ var hostname = window.location.hostname;
+ var authorized = ['faydha-app.firebaseapp.com','faydha-app.web.app','ms2imedina-cloud.github.io','localhost','127.0.0.1'];
+ if (authorized.indexOf(hostname) === -1) {
+   console.warn('[Faydha Auth] ⚠️ Domaine "' + hostname + '" peut ne pas être autorisé dans Firebase Console → Authentication → Authorized domains. Ajoutez-le si la connexion Google échoue.');
+ }
+})();
 </script>
 <script>
 
 /* ── _fbInit — wrapper Firebase compatibility ── */
+window._fbCallbacks = window._fbCallbacks || [];
 function _fbInit(cb) {
- /* Firebase déjà prêt */
+ if (!cb) return;
+ /* Firebase déjà prêt → exécuter immédiatement */
  if (window._fbReady && typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
- if (typeof cb === 'function') cb();
+ try { cb(); } catch(e){ console.error('[_fbInit cb]', e); }
  return;
  }
- /* Firebase pas encore chargé — retry jusqu'à 5s max (defer peut prendre du temps) */
- if (typeof firebase === 'undefined' || !firebase.apps) {
- var tries = 0;
- var iv = setInterval(function() {
- tries++;
- if (typeof firebase !== 'undefined' && firebase.apps !== undefined) {
- clearInterval(iv);
- _fbInit(cb);
- } else if (tries > 50) {
- /* Firebase non disponible après 5s — uniquement si page déjà chargée */
- clearInterval(iv);
- if (document.readyState === 'complete') {
- console.warn('[Faydha] Firebase non disponible — fonctions dépendantes désactivées');
- }
- }
- }, 100);
- return;
- }
- if (!firebase.apps.length) {
- try { firebase.initializeApp(window._fbConfig); } catch(e) {}
- }
- window._fbReady = true;
- if (typeof cb === 'function') cb();
+ /* Pas encore prêt → mettre en file d'attente */
+ window._fbCallbacks.push(cb);
 }
+/* Exécuteur des callbacks — appelé par _loadScript quand Firebase est prêt */
+window._fbFlush = function() {
+ if (!window._fbCallbacks) return;
+ var cbs = window._fbCallbacks.slice();
+ window._fbCallbacks = [];
+ cbs.forEach(function(fn){ try{ fn(); }catch(e){ console.error('[_fbFlush]',e); } });
+};
 
 </script>
-<!-- Firebase SDKs — defer : ne bloquent plus le parser HTML, chargés en parallèle -->
-<script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<!-- Firebase SDKs — chargement séquentiel garanti -->
 <script>
-/* Avec defer, les SDKs Firebase se chargent après le DOM — init via DOMContentLoaded */
-document.addEventListener('DOMContentLoaded', function(){
- try{
- if(typeof firebase!=='undefined'){
- if(!firebase.apps.length) firebase.initializeApp(window._fbConfig);
- window._fbReady=true;
- }
- }catch(e){ console.error('[Firebase]',e); }
+function _loadScript(src, cb) {
+ var s = document.createElement('script');
+ s.src = src;
+ s.onload = cb;
+ s.onerror = function(){ console.error('[Firebase] Échec:', src); cb && cb(); };
+ document.head.appendChild(s);
+}
+_loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js', function(){
+ _loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js', function(){
+ _loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js', function(){
+ try {
+ if (!firebase.apps.length) firebase.initializeApp(window._fbConfig);
+ window._fbReady = true;
+ console.log('[Firebase] ✅ Prêt — flush', (window._fbCallbacks||[]).length, 'callbacks');
+ window._fbFlush && window._fbFlush();
+ } catch(e){ console.error('[Firebase init]', e); }
+ });
+ });
 });
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -3470,6 +3485,9 @@ document.addEventListener('DOMContentLoaded', function(){
  <svg width="22" height="22" viewBox="0 0 48 48" style="flex-shrink:0"><path fill="#FFC107" d="M43.611 20.083H24v4.175h10.8C33.638 29.951 29.249 33.75 24 33.75c-5.642 0-10.193-3.747-11.765-9.343l-7.887 1.931C6.782 35.033 13.902 40 24 40c8.635 0 15.964-4.633 19.706-11.5L43.611 20.083z"/><path fill="#FF3D00" d="M6.306 23.85C3.201 18.334 3.201 11.666 6.306 6.15L.566 1.83C-2.823 8.899-2.823 21.101.566 28.17L6.306 23.85z"/><path fill="#4CAF50" d="M24 7.5c3.845 0 7.236 1.375 9.931 3.617L40.019 5.249C36.013 1.993 30.273 0 24 0 13.902 0 6.782 4.967 3.148 13.443l7.887 1.931C12.656 10.211 17.805 7.5 24 7.5z"/><path fill="#1565C0" d="M24 40c6.273 0 12.013-2.074 16.019-5.613l-7.064-5.612C30.572 31.447 27.443 32.5 24 32.5c-5.292 0-9.725-3.236-11.532-7.8l-7.887 1.931C10.119 35.223 16.316 40 24 40z"/></svg>
  Se connecter avec Google
  </button>
+ <div id="wlcRedirectInfo" style="display:none;text-align:center;font-size:12px;color:rgba(212,175,55,.9);padding:.6rem .8rem;background:rgba(0,0,0,.25);border-radius:10px;margin-top:.3rem;line-height:1.5;word-break:break-word">
+ ↗ Redirection vers Google…
+ </div>
 
  </div>
 
@@ -6388,38 +6406,6 @@ function enterApp(profile) {
 /* ═══════════════════════════════════════
  GOOGLE AUTH — Firebase Authentication
 ═══════════════════════════════════════ */
-/* ── Retour de redirect Google Auth (iOS/Safari) ── */
-(function(){
- document.addEventListener('DOMContentLoaded', function(){
- _fbInit(function(){
- /* Récupérer le résultat du redirect Google si l'utilisateur revient sur la page */
- try {
- firebase.auth().getRedirectResult().then(function(result){
- if (result && result.user) {
- /* Connexion réussie via redirect — même traitement que popup */
- firebase.database().ref('users/' + result.user.uid).set({
- name: result.user.displayName, email: result.user.email,
- photo: result.user.photoURL, lastLogin: Date.now(), uid: result.user.uid
- });
- _onGoogleUser(result.user);
- }
- }).catch(function(err){
- if (err && err.code !== 'auth/credential-already-in-use') {
- console.warn('[Google Redirect]', err.message);
- }
- });
- } catch(e){ console.warn('[getRedirectResult]', e); }
- /* Garde-fou : bouton bloqué après redirect → réactiver après 6s */
- setTimeout(function(){
- var btn = document.querySelector('.wlc-google-btn');
- if (btn && btn.disabled) {
- btn.disabled = false;
- btn.innerHTML = _googleBtnHTML();
- }
- }, 6000);
- });
- });
-})();
 
 function _googleBtnHTML() {
  return '<svg width="22" height="22" viewBox="0 0 48 48" style="flex-shrink:0"><path fill="#FFC107" d="M43.611 20.083H24v4.175h10.8C33.638 29.951 29.249 33.75 24 33.75c-5.642 0-10.193-3.747-11.765-9.343l-7.887 1.931C6.782 35.033 13.902 40 24 40c8.635 0 15.964-4.633 19.706-11.5L43.611 20.083z"/><path fill="#FF3D00" d="M6.306 23.85C3.201 18.334 3.201 11.666 6.306 6.15L.566 1.83C-2.823 8.899-2.823 21.101.566 28.17L6.306 23.85z"/><path fill="#4CAF50" d="M24 7.5c3.845 0 7.236 1.375 9.931 3.617L40.019 5.249C36.013 1.993 30.273 0 24 0 13.902 0 6.782 4.967 3.148 13.443l7.887 1.931C12.656 10.211 17.805 7.5 24 7.5z"/><path fill="#1565C0" d="M24 40c6.273 0 12.013-2.074 16.019-5.613l-7.064-5.612C30.572 31.447 27.443 32.5 24 32.5c-5.292 0-9.725-3.236-11.532-7.8l-7.887 1.931C10.119 35.223 16.316 40 24 40z"/></svg> Se connecter avec Google';
@@ -6427,53 +6413,89 @@ function _googleBtnHTML() {
 
 function signInWithGoogle() {
  var btn = document.querySelector('.wlc-google-btn');
- if (btn) { btn.disabled = true; btn.innerHTML = '<span>⏳</span> Connexion…'; }
+ var info = document.getElementById('wlcRedirectInfo');
+ if (btn) { btn.disabled = true; btn.innerHTML = '<span>⏳</span> Chargement…'; }
 
- function _resetBtn() {
- if (btn) { btn.disabled = false; btn.innerHTML = _googleBtnHTML(); }
+ function _resetBtn(msg, isError) {
+   if (btn) { btn.disabled = false; btn.innerHTML = _googleBtnHTML(); }
+   if (info) {
+     info.style.display = 'block';
+     info.style.color = isError ? '#ffb347' : 'rgba(212,175,55,.9)';
+     info.textContent = msg || '';
+   }
  }
- function _launch() {
- try {
- var provider = new firebase.auth.GoogleAuthProvider();
- provider.setCustomParameters({ prompt: 'select_account' });
- if (_isIOS() || _isSafari()) {
- /* Réactiver le bouton après 2s pour éviter qu'il reste bloqué si la redirect tarde */
- setTimeout(function(){
- if(btn && btn.disabled){ btn.disabled=false; btn.innerHTML='<span>↩</span> Appuyez à nouveau…'; }
- }, 2000);
- firebase.auth().signInWithRedirect(provider).catch(function(err){ _resetBtn(); showToast('⚠️ ' + err.message); });
- return;
+
+ /* ── Vérification protocole : file:// interdit par Firebase Auth ── */
+ var proto = window.location.protocol;
+ if (proto !== 'https:' && proto !== 'http:' && proto !== 'chrome-extension:') {
+   _resetBtn(
+     '⚠️ Connexion Google impossible en mode fichier local (file://).' +
+     ' Ouvrez l'app via : https://ms2imedina-cloud.github.io/alfaydha/', true
+   );
+   return;
  }
- firebase.auth().signInWithPopup(provider)
- .then(function(result) {
- firebase.database().ref('users/' + result.user.uid).set({
- name: result.user.displayName, email: result.user.email,
- photo: result.user.photoURL, lastLogin: Date.now(), uid: result.user.uid
+
+ /* ── Vérification localStorage (cookie bloqué = auth cassé) ── */
+ try { localStorage.setItem('_fbtest','1'); localStorage.removeItem('_fbtest'); }
+ catch(e) {
+   _resetBtn('⚠️ Stockage bloqué (mode privé strict ou cookies désactivés). Activez les cookies.', true);
+   return;
+ }
+
+ /* Detect iOS / Safari → popup obligatoire */
+ function _isIOS() { return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream; }
+ function _isSafari() { return /^((?!chrome|android).)*safari/i.test(navigator.userAgent); }
+ var isChromDesktop = /Chrome/.test(navigator.userAgent) && !/Mobile/.test(navigator.userAgent) && !_isIOS() && !_isSafari();
+ var onFirebaseDomain = (window.location.hostname === 'faydha-app.firebaseapp.com' || window.location.hostname === 'faydha-app.web.app');
+ /* popup partout sauf Chrome Desktop sur domaine Firebase officiel */
+ var usePopup = !isChromDesktop || !onFirebaseDomain;
+
+ var _btnTimeout = setTimeout(function(){
+   if (btn && btn.disabled) _resetBtn('⚠️ Firebase lent — réessayez ou vérifiez votre connexion', true);
+ }, 12000);
+
+ _fbInit(function() {
+   clearTimeout(_btnTimeout);
+   try {
+     var provider = new firebase.auth.GoogleAuthProvider();
+     provider.addScope('email');
+     provider.addScope('profile');
+     provider.setCustomParameters({ prompt: 'select_account' });
+
+     if (usePopup) {
+       if (btn) btn.innerHTML = '<span>⏳</span> Ouverture Google…';
+       if (info) { info.style.display = 'block'; info.textContent = '🔐 Fenêtre Google en cours…'; }
+       firebase.auth().signInWithPopup(provider).then(function(result) {
+         clearTimeout(_btnTimeout);
+         /* onAuthStateChanged se déclenche automatiquement */
+       }).catch(function(err) {
+         console.error('[signInWithPopup]', err);
+         if (err.code === 'auth/operation-not-supported-in-this-environment') {
+           _resetBtn('⚠️ Ouvrez l'app via https:// — connexion impossible ici.', true);
+         } else if (err.code === 'auth/unauthorized-domain') {
+           _resetBtn('⚠️ Domaine non autorisé Firebase. Ajoutez "' + window.location.hostname + '" dans Firebase Console → Authentication → Authorized domains.', true);
+         } else if (err.code === 'auth/popup-blocked' || err.code === 'auth/popup-closed-by-user') {
+           if (info) { info.style.display = 'block'; info.textContent = '↗ Popup bloquée — redirection en cours…'; }
+           try { firebase.auth().signInWithRedirect(provider); } catch(e2) { _resetBtn('⚠️ Erreur redirect: ' + e2.message, true); }
+         } else {
+           _resetBtn('⚠️ ' + (err.code || '') + ': ' + (err.message || 'Erreur inconnue'), true);
+         }
+       });
+     } else {
+       if (btn) btn.innerHTML = '<span>⏳</span> Redirection Google…';
+       if (info) { info.style.display = 'block'; info.textContent = '↗ Redirection vers Google…'; }
+       firebase.auth().signInWithRedirect(provider);
+     }
+   } catch(e) {
+     clearTimeout(_btnTimeout);
+     console.error('[signInWithGoogle]', e);
+     if (e.code === 'auth/operation-not-supported-in-this-environment') {
+       _resetBtn('⚠️ Ouvrez l'app via https:// — connexion Google impossible en local.', true);
+     } else {
+       _resetBtn('⚠️ Erreur: ' + e.message, true);
+     }
+   }
  });
- })
- .catch(function(err) {
- _resetBtn();
- if (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment') {
- setTimeout(function() { firebase.auth().signInWithRedirect(provider); }, 500);
- } else if (err.code !== 'auth/popup-closed-by-user') {
- showToast('⚠️ ' + err.message);
- }
- });
- } catch(e) { _resetBtn(); showToast('⚠️ Service indisponible — réessayez'); }
- }
- /* Lancer directement si Firebase prêt, sinon attendre max 8s */
- var _waited = 0;
- (function _poll(){
- if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
- _launch();
- } else if (_waited < 8000) {
- _waited += 250;
- setTimeout(_poll, 250);
- } else {
- _resetBtn();
- showToast('⚠️ Connexion impossible — vérifiez votre réseau');
- }
- })();
 }
 
 /* Email admin/streamer officiel */
@@ -6618,16 +6640,16 @@ document.addEventListener('DOMContentLoaded', function(){
  }
 
  function _showWelcomeForced(){
- /* Afficher sélecteur de langue au premier démarrage, sinon page connexion Google */
+ /* Ne pas afficher welcome si un redirect Google est en cours */
+ /* onAuthStateChanged dans _fbInit gérera l'affichage après retour redirect */
  var langChosen = false;
  try { langChosen = !!localStorage.getItem('faydha_lang'); } catch(e){}
  if (!langChosen) {
- /* Premier démarrage → sélection de langue d'abord */
  _showLangSelector();
  } else {
- /* Langue déjà choisie → afficher la page de connexion Google */
- var w = document.getElementById('welcome');
- if (w) { w.classList.remove('hidden'); w.style.opacity = '1'; }
+ /* Laisser onAuthStateChanged décider — il s'en charge dans _fbInit */
+ /* On affiche welcome seulement si Firebase ne répond pas dans 2.5s */
+ /* (le fallback _fbTimeout dans le bloc principal gère déjà ça) */
  }
  }
 
@@ -6904,7 +6926,7 @@ async function _playLiveKitViewer(d) {
  /* Toujours regénérer le token avec canPublish:true pour permettre le micro */
  if(pub.apiKey&&pub.apiSecret){
  lkGenerateViewerToken(pub.apiKey,pub.apiSecret,pub.room||'faydha-live')
- .then(function(vt){lkJoinAsViewer(pub.url,vt);})
+ .then(function(vt){ lkJoinAsViewer(pub.url,vt).catch(function(e){ _showLiveError(wrap, e.message||'Erreur connexion LiveKit'); }); })
  .catch(function(e){
   /* Fallback : token pré-stocké */
   if(pub.token) lkJoinAsViewer(pub.url,pub.token);
@@ -11386,9 +11408,10 @@ document.addEventListener('DOMContentLoaded', function() {
    if (wrap) wrap.style.display = d.enabled !== false ? '' : 'none';
  });
 
- /* ── 4. Direct live (état du stream en temps réel) ── */
- firebase.database().ref('faydha_direct').on('value', function(snap) {
-   if (window._isStreaming) return; /* le streamer ignore ses propres updates */
+ /* ── 4. Direct live (état du stream en temps réel) — sync initial uniquement ── */
+ /* Note: le listener complet est dans _fbSyncUser pour les utilisateurs connectés */
+ firebase.database().ref('faydha_direct').once('value', function(snap) {
+   if (window._isStreaming) return;
    var d = snap.val();
    if (!d) return;
    try { localStorage.setItem('faydha_direct', JSON.stringify(d)); } catch(e) {}
@@ -11409,16 +11432,34 @@ document.addEventListener('DOMContentLoaded', function() {
    try { localStorage.setItem('faydha_lk_viewer', JSON.stringify(d)); } catch(e) {}
  });
 
- /* Récupérer résultat redirect (iOS Safari) */
+ /* Récupérer résultat redirect Google après retour de page */
  firebase.auth().getRedirectResult().then(function(result) {
- if (result && result.user) {
- firebase.database().ref('users/' + result.user.uid).set({
- name: result.user.displayName, email: result.user.email,
- photo: result.user.photoURL, lastLogin: Date.now(), uid: result.user.uid
- });
- }
+   if (result && result.user) {
+     console.log('[getRedirectResult] ✅ Utilisateur Google récupéré:', result.user.email);
+     /* Sauvegarder dans Firebase — onAuthStateChanged gère l'UI */
+     try {
+       firebase.database().ref('users/' + result.user.uid).set({
+         name: result.user.displayName, email: result.user.email,
+         photo: result.user.photoURL, lastLogin: Date.now(), uid: result.user.uid
+       });
+     } catch(e) { console.warn('[getRedirectResult db]', e); }
+     /* onAuthStateChanged va se déclencher automatiquement avec le user */
+   }
  }).catch(function(err) {
- if (err.code !== 'auth/no-current-user') console.warn('Redirect result:', err.code);
+   if (!err) return;
+   /* Ignorer les erreurs non-critiques */
+   var ignored = ['auth/no-current-user', 'auth/null-user', 'auth/credential-already-in-use'];
+   if (ignored.indexOf(err.code) === -1) {
+     console.warn('[getRedirectResult]', err.code, err.message);
+     /* Afficher info à l'utilisateur si l'erreur vient d'un redirect bloqué */
+     if (err.code === 'auth/unauthorized-domain') {
+       var info = document.getElementById('wlcRedirectInfo');
+       if (info) {
+         info.style.display = 'block';
+         info.textContent = '⚠️ Domaine non autorisé dans Firebase. Ajoutez "' + window.location.hostname + '" dans Firebase Console → Authentication → Authorized domains.';
+       }
+     }
+   }
  });
 
  /* Auth state — protection anti-boucle absolue */
@@ -12512,7 +12553,11 @@ function interactUpdateRole() {
 }
 
 document.addEventListener('DOMContentLoaded', function(){
- _fbInit(function(){ interactInit(); });
+ _fbInit(function(){
+   interactInit();
+   /* Démarrer le listener de notifications push pour tous les utilisateurs */
+   if (typeof _initNotifListener === 'function') _initNotifListener();
+ });
  /* Afficher la barre d\'interaction quand on est dans le chat live */
 });
 
