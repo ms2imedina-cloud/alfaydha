@@ -792,6 +792,158 @@ body{
 .ab-multi-item:last-child{border-bottom:none}
 .ab-multi-src{font-size:12px;color:rgba(212,175,55,.6);font-style:italic;margin-top:.2rem}
 
+/* ════════════════════════════════════════════════════
+   BAYE IA — Chat messages — Design professionnel
+════════════════════════════════════════════════════ */
+.ab-chat {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  background: var(--ivory);
+}
+.ab-msgs {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem .85rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: .85rem;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+.ab-msgs::-webkit-scrollbar { width: 3px; }
+.ab-msgs::-webkit-scrollbar-thumb { background: rgba(46,125,82,.2); border-radius: 3px; }
+
+/* Ligne de message */
+.ab-msg {
+  display: flex;
+  align-items: flex-end;
+  gap: .5rem;
+  max-width: 100%;
+  animation: abMsgIn .25s ease both;
+}
+@keyframes abMsgIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.ab-msg.user { flex-direction: row-reverse; }
+.ab-msg.baye { flex-direction: row; }
+
+/* Avatar Baye */
+.ab-msg.baye::before {
+  content: '🕌';
+  font-size: 18px;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--g1), var(--g2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 30px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(46,125,82,.3);
+  align-self: flex-end;
+  margin-bottom: 2px;
+}
+
+/* Bulle */
+.ab-bubble {
+  max-width: 82%;
+  border-radius: 18px;
+  overflow: visible;
+  position: relative;
+  box-shadow: 0 2px 10px rgba(0,0,0,.07);
+}
+
+/* Bulle utilisateur */
+.ab-msg.user .ab-bubble {
+  background: linear-gradient(135deg, var(--g1), var(--g2));
+  border-radius: 18px 18px 4px 18px;
+  padding: .65rem 1rem;
+}
+.ab-msg.user .ab-bubble .ab-bubble-body {
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* Bulle Baye IA */
+.ab-msg.baye .ab-bubble {
+  background: #fff;
+  border: 1px solid rgba(46,125,82,.12);
+  border-radius: 18px 18px 18px 4px;
+  padding: .75rem 1rem 1rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,.07);
+}
+
+/* Badge moteur */
+.ab-bubble-engine {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--g1);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: .45rem;
+  opacity: .7;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Corps du message */
+.ab-bubble-body {
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  color: var(--text1);
+  line-height: 1.65;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+.ab-bubble-body strong {
+  color: var(--g1);
+  font-weight: 700;
+}
+.ab-bubble-body em {
+  color: var(--text2);
+  font-style: italic;
+}
+/* Lisibilité des paragraphes */
+.ab-bubble-body br + br {
+  display: block;
+  content: '';
+  margin-top: .35rem;
+}
+
+/* Bouton écouter placé dans la bulle */
+.ab-msg.baye .ab-bubble .ab-tts-btn {
+  margin-top: .6rem;
+  margin-bottom: 0;
+  font-size: 11px;
+  padding: .28rem .7rem;
+}
+
+/* Typing indicator */
+.ab-msg.baye.typing .ab-bubble {
+  padding: .7rem 1rem;
+}
+.ab-dots-wrap {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  height: 18px;
+}
+.ab-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--g1);
+  animation: abDots .9s ease-in-out infinite;
+}
+.ab-dot:nth-child(2) { animation-delay: .15s; }
+.ab-dot:nth-child(3) { animation-delay: .3s; }
+
+
+
 
 /* ── Performance : GPU layers pour éléments animés ── */
 .nav-btn::before,
@@ -10465,9 +10617,9 @@ function abAddThinking() {
  if (!msgs) return null;
  var id = 'think_' + Date.now();
  var div = document.createElement('div');
- div.className = 'ab-msg baye';
+ div.className = 'ab-msg baye typing';
  div.id = id;
- div.innerHTML = '<div class="ab-bubble"><div class="ab-thinking"></div></div>';
+ div.innerHTML = '<div class="ab-bubble"><div class="ab-dots-wrap"><div class="ab-dot"></div><div class="ab-dot"></div><div class="ab-dot"></div></div></div>';
  msgs.appendChild(div);
  abScrollBottom();
  return id;
@@ -10587,7 +10739,7 @@ async function abAskSuggestion(q) {
  var sugs = document.getElementById('abSuggestions');
  var chat = document.getElementById('abChat');
  if (sugs) sugs.style.display = 'none';
- if (chat) { chat.style.display = 'flex'; chat.style.flexDirection = 'column'; chat.style.minHeight = '250px'; }
+ if (chat) { chat.style.display = 'flex'; chat.style.flexDirection = 'column'; chat.style.minHeight = '200px'; chat.style.flex = '1'; }
 
  // Afficher la question de l'utilisateur
  abAddMsg('user', q, null);
@@ -10703,7 +10855,7 @@ async function abSendIstikhara() {
  var form = document.getElementById('abIstikhForm');
  if (form) form.style.display = 'none';
  var chat = document.getElementById('abChat');
- if (chat) { chat.style.display = 'flex'; chat.style.flexDirection = 'column'; chat.style.minHeight = '250px'; }
+ if (chat) { chat.style.display = 'flex'; chat.style.flexDirection = 'column'; chat.style.minHeight = '200px'; chat.style.flex = '1'; }
 
  /* Injecter dans l'input et envoyer */
  var inp = document.getElementById('abInput');
@@ -10792,7 +10944,7 @@ async function abSend() {
  var sugs = document.getElementById('abSuggestions');
  var chat = document.getElementById('abChat');
  if (sugs) sugs.style.display = 'none';
- if (chat) { chat.style.display = 'flex'; chat.style.flexDirection = 'column'; chat.style.minHeight = '250px'; }
+ if (chat) { chat.style.display = 'flex'; chat.style.flexDirection = 'column'; chat.style.minHeight = '200px'; chat.style.flex = '1'; }
 
  if (inp) { inp.value = ''; inp.style.height = 'auto'; }
 
