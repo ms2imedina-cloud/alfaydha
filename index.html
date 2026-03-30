@@ -3216,6 +3216,7 @@ button[onclick="qiblaGPS()"] {
   1. Authentication → Sign-in method → Google → Activer ✅
   2. Authentication → Authorized domains → Ajouter :
        • ms2imedina-cloud.github.io
+       • alfaydha.pages.dev
        • localhost  (pour test local)
   3. Google Cloud Console → OAuth → Redirect URIs → Ajouter :
        • https://faydha-app.firebaseapp.com/__/auth/handler
@@ -3237,7 +3238,7 @@ window._adminIn=false; /* guard pour interactInit */
 /* ── Diagnostic domaine autorisé ── */
 (function(){
  var hostname = window.location.hostname;
- var authorized = ['faydha-app.firebaseapp.com','faydha-app.web.app','ms2imedina-cloud.github.io','localhost','127.0.0.1'];
+ var authorized = ['faydha-app.firebaseapp.com','faydha-app.web.app','ms2imedina-cloud.github.io','alfaydha.pages.dev','localhost','127.0.0.1'];
  if (authorized.indexOf(hostname) === -1) {
    console.warn('[Faydha Auth] ⚠️ Domaine "' + hostname + '" peut ne pas être autorisé dans Firebase Console → Authentication → Authorized domains. Ajoutez-le si la connexion Google échoue.');
  }
@@ -6430,7 +6431,7 @@ function signInWithGoogle() {
  if (proto !== 'https:' && proto !== 'http:' && proto !== 'chrome-extension:') {
    _resetBtn(
      '⚠️ Connexion Google impossible en mode fichier local (file://).' +
-     ' Ouvrez l'app via : https://ms2imedina-cloud.github.io/alfaydha/', true
+     ' Ouvrez l\'app via : https://ms2imedina-cloud.github.io/alfaydha/', true
    );
    return;
  }
@@ -6471,7 +6472,7 @@ function signInWithGoogle() {
        }).catch(function(err) {
          console.error('[signInWithPopup]', err);
          if (err.code === 'auth/operation-not-supported-in-this-environment') {
-           _resetBtn('⚠️ Ouvrez l'app via https:// — connexion impossible ici.', true);
+           _resetBtn('⚠️ Ouvrez l\'app via https:// — connexion impossible ici.', true);
          } else if (err.code === 'auth/unauthorized-domain') {
            _resetBtn('⚠️ Domaine non autorisé Firebase. Ajoutez "' + window.location.hostname + '" dans Firebase Console → Authentication → Authorized domains.', true);
          } else if (err.code === 'auth/popup-blocked' || err.code === 'auth/popup-closed-by-user') {
@@ -6490,7 +6491,7 @@ function signInWithGoogle() {
      clearTimeout(_btnTimeout);
      console.error('[signInWithGoogle]', e);
      if (e.code === 'auth/operation-not-supported-in-this-environment') {
-       _resetBtn('⚠️ Ouvrez l'app via https:// — connexion Google impossible en local.', true);
+       _resetBtn('⚠️ Ouvrez l\'app via https:// — connexion Google impossible en local.', true);
      } else {
        _resetBtn('⚠️ Erreur: ' + e.message, true);
      }
@@ -12306,6 +12307,8 @@ function _interactUpdateAdminPanel(data) {
 }
 
 function _interactRenderList(panelId, items, type, icon) {
+ /* Fallback sécurisé si escH n'est pas encore définie dans ce scope */
+ var _esc = (typeof escH === 'function') ? escH : function(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
  var el = document.getElementById(panelId);
  if (!el) return;
  if (!items || !Object.keys(items).length) {
@@ -12316,23 +12319,23 @@ function _interactRenderList(panelId, items, type, icon) {
  el.innerHTML = entries.map(function(entry) {
  var key = entry[0], item = entry[1];
  var timeStr = item.ts ? new Date(item.ts).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : '';
- var extra = type === 'question' ? '<div style="font-size:12px;color:var(--text2);margin:.2rem 0 .3rem;line-height:1.5">' + escH(item.text||'') + '</div>' : '';
+ var extra = type === 'question' ? '<div style="font-size:12px;color:var(--text2);margin:.2rem 0 .3rem;line-height:1.5">' + _esc(item.text||'') + '</div>' : '';
  var answerBtn = '';
  if (type === 'question') {
- answerBtn = '<button onclick="interactMarkAnswered(\''+escH(key)+'\')" style="font-size:11px;background:var(--g1);color:var(--gold2);border:none;border-radius:100px;padding:.15rem .6rem;cursor:pointer;font-family:\'Roboto\',sans-serif;margin-right:.3rem">✅ Répondu</button>';
+ answerBtn = '<button onclick="interactMarkAnswered(\''+_esc(key)+'\')" style="font-size:11px;background:var(--g1);color:var(--gold2);border:none;border-radius:100px;padding:.15rem .6rem;cursor:pointer;font-family:\'Roboto\',sans-serif;margin-right:.3rem">✅ Répondu</button>';
  } else if (type === 'mic') {
- answerBtn = '<button onclick="interactGrantMic(\''+escH(key)+'\',\''+escH(item.name||'Visiteur')+'\')" style="font-size:11px;background:#27ae60;color:#fff;border:none;border-radius:100px;padding:.15rem .6rem;cursor:pointer;font-family:\'Roboto\',sans-serif;margin-right:.3rem">🎤 Donner la parole</button>';
+ answerBtn = '<button onclick="interactGrantMic(\''+_esc(key)+'\',\''+_esc(item.name||'Visiteur')+'\')" style="font-size:11px;background:#27ae60;color:#fff;border:none;border-radius:100px;padding:.15rem .6rem;cursor:pointer;font-family:\'Roboto\',sans-serif;margin-right:.3rem">🎤 Donner la parole</button>';
  }
  return '<div style="display:flex;flex-direction:column;padding:.5rem .6rem;background:var(--white);border:1px solid var(--gold3);border-radius:10px;margin-bottom:.35rem">' +
  '<div style="display:flex;align-items:center;gap:.5rem">' +
  '<span style="font-size:16px">' + icon + '</span>' +
- '<span style="font-size:13px;font-weight:600;color:var(--g1);flex:1">' + escH(item.name||'Visiteur') + '</span>' +
+ '<span style="font-size:13px;font-weight:600;color:var(--g1);flex:1">' + _esc(item.name||'Visiteur') + '</span>' +
  '<span style="font-size:11px;color:var(--text3)">' + timeStr + '</span>' +
  '</div>' +
  extra +
  '<div style="display:flex;gap:.3rem;margin-top:.25rem">' +
  answerBtn +
- '<button onclick="interactDismiss(\''+type+'\',\''+escH(key)+'\')" style="font-size:11px;background:rgba(192,57,43,.1);color:var(--red);border:1px solid rgba(192,57,43,.3);border-radius:100px;padding:.15rem .6rem;cursor:pointer;font-family:\'Roboto\',sans-serif">✕ Retirer</button>' +
+ '<button onclick="interactDismiss(\''+type+'\',\''+_esc(key)+'\')" style="font-size:11px;background:rgba(192,57,43,.1);color:var(--red);border:1px solid rgba(192,57,43,.3);border-radius:100px;padding:.15rem .6rem;cursor:pointer;font-family:\'Roboto\',sans-serif">✕ Retirer</button>' +
  '</div>' +
  '</div>';
  }).join('');
