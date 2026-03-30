@@ -4758,8 +4758,8 @@ window.toggleStudioPanel = function() {
  <span class="qt-label">Croissant Hilal</span>
  </button>
  <button class="ql-tab cal-tab" id="qltab-cal" onclick="switchQlTab('cal')">
- <span class="qt-icon">📅</span>
- <span class="qt-label">Calendrier</span>
+ <span class="qt-icon">📿</span>
+ <span class="qt-label">Chapelet</span>
  </button>
 </div>
 
@@ -4951,75 +4951,367 @@ window.toggleStudioPanel = function() {
 </div><!-- /ql-panel-lune -->
 
 <div class="ql-panel" id="ql-panel-cal">
-<div class="ical-wrap">
- <div class="ical-head">
- <div class="ical-nav-row">
- <button class="ical-nav-btn" onclick="icalPrev()">&#8249;</button>
- <div class="ical-head-center">
- <div class="ical-hijri-m" id="icalHijriM"></div>
- <div class="ical-hijri-y" id="icalHijriY"></div>
- <div class="ical-greg-s" id="icalGregS"></div>
- </div>
- <button class="ical-nav-btn" onclick="icalNext()">&#8250;</button>
- </div>
- <!-- Aujourd'hui rapide -->
- <div style="text-align:center;margin-top:.3rem">
- <button onclick="icalToday()" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;color:#fff;font-size:10px;padding:3px 12px;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;font-weight:600">📍 Aujourd'hui</button>
- </div>
- </div>
- <div class="ical-evbar" id="icalEvBar"><span class="ical-ep none">Chargement…</span></div>
- <div class="ical-wdays">
- <div class="ical-wd">Dim</div>
- <div class="ical-wd">Lun</div>
- <div class="ical-wd">Mar</div>
- <div class="ical-wd">Mer</div>
- <div class="ical-wd">Jeu</div>
- <div class="ical-wd fri">Ven ★</div>
- <div class="ical-wd">Sam</div>
- </div>
- <div class="ical-grid" id="icalGrid"></div>
- <div style="display:flex;gap:.5rem;padding:.4rem .8rem;background:#fff;border-top:1px solid #EDE9DF;flex-wrap:wrap">
- <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:#7A9085">
- <div style="width:10px;height:10px;border-radius:3px;background:linear-gradient(135deg,#2E7D52,#3A9463)"></div>Aujourd'hui
- </div>
- <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:#7A9085">
- <div style="width:10px;height:10px;border-radius:3px;background:linear-gradient(135deg,#FDF7EC,#FFF9F0);border:1px solid rgba(200,151,58,.4)"></div>Fête islamique
- </div>
- <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:#7A9085">
- <div style="width:10px;height:10px;border-radius:3px;background:linear-gradient(135deg,#F3EEF9,#F8F4FF);border:1px solid rgba(147,112,219,.4)"></div>Gamou
- </div>
- <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:#7A9085">
- <div style="width:10px;height:10px;border-radius:3px;background:linear-gradient(135deg,#EBF7F1,#F2FBF6);border:1px solid rgba(46,125,82,.3)"></div>Ramadan
- </div>
- </div>
- <div class="ical-infobar" id="icalInfoBar">
- <div class="ical-info-ic">📅</div>
- <div class="ical-info-body">
- <div class="ical-info-date" id="icalInfoDate">Appuyez sur une date</div>
- <div class="ical-info-sub" id="icalInfoSub">Date grégorienne · Date hijri</div>
- <div id="icalInfoEv"></div>
- </div>
- </div>
- <div class="ical-stats">
- <div class="ical-stat">
- <div class="ical-stat-n" id="icalStFri">0</div>
- <div class="ical-stat-l">Vendredis</div>
- </div>
- <div class="ical-stat">
- <div class="ical-stat-n" id="icalStHoly">0</div>
- <div class="ical-stat-l">Fêtes</div>
- </div>
- <div class="ical-stat">
- <div class="ical-stat-n" id="icalStLeft">0</div>
- <div class="ical-stat-l">Restants</div>
- </div>
- <div class="ical-stat">
- <div class="ical-stat-n" id="icalStRam">—</div>
- <div class="ical-stat-l">Ramadan</div>
- </div>
- </div>
+<!-- ═══ CHAPELET VIBRANT ═══ -->
+<style>
+#chapelet-wrap{
+  background:linear-gradient(160deg,#0a2e18 0%,#1a5233 50%,#0d3320 100%);
+  min-height:100%;display:flex;flex-direction:column;align-items:center;
+  padding:1rem 1rem 2rem;position:relative;overflow:hidden;
+}
+#chapelet-wrap::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(circle,rgba(212,175,55,.05) 1px,transparent 1px);
+  background-size:22px 22px;pointer-events:none;
+}
+.ch-header{text-align:center;margin-bottom:.8rem;position:relative}
+.ch-title{font-family:'Amiri',serif;font-size:22px;color:#fff;margin-bottom:.15rem}
+.ch-ar{font-family:'Amiri',serif;font-size:15px;color:var(--gold2);direction:rtl}
 
+/* SVG chapelet */
+#tasbihSvg{cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;
+  filter:drop-shadow(0 8px 24px rgba(0,0,0,.5));
+  transition:transform .08s ease;touch-action:manipulation}
+#tasbihSvg:active{transform:scale(.97)}
+@keyframes rotateCw{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes pearleFlash{0%{fill:#E8C97A}50%{fill:#fff}100%{fill:#E8C97A}}
+.pearl-glow{animation:pearleFlash .3s ease}
+.chapelet-spin{animation:rotateCw .6s cubic-bezier(.22,.68,0,1.2)}
+
+/* Compteurs & zikr */
+.ch-zikr-selector{
+  display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;
+  margin:.8rem 0;position:relative;
+}
+.ch-zikr-btn{
+  background:rgba(255,255,255,.08);border:1px solid rgba(212,175,55,.3);
+  border-radius:20px;padding:.3rem .75rem;font-size:11px;color:rgba(251,248,232,.7);
+  cursor:pointer;transition:all .2s;font-family:'Roboto',sans-serif;font-weight:600;
+}
+.ch-zikr-btn.active{background:linear-gradient(135deg,rgba(200,151,58,.4),rgba(212,175,55,.2));
+  border-color:var(--gold);color:var(--gold2);}
+.ch-counter-wrap{
+  display:flex;flex-direction:column;align-items:center;gap:.3rem;
+  background:rgba(0,0,0,.3);border:1.5px solid rgba(212,175,55,.3);
+  border-radius:18px;padding:.8rem 1.4rem;min-width:200px;position:relative;
+}
+.ch-count-main{font-size:52px;font-weight:700;color:#fff;line-height:1;
+  font-family:'Roboto',sans-serif;letter-spacing:-2px;
+  text-shadow:0 2px 20px rgba(212,175,55,.4);}
+.ch-count-total{font-size:13px;color:rgba(212,175,55,.75);font-weight:600}
+.ch-count-label{font-family:'Amiri',serif;font-size:17px;color:var(--gold2);direction:rtl;text-align:center}
+.ch-progress{width:100%;height:4px;background:rgba(255,255,255,.1);border-radius:100px;overflow:hidden;margin-top:.3rem}
+.ch-progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:100px;transition:width .15s ease}
+
+/* Boutons action */
+.ch-actions{display:flex;gap:.6rem;margin-top:.8rem}
+.ch-btn{
+  border:none;border-radius:12px;padding:.5rem 1rem;font-size:12px;
+  font-weight:600;cursor:pointer;font-family:'Roboto',sans-serif;transition:all .18s;
+}
+.ch-btn-tap{
+  background:linear-gradient(135deg,var(--g1),var(--g2));
+  color:#fff;flex:1;font-size:15px;padding:.7rem 1.2rem;
+  box-shadow:0 4px 16px rgba(46,125,82,.4);
+}
+.ch-btn-tap:active{transform:scale(.94);box-shadow:0 2px 8px rgba(46,125,82,.3)}
+.ch-btn-reset{background:rgba(255,255,255,.08);color:rgba(251,248,232,.6);border:1px solid rgba(255,255,255,.15)}
+.ch-btn-reset:active{background:rgba(255,255,255,.15)}
+
+/* Sessions */
+.ch-sessions{width:100%;margin-top:.9rem;position:relative}
+.ch-sessions-title{font-size:11px;color:rgba(251,248,232,.4);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.4rem}
+.ch-session-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.35rem .6rem;background:rgba(255,255,255,.04);
+  border-radius:8px;margin-bottom:.25rem;font-size:12px;
+}
+.ch-sess-name{color:var(--gold2);font-family:'Amiri',serif;font-size:14px}
+.ch-sess-count{color:rgba(251,248,232,.65);font-weight:600}
+</style>
+
+<div id="chapelet-wrap">
+  <div class="ch-header">
+    <div class="ch-title">📿 Chapelet</div>
+    <div class="ch-ar">سُبْحَانَ اللّٰه · الْحَمْدُ لِلّٰه · اللّٰهُ أَكْبَر</div>
+  </div>
+
+  <!-- SVG Chapelet -->
+  <svg id="tasbihSvg" viewBox="0 0 220 220" width="220" height="220" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="pearlGrad" cx="35%" cy="30%">
+        <stop offset="0%" stop-color="#F5EFD0"/>
+        <stop offset="60%" stop-color="#C8973A"/>
+        <stop offset="100%" stop-color="#7A5A20"/>
+      </radialGradient>
+      <radialGradient id="pearlActiveGrad" cx="35%" cy="30%">
+        <stop offset="0%" stop-color="#fff"/>
+        <stop offset="50%" stop-color="#FFE066"/>
+        <stop offset="100%" stop-color="#C8973A"/>
+      </radialGradient>
+      <radialGradient id="bigPearlGrad" cx="30%" cy="25%">
+        <stop offset="0%" stop-color="#F5EFD0"/>
+        <stop offset="50%" stop-color="#A0731A"/>
+        <stop offset="100%" stop-color="#5A3A0A"/>
+      </radialGradient>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="2" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+
+    <!-- Fil / corde -->
+    <g id="tasbihRope" transform="rotate(0,110,110)">
+      <circle cx="110" cy="110" r="68" fill="none" stroke="rgba(100,70,20,.6)" stroke-width="2.5"/>
+      <!-- 33 perles sur le cercle -->
+      <!-- Perles générées dynamiquement par JS, on place juste les éléments vides -->
+      <g id="pearlsGroup"></g>
+    </g>
+
+    <!-- Gros séparateur central -->
+    <g id="bigPearlGroup" transform="translate(110,28)">
+      <ellipse rx="11" ry="14" fill="url(#bigPearlGrad)" filter="url(#glow)"/>
+      <ellipse rx="5" ry="2" cy="-10" fill="rgba(255,255,255,.3)"/>
+      <!-- Pompon -->
+      <line y1="14" y2="30" stroke="#8B6914" stroke-width="2.5"/>
+      <circle cy="33" r="5" fill="#C8973A"/>
+      <circle cy="33" r="3" fill="#E8C97A"/>
+    </g>
+  </svg>
+
+  <!-- Sélecteur de zikr -->
+  <div class="ch-zikr-selector">
+    <button class="ch-zikr-btn active" data-zikr="subhan" onclick="chSetZikr(this,'subhan','سُبْحَانَ اللّٰه',33)">Subhân Allah</button>
+    <button class="ch-zikr-btn" data-zikr="hamd" onclick="chSetZikr(this,'hamd','الْحَمْدُ لِلّٰه',33)">Alhamdulillah</button>
+    <button class="ch-zikr-btn" data-zikr="akbar" onclick="chSetZikr(this,'akbar','اللّٰهُ أَكْبَر',33)">Allahu Akbar</button>
+    <button class="ch-zikr-btn" data-zikr="istighfar" onclick="chSetZikr(this,'istighfar','أَسْتَغْفِرُ اللّٰه',100)">Istighfâr</button>
+    <button class="ch-zikr-btn" data-zikr="salawat" onclick="chSetZikr(this,'salawat','اللَّهُمَّ صَلِّ عَلَى مُحَمَّد',100)">Ṣalawât</button>
+  </div>
+
+  <!-- Compteur -->
+  <div class="ch-counter-wrap">
+    <div class="ch-count-main" id="chCountMain">0</div>
+    <div class="ch-progress"><div class="ch-progress-fill" id="chProgressFill" style="width:0%"></div></div>
+    <div class="ch-count-label" id="chCountLabel">سُبْحَانَ اللّٰه</div>
+    <div class="ch-count-total" id="chCountTotal">0 / 33 — Tour 1</div>
+  </div>
+
+  <!-- Boutons -->
+  <div class="ch-actions">
+    <button class="ch-btn ch-btn-tap" id="chTapBtn" onclick="chTap()">﷽ Tap</button>
+    <button class="ch-btn ch-btn-reset" onclick="chReset()">↺ Reset</button>
+  </div>
+
+  <!-- Sessions sauvegardées -->
+  <div class="ch-sessions">
+    <div class="ch-sessions-title">Mes Wird du jour</div>
+    <div id="chSessionsList"></div>
+  </div>
 </div>
+
+<script>
+(function(){
+  /* ── État ── */
+  var _chCount = 0, _chTarget = 33, _chTour = 1, _chTotalSession = 0;
+  var _chZikrLabel = 'سُبْحَانَ اللّٰه';
+  var _chZikrKey = 'subhan';
+  var _chSessions = JSON.parse(localStorage.getItem('ch_sessions')||'{}');
+  var _chAudioCtx = null;
+  var _chLastPearlIdx = -1;
+  var N_PEARLS = 33;
+
+  /* ── Build SVG perles ── */
+  function chBuildPearls(){
+    var g = document.getElementById('pearlsGroup'); if(!g)return;
+    g.innerHTML='';
+    for(var i=0;i<N_PEARLS;i++){
+      var angle = (i/N_PEARLS)*2*Math.PI - Math.PI/2;
+      var r=68, cx=Math.cos(angle)*r, cy=Math.sin(angle)*r;
+      var c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      c.setAttribute('cx', cx.toFixed(1));
+      c.setAttribute('cy', cy.toFixed(1));
+      c.setAttribute('r','7');
+      c.setAttribute('fill','url(#pearlGrad)');
+      c.setAttribute('id','pearl-'+i);
+      c.setAttribute('opacity','0.55');
+      g.appendChild(c);
+    }
+  }
+
+  /* ── Perles actives ── */
+  function chUpdatePearls(){
+    var count = _chCount % N_PEARLS;
+    for(var i=0;i<N_PEARLS;i++){
+      var p=document.getElementById('pearl-'+i);
+      if(!p)continue;
+      if(i<count){
+        p.setAttribute('fill','url(#pearlActiveGrad)');
+        p.setAttribute('opacity','1');
+      } else {
+        p.setAttribute('fill','url(#pearlGrad)');
+        p.setAttribute('opacity','0.45');
+      }
+    }
+  }
+
+  /* ── Son perle (WebAudio) ── */
+  function chPlayBead(){
+    try{
+      if(!_chAudioCtx) _chAudioCtx=new(window.AudioContext||window.webkitAudioContext)();
+      var ctx=_chAudioCtx;
+      var o=ctx.createOscillator(), g=ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type='sine'; o.frequency.setValueAtTime(880,ctx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(440,ctx.currentTime+0.08);
+      g.gain.setValueAtTime(0.18,ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.12);
+      o.start(ctx.currentTime); o.stop(ctx.currentTime+0.13);
+    }catch(e){}
+  }
+  function chPlayDing(){
+    try{
+      if(!_chAudioCtx) _chAudioCtx=new(window.AudioContext||window.webkitAudioContext)();
+      var ctx=_chAudioCtx;
+      var o=ctx.createOscillator(), g=ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type='triangle'; o.frequency.setValueAtTime(1200,ctx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(600,ctx.currentTime+0.4);
+      g.gain.setValueAtTime(0.3,ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.45);
+      o.start(ctx.currentTime); o.stop(ctx.currentTime+0.5);
+    }catch(e){}
+  }
+
+  /* ── Vibration ── */
+  function chVibrate(ms){ try{if(navigator.vibrate) navigator.vibrate(ms);}catch(e){} }
+
+  /* ── Rotation SVG (effet chapelet qui tourne) ── */
+  function chSpinSvg(){
+    var svg=document.getElementById('tasbihSvg');
+    if(!svg)return;
+    svg.classList.remove('chapelet-spin');
+    void svg.offsetWidth;
+    svg.classList.add('chapelet-spin');
+    svg.addEventListener('animationend',function(){ svg.classList.remove('chapelet-spin'); },{once:true});
+  }
+
+  /* ── Flash perle active ── */
+  function chFlashPearl(idx){
+    var p=document.getElementById('pearl-'+idx);
+    if(!p)return;
+    p.classList.add('pearl-glow');
+    setTimeout(function(){p.classList.remove('pearl-glow');},320);
+  }
+
+  /* ── Tap principal ── */
+  window.chTap = function(){
+    _chCount++;
+    _chTotalSession++;
+    var pearlIdx = (_chCount-1) % N_PEARLS;
+    chFlashPearl(pearlIdx);
+    chUpdatePearls();
+    var isTourComplete = (_chCount % N_PEARLS === 0);
+
+    if(isTourComplete){
+      _chTour++;
+      chPlayDing();
+      chVibrate([30,50,30,50,80]);
+      chSpinSvg();
+      /* Sauvegarde session si tour = target/33 */
+      if(_chCount % _chTarget === 0){
+        chSaveSession();
+      }
+    } else {
+      chPlayBead();
+      chVibrate(15);
+    }
+
+    chUpdateDisplay();
+  };
+
+  /* ── Reset ── */
+  window.chReset = function(){
+    _chCount=0; _chTour=1; _chTotalSession=0;
+    chUpdatePearls(); chUpdateDisplay();
+    chVibrate(40);
+  };
+
+  /* ── Changer zikr ── */
+  window.chSetZikr = function(btn, key, label, target){
+    _chZikrKey=key; _chZikrLabel=label; _chTarget=target;
+    document.querySelectorAll('.ch-zikr-btn').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    chReset();
+  };
+
+  /* ── Affichage ── */
+  function chUpdateDisplay(){
+    var main=document.getElementById('chCountMain');
+    var total=document.getElementById('chCountTotal');
+    var label=document.getElementById('chCountLabel');
+    var fill=document.getElementById('chProgressFill');
+    if(!main)return;
+    var inCycle=_chCount % N_PEARLS;
+    main.textContent = inCycle;
+    label.textContent = _chZikrLabel;
+    var tourLabel = 'Tour '+ Math.floor(_chCount/N_PEARLS+1);
+    if(_chCount>0 && _chCount%N_PEARLS===0) tourLabel='Tour '+Math.floor(_chCount/N_PEARLS);
+    total.textContent = _chCount + ' / ' + _chTarget + ' — ' + tourLabel;
+    var pct=(inCycle/N_PEARLS)*100;
+    fill.style.width=pct+'%';
+  }
+
+  /* ── Sessions ── */
+  function chSaveSession(){
+    var today=new Date().toLocaleDateString('fr-FR');
+    if(!_chSessions[today]) _chSessions[today]={};
+    _chSessions[today][_chZikrKey] = (_chSessions[today][_chZikrKey]||0) + _chTarget;
+    try{localStorage.setItem('ch_sessions',JSON.stringify(_chSessions));}catch(e){}
+    chRenderSessions();
+  }
+
+  function chRenderSessions(){
+    var list=document.getElementById('chSessionsList'); if(!list)return;
+    var today=new Date().toLocaleDateString('fr-FR');
+    var todaySess=_chSessions[today]||{};
+    var keys=Object.keys(todaySess);
+    if(!keys.length){list.innerHTML='<div style="font-size:11px;color:rgba(251,248,232,.25);font-style:italic;text-align:center;padding:.4rem">Aucun wird accompli aujourd\'hui</div>';return;}
+    var labels={'subhan':'سُبْحَانَ اللّٰه','hamd':'الْحَمْدُ لِلّٰه','akbar':'اللّٰهُ أَكْبَر','istighfar':'أَسْتَغْفِرُ اللّٰه','salawat':'اللَّهُمَّ صَلِّ عَلَى مُحَمَّد'};
+    list.innerHTML=keys.map(function(k){
+      return '<div class="ch-session-row"><span class="ch-sess-name">'+(labels[k]||k)+'</span><span class="ch-sess-count">×'+todaySess[k]+'</span></div>';
+    }).join('');
+  }
+
+  /* ── Init ── */
+  function chInit(){
+    chBuildPearls();
+    chUpdatePearls();
+    chUpdateDisplay();
+    chRenderSessions();
+    /* Tap aussi sur le SVG entier */
+    var svg=document.getElementById('tasbihSvg');
+    if(svg) svg.addEventListener('click', window.chTap);
+  }
+
+  /* Init au chargement et quand l'onglet devient actif */
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',chInit);
+  } else { chInit(); }
+
+  /* Observer onglet */
+  var chObsTimer = setInterval(function(){
+    var panel=document.getElementById('ql-panel-cal');
+    if(!panel){return;}
+    clearInterval(chObsTimer);
+    new MutationObserver(function(muts){
+      muts.forEach(function(m){
+        if(m.target.classList.contains('active')){ chInit(); }
+      });
+    }).observe(panel,{attributes:true,attributeFilter:['class']});
+  },300);
+
+})();
+</script>
+
 </div><!-- /ql-panel-cal -->
 
 <script>
@@ -9181,7 +9473,7 @@ var LANG = {
  /* Onglets Pratique */
  tab_wird: 'Wird',
  tab_zikr: 'Zikr',
- tab_cal: 'Calendrier',
+ tab_cal: 'Chapelet',
 
  /* Radio */
  radio_live: 'EN DIRECT',
@@ -9193,7 +9485,7 @@ var LANG = {
  /* Qibla */
  qibla_tab: 'Direction Mecque',
  lune_tab: 'Croissant Hilal',
- cal_tab: 'Calendrier',
+ cal_tab: 'Chapelet',
  qibla_btn: 'Trouver la Qibla',
 
  /* Baye IA */
@@ -9312,7 +9604,7 @@ var LANG = {
 
  tab_wird: 'Wird',
  tab_zikr: 'Zikr',
- tab_cal: 'Calendar',
+ tab_cal: 'Chapelet',
 
  radio_live: 'ON AIR',
  radio_connecting: 'Connecting...',
@@ -9322,7 +9614,7 @@ var LANG = {
 
  qibla_tab: 'Mecca Direction',
  lune_tab: 'Hilal Crescent',
- cal_tab: 'Calendar',
+ cal_tab: 'Chapelet',
  qibla_btn: 'Find Qibla',
 
  ai_placeholder: 'Ask your question...',
@@ -9428,7 +9720,7 @@ var LANG = {
 
  tab_wird: 'الورد',
  tab_zikr: 'الذكر',
- tab_cal: 'التقويم',
+ tab_cal: 'التسبيح',
 
  radio_live: 'مباشر',
  radio_connecting: 'جارٍ الاتصال...',
@@ -9438,7 +9730,7 @@ var LANG = {
 
  qibla_tab: 'اتجاه مكة',
  lune_tab: 'الهلال',
- cal_tab: 'التقويم',
+ cal_tab: 'التسبيح',
  qibla_btn: 'تحديد القبلة',
 
  ai_placeholder: 'اكتب سؤالك...',
