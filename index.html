@@ -6841,8 +6841,17 @@ function signInWithGoogle() {
        firebase.auth().signInWithPopup(provider).then(function(result) {
          clearTimeout(_btnTimeout);
          /* Connexion réussie — onAuthStateChanged prend le relais */
+         window._popupInProgress = true; /* Empêche _showWelcomeForced de réafficher le welcome */
          if (btn) { btn.disabled = true; btn.innerHTML = '<span>✅</span> Connecté…'; }
          if (info) { info.style.display = 'block'; info.style.color = '#A8F0C0'; info.textContent = '✅ Connexion réussie — chargement…'; }
+         /* Sécurité : si onAuthStateChanged ne se déclenche pas dans 4s, forcer */
+         setTimeout(function() {
+           if (!window._userConnected && result && result.user) {
+             window._popupInProgress = false;
+             _onGoogleUser(result.user);
+             _fbSyncUser(result.user);
+           }
+         }, 4000);
        }).catch(function(err) {
          window._popupInProgress = false;
          console.error('[signInWithPopup]', err);
@@ -11796,10 +11805,10 @@ document.addEventListener('DOMContentLoaded', function() {
  }
 
  if (user) {
+ window._popupInProgress = false; /* Toujours réinitialiser dès que Firebase confirme */
  if (_userConnected) return;
  _userConnected = true;
  window._userConnected = true;
- window._popupInProgress = false;
  /* Ignorer les sessions anonymes (utilisateurs sans Google) */
  if (user.isAnonymous) return;
  _onGoogleUser(user);
