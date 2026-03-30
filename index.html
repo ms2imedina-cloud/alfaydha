@@ -7183,14 +7183,16 @@ function _doRenderChannels(){
  var modeLabel={youtube:'YouTube Live · ∞ viewers',sfu:'Serveur SFU · Exclusif'}[direct.mode]||'Direct en cours';
  var isFavD=getFavs().includes('direct');
  dc.className='channel-card app-direct'+(isLive?' live-active':'')+(_currentCh===99?' playing':'');
+ var isSFULive = isLive && direct.mode === 'sfu';
  dc.innerHTML=
  '<div class="ch-avatar" style="'+(isLive?'background:var(--red);animation:ldPulse 1.4s infinite':'')+'">📡</div>'+
  '<div class="ch-body">'+
  '<div class="ch-name">'+(isLive?'🔴 App Direct — En cours':'App Direct — Faydha Live')+'</div>'+
  '<div class="ch-meta">'+(isLive?modeLabel:'Aucun direct en ce moment')+'</div>'+
  '</div>'+
- '<div class="ch-right">'+
+ '<div class="ch-right" style="display:flex;align-items:center;gap:.35rem">'+
  (isLive?'<span class="ch-live-pill">LIVE</span>':'')+
+ (isSFULive?'<button onclick="event.stopPropagation();interactRequestMic()" title="Demander le micro" style="background:rgba(212,175,55,.15);border:1.5px solid rgba(212,175,55,.4);border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;color:var(--gold2);flex-shrink:0;transition:all .2s">🎤</button>':'')+
  '<button class="ch-fav'+(isFavD?' active':'')+'" onclick="event.stopPropagation();toggleFav(\'direct\',this)" title="Favori">'+(isFavD?'⭐':'☆')+'</button>'+
  '<span class="ch-arrow" class="ui-gold2">›</span>'+
  '</div>';
@@ -7468,10 +7470,13 @@ function renderFavs(){
  favs.forEach(function(id){
  if(id==='direct'){
  var isLive=direct.isLive&&direct.url;
+ var isSFULive2=isLive&&direct.mode==='sfu';
  html+='<div class="channel-card app-direct" onclick="playDirect()">'+
  '<div class="ch-avatar">📡</div>'+
  '<div class="ch-body"><div class="ch-name">App Direct</div><div class="ch-meta">'+(isLive?'🔴 Direct en cours':'Hors ligne')+'</div></div>'+
- '<div class="ch-right"><button class="ch-fav active" onclick="event.stopPropagation();toggleFav(\'direct\',this)">⭐</button><span class="ch-arrow">›</span></div></div>';
+ '<div class="ch-right" style="display:flex;align-items:center;gap:.35rem">'+
+ (isSFULive2?'<button onclick="event.stopPropagation();interactRequestMic()" title="Demander le micro" style="background:rgba(212,175,55,.15);border:1.5px solid rgba(212,175,55,.4);border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;color:var(--gold2);flex-shrink:0">🎤</button>':'')+
+ '<button class="ch-fav active" onclick="event.stopPropagation();toggleFav(\'direct\',this)">⭐</button><span class="ch-arrow">›</span></div></div>';
  } else {
  var i=parseInt(id.replace('ch',''));
  var ch=channels[i];
