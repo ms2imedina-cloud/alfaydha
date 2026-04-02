@@ -7660,7 +7660,7 @@ select.f-input {
 
   <!-- Mini stats bar -->
   <div class="p2-stats-bar">
-    <div class="p2-stat-chip">🧠 Modèle <span>claude-sonnet-4-5-20251001</span></div>
+    <div class="p2-stat-chip">🧠 Modèle <span>claude-haiku-4-5-20251001</span></div>
     <div class="p2-stat-chip">📊 Marchés <span>15+</span></div>
     <div class="p2-stat-chip">🎯 Critères <span>13</span></div>
     <div class="p2-stat-chip">🔒 Sécurité <span>Max</span></div>
@@ -12170,7 +12170,7 @@ async function abCallClaude(question, apiKey, systemPrompt) {
  'anthropic-dangerous-direct-browser-access': 'true'
  },
  body: JSON.stringify({
- model: 'claude-sonnet-4-5-20251001',
+ model: 'claude-haiku-4-5-20251001',
  max_tokens: 2048,
  system: finalSystem,
  messages: messages
@@ -16637,7 +16637,7 @@ async function asCallAI(prompt, onResult) {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        model:'claude-sonnet-4-5-20251001',max_tokens:1000,
+        model:'claude-haiku-4-5-20251001',max_tokens:1000,
         system:'Tu es Nour, un assistant spirituel islamique spécialisé dans la science des nombres sacrés (Asrar, Abjad, Wafq), l\'Istikhara numérique, et l\'analyse spirituelle des situations. Tu réponds avec sagesse, bienveillance et profondeur spirituelle. Tu mélanges l\'arabe et le français naturellement. Tes réponses sont précises, concrètes et spirituellement éclairées. Tu ne donnes jamais de fatwa, mais offres une guidance orientative.',
         messages:[{role:'user',content:prompt}]
       })
@@ -16840,8 +16840,10 @@ var _FALLBACK_KEY = 'sk-ant-api03-607HyxaD675dO34qxnLOFCwXQAO9ODKxWhwaI7GvYoDDtj
 function _p2GetKey() {
   var store = (typeof AB_KEY_STORE !== 'undefined') ? AB_KEY_STORE : 'ab_anthropic_key';
   return localStorage.getItem(store) ||
+         localStorage.getItem('ab_anthropic_key') ||
          localStorage.getItem('asrar_api_key') ||
          localStorage.getItem('faydha_ab_key') ||
+         (typeof _HARDCODED_KEY !== 'undefined' ? _HARDCODED_KEY : null) ||
          _FALLBACK_KEY;
 }
 
@@ -16939,7 +16941,7 @@ async function _p2CallClaude(userPrompt, systemPrompt, maxTokens) {
       'anthropic-dangerous-direct-browser-access': 'true'
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-5-20251001',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: maxTokens || 3000,
       system: systemPrompt,
       messages: [{ role: 'user', content: userPrompt }]
@@ -17311,7 +17313,7 @@ async function _admPredTopFetch(apiKey) {
         'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-5-20251001',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 3000,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }]
