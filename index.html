@@ -16789,37 +16789,97 @@ async function admPredTopBets() {
 
   if (btn)     btn.disabled = true;
   if (spinner) spinner.style.display = 'block';
-  if (btnText) btnText.textContent = 'Génération…';
+  if (btnText) btnText.textContent = 'Recherche des vrais matchs…';
   if (box)     box.classList.add('visible');
   if (thinking) thinking.style.display = 'flex';
   if (bodyEl)  bodyEl.innerHTML = '';
 
-  var today = new Date().toLocaleDateString('fr-FR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  // Heure et date actuelles
+  var now = new Date();
+  var today = now.toLocaleDateString('fr-FR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  var timeNow = now.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
 
-  var systemPrompt = "Tu es un analyste expert en paris sportifs de très haut niveau. Tu sélectionnes les paris les plus rentables et les plus sûrs du jour, avec une logique statistique et professionnelle. Tu réponds en français, de façon claire et structurée.";
+  var systemPrompt = "Tu es un analyste expert en paris sportifs de très haut niveau. " +
+    "Tu as accès à la recherche web pour trouver les VRAIS matchs du jour qui n'ont pas encore commencé. " +
+    "Tu dois OBLIGATOIREMENT utiliser l'outil web_search pour chercher les matchs réels de la journée avant de faire tes prédictions. " +
+    "Cherche d'abord les matchs du jour, filtre ceux qui n'ont pas encore commencé à l'heure actuelle, puis analyse et propose 5 à 7 paris. " +
+    "Tu réponds en français, de façon claire et structurée.";
 
-  var userPrompt = "Date d'aujourd'hui : " + today + "\n\n" +
-    "Ta mission : Sélectionner les 5 à 7 MEILLEURS PARIS du jour (Football, Tennis, Basketball) avec une logique de sécurité maximale.\n\n" +
-    "INSTRUCTIONS :\n" +
-    "- Analyse les matchs majeurs du jour (Ligue 1, Liga, Premier League, Serie A, Bundesliga, Champions League, NBA, ATP/WTA, etc.)\n" +
+  var userPrompt = "Date et heure actuelles : " + today + " à " + timeNow + "\n\n" +
+    "MISSION EN 2 ÉTAPES :\n\n" +
+    "ÉTAPE 1 — RECHERCHE WEB OBLIGATOIRE :\n" +
+    "Utilise l'outil web_search pour chercher :\n" +
+    "- 'matchs football aujourd'hui " + now.toLocaleDateString('fr-FR') + "'\n" +
+    "- 'matches NBA today " + now.toLocaleDateString('en-US') + "'\n" +
+    "- 'ATP WTA tennis matches today'\n" +
+    "Identifie les matchs dont l'heure de début est APRÈS " + timeNow + " (heure locale). " +
+    "Ignore tout match déjà commencé ou terminé.\n\n" +
+    "ÉTAPE 2 — ANALYSE ET PRÉDICTIONS :\n" +
+    "Parmi les matchs trouvés qui n'ont pas encore commencé, sélectionne les 5 à 7 MEILLEURS PARIS avec une logique de sécurité maximale.\n\n" +
+    "CRITÈRES DE SÉLECTION :\n" +
     "- Sélectionne uniquement des paris à haute probabilité (>70% de confiance)\n" +
+    "- Priorise les grandes compétitions (Ligue 1, Liga, Premier League, Serie A, Bundesliga, Champions League, NBA, ATP/WTA)\n" +
     "- Évite les paris trop risqués ou imprévisibles\n" +
-    "- Justifie chaque sélection avec des arguments solides\n\n" +
+    "- Justifie chaque sélection avec des arguments solides basés sur la forme récente et les stats\n\n" +
     "FORMAT POUR CHAQUE PARI :\n" +
     "## Pari N° [numéro]\n" +
     "Match : [Équipe A vs Équipe B]\n" +
     "Compétition : [Nom]\n" +
+    "Heure du match : [HH:MM]\n" +
     "Type de pari : [ex: Over 2.5 buts]\n" +
     "Justification : [2-3 lignes d'analyse]\n" +
     "Niveau de confiance : [XX%]\n" +
     "Risque principal : [1 ligne]\n\n" +
-    "À la fin, donne un RÉSUMÉ : les 2-3 paris les plus solides à privilégier absolument, et un pari combiné suggéré si pertinent.\n\n" +
-    "IMPORTANT : Si tu n'as pas accès aux données du jour, base-toi sur ta connaissance des équipes, leur forme récente connue, et les statistiques historiques. Précise ce cas le cas échéant.";
+    "À la fin, donne un RÉSUMÉ : les 2-3 paris les plus solides à privilégier absolument, et un pari combiné suggéré si pertinent.";
 
   try {
-    var result = await _p2CallClaude(userPrompt, systemPrompt, 2000);
+    // Appel API avec web_search tool activé
+    var response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": _p2GetKey(),
+        "anthropic-version": "2023-06-01",
+        "anthropic-beta": "interleaved-thinking-2025-05-14"
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 4000,
+        tools: [
+          {
+            type: "web_search_20250305",
+            name: "web_search"
+          }
+        ],
+        system: systemPrompt,
+        messages: [
+          { role: "user", content: userPrompt }
+        ]
+      })
+    });
+
+    if (!response.ok) {
+      var errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error && errData.error.message ? errData.error.message : 'Erreur API ' + response.status);
+    }
+
+    var data = await response.json();
+
+    // Extraire tout le texte des blocs de contenu (text + tool_result)
+    var fullText = '';
+    if (data.content && Array.isArray(data.content)) {
+      data.content.forEach(function(block) {
+        if (block.type === 'text' && block.text) {
+          fullText += block.text;
+        }
+      });
+    }
+
+    if (!fullText) fullText = '❌ Aucune réponse reçue.';
+
     if (thinking) thinking.style.display = 'none';
-    if (bodyEl) bodyEl.innerHTML = _p2Format(result);
+    if (bodyEl) bodyEl.innerHTML = _p2Format(fullText);
+
   } catch (e) {
     if (thinking) thinking.style.display = 'none';
     if (bodyEl) bodyEl.innerHTML = '<div class="p2r-risk">❌ ' + (e.message || 'Erreur inconnue') + '</div>';
