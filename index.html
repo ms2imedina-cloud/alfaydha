@@ -11876,11 +11876,10 @@ async function abCallClaude(question, apiKey, systemPrompt) {
  'Content-Type': 'application/json',
  'x-api-key': apiKey,
  'anthropic-version': '2023-06-01',
- 'anthropic-dangerous-direct-browser-access': 'true',
- 'anthropic-beta': 'max-tokens-3-5-sonnet-2024-07-15'
+ 'anthropic-dangerous-direct-browser-access': 'true'
  },
  body: JSON.stringify({
- model: 'claude-sonnet-4-20250514',
+ model: 'claude-sonnet-4-5',
  max_tokens: 2048,
  system: finalSystem,
  messages: messages
@@ -16347,7 +16346,7 @@ async function asCallAI(prompt, onResult) {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',max_tokens:1000,
+        model:'claude-sonnet-4-5',max_tokens:1000,
         system:'Tu es Nour, un assistant spirituel islamique spécialisé dans la science des nombres sacrés (Asrar, Abjad, Wafq), l\'Istikhara numérique, et l\'analyse spirituelle des situations. Tu réponds avec sagesse, bienveillance et profondeur spirituelle. Tu mélanges l\'arabe et le français naturellement. Tes réponses sont précises, concrètes et spirituellement éclairées. Tu ne donnes jamais de fatwa, mais offres une guidance orientative.',
         messages:[{role:'user',content:prompt}]
       })
@@ -16578,7 +16577,7 @@ async function _p2CallClaude(userPrompt, systemPrompt, maxTokens) {
   if (!key) throw new Error('Clé API Anthropic non configurée. Allez dans Params → Clé API.');
 
   var body = {
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4-5',
     max_tokens: maxTokens || 2500,
     system: systemPrompt,
     messages: [{ role: 'user', content: userPrompt }]
@@ -16861,11 +16860,10 @@ async function _admPredTopFetch(apiKey) {
         'Content-Type': 'application/json',
         'x-api-key': apiKey,
         'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
-        'anthropic-beta': 'max-tokens-3-5-sonnet-2024-07-15'
+        'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-5',
         max_tokens: 2048,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }]
