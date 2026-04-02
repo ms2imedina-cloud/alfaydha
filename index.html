@@ -6335,6 +6335,7 @@ select.f-input {
  <button class="adm-tab" id="atab-params" onclick="switchAdmTab('params')"><span class="adm-tab-icon">⚙️</span>Params</button>
  <button class="adm-tab" id="atab-notif" onclick="switchAdmTab('notif')"><span class="adm-tab-icon">🔔</span>Notifs</button>
  <button class="adm-tab" id="atab-users" onclick="switchAdmTab('users')"><span class="adm-tab-icon">👤</span>Profils</button>
+ <button class="adm-tab" id="atab-prediction" onclick="switchAdmTab('prediction')"><span class="adm-tab-icon">⚽</span>Prédiction</button>
 
  </div>
  <div style="display:none" id="adm-chaines">
@@ -7028,6 +7029,461 @@ select.f-input {
  </div>
  </div>
  </div>
+
+
+ <!-- ════ ONGLET PRÉDICTION SPORTIVE IA ════ -->
+ <div style="display:none" id="adm-prediction">
+  <style>
+  /* ════ PRÉDICTION SPORTIVE IA — DESIGN COMPLET ════ */
+  #adm-prediction {
+    background: #080c14;
+    min-height: 500px;
+    font-family: 'Roboto', sans-serif;
+  }
+
+  /* — Header — */
+  .p2-header {
+    background: linear-gradient(135deg, #0d1b2e 0%, #0f2340 60%, #0a1a30 100%);
+    padding: 1rem 1.2rem .75rem;
+    border-bottom: 1px solid rgba(46,125,82,.35);
+    position: relative;
+    overflow: hidden;
+  }
+  .p2-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(46,125,82,.06) 1px, transparent 1px);
+    background-size: 20px 20px;
+    pointer-events: none;
+  }
+  .p2-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin-bottom: .2rem;
+  }
+  .p2-badge {
+    font-size: 9px;
+    font-weight: 700;
+    background: linear-gradient(135deg, rgba(46,125,82,.5), rgba(46,125,82,.2));
+    border: 1px solid #2E7D52;
+    border-radius: 20px;
+    padding: 2px 8px;
+    color: #6ee8a2;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+  .p2-subtitle { font-size: 11px; color: rgba(255,255,255,.35); margin-top: .1rem; }
+
+  /* — Clé API status — */
+  .p2-key-status {
+    margin: .6rem 1.2rem 0;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 8px;
+    padding: .4rem .7rem;
+    font-size: 11px;
+    color: rgba(255,255,255,.4);
+  }
+  .p2-key-status.ok { border-color: rgba(46,125,82,.4); color: #6ee8a2; background: rgba(46,125,82,.08); }
+  .p2-key-status.err { border-color: rgba(192,57,43,.4); color: #e74c3c; background: rgba(192,57,43,.08); }
+  .p2-key-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+  /* — Sport selector — */
+  .p2-sports {
+    display: flex;
+    gap: .4rem;
+    padding: .75rem 1.2rem .4rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .p2-sports::-webkit-scrollbar { display: none; }
+  .p2-sport-btn {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: .3rem;
+    background: rgba(255,255,255,.04);
+    border: 1.5px solid rgba(255,255,255,.08);
+    border-radius: 22px;
+    padding: .38rem .9rem;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255,255,255,.4);
+    cursor: pointer;
+    transition: all .2s;
+    font-family: 'Roboto', sans-serif;
+  }
+  .p2-sport-btn.active {
+    background: rgba(46,125,82,.25);
+    border-color: #2E7D52;
+    color: #7ff5b0;
+    box-shadow: 0 0 12px rgba(46,125,82,.2);
+  }
+  .p2-sport-btn:hover:not(.active) {
+    border-color: rgba(255,255,255,.2);
+    color: rgba(255,255,255,.65);
+  }
+
+  /* — Formulaire — */
+  .p2-form { padding: .5rem 1.2rem 1rem; }
+  .p2-match-vs {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: .4rem;
+    margin-bottom: .55rem;
+  }
+  .p2-vs-badge {
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(255,255,255,.25);
+    background: rgba(255,255,255,.05);
+    border-radius: 6px;
+    padding: .25rem .35rem;
+    text-align: center;
+  }
+  .p2-input {
+    width: 100%;
+    background: rgba(255,255,255,.05);
+    border: 1.5px solid rgba(255,255,255,.1);
+    border-radius: 10px;
+    padding: .55rem .8rem;
+    font-size: 13px;
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+    box-sizing: border-box;
+  }
+  .p2-input::placeholder { color: rgba(255,255,255,.25); }
+  .p2-input:focus {
+    border-color: #2E7D52;
+    box-shadow: 0 0 0 3px rgba(46,125,82,.12);
+  }
+  .p2-row2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .45rem;
+    margin-bottom: .5rem;
+  }
+  .p2-row3 { margin-bottom: .7rem; }
+  .p2-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #1d5c39 0%, #2E7D52 60%, #3a9463 100%);
+    border: none;
+    border-radius: 12px;
+    padding: .8rem 1rem;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    transition: all .25s;
+    letter-spacing: .02em;
+    box-shadow: 0 4px 16px rgba(46,125,82,.3);
+  }
+  .p2-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(46,125,82,.45); }
+  .p2-btn:active { transform: scale(.98); }
+  .p2-btn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  .p2-btn-spinner {
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: p2spin .7s linear infinite;
+    display: none;
+  }
+  @keyframes p2spin { to { transform: rotate(360deg); } }
+
+  /* — Résultat — */
+  .p2-result {
+    margin: 0 1.2rem 1rem;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(46,125,82,.25);
+    display: none;
+    animation: p2fadeIn .3s ease;
+  }
+  .p2-result.visible { display: block; }
+  @keyframes p2fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .p2-result-head {
+    background: linear-gradient(90deg, rgba(46,125,82,.25) 0%, rgba(46,125,82,.1) 100%);
+    padding: .6rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .p2-result-match { font-size: 12px; font-weight: 700; color: #7ff5b0; letter-spacing: .03em; }
+  .p2-result-sport-icon { font-size: 16px; }
+  .p2-thinking {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: 1.4rem 1rem;
+    color: rgba(255,255,255,.35);
+    font-size: 12.5px;
+    font-style: italic;
+    background: rgba(0,0,0,.2);
+  }
+  .p2-dots span {
+    display: inline-block;
+    width: 5px; height: 5px;
+    background: #2E7D52;
+    border-radius: 50%;
+    margin: 0 2px;
+    animation: p2dot 1.4s infinite ease-in-out;
+  }
+  .p2-dots span:nth-child(2) { animation-delay: .22s; }
+  .p2-dots span:nth-child(3) { animation-delay: .44s; }
+  @keyframes p2dot {
+    0%,80%,100% { transform: scale(.6); opacity: .3; }
+    40% { transform: scale(1.1); opacity: 1; }
+  }
+  .p2-result-body {
+    padding: .9rem 1rem 1.1rem;
+    font-size: 13px;
+    color: rgba(255,255,255,.82);
+    line-height: 1.75;
+    background: rgba(255,255,255,.03);
+  }
+  /* Éléments riches dans le résultat */
+  .p2r-section {
+    margin: .6rem 0 .3rem;
+    font-size: 12px;
+    font-weight: 700;
+    color: #F0DC82;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+    padding-bottom: .2rem;
+    border-bottom: 1px solid rgba(240,220,130,.15);
+  }
+  .p2r-pari {
+    display: flex;
+    align-items: flex-start;
+    gap: .5rem;
+    padding: .4rem .6rem;
+    margin: .3rem 0;
+    background: rgba(46,125,82,.1);
+    border: 1px solid rgba(46,125,82,.2);
+    border-radius: 8px;
+    font-size: 12.5px;
+  }
+  .p2r-pari-num {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: rgba(46,125,82,.5);
+    color: #7ff5b0;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: .1rem;
+  }
+  .p2r-conf {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    background: rgba(212,175,55,.12);
+    border: 1px solid rgba(212,175,55,.3);
+    border-radius: 20px;
+    padding: .2rem .6rem;
+    font-size: 12px;
+    font-weight: 700;
+    color: #E8C97A;
+    margin: .4rem 0;
+  }
+  .p2r-risk {
+    background: rgba(192,57,43,.08);
+    border-left: 3px solid rgba(192,57,43,.4);
+    border-radius: 0 6px 6px 0;
+    padding: .4rem .7rem;
+    font-size: 12px;
+    color: rgba(255,160,140,.85);
+    margin: .4rem 0;
+  }
+  .p2r-main {
+    background: linear-gradient(90deg, rgba(46,125,82,.2), rgba(46,125,82,.08));
+    border: 1px solid rgba(46,125,82,.35);
+    border-radius: 8px;
+    padding: .5rem .8rem;
+    font-size: 13px;
+    font-weight: 600;
+    color: #7ff5b0;
+    margin: .4rem 0;
+  }
+
+  /* — Top Paris du Jour — */
+  .p2-topbets {
+    margin: 0 1.2rem 1.2rem;
+  }
+  .p2-topbets-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: .55rem;
+  }
+  .p2-topbets-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(212,175,55,.65);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+  }
+  .p2-topbets-btn {
+    background: rgba(212,175,55,.12);
+    border: 1.5px solid rgba(212,175,55,.3);
+    border-radius: 22px;
+    padding: .38rem .9rem;
+    font-size: 12px;
+    font-weight: 700;
+    color: #E8C97A;
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    gap: .3rem;
+  }
+  .p2-topbets-btn:hover {
+    background: rgba(212,175,55,.22);
+    border-color: rgba(212,175,55,.55);
+    box-shadow: 0 4px 14px rgba(212,175,55,.15);
+  }
+  .p2-topbets-btn:disabled { opacity: .5; cursor: not-allowed; }
+  .p2-topbets-box {
+    background: rgba(12,8,0,.35);
+    border: 1px solid rgba(212,175,55,.2);
+    border-radius: 12px;
+    overflow: hidden;
+    display: none;
+  }
+  .p2-topbets-box.visible { display: block; animation: p2fadeIn .3s ease; }
+  .p2-topbets-body {
+    padding: .8rem 1rem 1rem;
+    font-size: 13px;
+    color: rgba(255,255,255,.8);
+    line-height: 1.7;
+  }
+
+  /* — Error box — */
+  .p2-error {
+    margin: .5rem 1.2rem;
+    background: rgba(192,57,43,.1);
+    border: 1px solid rgba(192,57,43,.35);
+    border-radius: 10px;
+    padding: .7rem 1rem;
+    font-size: 12.5px;
+    color: #f1948a;
+    display: none;
+    align-items: center;
+    gap: .5rem;
+  }
+  .p2-error.visible { display: flex; }
+  </style>
+
+  <!-- Header -->
+  <div class="p2-header">
+    <div class="p2-title">
+      ⚽ Prédiction Sportive IA
+      <span class="p2-badge">Claude AI</span>
+    </div>
+    <div class="p2-subtitle">Analyse experte multi-marchés · Football · Tennis · Basketball</div>
+  </div>
+
+  <!-- Statut clé API -->
+  <div class="p2-key-status" id="p2KeyStatus">
+    <div class="p2-key-dot"></div>
+    <span id="p2KeyText">Vérification de la clé API…</span>
+  </div>
+
+  <!-- Sélection sport -->
+  <div class="p2-sports">
+    <button class="p2-sport-btn active" id="ps2-football" onclick="admPredSport('football')">⚽ Football</button>
+    <button class="p2-sport-btn" id="ps2-tennis" onclick="admPredSport('tennis')">🎾 Tennis</button>
+    <button class="p2-sport-btn" id="ps2-basketball" onclick="admPredSport('basketball')">🏀 Basketball</button>
+  </div>
+
+  <!-- Formulaire -->
+  <div class="p2-form">
+    <div class="p2-match-vs">
+      <input class="p2-input" id="predTeamA" placeholder="Équipe A…" autocomplete="off" />
+      <div class="p2-vs-badge">VS</div>
+      <input class="p2-input" id="predTeamB" placeholder="Équipe B…" autocomplete="off" />
+    </div>
+    <div class="p2-row2">
+      <input class="p2-input" id="predLeague" placeholder="🏆 Compétition" autocomplete="off" />
+      <input class="p2-input" id="predDate" placeholder="📅 Date du match" autocomplete="off" />
+    </div>
+    <div class="p2-row3">
+      <input class="p2-input" id="predContext" placeholder="ℹ️ Infos clés : absences, enjeu, météo, domicile/extérieur…" autocomplete="off" />
+    </div>
+    <button class="p2-btn" id="predAnalyseBtn" onclick="admPredAnalyse()">
+      <div class="p2-btn-spinner" id="predSpinner"></div>
+      <span id="predBtnText">🔍 Analyser &amp; Prédire</span>
+    </button>
+  </div>
+
+  <!-- Zone erreur -->
+  <div class="p2-error" id="p2Error">
+    <span>⚠️</span><span id="p2ErrorText"></span>
+  </div>
+
+  <!-- Résultat analyse match -->
+  <div class="p2-result" id="predResultBox">
+    <div class="p2-result-head">
+      <span class="p2-result-match" id="predResultTitle">—</span>
+      <span class="p2-result-sport-icon" id="predResultIcon">⚽</span>
+    </div>
+    <div class="p2-thinking" id="predThinking">
+      <div class="p2-dots"><span></span><span></span><span></span></div>
+      Analyse experte en cours…
+    </div>
+    <div class="p2-result-body" id="predResultText" style="display:none"></div>
+  </div>
+
+  <!-- TOP paris du jour -->
+  <div class="p2-topbets">
+    <div class="p2-topbets-header">
+      <div class="p2-topbets-label">🏆 Meilleurs Paris du Jour</div>
+      <button class="p2-topbets-btn" id="predTopBtn" onclick="admPredTopBets()">
+        <div class="p2-btn-spinner" id="predTopSpinner" style="width:10px;height:10px;border-width:1.5px"></div>
+        <span id="predTopBtnText">📋 Générer TOP 5-7</span>
+      </button>
+    </div>
+    <div class="p2-topbets-box" id="predTopBetsBox">
+      <div class="p2-thinking" id="predTopThinking" style="display:none">
+        <div class="p2-dots"><span></span><span></span><span></span></div>
+        Sélection des meilleures opportunités du jour…
+      </div>
+      <div class="p2-topbets-body" id="predTopBetsText"></div>
+    </div>
+  </div>
+
+ </div>
+ <!-- ════ /PRÉDICTION ════ -->
 
 
  </div><!-- /admin-content -->
@@ -8115,7 +8571,7 @@ function checkStreamerAccess(user, callback) {
 
 function switchAdmTab(id){
  // Masquer tous les panels
- ['chaines','direct','prog','stats','streamers','params','notif','interact','qa','users','asrar'].forEach(function(n){
+ ['chaines','direct','prog','stats','streamers','params','notif','interact','qa','users','asrar','prediction'].forEach(function(n){
  var p = document.getElementById('adm-'+n);
  if(p) p.style.display = 'none';
  var b = document.getElementById('atab-'+n);
@@ -8132,6 +8588,7 @@ function switchAdmTab(id){
  if(id === 'qa') _lkInteractStart();
  if(id === 'users') admLoadUsers();
  if(id === 'asrar') asrInit();
+ if(id === 'prediction') admPredInit();
  if(id === 'chaines') buildChEditors();
  if(id === 'params') {
  /* Charger la clé Anthropic actuelle */
@@ -16036,6 +16493,342 @@ function asResetAll(){
   asRefreshConfig();
 }
 
-</script>
-</body>
-</html>
+/* ═══════════════════════════════════════════════════════════
+   PRÉDICTION SPORTIVE IA — Module complet v2
+   Utilise la même clé API que le reste de l'app (AB_KEY_STORE)
+   Headers corrects : anthropic-dangerous-direct-browser-access
+═══════════════════════════════════════════════════════════ */
+
+var _predSport = 'football';
+var _predBusy  = false;
+var _predTopBusy = false;
+
+/* ── Initialisation de l'onglet ── */
+function admPredInit() {
+  _p2CheckKey();
+  admPredSport(_predSport);
+  // Réinitialiser l'UI proprement
+  var err = document.getElementById('p2Error');
+  if (err) err.classList.remove('visible');
+}
+
+/* ── Vérifier et afficher le statut de la clé ── */
+function _p2CheckKey() {
+  var key = _p2GetKey();
+  var el  = document.getElementById('p2KeyStatus');
+  var txt = document.getElementById('p2KeyText');
+  if (!el || !txt) return;
+  if (key && key.startsWith('sk-ant-')) {
+    el.className = 'p2-key-status ok';
+    txt.textContent = '✅ Clé API active — IA opérationnelle';
+  } else if (key) {
+    el.className = 'p2-key-status ok';
+    txt.textContent = '✅ Clé API configurée';
+  } else {
+    el.className = 'p2-key-status err';
+    txt.textContent = '❌ Clé API manquante — Allez dans Params pour la configurer';
+  }
+}
+
+/* ── Récupérer la clé API (même source que le reste de l'app) ── */
+function _p2GetKey() {
+  var store = (typeof AB_KEY_STORE !== 'undefined') ? AB_KEY_STORE : 'ab_anthropic_key';
+  return localStorage.getItem(store) ||
+         localStorage.getItem('asrar_api_key') ||
+         localStorage.getItem('faydha_ab_key') || '';
+}
+
+/* ── Changer le sport sélectionné ── */
+function admPredSport(sport) {
+  _predSport = sport;
+  ['football','tennis','basketball'].forEach(function(s) {
+    var b = document.getElementById('ps2-' + s);
+    if (b) b.classList.toggle('active', s === sport);
+  });
+  var icon = { football: '⚽', tennis: '🎾', basketball: '🏀' };
+  var ri = document.getElementById('predResultIcon');
+  if (ri) ri.textContent = icon[sport] || '⚽';
+
+  var tA = document.getElementById('predTeamA');
+  var tB = document.getElementById('predTeamB');
+  var lg = document.getElementById('predLeague');
+  var dt = document.getElementById('predDate');
+
+  if (sport === 'tennis') {
+    if (tA) tA.placeholder = 'Joueur A (ex: Djokovic)';
+    if (tB) tB.placeholder = 'Joueur B (ex: Alcaraz)';
+    if (lg) lg.placeholder = '🏆 Tournoi (ex: Roland Garros)';
+    if (dt) dt.placeholder = '📅 Date (ex: 02/04/2026)';
+  } else if (sport === 'basketball') {
+    if (tA) tA.placeholder = 'Équipe A (ex: Lakers)';
+    if (tB) tB.placeholder = 'Équipe B (ex: Celtics)';
+    if (lg) lg.placeholder = '🏆 Ligue (ex: NBA)';
+    if (dt) dt.placeholder = '📅 Date (ex: 02/04/2026)';
+  } else {
+    if (tA) tA.placeholder = 'Équipe A (ex: PSG)';
+    if (tB) tB.placeholder = 'Équipe B (ex: OM)';
+    if (lg) lg.placeholder = '🏆 Compétition (ex: Ligue 1)';
+    if (dt) dt.placeholder = '📅 Date (ex: 02/04/2026)';
+  }
+}
+
+/* ── Appel API Anthropic — même logique que abCallClaude ── */
+async function _p2CallClaude(userPrompt, systemPrompt, maxTokens) {
+  var key = _p2GetKey();
+  if (!key) throw new Error('Clé API Anthropic non configurée. Allez dans Params → Clé API.');
+
+  var body = {
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: maxTokens || 2500,
+    system: systemPrompt,
+    messages: [{ role: 'user', content: userPrompt }]
+  };
+
+  var resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify(body)
+  });
+
+  if (!resp.ok) {
+    var errData = {};
+    try { errData = await resp.json(); } catch(e) {}
+    var msg = (errData.error && errData.error.message) ? errData.error.message : resp.statusText;
+    if (resp.status === 401) throw new Error('Clé API invalide ou expirée. Vérifiez dans Params.');
+    if (resp.status === 429) throw new Error('Limite de requêtes atteinte. Attendez quelques secondes.');
+    if (resp.status === 529) throw new Error('Service temporairement surchargé. Réessayez dans un instant.');
+    throw new Error('Erreur ' + resp.status + ' : ' + msg);
+  }
+
+  var data = await resp.json();
+  if (!data.content || !data.content[0] || !data.content[0].text) {
+    throw new Error('Réponse inattendue de l\'API. Réessayez.');
+  }
+  return data.content[0].text;
+}
+
+/* ── Formater le texte Markdown → HTML riche ── */
+function _p2Format(text) {
+  if (!text) return '';
+  var h = text
+    // Escape HTML de base
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    // Sections (### ## #)
+    .replace(/^#{1,3}\s+(.+)$/gm, '<div class="p2r-section">📌 $1</div>')
+    // Pari principal recommandé
+    .replace(/\*\*Pari principal[^:]*:\*\*\s*(.+)/gi, '<div class="p2r-main">🎯 $1</div>')
+    .replace(/Pari principal[^:]*:\s*(.+)/gi, '<div class="p2r-main">🎯 $1</div>')
+    // Niveau de confiance
+    .replace(/Niveau de confiance[^:]*:\s*(.+)/gi, '<div class="p2r-conf">📊 $1</div>')
+    .replace(/\*\*Niveau de confiance[^:]*:\*\*\s*(.+)/gi, '<div class="p2r-conf">📊 $1</div>')
+    // Risques
+    .replace(/\*\*Risques?[^:]*:\*\*\s*(.+)/gi, '<div class="p2r-risk">⚠️ $1</div>')
+    .replace(/Risques?[^:]*:\s*(.+)/gi, '<div class="p2r-risk">⚠️ $1</div>')
+    // Gras
+    .replace(/\*\*(.*?)\*\*/g, '<strong style="color:#a8f0c6">$1</strong>')
+    // Italique
+    .replace(/\*(.*?)\*/g, '<em style="color:rgba(255,255,255,.65)">$1</em>')
+    // Listes numérotées
+    .replace(/^(\d+)\.\s+(.+)$/gm, '<div class="p2r-pari"><div class="p2r-pari-num">$1</div><div>$2</div></div>')
+    // Puces
+    .replace(/^[-–•]\s+(.+)$/gm, '<div style="padding:.2rem 0 .2rem .8rem;color:rgba(255,255,255,.78);font-size:12.5px">• $1</div>')
+    // Sauts de ligne
+    .replace(/\n\n/g, '<br>')
+    .replace(/\n/g, '<br>');
+  return h;
+}
+
+/* ── Afficher / masquer erreur ── */
+function _p2ShowError(msg) {
+  var el = document.getElementById('p2Error');
+  var txt = document.getElementById('p2ErrorText');
+  if (!el || !txt) return;
+  txt.textContent = msg;
+  el.classList.add('visible');
+  setTimeout(function() { el.classList.remove('visible'); }, 8000);
+}
+function _p2HideError() {
+  var el = document.getElementById('p2Error');
+  if (el) el.classList.remove('visible');
+}
+
+/* ── ANALYSER UN MATCH ── */
+async function admPredAnalyse() {
+  if (_predBusy) return;
+
+  var teamA   = (document.getElementById('predTeamA') || {}).value || '';
+  var teamB   = (document.getElementById('predTeamB') || {}).value || '';
+  var league  = (document.getElementById('predLeague') || {}).value || '';
+  var date    = (document.getElementById('predDate') || {}).value || '';
+  var context = (document.getElementById('predContext') || {}).value || '';
+
+  teamA = teamA.trim(); teamB = teamB.trim();
+
+  if (!teamA || !teamB) {
+    _p2ShowError('⚠️ Veuillez renseigner les deux équipes / joueurs avant d\'analyser.');
+    return;
+  }
+  if (!_p2GetKey()) {
+    _p2ShowError('❌ Clé API Anthropic manquante. Allez dans l\'onglet Params et enregistrez votre clé.');
+    _p2CheckKey();
+    return;
+  }
+
+  _predBusy = true;
+  _p2HideError();
+
+  // UI → loading
+  var btn       = document.getElementById('predAnalyseBtn');
+  var spinner   = document.getElementById('predSpinner');
+  var btnText   = document.getElementById('predBtnText');
+  var box       = document.getElementById('predResultBox');
+  var thinking  = document.getElementById('predThinking');
+  var bodyEl    = document.getElementById('predResultText');
+  var titleEl   = document.getElementById('predResultTitle');
+  var iconEl    = document.getElementById('predResultIcon');
+
+  var sportIcon  = { football:'⚽', tennis:'🎾', basketball:'🏀' };
+  var sportLabel = { football:'Football', tennis:'Tennis', basketball:'Basketball' };
+
+  if (btn)     { btn.disabled = true; }
+  if (spinner) { spinner.style.display = 'block'; }
+  if (btnText) { btnText.textContent = 'Analyse en cours…'; }
+  if (box)     { box.classList.add('visible'); }
+  if (thinking){ thinking.style.display = 'flex'; }
+  if (bodyEl)  { bodyEl.style.display = 'none'; bodyEl.innerHTML = ''; }
+  if (titleEl) { titleEl.textContent = teamA.toUpperCase() + ' VS ' + teamB.toUpperCase(); }
+  if (iconEl)  { iconEl.textContent = sportIcon[_predSport] || '⚽'; }
+
+  var systemPrompt = "Tu es un analyste expert en paris sportifs de très haut niveau, combinant IA, data science, statistiques avancées et stratégie. Tu analyses avec rigueur et tu fournis des prédictions de paris précises, justifiées et professionnelles. Tu réponds toujours en français, de façon structurée et détaillée.";
+
+  var userPrompt = "Agis comme un analyste expert en paris sportifs de très haut niveau.\n\n" +
+    "MATCH À ANALYSER :\n" +
+    "Sport : " + sportLabel[_predSport] + "\n" +
+    "Match : " + teamA + " vs " + teamB + "\n" +
+    (league  ? "Compétition : " + league  + "\n" : "") +
+    (date    ? "Date : "        + date    + "\n" : "") +
+    (context ? "Informations supplémentaires : " + context + "\n" : "") +
+    "\nANALYSE COMPLÈTE OBLIGATOIRE :\n" +
+    "Analyse les 13 points suivants :\n" +
+    "1. Forme récente (5 à 10 derniers matchs)\n" +
+    "2. Statistiques offensives et défensives\n" +
+    "3. Historique des confrontations (H2H)\n" +
+    "4. Absences (blessures, suspensions)\n" +
+    "5. Importance du match (motivation réelle)\n" +
+    "6. Fatigue / calendrier / déplacements\n" +
+    "7. Style de jeu (offensif, défensif, pressing…)\n" +
+    "8. Données avancées (xG, tirs cadrés, possession, efficacité)\n" +
+    ((_predSport === 'football') ? "9. Conditions météo probables\n10. Arbitrage (cartons fréquents ou non)\n" : "") +
+    "11. Dynamique psychologique\n" +
+    "12. Analyse des cotes bookmakers (value bets)\n" +
+    "13. Risques cachés / surprises possibles\n\n" +
+    "SÉLECTION INTELLIGENTE DES MARCHÉS :\n" +
+    (_predSport === 'football' ?
+      "Choisis parmi : 1X2, Double chance, Over/Under (0.5/1.5/2.5/3.5), BTTS, Score exact, Mi-temps/fin, Corners, Cartons, Buteurs\n" :
+     _predSport === 'tennis' ?
+      "Choisis parmi : Vainqueur, Nombre de sets, Over/Under jeux, Tie-break, Vainqueur 1er set, Handicap jeux\n" :
+      "Choisis parmi : Vainqueur, Over/Under points, Points par quart-temps, Handicap, Joueur clé\n"
+    ) +
+    "\nSTRATÉGIE : Sélectionne UNIQUEMENT 2 à 4 paris fiables. Justifie chaque choix. Priorise la sécurité.\n\n" +
+    "RÉPONDS DANS CE FORMAT EXACT :\n\n" +
+    "## Analyse complète\n" +
+    "(Analyse détaillée et logique de tous les points)\n\n" +
+    "## Meilleurs paris sélectionnés\n" +
+    "1. [Type de pari] — [Explication précise]\n" +
+    "2. [Type de pari] — [Explication précise]\n" +
+    "3. [Type de pari si pertinent] — [Explication]\n\n" +
+    "Pari principal recommandé : [Le plus sûr avec justification]\n\n" +
+    "Niveau de confiance : [XX% — réaliste et justifié]\n\n" +
+    "Risques : [Ce qui pourrait faire échouer ce pari]\n\n" +
+    "RÈGLES : Justifie CHAQUE choix. Évite les réponses vagues. Si le match est trop imprévisible, dis-le clairement.";
+
+  try {
+    var result = await _p2CallClaude(userPrompt, systemPrompt, 2500);
+    if (thinking) thinking.style.display = 'none';
+    if (bodyEl) {
+      bodyEl.innerHTML = _p2Format(result);
+      bodyEl.style.display = 'block';
+    }
+  } catch (e) {
+    if (thinking) thinking.style.display = 'none';
+    if (bodyEl) {
+      bodyEl.innerHTML = '<div class="p2r-risk">❌ ' + (e.message || 'Erreur inconnue') + '</div>';
+      bodyEl.style.display = 'block';
+    }
+    _p2ShowError(e.message || 'Erreur lors de l\'analyse.');
+  }
+
+  _predBusy = false;
+  if (btn)     { btn.disabled = false; }
+  if (spinner) { spinner.style.display = 'none'; }
+  if (btnText) { btnText.textContent = '🔍 Analyser & Prédire'; }
+}
+
+/* ── TOP PARIS DU JOUR ── */
+async function admPredTopBets() {
+  if (_predTopBusy) return;
+  if (!_p2GetKey()) {
+    _p2ShowError('❌ Clé API Anthropic manquante. Configurez-la dans l\'onglet Params.');
+    _p2CheckKey();
+    return;
+  }
+
+  _predTopBusy = true;
+
+  var btn       = document.getElementById('predTopBtn');
+  var spinner   = document.getElementById('predTopSpinner');
+  var btnText   = document.getElementById('predTopBtnText');
+  var box       = document.getElementById('predTopBetsBox');
+  var thinking  = document.getElementById('predTopThinking');
+  var bodyEl    = document.getElementById('predTopBetsText');
+
+  if (btn)     btn.disabled = true;
+  if (spinner) spinner.style.display = 'block';
+  if (btnText) btnText.textContent = 'Génération…';
+  if (box)     box.classList.add('visible');
+  if (thinking) thinking.style.display = 'flex';
+  if (bodyEl)  bodyEl.innerHTML = '';
+
+  var today = new Date().toLocaleDateString('fr-FR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+  var systemPrompt = "Tu es un analyste expert en paris sportifs de très haut niveau. Tu sélectionnes les paris les plus rentables et les plus sûrs du jour, avec une logique statistique et professionnelle. Tu réponds en français, de façon claire et structurée.";
+
+  var userPrompt = "Date d'aujourd'hui : " + today + "\n\n" +
+    "Ta mission : Sélectionner les 5 à 7 MEILLEURS PARIS du jour (Football, Tennis, Basketball) avec une logique de sécurité maximale.\n\n" +
+    "INSTRUCTIONS :\n" +
+    "- Analyse les matchs majeurs du jour (Ligue 1, Liga, Premier League, Serie A, Bundesliga, Champions League, NBA, ATP/WTA, etc.)\n" +
+    "- Sélectionne uniquement des paris à haute probabilité (>70% de confiance)\n" +
+    "- Évite les paris trop risqués ou imprévisibles\n" +
+    "- Justifie chaque sélection avec des arguments solides\n\n" +
+    "FORMAT POUR CHAQUE PARI :\n" +
+    "## Pari N° [numéro]\n" +
+    "Match : [Équipe A vs Équipe B]\n" +
+    "Compétition : [Nom]\n" +
+    "Type de pari : [ex: Over 2.5 buts]\n" +
+    "Justification : [2-3 lignes d'analyse]\n" +
+    "Niveau de confiance : [XX%]\n" +
+    "Risque principal : [1 ligne]\n\n" +
+    "À la fin, donne un RÉSUMÉ : les 2-3 paris les plus solides à privilégier absolument, et un pari combiné suggéré si pertinent.\n\n" +
+    "IMPORTANT : Si tu n'as pas accès aux données du jour, base-toi sur ta connaissance des équipes, leur forme récente connue, et les statistiques historiques. Précise ce cas le cas échéant.";
+
+  try {
+    var result = await _p2CallClaude(userPrompt, systemPrompt, 2000);
+    if (thinking) thinking.style.display = 'none';
+    if (bodyEl) bodyEl.innerHTML = _p2Format(result);
+  } catch (e) {
+    if (thinking) thinking.style.display = 'none';
+    if (bodyEl) bodyEl.innerHTML = '<div class="p2r-risk">❌ ' + (e.message || 'Erreur inconnue') + '</div>';
+    _p2ShowError(e.message || 'Erreur lors de la génération.');
+  }
+
+  _predTopBusy = false;
+  if (btn)     btn.disabled = false;
+  if (spinner) spinner.style.display = 'none';
+  if (btnText) btnText.textContent = '🔄 Régénérer';
+}
+
