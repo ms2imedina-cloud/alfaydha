@@ -7034,18 +7034,18 @@ select.f-input {
  <!-- ════ ONGLET PRÉDICTION SPORTIVE IA ════ -->
  <div style="display:none" id="adm-prediction">
   <style>
-  /* ════ PRÉDICTION SPORTIVE IA — DESIGN COMPLET ════ */
+  /* ════ PRÉDICTION SPORTIVE IA — DESIGN EXPERT PREMIUM ════ */
   #adm-prediction {
-    background: #080c14;
+    background: #060b14;
     min-height: 500px;
     font-family: 'Roboto', sans-serif;
   }
 
-  /* — Header — */
+  /* — Header premium — */
   .p2-header {
-    background: linear-gradient(135deg, #0d1b2e 0%, #0f2340 60%, #0a1a30 100%);
+    background: linear-gradient(135deg, #080f1e 0%, #0d1a35 50%, #071528 100%);
     padding: 1rem 1.2rem .75rem;
-    border-bottom: 1px solid rgba(46,125,82,.35);
+    border-bottom: 1px solid rgba(46,125,82,.4);
     position: relative;
     overflow: hidden;
   }
@@ -7053,31 +7053,72 @@ select.f-input {
     content: '';
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(circle, rgba(46,125,82,.06) 1px, transparent 1px);
-    background-size: 20px 20px;
+    background-image: radial-gradient(circle, rgba(46,125,82,.07) 1px, transparent 1px);
+    background-size: 18px 18px;
     pointer-events: none;
   }
+  .p2-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(46,125,82,.6), rgba(212,175,55,.4), rgba(46,125,82,.6), transparent);
+  }
   .p2-title {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     color: #fff;
     display: flex;
     align-items: center;
     gap: .5rem;
-    margin-bottom: .2rem;
+    margin-bottom: .25rem;
   }
   .p2-badge {
     font-size: 9px;
     font-weight: 700;
-    background: linear-gradient(135deg, rgba(46,125,82,.5), rgba(46,125,82,.2));
-    border: 1px solid #2E7D52;
+    background: linear-gradient(135deg, rgba(46,125,82,.6), rgba(46,125,82,.25));
+    border: 1px solid rgba(46,125,82,.8);
     border-radius: 20px;
     padding: 2px 8px;
     color: #6ee8a2;
-    letter-spacing: .05em;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+  .p2-badge-pro {
+    font-size: 9px;
+    font-weight: 700;
+    background: linear-gradient(135deg, rgba(212,175,55,.3), rgba(212,175,55,.1));
+    border: 1px solid rgba(212,175,55,.5);
+    border-radius: 20px;
+    padding: 2px 8px;
+    color: #E8C97A;
+    letter-spacing: .06em;
     text-transform: uppercase;
   }
   .p2-subtitle { font-size: 11px; color: rgba(255,255,255,.35); margin-top: .1rem; }
+
+  /* — Stats header mini — */
+  .p2-stats-bar {
+    display: flex;
+    gap: .5rem;
+    padding: .5rem 1.2rem;
+    background: rgba(255,255,255,.02);
+    border-bottom: 1px solid rgba(255,255,255,.05);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .p2-stats-bar::-webkit-scrollbar { display: none; }
+  .p2-stat-chip {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: .3rem;
+    font-size: 10px;
+    color: rgba(255,255,255,.35);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .p2-stat-chip span { color: #6ee8a2; }
 
   /* — Clé API status — */
   .p2-key-status {
@@ -7085,22 +7126,24 @@ select.f-input {
     display: flex;
     align-items: center;
     gap: .5rem;
-    background: rgba(255,255,255,.04);
-    border: 1px solid rgba(255,255,255,.08);
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,255,255,.07);
     border-radius: 8px;
     padding: .4rem .7rem;
     font-size: 11px;
-    color: rgba(255,255,255,.4);
+    color: rgba(255,255,255,.35);
   }
-  .p2-key-status.ok { border-color: rgba(46,125,82,.4); color: #6ee8a2; background: rgba(46,125,82,.08); }
-  .p2-key-status.err { border-color: rgba(192,57,43,.4); color: #e74c3c; background: rgba(192,57,43,.08); }
-  .p2-key-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+  .p2-key-status.ok { border-color: rgba(46,125,82,.45); color: #6ee8a2; background: rgba(46,125,82,.07); }
+  .p2-key-status.err { border-color: rgba(192,57,43,.45); color: #e74c3c; background: rgba(192,57,43,.07); }
+  .p2-key-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; animation: p2pulse 2s infinite; }
+  .p2-key-status.ok .p2-key-dot { animation: p2pulse 2s infinite; }
+  @keyframes p2pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
-  /* — Sport selector — */
+  /* — Sélection sport — */
   .p2-sports {
     display: flex;
     gap: .4rem;
-    padding: .75rem 1.2rem .4rem;
+    padding: .65rem 1.2rem .4rem;
     overflow-x: auto;
     scrollbar-width: none;
   }
@@ -7111,76 +7154,164 @@ select.f-input {
     align-items: center;
     gap: .3rem;
     background: rgba(255,255,255,.04);
-    border: 1.5px solid rgba(255,255,255,.08);
+    border: 1.5px solid rgba(255,255,255,.07);
     border-radius: 22px;
     padding: .38rem .9rem;
     font-size: 12px;
     font-weight: 600;
-    color: rgba(255,255,255,.4);
+    color: rgba(255,255,255,.35);
     cursor: pointer;
     transition: all .2s;
     font-family: 'Roboto', sans-serif;
   }
   .p2-sport-btn.active {
-    background: rgba(46,125,82,.25);
-    border-color: #2E7D52;
+    background: rgba(46,125,82,.2);
+    border-color: rgba(46,125,82,.7);
     color: #7ff5b0;
-    box-shadow: 0 0 12px rgba(46,125,82,.2);
+    box-shadow: 0 0 14px rgba(46,125,82,.18);
   }
   .p2-sport-btn:hover:not(.active) {
-    border-color: rgba(255,255,255,.2);
-    color: rgba(255,255,255,.65);
+    border-color: rgba(255,255,255,.18);
+    color: rgba(255,255,255,.6);
+  }
+
+  /* — Section label — */
+  .p2-section-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(255,255,255,.25);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    padding: .5rem 1.2rem .25rem;
   }
 
   /* — Formulaire — */
-  .p2-form { padding: .5rem 1.2rem 1rem; }
+  .p2-form { padding: .3rem 1.2rem 1rem; }
   .p2-match-vs {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
     gap: .4rem;
-    margin-bottom: .55rem;
+    margin-bottom: .45rem;
   }
   .p2-vs-badge {
     font-size: 10px;
-    font-weight: 700;
-    color: rgba(255,255,255,.25);
-    background: rgba(255,255,255,.05);
+    font-weight: 800;
+    color: rgba(255,255,255,.2);
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.06);
     border-radius: 6px;
-    padding: .25rem .35rem;
+    padding: .3rem .4rem;
     text-align: center;
+    letter-spacing: .05em;
   }
   .p2-input {
     width: 100%;
-    background: rgba(255,255,255,.05);
-    border: 1.5px solid rgba(255,255,255,.1);
+    background: rgba(255,255,255,.04);
+    border: 1.5px solid rgba(255,255,255,.09);
     border-radius: 10px;
     padding: .55rem .8rem;
     font-size: 13px;
     color: #fff;
     font-family: 'Roboto', sans-serif;
     outline: none;
-    transition: border-color .2s, box-shadow .2s;
+    transition: border-color .2s, box-shadow .2s, background .2s;
     box-sizing: border-box;
   }
-  .p2-input::placeholder { color: rgba(255,255,255,.25); }
+  .p2-input::placeholder { color: rgba(255,255,255,.2); }
   .p2-input:focus {
-    border-color: #2E7D52;
-    box-shadow: 0 0 0 3px rgba(46,125,82,.12);
+    border-color: rgba(46,125,82,.7);
+    box-shadow: 0 0 0 3px rgba(46,125,82,.1);
+    background: rgba(255,255,255,.06);
   }
   .p2-row2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: .45rem;
-    margin-bottom: .5rem;
+    gap: .4rem;
+    margin-bottom: .45rem;
   }
-  .p2-row3 { margin-bottom: .7rem; }
+  .p2-row3 { margin-bottom: .6rem; }
+
+  /* — Marchés additionnels — */
+  .p2-markets-toggle {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    margin-bottom: .45rem;
+    cursor: pointer;
+    font-size: 11px;
+    color: rgba(255,255,255,.35);
+    font-weight: 600;
+  }
+  .p2-markets-toggle:hover { color: rgba(255,255,255,.6); }
+  .p2-markets-toggle-icon { font-size: 10px; transition: transform .2s; }
+  .p2-markets-toggle-icon.open { transform: rotate(90deg); }
+  .p2-markets-extra {
+    display: none;
+    margin-bottom: .45rem;
+  }
+  .p2-markets-extra.open { display: block; }
+  .p2-markets-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .35rem;
+  }
+  .p2-market-chip {
+    display: flex;
+    align-items: center;
+    gap: .3rem;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 8px;
+    padding: .35rem .55rem;
+    font-size: 11px;
+    color: rgba(255,255,255,.4);
+    cursor: pointer;
+    transition: all .18s;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+  }
+  .p2-market-chip.selected {
+    background: rgba(46,125,82,.15);
+    border-color: rgba(46,125,82,.45);
+    color: #7ff5b0;
+  }
+  .p2-market-chip:hover:not(.selected) { border-color: rgba(255,255,255,.18); color: rgba(255,255,255,.6); }
+
+  /* — Niveau d'analyse — */
+  .p2-depth-row {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin-bottom: .6rem;
+  }
+  .p2-depth-label { font-size: 11px; color: rgba(255,255,255,.3); flex-shrink: 0; }
+  .p2-depth-btns { display: flex; gap: .3rem; }
+  .p2-depth-btn {
+    font-size: 10px;
+    font-weight: 700;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 20px;
+    padding: .25rem .6rem;
+    color: rgba(255,255,255,.3);
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+    transition: all .18s;
+  }
+  .p2-depth-btn.active {
+    background: rgba(212,175,55,.15);
+    border-color: rgba(212,175,55,.4);
+    color: #E8C97A;
+  }
+
+  /* — Bouton analyse — */
   .p2-btn {
     width: 100%;
-    background: linear-gradient(135deg, #1d5c39 0%, #2E7D52 60%, #3a9463 100%);
+    background: linear-gradient(135deg, #163f28 0%, #2E7D52 55%, #3a9463 100%);
     border: none;
     border-radius: 12px;
-    padding: .8rem 1rem;
+    padding: .82rem 1rem;
     font-size: 14px;
     font-weight: 700;
     color: #fff;
@@ -7192,16 +7323,20 @@ select.f-input {
     gap: .5rem;
     transition: all .25s;
     letter-spacing: .02em;
-    box-shadow: 0 4px 16px rgba(46,125,82,.3);
+    box-shadow: 0 4px 18px rgba(46,125,82,.28);
+    position: relative;
+    overflow: hidden;
   }
-  .p2-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(46,125,82,.45); }
+  .p2-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,.08), transparent);
+    pointer-events: none;
+  }
+  .p2-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(46,125,82,.42); }
   .p2-btn:active { transform: scale(.98); }
-  .p2-btn:disabled {
-    opacity: .5;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-  }
+  .p2-btn:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
   .p2-btn-spinner {
     width: 14px; height: 14px;
     border: 2px solid rgba(255,255,255,.3);
@@ -7212,35 +7347,37 @@ select.f-input {
   }
   @keyframes p2spin { to { transform: rotate(360deg); } }
 
-  /* — Résultat — */
+  /* — Résultat analyse — */
   .p2-result {
     margin: 0 1.2rem 1rem;
     border-radius: 14px;
     overflow: hidden;
-    border: 1px solid rgba(46,125,82,.25);
+    border: 1px solid rgba(46,125,82,.3);
     display: none;
-    animation: p2fadeIn .3s ease;
+    animation: p2fadeIn .35s ease;
+    box-shadow: 0 8px 32px rgba(0,0,0,.3);
   }
   .p2-result.visible { display: block; }
-  @keyframes p2fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  @keyframes p2fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
   .p2-result-head {
-    background: linear-gradient(90deg, rgba(46,125,82,.25) 0%, rgba(46,125,82,.1) 100%);
+    background: linear-gradient(90deg, rgba(46,125,82,.3) 0%, rgba(46,125,82,.12) 100%);
     padding: .6rem 1rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    border-bottom: 1px solid rgba(46,125,82,.2);
   }
-  .p2-result-match { font-size: 12px; font-weight: 700; color: #7ff5b0; letter-spacing: .03em; }
-  .p2-result-sport-icon { font-size: 16px; }
+  .p2-result-match { font-size: 12px; font-weight: 700; color: #7ff5b0; letter-spacing: .04em; }
+  .p2-result-sport-icon { font-size: 18px; }
   .p2-thinking {
     display: flex;
     align-items: center;
     gap: .6rem;
-    padding: 1.4rem 1rem;
-    color: rgba(255,255,255,.35);
+    padding: 1.5rem 1rem;
+    color: rgba(255,255,255,.3);
     font-size: 12.5px;
     font-style: italic;
-    background: rgba(0,0,0,.2);
+    background: rgba(0,0,0,.15);
   }
   .p2-dots span {
     display: inline-block;
@@ -7259,80 +7396,100 @@ select.f-input {
   .p2-result-body {
     padding: .9rem 1rem 1.1rem;
     font-size: 13px;
-    color: rgba(255,255,255,.82);
-    line-height: 1.75;
-    background: rgba(255,255,255,.03);
+    color: rgba(255,255,255,.8);
+    line-height: 1.78;
+    background: rgba(8,12,20,.6);
   }
-  /* Éléments riches dans le résultat */
+
+  /* — Éléments riches résultat — */
   .p2r-section {
-    margin: .6rem 0 .3rem;
-    font-size: 12px;
+    margin: .75rem 0 .35rem;
+    font-size: 11px;
     font-weight: 700;
     color: #F0DC82;
     text-transform: uppercase;
-    letter-spacing: .07em;
+    letter-spacing: .09em;
     display: flex;
     align-items: center;
     gap: .35rem;
-    padding-bottom: .2rem;
-    border-bottom: 1px solid rgba(240,220,130,.15);
+    padding-bottom: .25rem;
+    border-bottom: 1px solid rgba(240,220,130,.12);
   }
   .p2r-pari {
     display: flex;
     align-items: flex-start;
     gap: .5rem;
-    padding: .4rem .6rem;
-    margin: .3rem 0;
-    background: rgba(46,125,82,.1);
-    border: 1px solid rgba(46,125,82,.2);
-    border-radius: 8px;
+    padding: .5rem .7rem;
+    margin: .35rem 0;
+    background: linear-gradient(135deg, rgba(46,125,82,.12), rgba(46,125,82,.05));
+    border: 1px solid rgba(46,125,82,.25);
+    border-radius: 10px;
     font-size: 12.5px;
+    transition: border-color .2s;
   }
+  .p2r-pari:hover { border-color: rgba(46,125,82,.5); }
   .p2r-pari-num {
-    width: 18px; height: 18px;
+    width: 20px; height: 20px;
     border-radius: 50%;
-    background: rgba(46,125,82,.5);
+    background: linear-gradient(135deg, rgba(46,125,82,.7), rgba(46,125,82,.4));
     color: #7ff5b0;
     font-size: 10px;
     font-weight: 700;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
     margin-top: .1rem;
+    box-shadow: 0 0 8px rgba(46,125,82,.3);
   }
   .p2r-conf {
     display: inline-flex;
     align-items: center;
     gap: .3rem;
-    background: rgba(212,175,55,.12);
+    background: rgba(212,175,55,.1);
     border: 1px solid rgba(212,175,55,.3);
     border-radius: 20px;
-    padding: .2rem .6rem;
+    padding: .22rem .65rem;
     font-size: 12px;
     font-weight: 700;
     color: #E8C97A;
     margin: .4rem 0;
   }
   .p2r-risk {
-    background: rgba(192,57,43,.08);
-    border-left: 3px solid rgba(192,57,43,.4);
-    border-radius: 0 6px 6px 0;
-    padding: .4rem .7rem;
+    background: rgba(192,57,43,.07);
+    border-left: 3px solid rgba(192,57,43,.45);
+    border-radius: 0 8px 8px 0;
+    padding: .45rem .75rem;
     font-size: 12px;
-    color: rgba(255,160,140,.85);
-    margin: .4rem 0;
+    color: rgba(255,160,140,.82);
+    margin: .45rem 0;
+    line-height: 1.55;
   }
   .p2r-main {
-    background: linear-gradient(90deg, rgba(46,125,82,.2), rgba(46,125,82,.08));
-    border: 1px solid rgba(46,125,82,.35);
-    border-radius: 8px;
-    padding: .5rem .8rem;
+    background: linear-gradient(135deg, rgba(46,125,82,.22), rgba(46,125,82,.08));
+    border: 1px solid rgba(46,125,82,.4);
+    border-radius: 10px;
+    padding: .55rem .9rem;
     font-size: 13px;
     font-weight: 600;
     color: #7ff5b0;
-    margin: .4rem 0;
+    margin: .5rem 0;
+    box-shadow: 0 0 12px rgba(46,125,82,.12);
+  }
+  .p2r-value-bet {
+    background: linear-gradient(135deg, rgba(155,89,182,.15), rgba(155,89,182,.05));
+    border: 1px solid rgba(155,89,182,.3);
+    border-radius: 8px;
+    padding: .4rem .7rem;
+    font-size: 12px;
+    color: rgba(200,160,255,.85);
+    margin: .35rem 0;
+  }
+  .p2r-hline {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent);
+    margin: .6rem 0;
   }
 
-  /* — Top Paris du Jour — */
+  /* — TOP paris du jour — */
   .p2-topbets {
     margin: 0 1.2rem 1.2rem;
   }
@@ -7353,8 +7510,8 @@ select.f-input {
     gap: .35rem;
   }
   .p2-topbets-btn {
-    background: rgba(212,175,55,.12);
-    border: 1.5px solid rgba(212,175,55,.3);
+    background: rgba(212,175,55,.1);
+    border: 1.5px solid rgba(212,175,55,.28);
     border-radius: 22px;
     padding: .38rem .9rem;
     font-size: 12px;
@@ -7368,31 +7525,52 @@ select.f-input {
     gap: .3rem;
   }
   .p2-topbets-btn:hover {
-    background: rgba(212,175,55,.22);
+    background: rgba(212,175,55,.2);
     border-color: rgba(212,175,55,.55);
-    box-shadow: 0 4px 14px rgba(212,175,55,.15);
+    box-shadow: 0 4px 14px rgba(212,175,55,.12);
   }
-  .p2-topbets-btn:disabled { opacity: .5; cursor: not-allowed; }
+  .p2-topbets-btn:disabled { opacity: .45; cursor: not-allowed; }
   .p2-topbets-box {
-    background: rgba(12,8,0,.35);
-    border: 1px solid rgba(212,175,55,.2);
+    background: rgba(10,7,2,.4);
+    border: 1px solid rgba(212,175,55,.18);
     border-radius: 12px;
     overflow: hidden;
     display: none;
+    box-shadow: 0 8px 28px rgba(0,0,0,.25);
   }
-  .p2-topbets-box.visible { display: block; animation: p2fadeIn .3s ease; }
+  .p2-topbets-box.visible { display: block; animation: p2fadeIn .35s ease; }
   .p2-topbets-body {
     padding: .8rem 1rem 1rem;
     font-size: 13px;
-    color: rgba(255,255,255,.8);
-    line-height: 1.7;
+    color: rgba(255,255,255,.78);
+    line-height: 1.72;
+  }
+
+  /* — Combiné suggéré — */
+  .p2-combo-box {
+    margin: .8rem 0 0;
+    padding: .65rem .9rem;
+    background: linear-gradient(135deg, rgba(212,175,55,.12), rgba(212,175,55,.04));
+    border: 1px solid rgba(212,175,55,.3);
+    border-radius: 10px;
+    font-size: 12px;
+    color: #E8C97A;
+    line-height: 1.65;
+  }
+  .p2-combo-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: rgba(212,175,55,.5);
+    margin-bottom: .3rem;
   }
 
   /* — Error box — */
   .p2-error {
     margin: .5rem 1.2rem;
-    background: rgba(192,57,43,.1);
-    border: 1px solid rgba(192,57,43,.35);
+    background: rgba(192,57,43,.08);
+    border: 1px solid rgba(192,57,43,.3);
     border-radius: 10px;
     padding: .7rem 1rem;
     font-size: 12.5px;
@@ -7400,8 +7578,60 @@ select.f-input {
     display: none;
     align-items: center;
     gap: .5rem;
+    animation: p2fadeIn .2s ease;
   }
   .p2-error.visible { display: flex; }
+
+  /* — Séparateur section — */
+  .p2-divider {
+    height: 1px;
+    margin: .5rem 1.2rem;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
+  }
+
+  /* — Accordéon historique — */
+  .p2-history-section {
+    margin: 0 1.2rem .8rem;
+  }
+  .p2-history-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .5rem .7rem;
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,255,255,.06);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 12px;
+    color: rgba(255,255,255,.35);
+    font-weight: 600;
+    transition: all .2s;
+  }
+  .p2-history-toggle:hover { background: rgba(255,255,255,.05); color: rgba(255,255,255,.55); }
+  .p2-history-list {
+    display: none;
+    margin-top: .4rem;
+    background: rgba(255,255,255,.02);
+    border: 1px solid rgba(255,255,255,.05);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .p2-history-list.open { display: block; animation: p2fadeIn .2s ease; }
+  .p2-history-item {
+    padding: .4rem .7rem;
+    border-bottom: 1px solid rgba(255,255,255,.04);
+    font-size: 11px;
+    color: rgba(255,255,255,.4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+  }
+  .p2-history-item:last-child { border-bottom: none; }
+  .p2-history-item-match { font-weight: 600; color: rgba(255,255,255,.6); flex: 1; }
+  .p2-history-item-date { font-size: 10px; flex-shrink: 0; }
+  .p2-history-item-sport { font-size: 14px; flex-shrink: 0; }
+  .p2-history-empty { padding: .8rem; text-align: center; color: rgba(255,255,255,.2); font-size: 12px; font-style: italic; }
   </style>
 
   <!-- Header -->
@@ -7409,8 +7639,17 @@ select.f-input {
     <div class="p2-title">
       ⚽ Prédiction Sportive IA
       <span class="p2-badge">Claude AI</span>
+      <span class="p2-badge-pro">PRO</span>
     </div>
-    <div class="p2-subtitle">Analyse experte multi-marchés · Football · Tennis · Basketball</div>
+    <div class="p2-subtitle">Analyse experte 13 critères · Football · Tennis · Basketball · Multi-marchés</div>
+  </div>
+
+  <!-- Mini stats bar -->
+  <div class="p2-stats-bar">
+    <div class="p2-stat-chip">🧠 Modèle <span>claude-sonnet-4-5</span></div>
+    <div class="p2-stat-chip">📊 Marchés <span>15+</span></div>
+    <div class="p2-stat-chip">🎯 Critères <span>13</span></div>
+    <div class="p2-stat-chip">🔒 Sécurité <span>Max</span></div>
   </div>
 
   <!-- Statut clé API -->
@@ -7427,19 +7666,42 @@ select.f-input {
   </div>
 
   <!-- Formulaire -->
+  <div class="p2-section-label">📋 Informations du match</div>
   <div class="p2-form">
     <div class="p2-match-vs">
-      <input class="p2-input" id="predTeamA" placeholder="Équipe A…" autocomplete="off" />
+      <input class="p2-input" id="predTeamA" placeholder="Équipe A / Joueur A" autocomplete="off" />
       <div class="p2-vs-badge">VS</div>
-      <input class="p2-input" id="predTeamB" placeholder="Équipe B…" autocomplete="off" />
+      <input class="p2-input" id="predTeamB" placeholder="Équipe B / Joueur B" autocomplete="off" />
     </div>
     <div class="p2-row2">
       <input class="p2-input" id="predLeague" placeholder="🏆 Compétition" autocomplete="off" />
       <input class="p2-input" id="predDate" placeholder="📅 Date du match" autocomplete="off" />
     </div>
     <div class="p2-row3">
-      <input class="p2-input" id="predContext" placeholder="ℹ️ Infos clés : absences, enjeu, météo, domicile/extérieur…" autocomplete="off" />
+      <input class="p2-input" id="predContext" placeholder="ℹ️ Absences, enjeu, météo, domicile/extérieur, cotes…" autocomplete="off" />
     </div>
+
+    <!-- Marchés à prioriser -->
+    <div class="p2-markets-toggle" id="p2MarketsToggle" onclick="admPredToggleMarkets()">
+      <span class="p2-markets-toggle-icon" id="p2MarketsIcon">▶</span>
+      Marchés à prioriser (optionnel)
+    </div>
+    <div class="p2-markets-extra" id="p2MarketsExtra">
+      <div class="p2-markets-grid" id="p2MarketsGrid">
+        <!-- Injecté dynamiquement par JS selon le sport -->
+      </div>
+    </div>
+
+    <!-- Profondeur d'analyse -->
+    <div class="p2-depth-row">
+      <div class="p2-depth-label">Profondeur :</div>
+      <div class="p2-depth-btns">
+        <button class="p2-depth-btn" id="depth-rapide" onclick="admPredDepth('rapide')">⚡ Rapide</button>
+        <button class="p2-depth-btn active" id="depth-standard" onclick="admPredDepth('standard')">📊 Standard</button>
+        <button class="p2-depth-btn" id="depth-expert" onclick="admPredDepth('expert')">🔬 Expert</button>
+      </div>
+    </div>
+
     <button class="p2-btn" id="predAnalyseBtn" onclick="admPredAnalyse()">
       <div class="p2-btn-spinner" id="predSpinner"></div>
       <span id="predBtnText">🔍 Analyser &amp; Prédire</span>
@@ -7459,10 +7721,23 @@ select.f-input {
     </div>
     <div class="p2-thinking" id="predThinking">
       <div class="p2-dots"><span></span><span></span><span></span></div>
-      Analyse experte en cours…
+      Analyse experte en cours (13 critères)…
     </div>
     <div class="p2-result-body" id="predResultText" style="display:none"></div>
   </div>
+
+  <div class="p2-divider"></div>
+
+  <!-- Historique des analyses -->
+  <div class="p2-history-section">
+    <div class="p2-history-toggle" onclick="admPredToggleHistory()">
+      <span>📁 Historique des analyses</span>
+      <span id="p2HistoryCount" style="font-size:10px;opacity:.5">—</span>
+    </div>
+    <div class="p2-history-list" id="p2HistoryList"></div>
+  </div>
+
+  <div class="p2-divider"></div>
 
   <!-- TOP paris du jour -->
   <div class="p2-topbets">
@@ -16500,15 +16775,30 @@ function asResetAll(){
    Headers corrects : anthropic-dangerous-direct-browser-access
 ═══════════════════════════════════════════════════════════ */
 
-var _predSport = 'football';
-var _predBusy  = false;
+/* ════════════════════════════════════════════════════════════
+   PRÉDICTION SPORTIVE IA — SYSTÈME EXPERT COMPLET v2.0
+   ════════════════════════════════════════════════════════════ */
+
+var _predSport   = 'football';
+var _predDepth   = 'standard';   // rapide | standard | expert
+var _predBusy    = false;
 var _predTopBusy = false;
+var _predMarkets = [];           // marchés sélectionnés manuellement
+var _predHistory = [];           // historique local des analyses
+
+/* ── Marchés disponibles par sport ── */
+var _P2_MARKETS = {
+  football:   ['1X2','Double chance','Over 0.5','Over 1.5','Over 2.5','Over 3.5','BTTS','Score exact','Mi-temps/FT','Corners O/U','Cartons O/U','Buteur','Handicap','1ère mi-temps'],
+  tennis:     ['Vainqueur','2-0 / 2-1','Over/Under jeux','Tie-break','1er set','Handicap jeux','Over sets'],
+  basketball: ['Vainqueur','Over/Under pts','Handicap','Q1 pts','Q3 pts','Joueur clé','Double chance']
+};
 
 /* ── Initialisation de l'onglet ── */
 function admPredInit() {
   _p2CheckKey();
   admPredSport(_predSport);
-  // Réinitialiser l'UI proprement
+  admPredDepth(_predDepth);
+  _p2LoadHistory();
   var err = document.getElementById('p2Error');
   if (err) err.classList.remove('visible');
 }
@@ -16521,17 +16811,17 @@ function _p2CheckKey() {
   if (!el || !txt) return;
   if (key && key.startsWith('sk-ant-')) {
     el.className = 'p2-key-status ok';
-    txt.textContent = '✅ Clé API active — IA opérationnelle';
+    txt.textContent = '✅ Clé API active — Analyste IA opérationnel';
   } else if (key) {
     el.className = 'p2-key-status ok';
-    txt.textContent = '✅ Clé API configurée';
+    txt.textContent = '✅ Clé API configurée — Prêt à analyser';
   } else {
     el.className = 'p2-key-status err';
-    txt.textContent = '❌ Clé API manquante — Allez dans Params pour la configurer';
+    txt.textContent = '❌ Clé API manquante — Configurez dans Params';
   }
 }
 
-/* ── Récupérer la clé API (même source que le reste de l'app) ── */
+/* ── Récupérer la clé API ── */
 var _FALLBACK_KEY = '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';
 function _p2GetKey() {
   var store = (typeof AB_KEY_STORE !== 'undefined') ? AB_KEY_STORE : 'ab_anthropic_key';
@@ -16544,6 +16834,7 @@ function _p2GetKey() {
 /* ── Changer le sport sélectionné ── */
 function admPredSport(sport) {
   _predSport = sport;
+  _predMarkets = [];
   ['football','tennis','basketball'].forEach(function(s) {
     var b = document.getElementById('ps2-' + s);
     if (b) b.classList.toggle('active', s === sport);
@@ -16552,11 +16843,11 @@ function admPredSport(sport) {
   var ri = document.getElementById('predResultIcon');
   if (ri) ri.textContent = icon[sport] || '⚽';
 
+  // Placeholders selon sport
   var tA = document.getElementById('predTeamA');
   var tB = document.getElementById('predTeamB');
   var lg = document.getElementById('predLeague');
   var dt = document.getElementById('predDate');
-
   if (sport === 'tennis') {
     if (tA) tA.placeholder = 'Joueur A (ex: Djokovic)';
     if (tB) tB.placeholder = 'Joueur B (ex: Alcaraz)';
@@ -16573,20 +16864,58 @@ function admPredSport(sport) {
     if (lg) lg.placeholder = '🏆 Compétition (ex: Ligue 1)';
     if (dt) dt.placeholder = '📅 Date (ex: 02/04/2026)';
   }
+
+  // Reconstruire les chips de marchés
+  _p2BuildMarketsGrid();
+
+  // Fermer le panneau marchés si ouvert
+  var extra = document.getElementById('p2MarketsExtra');
+  var icon2 = document.getElementById('p2MarketsIcon');
+  if (extra) extra.classList.remove('open');
+  if (icon2) icon2.classList.remove('open');
 }
 
-/* ── Appel API Anthropic — même logique que abCallClaude ── */
+/* ── Profondeur d'analyse ── */
+function admPredDepth(depth) {
+  _predDepth = depth;
+  ['rapide','standard','expert'].forEach(function(d) {
+    var b = document.getElementById('depth-' + d);
+    if (b) b.classList.toggle('active', d === depth);
+  });
+}
+
+/* ── Toggle marchés panel ── */
+function admPredToggleMarkets() {
+  var extra = document.getElementById('p2MarketsExtra');
+  var icon  = document.getElementById('p2MarketsIcon');
+  if (!extra) return;
+  var isOpen = extra.classList.toggle('open');
+  if (icon) icon.classList.toggle('open', isOpen);
+}
+
+/* ── Construire la grille de marchés ── */
+function _p2BuildMarketsGrid() {
+  var grid = document.getElementById('p2MarketsGrid');
+  if (!grid) return;
+  var markets = _P2_MARKETS[_predSport] || [];
+  grid.innerHTML = '';
+  markets.forEach(function(m) {
+    var chip = document.createElement('button');
+    chip.className = 'p2-market-chip';
+    chip.textContent = m;
+    chip.onclick = function() {
+      var idx = _predMarkets.indexOf(m);
+      if (idx === -1) { _predMarkets.push(m); chip.classList.add('selected'); }
+      else { _predMarkets.splice(idx,1); chip.classList.remove('selected'); }
+    };
+    grid.appendChild(chip);
+  });
+}
+
+/* ── Appel API Anthropic ── */
 async function _p2CallClaude(userPrompt, systemPrompt, maxTokens) {
   var key = _p2GetKey();
   if (!key) throw new Error('Clé API Anthropic non configurée. Allez dans Params → Clé API.');
-
-  var body = {
-    model: 'claude-sonnet-4-5',
-    max_tokens: maxTokens || 2500,
-    system: systemPrompt,
-    messages: [{ role: 'user', content: userPrompt }]
-  };
-
   var resp = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -16595,9 +16924,13 @@ async function _p2CallClaude(userPrompt, systemPrompt, maxTokens) {
       'anthropic-version': '2023-06-01',
       'anthropic-dangerous-direct-browser-access': 'true'
     },
-    body: JSON.stringify(body)
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-5',
+      max_tokens: maxTokens || 3000,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userPrompt }]
+    })
   });
-
   if (!resp.ok) {
     var errData = {};
     try { errData = await resp.json(); } catch(e) {}
@@ -16607,11 +16940,8 @@ async function _p2CallClaude(userPrompt, systemPrompt, maxTokens) {
     if (resp.status === 529) throw new Error('Service temporairement surchargé. Réessayez dans un instant.');
     throw new Error('Erreur ' + resp.status + ' : ' + msg);
   }
-
   var data = await resp.json();
-  if (!data.content || !data.content[0] || !data.content[0].text) {
-    throw new Error('Réponse inattendue de l\'API. Réessayez.');
-  }
+  if (!data.content || !data.content[0] || !data.content[0].text) throw new Error('Réponse inattendue de l\'API.');
   return data.content[0].text;
 }
 
@@ -16619,27 +16949,32 @@ async function _p2CallClaude(userPrompt, systemPrompt, maxTokens) {
 function _p2Format(text) {
   if (!text) return '';
   var h = text
-    // Escape HTML de base
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    // Sections (### ## #)
+    // Sections titres
     .replace(/^#{1,3}\s+(.+)$/gm, '<div class="p2r-section">📌 $1</div>')
-    // Pari principal recommandé
+    // Pari principal
     .replace(/\*\*Pari principal[^:]*:\*\*\s*(.+)/gi, '<div class="p2r-main">🎯 $1</div>')
-    .replace(/Pari principal[^:]*:\s*(.+)/gi, '<div class="p2r-main">🎯 $1</div>')
+    .replace(/^Pari principal[^:]*:\s*(.+)$/gim, '<div class="p2r-main">🎯 $1</div>')
+    // Value bet
+    .replace(/\*\*Value bet[^:]*:\*\*\s*(.+)/gi, '<div class="p2r-value-bet">💎 $1</div>')
+    .replace(/^Value bet[^:]*:\s*(.+)$/gim, '<div class="p2r-value-bet">💎 $1</div>')
     // Niveau de confiance
-    .replace(/Niveau de confiance[^:]*:\s*(.+)/gi, '<div class="p2r-conf">📊 $1</div>')
     .replace(/\*\*Niveau de confiance[^:]*:\*\*\s*(.+)/gi, '<div class="p2r-conf">📊 $1</div>')
+    .replace(/^Niveau de confiance[^:]*:\s*(.+)$/gim, '<div class="p2r-conf">📊 $1</div>')
     // Risques
     .replace(/\*\*Risques?[^:]*:\*\*\s*(.+)/gi, '<div class="p2r-risk">⚠️ $1</div>')
-    .replace(/Risques?[^:]*:\s*(.+)/gi, '<div class="p2r-risk">⚠️ $1</div>')
-    // Gras
+    .replace(/^Risques?[^:]*:\s*(.+)$/gim, '<div class="p2r-risk">⚠️ $1</div>')
+    // Combiné
+    .replace(/^Combiné[^:]*:\s*(.+)$/gim, '<div class="p2-combo-box"><div class="p2-combo-title">🔗 COMBINÉ SUGGÉRÉ</div>$1</div>')
+    // Gras & italique
     .replace(/\*\*(.*?)\*\*/g, '<strong style="color:#a8f0c6">$1</strong>')
-    // Italique
-    .replace(/\*(.*?)\*/g, '<em style="color:rgba(255,255,255,.65)">$1</em>')
-    // Listes numérotées
+    .replace(/\*(.*?)\*/g, '<em style="color:rgba(255,255,255,.62)">$1</em>')
+    // Listes numérotées → paris
     .replace(/^(\d+)\.\s+(.+)$/gm, '<div class="p2r-pari"><div class="p2r-pari-num">$1</div><div>$2</div></div>')
     // Puces
-    .replace(/^[-–•]\s+(.+)$/gm, '<div style="padding:.2rem 0 .2rem .8rem;color:rgba(255,255,255,.78);font-size:12.5px">• $1</div>')
+    .replace(/^[-–•]\s+(.+)$/gm, '<div style="padding:.18rem 0 .18rem .9rem;color:rgba(255,255,255,.75);font-size:12.5px">▸ $1</div>')
+    // Ligne horizontale
+    .replace(/^---+$/gm, '<div class="p2r-hline"></div>')
     // Sauts de ligne
     .replace(/\n\n/g, '<br>')
     .replace(/\n/g, '<br>');
@@ -16653,24 +16988,133 @@ function _p2ShowError(msg) {
   if (!el || !txt) return;
   txt.textContent = msg;
   el.classList.add('visible');
-  setTimeout(function() { el.classList.remove('visible'); }, 8000);
+  setTimeout(function() { el.classList.remove('visible'); }, 9000);
 }
 function _p2HideError() {
   var el = document.getElementById('p2Error');
   if (el) el.classList.remove('visible');
 }
 
+/* ── Historique des analyses ── */
+function _p2LoadHistory() {
+  try {
+    var stored = localStorage.getItem('faydha_pred_history');
+    _predHistory = stored ? JSON.parse(stored) : [];
+  } catch(e) { _predHistory = []; }
+  _p2RenderHistory();
+}
+function _p2SaveHistory(teamA, teamB, sport) {
+  var entry = {
+    teamA: teamA, teamB: teamB, sport: sport,
+    date: new Date().toLocaleDateString('fr-FR', { day:'2-digit', month:'short' }),
+    ts: Date.now()
+  };
+  _predHistory.unshift(entry);
+  if (_predHistory.length > 10) _predHistory.pop();
+  try { localStorage.setItem('faydha_pred_history', JSON.stringify(_predHistory)); } catch(e) {}
+  _p2RenderHistory();
+}
+function _p2RenderHistory() {
+  var list  = document.getElementById('p2HistoryList');
+  var count = document.getElementById('p2HistoryCount');
+  if (!list) return;
+  if (count) count.textContent = _predHistory.length ? _predHistory.length + ' analyse(s)' : 'vide';
+  if (!_predHistory.length) {
+    list.innerHTML = '<div class="p2-history-empty">Aucune analyse effectuée</div>';
+    return;
+  }
+  var icons = { football:'⚽', tennis:'🎾', basketball:'🏀' };
+  list.innerHTML = _predHistory.map(function(h) {
+    return '<div class="p2-history-item">' +
+      '<span class="p2-history-item-sport">' + (icons[h.sport]||'⚽') + '</span>' +
+      '<span class="p2-history-item-match">' + h.teamA + ' vs ' + h.teamB + '</span>' +
+      '<span class="p2-history-item-date">' + h.date + '</span>' +
+    '</div>';
+  }).join('');
+}
+function admPredToggleHistory() {
+  var list = document.getElementById('p2HistoryList');
+  if (list) list.classList.toggle('open');
+}
+
+/* ── Construire le prompt selon la profondeur ── */
+function _p2BuildPrompt(teamA, teamB, league, date, context) {
+  var sportLabel = { football:'Football', tennis:'Tennis', basketball:'Basketball' };
+  var marketsInfo = _predMarkets.length ? '\nMARCHÉS PRIORITAIRES (l\'utilisateur préfère) : ' + _predMarkets.join(', ') + '\n' : '';
+
+  var depthInstructions = {
+    rapide:   "Analyse rapide et concise. Concentre-toi sur les 5 points les plus importants et propose 2 paris maximum.",
+    standard: "Analyse complète et équilibrée sur les 13 critères. Propose 2 à 4 paris justifiés.",
+    expert:   "Analyse ultra-détaillée niveau professionnel. Couvre TOUS les 13 critères en profondeur, inclus les xG, possession, données avancées, analyse des cotes, value bets potentiels. Propose 3 à 5 paris avec une analyse de risque complète et un combiné si pertinent."
+  };
+
+  var marketsList = {
+    football:   '1X2, Double chance, Over/Under (0.5/1.5/2.5/3.5), BTTS, Score exact, Mi-temps/fin de match, Équipe qui marque en 1ère/2e mi-temps, Nombre de buts par mi-temps, Corners O/U, Cartons O/U, Hors-jeu, Buteurs',
+    tennis:     'Vainqueur du match, Nombre de sets (2-0 / 2-1), Over/Under jeux (ex: +22.5), Tie-break (oui/non), Vainqueur 1er set, Handicap jeux',
+    basketball: 'Vainqueur, Over/Under points, Points par quart-temps, Handicap, Performance équipe (points marqués), Joueur clé'
+  };
+
+  var extraFootball = (_predSport === 'football') ?
+    "9. Conditions météo probables (impact sur le jeu)\n10. Arbitrage (style, cartons fréquents, gestion des duels)\n" : "";
+
+  var now = new Date();
+  var today = now.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+  return "Agis comme un analyste expert en paris sportifs de très haut niveau, combinant intelligence artificielle, data science, statistiques avancées et analyse stratégique humaine.\n\n" +
+    "DATE D'AUJOURD'HUI : " + today + "\n\n" +
+    "MATCH À ANALYSER :\n" +
+    "Sport : " + sportLabel[_predSport] + "\n" +
+    "Match : " + teamA + " vs " + teamB + "\n" +
+    (league  ? "Compétition : " + league  + "\n" : "") +
+    (date    ? "Date du match : " + date  + "\n" : "") +
+    (context ? "Informations clés fournies : " + context + "\n" : "") +
+    marketsInfo +
+    "\nNIVEAU D'ANALYSE : " + _predDepth.toUpperCase() + " — " + depthInstructions[_predDepth] + "\n\n" +
+    "ANALYSE COMPLÈTE OBLIGATOIRE (13 critères) :\n" +
+    "1. Forme récente (5 à 10 derniers matchs) — résultats, tendances, séries\n" +
+    "2. Statistiques offensives et défensives — buts marqués/encaissés, efficacité\n" +
+    "3. Historique des confrontations (H2H) — résultats directs, tendances\n" +
+    "4. Absences — blessures, suspensions, joueurs incertains\n" +
+    "5. Importance du match — enjeu réel, motivation, classement, qualification\n" +
+    "6. Fatigue et calendrier — matchs récents, déplacements, rotation possible\n" +
+    "7. Style de jeu — système tactique, pressing, phase défensive/offensive\n" +
+    "8. Données avancées — xG, tirs cadrés, possession, conversion, efficacité défensive\n" +
+    extraFootball +
+    "11. Dynamique psychologique — confiance, pression, vécu récent\n" +
+    "12. Analyse des cotes bookmakers — value bets, surcote/sous-cote, consensus du marché\n" +
+    "13. Risques cachés — facteurs imprévisibles, surprises potentielles\n\n" +
+    "SÉLECTION INTELLIGENTE DES MARCHÉS :\n" +
+    "Marchés disponibles : " + marketsList[_predSport] + "\n" +
+    "⚠️ Ne choisis PAS tous les marchés. Sélectionne UNIQUEMENT les 2 à 4 paris les plus fiables selon les données disponibles. Évite les marchés risqués si les données ne sont pas solides. Priorise la sécurité et la logique statistique.\n\n" +
+    "RÉPONDS DANS CE FORMAT EXACT :\n\n" +
+    "## Analyse complète\n" +
+    "[Analyse détaillée point par point des 13 critères]\n\n" +
+    "## Meilleurs paris sélectionnés\n" +
+    "1. [Type de pari] — [Explication précise avec données statistiques]\n" +
+    "2. [Type de pari] — [Explication précise avec données statistiques]\n" +
+    "3. [Type de pari si pertinent] — [Explication avec données]\n\n" +
+    "Pari principal recommandé : [Le plus sûr avec justification complète]\n\n" +
+    (_predDepth === 'expert' ? "Value bet détecté : [Si oui, lequel et pourquoi — sinon indiquer Aucun]\n\n" : "") +
+    "Niveau de confiance : [XX% — justifié et réaliste — jamais au-dessus de 85%]\n\n" +
+    "Risques : [Ce qui pourrait faire échouer ce pari — sois précis]\n\n" +
+    (_predDepth === 'expert' ? "Combiné suggéré : [Si les paris sont compatibles, propose un combiné 2-3 sélections. Sinon indiquer Déconseillé.]\n\n" : "") +
+    "⚠️ RÈGLES ABSOLUES :\n" +
+    "- Justifie CHAQUE choix avec des données concrètes\n" +
+    "- Évite les réponses vagues comme 'l'équipe est en forme'\n" +
+    "- Si le match est trop imprévisible, dis-le clairement et propose des marchés plus sûrs\n" +
+    "- Ne jamais suggérer un pari avec moins de 60% de confiance estimée\n" +
+    "- Raisonne comme un professionnel qui mise de l'argent réel";
+}
+
 /* ── ANALYSER UN MATCH ── */
 async function admPredAnalyse() {
   if (_predBusy) return;
 
-  var teamA   = (document.getElementById('predTeamA') || {}).value || '';
-  var teamB   = (document.getElementById('predTeamB') || {}).value || '';
-  var league  = (document.getElementById('predLeague') || {}).value || '';
-  var date    = (document.getElementById('predDate') || {}).value || '';
-  var context = (document.getElementById('predContext') || {}).value || '';
-
-  teamA = teamA.trim(); teamB = teamB.trim();
+  var teamA   = ((document.getElementById('predTeamA') || {}).value || '').trim();
+  var teamB   = ((document.getElementById('predTeamB') || {}).value || '').trim();
+  var league  = ((document.getElementById('predLeague') || {}).value || '').trim();
+  var date    = ((document.getElementById('predDate') || {}).value || '').trim();
+  var context = ((document.getElementById('predContext') || {}).value || '').trim();
 
   if (!teamA || !teamB) {
     _p2ShowError('⚠️ Veuillez renseigner les deux équipes / joueurs avant d\'analyser.');
@@ -16685,7 +17129,6 @@ async function admPredAnalyse() {
   _predBusy = true;
   _p2HideError();
 
-  // UI → loading
   var btn       = document.getElementById('predAnalyseBtn');
   var spinner   = document.getElementById('predSpinner');
   var btnText   = document.getElementById('predBtnText');
@@ -16696,67 +17139,34 @@ async function admPredAnalyse() {
   var iconEl    = document.getElementById('predResultIcon');
 
   var sportIcon  = { football:'⚽', tennis:'🎾', basketball:'🏀' };
-  var sportLabel = { football:'Football', tennis:'Tennis', basketball:'Basketball' };
+  var depthLabel = { rapide:'⚡', standard:'📊', expert:'🔬' };
 
   if (btn)     { btn.disabled = true; }
   if (spinner) { spinner.style.display = 'block'; }
-  if (btnText) { btnText.textContent = 'Analyse en cours…'; }
+  if (btnText) { btnText.textContent = depthLabel[_predDepth] + ' Analyse en cours…'; }
   if (box)     { box.classList.add('visible'); }
   if (thinking){ thinking.style.display = 'flex'; }
   if (bodyEl)  { bodyEl.style.display = 'none'; bodyEl.innerHTML = ''; }
   if (titleEl) { titleEl.textContent = teamA.toUpperCase() + ' VS ' + teamB.toUpperCase(); }
   if (iconEl)  { iconEl.textContent = sportIcon[_predSport] || '⚽'; }
 
-  var systemPrompt = "Tu es un analyste expert en paris sportifs de très haut niveau, combinant IA, data science, statistiques avancées et stratégie. Tu analyses avec rigueur et tu fournis des prédictions de paris précises, justifiées et professionnelles. Tu réponds toujours en français, de façon structurée et détaillée.";
+  var systemPrompt = "Tu es un analyste expert en paris sportifs de très haut niveau, reconnu internationalement. " +
+    "Tu combines l'intelligence artificielle, la data science, les statistiques avancées et l'analyse stratégique humaine. " +
+    "Ta mission est d'analyser en profondeur les événements sportifs et de sélectionner AUTOMATIQUEMENT les types de paris les plus pertinents et les plus sûrs. " +
+    "Tu ne te limites pas au 1X2 : tu choisis intelligemment les marchés les plus adaptés. " +
+    "Tu réponds toujours en français, de façon structurée, précise et professionnelle. " +
+    "Tu justifies CHAQUE décision avec des données concrètes. Tu n'es jamais vague.";
 
-  var userPrompt = "Agis comme un analyste expert en paris sportifs de très haut niveau.\n\n" +
-    "MATCH À ANALYSER :\n" +
-    "Sport : " + sportLabel[_predSport] + "\n" +
-    "Match : " + teamA + " vs " + teamB + "\n" +
-    (league  ? "Compétition : " + league  + "\n" : "") +
-    (date    ? "Date : "        + date    + "\n" : "") +
-    (context ? "Informations supplémentaires : " + context + "\n" : "") +
-    "\nANALYSE COMPLÈTE OBLIGATOIRE :\n" +
-    "Analyse les 13 points suivants :\n" +
-    "1. Forme récente (5 à 10 derniers matchs)\n" +
-    "2. Statistiques offensives et défensives\n" +
-    "3. Historique des confrontations (H2H)\n" +
-    "4. Absences (blessures, suspensions)\n" +
-    "5. Importance du match (motivation réelle)\n" +
-    "6. Fatigue / calendrier / déplacements\n" +
-    "7. Style de jeu (offensif, défensif, pressing…)\n" +
-    "8. Données avancées (xG, tirs cadrés, possession, efficacité)\n" +
-    ((_predSport === 'football') ? "9. Conditions météo probables\n10. Arbitrage (cartons fréquents ou non)\n" : "") +
-    "11. Dynamique psychologique\n" +
-    "12. Analyse des cotes bookmakers (value bets)\n" +
-    "13. Risques cachés / surprises possibles\n\n" +
-    "SÉLECTION INTELLIGENTE DES MARCHÉS :\n" +
-    (_predSport === 'football' ?
-      "Choisis parmi : 1X2, Double chance, Over/Under (0.5/1.5/2.5/3.5), BTTS, Score exact, Mi-temps/fin, Corners, Cartons, Buteurs\n" :
-     _predSport === 'tennis' ?
-      "Choisis parmi : Vainqueur, Nombre de sets, Over/Under jeux, Tie-break, Vainqueur 1er set, Handicap jeux\n" :
-      "Choisis parmi : Vainqueur, Over/Under points, Points par quart-temps, Handicap, Joueur clé\n"
-    ) +
-    "\nSTRATÉGIE : Sélectionne UNIQUEMENT 2 à 4 paris fiables. Justifie chaque choix. Priorise la sécurité.\n\n" +
-    "RÉPONDS DANS CE FORMAT EXACT :\n\n" +
-    "## Analyse complète\n" +
-    "(Analyse détaillée et logique de tous les points)\n\n" +
-    "## Meilleurs paris sélectionnés\n" +
-    "1. [Type de pari] — [Explication précise]\n" +
-    "2. [Type de pari] — [Explication précise]\n" +
-    "3. [Type de pari si pertinent] — [Explication]\n\n" +
-    "Pari principal recommandé : [Le plus sûr avec justification]\n\n" +
-    "Niveau de confiance : [XX% — réaliste et justifié]\n\n" +
-    "Risques : [Ce qui pourrait faire échouer ce pari]\n\n" +
-    "RÈGLES : Justifie CHAQUE choix. Évite les réponses vagues. Si le match est trop imprévisible, dis-le clairement.";
+  var tokenMap = { rapide: 1800, standard: 3000, expert: 4000 };
+  var maxTok   = tokenMap[_predDepth] || 3000;
+
+  var userPrompt = _p2BuildPrompt(teamA, teamB, league, date, context);
 
   try {
-    var result = await _p2CallClaude(userPrompt, systemPrompt, 2500);
+    var result = await _p2CallClaude(userPrompt, systemPrompt, maxTok);
     if (thinking) thinking.style.display = 'none';
-    if (bodyEl) {
-      bodyEl.innerHTML = _p2Format(result);
-      bodyEl.style.display = 'block';
-    }
+    if (bodyEl) { bodyEl.innerHTML = _p2Format(result); bodyEl.style.display = 'block'; }
+    _p2SaveHistory(teamA, teamB, _predSport);
   } catch (e) {
     if (thinking) thinking.style.display = 'none';
     if (bodyEl) {
@@ -16772,7 +17182,7 @@ async function admPredAnalyse() {
   if (btnText) { btnText.textContent = '🔍 Analyser & Prédire'; }
 }
 
-/* ── TOP PARIS DU JOUR — récupère la clé (localStorage ou Firebase) puis appelle l'API ── */
+/* ── TOP PARIS DU JOUR ── */
 function admPredTopBets() {
   if (_predTopBusy) return;
 
@@ -16783,21 +17193,18 @@ function admPredTopBets() {
   var thinking = document.getElementById('predTopThinking');
   var bodyEl   = document.getElementById('predTopBetsText');
 
-  /* ── Affichage chargement ── */
   _predTopBusy = true;
   if (btn)     btn.disabled = true;
   if (spinner) spinner.style.display = 'block';
-  if (btnText) btnText.textContent = 'Chargement…';
+  if (btnText) btnText.textContent = 'Analyse en cours…';
   if (box)     box.classList.add('visible');
   if (thinking) thinking.style.display = 'flex';
   if (bodyEl)  { bodyEl.innerHTML = ''; bodyEl.style.display = 'none'; }
 
-  /* ── 1. Récupérer la clé (localStorage d'abord, sinon Firebase) ── */
   var localKey = _p2GetKey();
   if (localKey) {
     _admPredTopFetch(localKey);
   } else {
-    /* Tenter Firebase comme le fait abInit() */
     _fbInit(function() {
       firebase.database().ref('app_config/ab_key').once('value', function(snap) {
         var d = snap.val();
@@ -16819,7 +17226,6 @@ function admPredTopBets() {
   }
 }
 
-/* ── Appel API réel (même pattern qu'abCallClaude qui fonctionne) ── */
 async function _admPredTopFetch(apiKey) {
   var btn      = document.getElementById('predTopBtn');
   var spinner  = document.getElementById('predTopSpinner');
@@ -16832,32 +17238,40 @@ async function _admPredTopFetch(apiKey) {
   var timeNow = now.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
   var dayEN   = now.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
 
-  var systemPrompt = "Tu es un analyste expert en paris sportifs de très haut niveau. " +
-    "Tu sélectionnes les paris les plus rentables et les plus sûrs du jour, avec une logique statistique et professionnelle. " +
-    "Tu réponds en français, de façon claire et structurée.";
+  var systemPrompt = "Tu es un analyste expert en paris sportifs de très haut niveau, combinant IA, data science et stratégie. " +
+    "Tu sélectionnes les paris les plus rentables et les plus sûrs du jour avec une logique statistique et professionnelle irréprochable. " +
+    "Tu justifies chaque choix avec des données concrètes. Tu réponds en français, de façon claire et structurée.";
 
   var userPrompt =
     "Date : " + today + " (" + dayEN + ") — Heure actuelle : " + timeNow + "\n\n" +
-    "Ta mission : Sélectionner les 5 à 7 MEILLEURS PARIS du jour parmi les matchs qui n'ont PAS encore commencé à " + timeNow + ".\n\n" +
-    "COMPÉTITIONS À COUVRIR : Ligue 1, Liga, Premier League, Serie A, Bundesliga, Champions League / Europa League, NBA, ATP/WTA.\n\n" +
-    "CRITÈRES :\n" +
-    "- Paris à haute probabilité (>70% confiance)\n" +
-    "- Éviter les matchs trop imprévisibles\n" +
-    "- Justifier chaque choix avec stats et forme récente\n\n" +
+    "Ta mission : Sélectionner les 5 à 7 MEILLEURS PARIS DU JOUR parmi les matchs qui n'ont PAS encore commencé à " + timeNow + ".\n\n" +
+    "COMPÉTITIONS À COUVRIR (priorité) :\n" +
+    "⚽ Football : Ligue 1, LaLiga, Premier League, Serie A, Bundesliga, Champions League, Europa League, Ligue des Nations\n" +
+    "🎾 Tennis : ATP/WTA (tournois en cours)\n" +
+    "🏀 Basketball : NBA (matchs du soir)\n\n" +
+    "CRITÈRES DE SÉLECTION STRICTS :\n" +
+    "- Confiance minimale requise : >68%\n" +
+    "- Éviter absolument les matchs trop imprévisibles\n" +
+    "- Prioriser les marchés avec forte cohérence statistique (pas uniquement 1X2)\n" +
+    "- Tenir compte des formes récentes, absences majeures et enjeux\n" +
+    "- Vérifier la cohérence avec les cotes bookmakers\n\n" +
     "FORMAT POUR CHAQUE PARI :\n" +
     "## Pari N°[numéro]\n" +
     "Match : [Équipe A vs Équipe B]\n" +
-    "Compétition : [Nom]\n" +
-    "Heure prévue : [HH:MM]\n" +
-    "Type de pari : [ex: Over 2.5 buts]\n" +
-    "Justification : [2-3 lignes d'analyse]\n" +
+    "Compétition : [Nom de la compétition]\n" +
+    "Type de pari : [ex: Over 2.5 buts / Victoire domicile / BTTS Oui]\n" +
+    "Justification : [2-4 lignes d'analyse avec données concrètes]\n" +
     "Niveau de confiance : [XX%]\n" +
-    "Risque principal : [1 ligne]\n\n" +
-    "RÉSUMÉ FINAL : Les 2-3 paris les plus solides + 1 combiné suggéré.";
+    "Risque principal : [1 ligne claire]\n\n" +
+    "---\n\n" +
+    "## RÉSUMÉ FINAL\n" +
+    "Top 3 paris les plus solides : [Liste]\n" +
+    "Combiné suggéré : [2-3 sélections compatibles avec cote estimée ou 'Déconseillé']\n" +
+    "Pari du jour (le meilleur) : [1 pari avec justification courte]\n\n" +
+    "⚠️ RAPPEL : Sois honnête sur les incertitudes. Ne gonffle pas les niveaux de confiance. Si le programme est peu chargé, dis-le.";
 
   try {
     if (btnText) btnText.textContent = 'Analyse IA en cours…';
-
     var resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -16868,12 +17282,11 @@ async function _admPredTopFetch(apiKey) {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-5',
-        max_tokens: 2048,
+        max_tokens: 3000,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }]
       })
     });
-
     if (!resp.ok) {
       var errData = {};
       try { errData = await resp.json(); } catch(e) {}
@@ -16882,13 +17295,10 @@ async function _admPredTopFetch(apiKey) {
       if (resp.status === 429) throw new Error('Limite de requêtes atteinte. Attendez quelques secondes.');
       throw new Error('Erreur ' + resp.status + ' : ' + msg);
     }
-
     var data = await resp.json();
     var result = (data.content && data.content[0] && data.content[0].text) || 'Aucune réponse reçue.';
-
     if (thinking) thinking.style.display = 'none';
     if (bodyEl)  { bodyEl.innerHTML = _p2Format(result); bodyEl.style.display = 'block'; }
-
   } catch (e) {
     if (thinking) thinking.style.display = 'none';
     if (bodyEl)  { bodyEl.innerHTML = '<div class="p2r-risk">❌ ' + (e.message || 'Erreur inconnue') + '</div>'; bodyEl.style.display = 'block'; }
