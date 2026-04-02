@@ -16769,17 +16769,9 @@ async function admPredAnalyse() {
   if (btnText) { btnText.textContent = '🔍 Analyser & Prédire'; }
 }
 
-/* ── TOP PARIS DU JOUR ── */
-async function admPredTopBets() {
+/* ── TOP PARIS DU JOUR — récupère la clé (localStorage ou Firebase) puis appelle l'API ── */
+function admPredTopBets() {
   if (_predTopBusy) return;
-  var key = _p2GetKey();
-  if (!key) {
-    _p2ShowError('❌ Clé API Anthropic manquante. Configurez-la dans l\'onglet Params.');
-    _p2CheckKey();
-    return;
-  }
-
-  _predTopBusy = true;
 
   var btn      = document.getElementById('predTopBtn');
   var spinner  = document.getElementById('predTopSpinner');
@@ -16788,53 +16780,94 @@ async function admPredTopBets() {
   var thinking = document.getElementById('predTopThinking');
   var bodyEl   = document.getElementById('predTopBetsText');
 
+  /* ── Affichage chargement ── */
+  _predTopBusy = true;
   if (btn)     btn.disabled = true;
   if (spinner) spinner.style.display = 'block';
-  if (btnText) btnText.textContent = '🔍 Recherche des matchs en cours…';
+  if (btnText) btnText.textContent = 'Chargement…';
   if (box)     box.classList.add('visible');
   if (thinking) thinking.style.display = 'flex';
   if (bodyEl)  { bodyEl.innerHTML = ''; bodyEl.style.display = 'none'; }
 
+  /* ── 1. Récupérer la clé (localStorage d'abord, sinon Firebase) ── */
+  var localKey = _p2GetKey();
+  if (localKey) {
+    _admPredTopFetch(localKey);
+  } else {
+    /* Tenter Firebase comme le fait abInit() */
+    _fbInit(function() {
+      firebase.database().ref('app_config/ab_key').once('value', function(snap) {
+        var d = snap.val();
+        var fireKey = (d && d.key) ? d.key : '';
+        if (fireKey) {
+          try { localStorage.setItem(AB_KEY_STORE, fireKey); } catch(e) {}
+          _admPredTopFetch(fireKey);
+        } else {
+          _predTopBusy = false;
+          if (btn)     btn.disabled = false;
+          if (spinner) spinner.style.display = 'none';
+          if (btnText) btnText.textContent = '📋 Générer TOP 5-7';
+          if (thinking) thinking.style.display = 'none';
+          _p2ShowError('❌ Clé API introuvable. Configurez-la dans l\'onglet Params.');
+          _p2CheckKey();
+        }
+      });
+    });
+  }
+}
+
+/* ── Appel API réel (même pattern qu'abCallClaude qui fonctionne) ── */
+async function _admPredTopFetch(apiKey) {
+  var btn      = document.getElementById('predTopBtn');
+  var spinner  = document.getElementById('predTopSpinner');
+  var btnText  = document.getElementById('predTopBtnText');
+  var thinking = document.getElementById('predTopThinking');
+  var bodyEl   = document.getElementById('predTopBetsText');
+
   var now     = new Date();
   var today   = now.toLocaleDateString('fr-FR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
   var timeNow = now.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
+  var dayEN   = now.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
 
-  var systemPrompt = "Tu es un analyste expert en paris sportifs. " +
-    "Tu utilises OBLIGATOIREMENT l'outil web_search pour trouver les vrais matchs du jour avant de faire tes analyses. " +
-    "Cherche les matchs réels qui n'ont pas encore commencé, puis propose 5 à 7 paris détaillés. " +
-    "Réponds en français, de façon claire et structurée.";
+  var systemPrompt = "Tu es un analyste expert en paris sportifs de très haut niveau. " +
+    "Tu sélectionnes les paris les plus rentables et les plus sûrs du jour, avec une logique statistique et professionnelle. " +
+    "Tu réponds en français, de façon claire et structurée.";
 
-  var userPrompt = "Date et heure actuelles : " + today + " à " + timeNow + "\n\n" +
-    "ÉTAPE 1 — Utilise web_search pour chercher :\n" +
-    "1. 'matchs football aujourd'hui " + now.toLocaleDateString('fr-FR') + " programme'\n" +
-    "2. 'NBA matches today " + now.toLocaleDateString('en-US') + "'\n" +
-    "3. 'tennis ATP WTA matches today'\n\n" +
-    "ÉTAPE 2 — Parmi les matchs trouvés qui commencent APRÈS " + timeNow + ", sélectionne les 5 à 7 meilleurs paris (>70% confiance).\n\n" +
+  var userPrompt =
+    "Date : " + today + " (" + dayEN + ") — Heure actuelle : " + timeNow + "\n\n" +
+    "Ta mission : Sélectionner les 5 à 7 MEILLEURS PARIS du jour parmi les matchs qui n'ont PAS encore commencé à " + timeNow + ".\n\n" +
+    "COMPÉTITIONS À COUVRIR : Ligue 1, Liga, Premier League, Serie A, Bundesliga, Champions League / Europa League, NBA, ATP/WTA.\n\n" +
+    "CRITÈRES :\n" +
+    "- Paris à haute probabilité (>70% confiance)\n" +
+    "- Éviter les matchs trop imprévisibles\n" +
+    "- Justifier chaque choix avec stats et forme récente\n\n" +
     "FORMAT POUR CHAQUE PARI :\n" +
     "## Pari N°[numéro]\n" +
     "Match : [Équipe A vs Équipe B]\n" +
     "Compétition : [Nom]\n" +
-    "Heure : [HH:MM]\n" +
+    "Heure prévue : [HH:MM]\n" +
     "Type de pari : [ex: Over 2.5 buts]\n" +
-    "Justification : [2-3 lignes]\n" +
+    "Justification : [2-3 lignes d'analyse]\n" +
     "Niveau de confiance : [XX%]\n" +
     "Risque principal : [1 ligne]\n\n" +
-    "FIN : Donne un RÉSUMÉ avec les 2-3 paris les plus solides et un pari combiné si pertinent.";
+    "RÉSUMÉ FINAL : Les 2-3 paris les plus solides + 1 combiné suggéré.";
 
   try {
+    if (btnText) btnText.textContent = 'Analyse IA en cours…';
+
     var resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': key,
+        'x-api-key': apiKey,
         'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
+        'anthropic-dangerous-direct-browser-access': 'true',
+        'anthropic-beta': 'max-tokens-3-5-sonnet-2024-07-15'
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 3000,
+        max_tokens: 2048,
         system: systemPrompt,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
         messages: [{ role: 'user', content: userPrompt }]
       })
     });
@@ -16849,21 +16882,10 @@ async function admPredTopBets() {
     }
 
     var data = await resp.json();
-
-    // Extraire tous les blocs texte (Claude peut alterner text / tool_use / tool_result)
-    var fullText = '';
-    if (data.content && Array.isArray(data.content)) {
-      data.content.forEach(function(block) {
-        if (block.type === 'text' && block.text) {
-          fullText += (fullText ? '\n\n' : '') + block.text;
-        }
-      });
-    }
-
-    if (!fullText) throw new Error('Réponse vide de l\'API. Réessayez.');
+    var result = (data.content && data.content[0] && data.content[0].text) || 'Aucune réponse reçue.';
 
     if (thinking) thinking.style.display = 'none';
-    if (bodyEl)  { bodyEl.innerHTML = _p2Format(fullText); bodyEl.style.display = 'block'; }
+    if (bodyEl)  { bodyEl.innerHTML = _p2Format(result); bodyEl.style.display = 'block'; }
 
   } catch (e) {
     if (thinking) thinking.style.display = 'none';
