@@ -8594,7 +8594,7 @@ function switchAdmTab(id){
  /* Charger la clé Anthropic actuelle */
  var _abInp = document.getElementById('adminAbKey');
  var _abSt = document.getElementById('adminAbKeyStatus');
- var _abK = localStorage.getItem(AB_KEY_STORE) || '';
+ var _abK = localStorage.getItem(AB_KEY_STORE) || _HARDCODED_KEY;
  if (_abInp && _abK) { _abInp.value = _abK; }
  _fbInit(function() {
  firebase.database().ref('app_config/ab_key').once('value', function(snap) {
@@ -10865,6 +10865,8 @@ var _abEngine = 'baye';
 var _abHistory = [];
 var _abLoading = false;
 var AB_KEY_STORE = 'ab_anthropic_key';
+var _HARDCODED_KEY = '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';
+(function(){try{if(!localStorage.getItem(AB_KEY_STORE)){localStorage.setItem(AB_KEY_STORE,_HARDCODED_KEY);}}catch(e){}})();
 
 /* ── Prompts systèmes par moteur ── */
 var AB_SYSTEMS = {
@@ -11146,7 +11148,7 @@ var AB_SUGGESTIONS = AB_SUGGESTIONS_FR;
 function abInit() {
  renderAbSuggestions();
  /* Essayer d\'abord le localStorage */
- var key = localStorage.getItem(AB_KEY_STORE) || '';
+ var key = localStorage.getItem(AB_KEY_STORE) || _HARDCODED_KEY;
  if (key) {
  _abHideConfig();
  } else {
@@ -11537,7 +11539,7 @@ async function abAskSuggestion(q) {
 
  // Pas de réponse prédéfinie → appel API direct, la question est déjà affichée
  _abHistory.push({ role: 'user', content: q });
- var key = localStorage.getItem(AB_KEY_STORE) || '';
+ var key = localStorage.getItem(AB_KEY_STORE) || _HARDCODED_KEY;
  if (!key) {
  showToast('🔑 Ajoutez votre clé API Anthropic — appuyez sur 🔑');
  var cfg = document.getElementById('abConfig');
@@ -11695,7 +11697,7 @@ async function abSend() {
  return;
  }
 
- var key = localStorage.getItem(AB_KEY_STORE) || '';
+ var key = localStorage.getItem(AB_KEY_STORE) || _HARDCODED_KEY;
  if (!key) {
  /* Tenter Firebase une dernière fois */
  _fbInit(function() {
@@ -11837,7 +11839,7 @@ window.istikhAskFull = function() {
  abAddMsg('user','?? Istikhara Num. : '+n1+' + '+n2+' ('+typeLabel+')',null);
  _abHistory.push({role:'user',content:prompt});
  abScrollBottom();
- var key=localStorage.getItem(AB_KEY_STORE)||'';
+ var key=localStorage.getItem(AB_KEY_STORE)||_HARDCODED_KEY;
  if(!key){showToast('?? Cle API requise');return;}
  _abLoading=true; var btn=document.getElementById('abSendBtn'); if(btn) btn.disabled=true;
  var thinkId=abAddThinking();
@@ -11854,7 +11856,7 @@ window.istikhAskFull = function() {
 var ABJAD = {'ا':1,'ب':2,'ج':3,'د':4,'ه':5,'و':6,'ز':7,'ح':8,'ط':9,'ي':10,'ك':20,'ل':30,'م':40,'ن':50,'س':60,'ع':70,'ف':80,'ص':90,'ق':100,'ر':200,'ش':300,'ت':400,'ث':500,'خ':600,'ذ':700,'ض':800,'ظ':900,'غ':1000,'إ':1,'أ':1,'آ':1,'ة':400,'ى':10};
 function abjadCalc(w){var t=0,d=[];for(var i=0;i<w.length;i++){var v=ABJAD[w[i]];if(v){t+=v;d.push(w[i]+'='+v);}}return{total:t,details:d};}
 window.asrarCalcLive=function(v){if(!v||!v.trim()){var r=document.getElementById('asrarResult');if(r)r.classList.remove('visible');return;}var res=abjadCalc(v.trim());var n=document.getElementById('asrarResultNum'),de=document.getElementById('asrarResultDetail'),wr=document.getElementById('asrarResult');if(n)n.textContent=res.total;if(de)de.textContent=res.details.join(' + ')+(res.details.length?' = '+res.total:'');if(wr)wr.classList.add('visible');};
-window.asrarAskFull=function(){var inp=document.getElementById('asrarInput');var word=inp?inp.value.trim():'';if(!word){showToast('Entrez un mot en arabe');return;}var res=abjadCalc(word);var prompt='Bismillah — Analyse Nour IA pour : '+word+'\nValeur Abjad = '+res.total+'\nDetail : '+res.details.join(' + ')+'\n\nEffectue une analyse complete:\n1. Confirme le calcul Abjad lettre par lettre\n2. Secrets spirituels des lettres\n3. Signification du nombre '+res.total+'\n4. Lien avec les Asma Allah ou versets\n5. Enseignements de Ibn Arabi ou Cheikh Ibrahim Niass\n6. PERLE SECRETE — secret numerique unique sur ce mot';var chatEl=document.getElementById('abChat'),sugsEl=document.getElementById('abSuggestions');if(sugsEl)sugsEl.style.display='none';if(chatEl){chatEl.style.display='flex';chatEl.style.flexDirection='column';chatEl.style.minHeight='250px';}abAddMsg('user','Analyse Nour IA : '+word+' (Abjad = '+res.total+')',null);_abHistory.push({role:'user',content:prompt});abScrollBottom();var key=localStorage.getItem(AB_KEY_STORE)||'';if(!key){showToast('Cle API requise');return;}_abLoading=true;var btn=document.getElementById('abSendBtn');if(btn)btn.disabled=true;var thinkId=abAddThinking();abCallClaude(prompt,key,AB_SYSTEMS.asrar).then(function(a){abRemoveThinking(thinkId);_abLoading=false;if(btn)btn.disabled=false;abAddMsg('baye',a,'asrar');_abHistory.push({role:'assistant',content:a});abScrollBottom();}).catch(function(e){abRemoveThinking(thinkId);_abLoading=false;if(btn)btn.disabled=false;abAddMsg('baye','Erreur: '+(e.message||e),'error');abScrollBottom();});};
+window.asrarAskFull=function(){var inp=document.getElementById('asrarInput');var word=inp?inp.value.trim():'';if(!word){showToast('Entrez un mot en arabe');return;}var res=abjadCalc(word);var prompt='Bismillah — Analyse Nour IA pour : '+word+'\nValeur Abjad = '+res.total+'\nDetail : '+res.details.join(' + ')+'\n\nEffectue une analyse complete:\n1. Confirme le calcul Abjad lettre par lettre\n2. Secrets spirituels des lettres\n3. Signification du nombre '+res.total+'\n4. Lien avec les Asma Allah ou versets\n5. Enseignements de Ibn Arabi ou Cheikh Ibrahim Niass\n6. PERLE SECRETE — secret numerique unique sur ce mot';var chatEl=document.getElementById('abChat'),sugsEl=document.getElementById('abSuggestions');if(sugsEl)sugsEl.style.display='none';if(chatEl){chatEl.style.display='flex';chatEl.style.flexDirection='column';chatEl.style.minHeight='250px';}abAddMsg('user','Analyse Nour IA : '+word+' (Abjad = '+res.total+')',null);_abHistory.push({role:'user',content:prompt});abScrollBottom();var key=localStorage.getItem(AB_KEY_STORE)||_HARDCODED_KEY;if(!key){showToast('Cle API requise');return;}_abLoading=true;var btn=document.getElementById('abSendBtn');if(btn)btn.disabled=true;var thinkId=abAddThinking();abCallClaude(prompt,key,AB_SYSTEMS.asrar).then(function(a){abRemoveThinking(thinkId);_abLoading=false;if(btn)btn.disabled=false;abAddMsg('baye',a,'asrar');_abHistory.push({role:'assistant',content:a});abScrollBottom();}).catch(function(e){abRemoveThinking(thinkId);_abLoading=false;if(btn)btn.disabled=false;abAddMsg('baye','Erreur: '+(e.message||e),'error');abScrollBottom();});};
 
 /* ── Appel Claude API ── */
 async function abCallClaude(question, apiKey, systemPrompt) {
@@ -16530,11 +16532,13 @@ function _p2CheckKey() {
 }
 
 /* ── Récupérer la clé API (même source que le reste de l'app) ── */
+var _FALLBACK_KEY = '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';
 function _p2GetKey() {
   var store = (typeof AB_KEY_STORE !== 'undefined') ? AB_KEY_STORE : 'ab_anthropic_key';
   return localStorage.getItem(store) ||
          localStorage.getItem('asrar_api_key') ||
-         localStorage.getItem('faydha_ab_key') || '';
+         localStorage.getItem('faydha_ab_key') ||
+         _FALLBACK_KEY;
 }
 
 /* ── Changer le sport sélectionné ── */
@@ -16797,7 +16801,7 @@ function admPredTopBets() {
     _fbInit(function() {
       firebase.database().ref('app_config/ab_key').once('value', function(snap) {
         var d = snap.val();
-        var fireKey = (d && d.key) ? d.key : '';
+        var fireKey = (d && d.key) ? d.key : _HARDCODED_KEY;
         if (fireKey) {
           try { localStorage.setItem(AB_KEY_STORE, fireKey); } catch(e) {}
           _admPredTopFetch(fireKey);
