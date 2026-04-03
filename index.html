@@ -6335,6 +6335,7 @@ select.f-input {
  <button class="adm-tab" id="atab-params" onclick="switchAdmTab('params')"><span class="adm-tab-icon">⚙️</span>Params</button>
  <button class="adm-tab" id="atab-notif" onclick="switchAdmTab('notif')"><span class="adm-tab-icon">🔔</span>Notifs</button>
  <button class="adm-tab" id="atab-users" onclick="switchAdmTab('users')"><span class="adm-tab-icon">👤</span>Profils</button>
+ <button class="adm-tab" id="atab-scout" onclick="switchAdmTab('scout')"><span class="adm-tab-icon">⚽</span>Scout Pro</button>
 
  </div>
  <div style="display:none" id="adm-chaines">
@@ -7030,8 +7031,366 @@ select.f-input {
  </div>
 
 
- <!-- ════ ONGLET PRÉDICTION SPORTIVE IA ════ -->
 
+<!-- ════ ONGLET SCOUT PRO ════ -->
+<div id="adm-scout" style="display:none;padding:0;background:#080b14;min-height:300px;border-radius:0 0 16px 16px;overflow:hidden">
+<style>
+/* Scout Pro — styles scopés dans #adm-scout */
+#adm-scout { font-family: 'Syne', sans-serif; }
+#adm-scout .sp-app { max-width: 100%; margin: 0 auto; padding: 16px 12px 40px; }
+#adm-scout .sp-hdr { text-align: center; padding: 20px 0 18px; position: relative; }
+#adm-scout .sp-hdr-glow { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 260px; height: 90px; background: radial-gradient(ellipse, rgba(0,240,255,0.08) 0%, transparent 70%); pointer-events: none; }
+#adm-scout .sp-logo { font-family: 'Barlow Condensed', sans-serif; font-size: 38px; font-weight: 800; letter-spacing: 5px; background: linear-gradient(135deg, #00f0ff, #a374ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+#adm-scout .sp-logo-tag { font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: #3d4260; margin-top: 3px; }
+#adm-scout .sp-date-pill { display: inline-block; margin-top: 8px; padding: 3px 12px; background: rgba(0,240,255,0.06); border: 1px solid rgba(0,240,255,0.15); border-radius: 20px; font-size: 11px; color: #00f0ff; }
+#adm-scout .sp-ai-banner { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: linear-gradient(135deg, rgba(163,116,255,0.08), rgba(0,240,255,0.04)); border: 1px solid rgba(163,116,255,0.25); border-radius: 12px; margin-bottom: 14px; }
+#adm-scout .sp-ai-dot { width: 7px; height: 7px; border-radius: 50%; background: #a374ff; flex-shrink: 0; animation: spPulse 2s ease-in-out infinite; }
+@keyframes spPulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(163,116,255,0.4);} 50%{opacity:0.7;box-shadow:0 0 0 6px rgba(163,116,255,0);} }
+#adm-scout .sp-ai-text { font-size: 11px; color: #dde0f0; line-height: 1.6; }
+#adm-scout .sp-ai-text strong { color: #a374ff; }
+#adm-scout .sp-bankroll-panel { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: rgba(0,240,255,0.03); border: 1px solid rgba(0,240,255,0.12); border-radius: 10px; margin-bottom: 14px; }
+#adm-scout .sp-bankroll-lbl { font-size: 11px; color: #3d4260; white-space: nowrap; }
+#adm-scout .sp-bankroll-input { flex: 1; background: rgba(0,0,0,0.4); border: 1px solid rgba(0,240,255,0.15); border-radius: 7px; padding: 7px 10px; color: #00f0ff; font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; outline: none; width: 100%; }
+#adm-scout .sp-bankroll-input:focus { border-color: #00f0ff; }
+#adm-scout .sp-league-filter { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+#adm-scout .sp-lf-btn { padding: 4px 11px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.03); color: #3d4260; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; font-family: 'Syne', sans-serif; }
+#adm-scout .sp-lf-btn:hover { border-color: rgba(0,240,255,0.3); color: #00f0ff; }
+#adm-scout .sp-lf-btn.active { background: rgba(0,240,255,0.08); border-color: rgba(0,240,255,0.4); color: #00f0ff; }
+#adm-scout .sp-gen { width: 100%; padding: 15px; border: none; border-radius: 12px; background: linear-gradient(135deg, rgba(163,116,255,0.9), rgba(0,240,255,0.8)); color: #fff; font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 800; letter-spacing: 3px; cursor: pointer; position: relative; overflow: hidden; transition: opacity 0.2s, transform 0.15s; margin-bottom: 16px; }
+#adm-scout .sp-gen:hover:not(:disabled) { opacity: 0.92; transform: translateY(-1px); }
+#adm-scout .sp-gen:disabled { opacity: 0.4; cursor: not-allowed; }
+#adm-scout .sp-gen-bar { position: absolute; bottom: 0; left: 0; height: 3px; background: rgba(255,255,255,0.4); width: 0%; transition: width 0.3s; border-radius: 0 0 12px 12px; }
+#adm-scout .sp-steps { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+#adm-scout .sp-step { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07); border-radius: 9px; font-size: 11px; color: #3d4260; transition: all 0.3s; }
+#adm-scout .sp-step.active { border-color: rgba(163,116,255,0.3); color: #dde0f0; background: rgba(163,116,255,0.05); }
+#adm-scout .sp-step.done { border-color: rgba(0,230,118,0.2); color: #00e676; background: rgba(0,230,118,0.04); }
+#adm-scout .sp-step-ico { font-size: 14px; flex-shrink: 0; }
+#adm-scout .sp-step-spin { width: 12px; height: 12px; border: 2px solid rgba(163,116,255,0.2); border-top-color: #a374ff; border-radius: 50%; animation: spSpin 0.8s linear infinite; flex-shrink: 0; }
+@keyframes spSpin { to { transform: rotate(360deg); } }
+#adm-scout .sp-summary { display: none; gap: 8px; margin-bottom: 16px; }
+#adm-scout .sp-summary.show { display: grid; grid-template-columns: repeat(4, 1fr); }
+#adm-scout .sp-sum-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 9px; padding: 8px; text-align: center; }
+#adm-scout .sp-sum-val { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 800; color: #00f0ff; line-height: 1; }
+#adm-scout .sp-sum-lbl { font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; color: #3d4260; margin-top: 2px; }
+#adm-scout .sp-empty { text-align: center; padding: 40px 16px; color: #3d4260; }
+#adm-scout .sp-empty-ico { font-size: 50px; opacity: 0.15; margin-bottom: 10px; }
+#adm-scout .sp-empty-t { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: 2px; color: #252840; margin-bottom: 4px; }
+#adm-scout .sp-empty-s { font-size: 12px; color: #2a2e50; }
+#adm-scout .sp-grid { display: grid; gap: 12px; }
+#adm-scout .sp-card { background: #0d1120; border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 14px; position: relative; overflow: hidden; animation: spRise 0.4s ease both; }
+@keyframes spRise { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:none;} }
+#adm-scout .sp-card-top { position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+#adm-scout .sp-card-top.high { background: linear-gradient(90deg,#00e676,transparent); }
+#adm-scout .sp-card-top.mid { background: linear-gradient(90deg,#ffd600,transparent); }
+#adm-scout .sp-card-top.low { background: linear-gradient(90deg,#ff3d57,transparent); }
+#adm-scout .sp-ch { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
+#adm-scout .sp-ch-n { font-family: 'Barlow Condensed', sans-serif; font-size: 34px; font-weight: 800; color: rgba(255,255,255,0.04); line-height: 1; flex-shrink: 0; min-width: 36px; }
+#adm-scout .sp-ch-m { flex: 1; }
+#adm-scout .sp-ch-league { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: #a374ff; margin-bottom: 1px; }
+#adm-scout .sp-ch-match { font-size: 13px; font-weight: 700; color: #dde0f0; margin-bottom: 1px; line-height: 1.3; }
+#adm-scout .sp-ch-time { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; color: #a374ff; flex-shrink: 0; }
+#adm-scout .sp-bet { display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.38); border-radius: 9px; padding: 10px 12px; margin-bottom: 10px; gap: 10px; }
+#adm-scout .sp-bet-lbl { font-size: 8px; letter-spacing: 1.8px; text-transform: uppercase; color: #3d4260; margin-bottom: 3px; }
+#adm-scout .sp-bet-pick { font-size: 13px; font-weight: 700; color: #dde0f0; }
+#adm-scout .sp-bet-cote { font-family: 'Barlow Condensed', sans-serif; font-size: 30px; font-weight: 800; color: #00f0ff; flex-shrink: 0; line-height: 1; }
+#adm-scout .sp-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-bottom: 9px; }
+#adm-scout .sp-sb { background: rgba(0,0,0,0.25); border-radius: 7px; padding: 6px 5px; text-align: center; }
+#adm-scout .sp-sb-l { font-size: 7px; letter-spacing: 1.2px; text-transform: uppercase; color: rgba(61,66,96,0.9); margin-bottom: 2px; }
+#adm-scout .sp-sb-v { font-size: 11px; font-weight: 700; }
+#adm-scout .sp-conf-bg { height: 3px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; margin-bottom: 5px; }
+#adm-scout .sp-conf-fill { height: 100%; border-radius: 2px; transition: width 1.2s; }
+#adm-scout .sp-conf-fill.high { background: linear-gradient(90deg,#00e676,#69f0ae); }
+#adm-scout .sp-conf-fill.mid { background: linear-gradient(90deg,#ffd600,#fff176); }
+#adm-scout .sp-conf-fill.low { background: linear-gradient(90deg,#ff3d57,#ff8a80); }
+#adm-scout .sp-conf-row { display: flex; justify-content: space-between; font-size: 9px; color: #3d4260; margin-bottom: 8px; }
+#adm-scout .sp-cp.high { color: #00e676; font-weight: 700; }
+#adm-scout .sp-cp.mid { color: #ffd600; font-weight: 700; }
+#adm-scout .sp-cp.low { color: #ff3d57; font-weight: 700; }
+#adm-scout .sp-vb-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 2px 8px; border-radius: 7px; margin-bottom: 7px; }
+#adm-scout .sp-vb-good { background: rgba(0,230,118,0.12); color: #00e676; border: 1px solid rgba(0,230,118,0.3); }
+#adm-scout .sp-vb-ok { background: rgba(255,214,0,0.1); color: #ffd600; border: 1px solid rgba(255,214,0,0.25); }
+#adm-scout .sp-vb-bad { background: rgba(255,61,87,0.08); color: #ff3d57; border: 1px solid rgba(255,61,87,0.2); }
+#adm-scout .sp-kelly-row { display: flex; align-items: center; justify-content: space-between; background: rgba(0,240,255,0.04); border: 1px solid rgba(0,240,255,0.1); border-radius: 7px; padding: 7px 10px; margin-bottom: 8px; }
+#adm-scout .sp-kelly-lbl { font-size: 8px; letter-spacing: 1.2px; text-transform: uppercase; color: #3d4260; }
+#adm-scout .sp-kelly-val { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; color: #00f0ff; }
+#adm-scout .sp-ana { border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px; font-size: 11px; color: #7080a0; line-height: 1.7; }
+#adm-scout .sp-ana-lbl { font-size: 8px; letter-spacing: 1.8px; text-transform: uppercase; color: #a374ff; margin-bottom: 4px; }
+#adm-scout .sp-dtag { font-size: 8px; letter-spacing: 0.8px; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; background: rgba(163,116,255,0.08); color: #a374ff; border: 1px solid rgba(163,116,255,0.15); }
+#adm-scout .sp-err-box { padding: 12px 14px; background: rgba(255,61,87,0.06); border: 1px solid rgba(255,61,87,0.2); border-radius: 10px; font-size: 12px; color: #ff3d57; display: none; margin-bottom: 12px; line-height: 1.6; }
+#adm-scout .sp-err-box.show { display: block; }
+#adm-scout .sp-disc { margin-top: 20px; padding: 12px 14px; background: rgba(255,61,87,0.04); border: 1px solid rgba(255,61,87,0.1); border-radius: 10px; font-size: 10px; color: #483838; text-align: center; line-height: 1.7; display: none; }
+#adm-scout .sp-disc.show { display: block; }
+</style>
+
+<div class="sp-app">
+  <div class="sp-hdr">
+    <div class="sp-hdr-glow"></div>
+    <div class="sp-logo">SCOUT PRO</div>
+    <div class="sp-logo-tag">Expert IA · Value Bets · Probabilités Réelles</div>
+    <div class="sp-date-pill">📅 <span id="sp-today-fr"></span></div>
+  </div>
+
+  <div class="sp-ai-banner">
+    <div class="sp-ai-dot"></div>
+    <div class="sp-ai-text">
+      <strong>Mode IA Full Autonome</strong> — Claude recherche les vrais matchs du jour sur le web, puis analyse chaque rencontre avec une méthodologie experte (forme, H2H, stats, blessures, cotes marché).
+    </div>
+  </div>
+
+  <div class="sp-bankroll-panel">
+    <span class="sp-bankroll-lbl">💰 Bankroll (€)</span>
+    <input id="sp-bankroll" class="sp-bankroll-input" type="number" value="1000" min="10" placeholder="Ex: 1000">
+    <span style="font-size:10px;color:#3d4260;white-space:nowrap;">→ Mise Kelly</span>
+  </div>
+
+  <div class="sp-league-filter" id="sp-league-filter">
+    <button class="sp-lf-btn active" data-league="all">🌍 Tous</button>
+    <button class="sp-lf-btn" data-league="ligue1">🇫🇷 L1</button>
+    <button class="sp-lf-btn" data-league="pl">🏴󠁧󠁢󠁥󠁮󠁧󠁿 PL</button>
+    <button class="sp-lf-btn" data-league="laliga">🇪🇸 Liga</button>
+    <button class="sp-lf-btn" data-league="bundesliga">🇩🇪 BL</button>
+    <button class="sp-lf-btn" data-league="seriea">🇮🇹 SA</button>
+    <button class="sp-lf-btn" data-league="champions">⭐ UCL</button>
+    <button class="sp-lf-btn" data-league="europa">🟠 UEL</button>
+  </div>
+
+  <button id="sp-gen-btn" class="sp-gen">
+    <span id="sp-gen-label">🔍 ANALYSER LES MATCHS DU JOUR</span>
+    <div id="sp-gen-bar" class="sp-gen-bar"></div>
+  </button>
+
+  <div id="sp-err-box" class="sp-err-box"></div>
+  <div id="sp-steps" class="sp-steps"></div>
+
+  <div id="sp-summary" class="sp-summary">
+    <div class="sp-sum-box"><div id="sp-sum-sel" class="sp-sum-val">—</div><div class="sp-sum-lbl">Sélections</div></div>
+    <div class="sp-sum-box"><div id="sp-sum-odds" class="sp-sum-val" style="color:#ffd600">—</div><div class="sp-sum-lbl">Cote moy.</div></div>
+    <div class="sp-sum-box"><div id="sp-sum-conf" class="sp-sum-val" style="color:#00e676">—</div><div class="sp-sum-lbl">Confiance</div></div>
+    <div class="sp-sum-box"><div id="sp-sum-ev" class="sp-sum-val" style="color:#a374ff">—</div><div class="sp-sum-lbl">Edge moy.</div></div>
+  </div>
+
+  <div id="sp-empty" class="sp-empty">
+    <div class="sp-empty-ico">⚽</div>
+    <div class="sp-empty-t">Prêt à analyser</div>
+    <div class="sp-empty-s">Claude recherche les vrais matchs du jour sur le web, puis analyse chaque rencontre avec une méthodologie experte</div>
+  </div>
+
+  <div id="sp-grid" class="sp-grid"></div>
+  <div id="sp-disc" class="sp-disc">⚠️ Sélections générées par IA à titre informatif uniquement. Les paris comportent des risques. Jouez de manière responsable. 18+</div>
+</div>
+
+<script>
+(function(){
+  var spToday = new Date();
+  var spDateEl = document.getElementById('sp-today-fr');
+  if(spDateEl) spDateEl.textContent = spToday.toLocaleDateString('fr-FR', {weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+  var spLeague = 'all';
+  var spLF = document.getElementById('sp-league-filter');
+  if(spLF) spLF.addEventListener('click', function(e){
+    var btn = e.target.closest('.sp-lf-btn');
+    if(!btn) return;
+    spLF.querySelectorAll('.sp-lf-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    spLeague = btn.dataset.league;
+  });
+
+  function spSetStep(steps, idx, state){
+    var el = document.getElementById('sp-step-'+idx);
+    if(!el) return;
+    el.className = 'sp-step ' + state;
+    var ico = el.querySelector('.sp-step-ico');
+    var spin = el.querySelector('.sp-step-spin');
+    if(state === 'active'){ ico.style.display='none'; spin.style.display='block'; }
+    else { ico.style.display='block'; spin.style.display='none'; ico.textContent = state==='done' ? '✅' : steps[idx].ico; }
+  }
+
+  function spRenderSteps(steps){
+    document.getElementById('sp-steps').innerHTML = steps.map(function(s,i){
+      return '<div class="sp-step" id="sp-step-'+i+'"><span class="sp-step-ico">'+s.ico+'</span><div class="sp-step-spin" style="display:none"></div><span>'+s.label+'</span></div>';
+    }).join('');
+  }
+
+  function spKelly(prob, odds, bankroll){
+    var b = odds - 1, q = 1 - prob;
+    var k = Math.max(0, (b * prob - q) / b);
+    return (Math.min(k * 0.5, 0.05) * bankroll).toFixed(0);
+  }
+
+  function spConfClass(c){ return c >= 70 ? 'high' : c >= 50 ? 'mid' : 'low'; }
+  function spVbClass(ev){ return ev > 5 ? 'sp-vb-good' : ev > 0 ? 'sp-vb-ok' : 'sp-vb-bad'; }
+  function spVbLabel(ev){ return ev > 5 ? '🔥 Value Bet' : ev > 0 ? '⚡ Légère Value' : '⚠️ Peu de Value'; }
+
+  function spRenderCard(m, idx, bankroll){
+    var cc = spConfClass(m.confidence);
+    var ev = ((m.prob_win / 100) * m.odds - 1) * 100;
+    var evStr = (ev > 0 ? '+' : '') + ev.toFixed(1) + '%';
+    var kellyMise = spKelly(m.prob_win / 100, m.odds, bankroll);
+    var tags = (m.data_sources || []).map(function(t){ return '<span class="sp-dtag">'+t+'</span>'; }).join(' ');
+    return '<div class="sp-card" style="animation-delay:'+( idx*0.08)+'s">' +
+      '<div class="sp-card-top '+cc+'"></div>' +
+      '<div class="sp-ch">' +
+        '<div class="sp-ch-n">'+String(idx+1).padStart(2,'0')+'</div>' +
+        '<div class="sp-ch-m">' +
+          '<div class="sp-ch-league">'+(m.league||'')+'</div>' +
+          '<div class="sp-ch-match">'+m.match+'</div>' +
+        '</div>' +
+        '<div class="sp-ch-time">'+m.time+'</div>' +
+      '</div>' +
+      '<div class="sp-vb-badge '+spVbClass(ev)+'">'+spVbLabel(ev)+'</div>' +
+      '<div class="sp-bet">' +
+        '<div><div class="sp-bet-lbl">Sélection</div><div class="sp-bet-pick">'+m.pick+'</div></div>' +
+        '<div class="sp-bet-cote">'+m.odds.toFixed(2)+'</div>' +
+      '</div>' +
+      '<div class="sp-kelly-row"><span class="sp-kelly-lbl">💰 Mise Kelly</span><span class="sp-kelly-val">'+kellyMise+'€</span></div>' +
+      '<div class="sp-stats">' +
+        '<div class="sp-sb"><div class="sp-sb-l">Prob. réelle</div><div class="sp-sb-v" style="color:#00f0ff">'+m.prob_win+'%</div></div>' +
+        '<div class="sp-sb"><div class="sp-sb-l">Forme dom.</div><div class="sp-sb-v" style="color:#00e676">'+(m.home_form||'—')+'</div></div>' +
+        '<div class="sp-sb"><div class="sp-sb-l">Forme ext.</div><div class="sp-sb-v" style="color:#ffd600">'+(m.away_form||'—')+'</div></div>' +
+      '</div>' +
+      '<div class="sp-conf-bg"><div class="sp-conf-fill '+cc+'" style="width:'+m.confidence+'%"></div></div>' +
+      '<div class="sp-conf-row"><span>Confiance</span><span class="sp-cp '+cc+'">'+m.confidence+'%</span></div>' +
+      '<div class="sp-ana"><div class="sp-ana-lbl">Analyse Expert</div>'+m.analysis+'<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:5px">'+tags+'</div></div>' +
+    '</div>';
+  }
+
+  async function spAnalyze(){
+    var bankroll = parseFloat(document.getElementById('sp-bankroll').value) || 1000;
+    var btn = document.getElementById('sp-gen-btn');
+    var label = document.getElementById('sp-gen-label');
+    var bar = document.getElementById('sp-gen-bar');
+    var errBox = document.getElementById('sp-err-box');
+
+    btn.disabled = true;
+    errBox.className = 'sp-err-box';
+    document.getElementById('sp-empty').style.display = 'none';
+    document.getElementById('sp-grid').innerHTML = '';
+    document.getElementById('sp-summary').className = 'sp-summary';
+    document.getElementById('sp-disc').className = 'sp-disc';
+
+    var leagueMap = {
+      all: 'toutes les grandes ligues européennes (Ligue 1, Premier League, La Liga, Bundesliga, Serie A, Champions League, Europa League)',
+      ligue1: 'Ligue 1 (France)', pl: 'Premier League (Angleterre)', laliga: 'La Liga (Espagne)',
+      bundesliga: 'Bundesliga (Allemagne)', seriea: 'Serie A (Italie)',
+      champions: 'UEFA Champions League', europa: 'UEFA Europa League'
+    };
+    var leagueLabel = leagueMap[spLeague] || 'toutes les ligues';
+
+    var steps = [
+      { ico: '🔍', label: 'Recherche des matchs du jour sur le web...' },
+      { ico: '📊', label: 'Collecte des stats, forme, H2H, blessures...' },
+      { ico: '🧠', label: 'Analyse probabiliste et calcul des value bets...' },
+      { ico: '⚡', label: 'Génération des picks finaux et mises Kelly...' },
+    ];
+    spRenderSteps(steps);
+
+    var barWidth = 0;
+    var barInterval = setInterval(function(){
+      barWidth = Math.min(barWidth + 0.4, 90);
+      bar.style.width = barWidth + '%';
+    }, 200);
+
+    spSetStep(steps, 0, 'active');
+    label.textContent = 'ANALYSE EN COURS...';
+
+    var todayDate = spToday.toLocaleDateString('fr-FR', {day:'numeric', month:'long', year:'numeric'});
+    var todayISO = spToday.toISOString().split('T')[0];
+
+    var prompt = 'Scout Pro - Expert football IA. Date: '+todayDate+' ('+todayISO+'). Ligues: '+leagueLabel+'.\n\nCherche avec web_search les matchs de football du '+todayISO+' dans ces ligues, puis analyse-les.\n\nRéponds UNIQUEMENT en JSON valide, sans texte ni backticks:\n{"matches":[{"match":"Équipe A vs Équipe B","league":"🇫🇷 Ligue 1","competition":"Ligue 1 - J28","time":"21:00","pick":"Pari recommandé","odds":1.85,"prob_win":62,"confidence":74,"home_form":"WDWWL","away_form":"LWDWW","analysis":"Analyse 2-3 phrases : forme, H2H, absences, valeur du pari.","data_sources":["Forme","H2H","Blessures","Cotes"]}]}\n\nRègles: vrais matchs du '+todayISO+' uniquement, cotes 1.40-4.50, confiance ≥50%, analyse en français.';
+
+    try {
+      spSetStep(steps, 0, 'done');
+      spSetStep(steps, 1, 'active');
+
+      // Utilise la clé API stockée dans Alfaydha (AB_KEY_STORE)
+      var apiKey = (typeof AB_KEY_STORE !== 'undefined' ? localStorage.getItem(AB_KEY_STORE) : null)
+                   || localStorage.getItem('scout_pro_api_key')
+                   || (typeof _HARDCODED_KEY !== 'undefined' ? _HARDCODED_KEY : '');
+
+      if (!apiKey || apiKey.length < 20) {
+        throw new Error('Clé API Anthropic non configurée. Veuillez la renseigner dans l\'onglet ⚙️ Params.');
+      }
+
+      var response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 2000,
+          tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+
+      if (!response.ok) {
+        var err = await response.json().catch(function(){ return {}; });
+        throw new Error(err.error && err.error.message ? err.error.message : 'Erreur API ' + response.status);
+      }
+
+      spSetStep(steps, 1, 'done');
+      spSetStep(steps, 2, 'active');
+
+      var data = await response.json();
+      spSetStep(steps, 2, 'done');
+      spSetStep(steps, 3, 'active');
+
+      var textBlocks = data.content.filter(function(b){ return b.type === 'text'; }).map(function(b){ return b.text; });
+      var fullText = textBlocks.join('\n');
+
+      var parsed;
+      try {
+        var jsonMatch = fullText.match(/\{[\s\S]*"matches"[\s\S]*\}/);
+        if (!jsonMatch) throw new Error('Format JSON non trouvé');
+        parsed = JSON.parse(jsonMatch[0].replace(/```json|```/g,'').trim());
+      } catch(e) {
+        throw new Error('Erreur parsing JSON : ' + e.message);
+      }
+
+      spSetStep(steps, 3, 'done');
+
+      var matches = parsed.matches || [];
+      if (!matches.length) throw new Error('Aucun match trouvé pour aujourd\'hui.');
+
+      clearInterval(barInterval);
+      bar.style.width = '100%';
+
+      document.getElementById('sp-grid').innerHTML = matches.map(function(m, i){ return spRenderCard(m, i, bankroll); }).join('');
+      document.getElementById('sp-disc').className = 'sp-disc show';
+
+      var avgOdds = (matches.reduce(function(s,m){ return s + m.odds; }, 0) / matches.length).toFixed(2);
+      var avgConf = Math.round(matches.reduce(function(s,m){ return s + m.confidence; }, 0) / matches.length);
+      var avgEv = (matches.reduce(function(s,m){ return s + ((m.prob_win/100)*m.odds-1)*100; }, 0) / matches.length).toFixed(1);
+      document.getElementById('sp-sum-sel').textContent = matches.length;
+      document.getElementById('sp-sum-odds').textContent = avgOdds;
+      document.getElementById('sp-sum-conf').textContent = avgConf + '%';
+      document.getElementById('sp-sum-ev').textContent = (avgEv > 0 ? '+' : '') + avgEv + '%';
+      document.getElementById('sp-summary').className = 'sp-summary show';
+
+      label.textContent = '🔄 RELANCER L\'ANALYSE';
+
+    } catch(e) {
+      clearInterval(barInterval);
+      bar.style.width = '0%';
+      document.getElementById('sp-empty').style.display = 'block';
+      errBox.className = 'sp-err-box show';
+      errBox.innerHTML = '<strong>❌ Erreur :</strong> ' + e.message;
+      label.textContent = '🔍 ANALYSER LES MATCHS DU JOUR';
+      document.getElementById('sp-steps').innerHTML = '';
+    } finally {
+      btn.disabled = false;
+      setTimeout(function(){ bar.style.width = '0%'; }, 800);
+    }
+  }
+
+  var spBtn = document.getElementById('sp-gen-btn');
+  if(spBtn) spBtn.addEventListener('click', spAnalyze);
+})();
+<\/script>
 
  </div><!-- /admin-content -->
  </div><!-- /admin-panel -->
@@ -8118,7 +8477,7 @@ function checkStreamerAccess(user, callback) {
 
 function switchAdmTab(id){
  // Masquer tous les panels
- ['chaines','direct','prog','stats','streamers','params','notif','interact','qa','users','asrar'].forEach(function(n){
+ ['chaines','direct','prog','stats','streamers','params','notif','interact','qa','users','asrar','scout'].forEach(function(n){
  var p = document.getElementById('adm-'+n);
  if(p) p.style.display = 'none';
  var b = document.getElementById('atab-'+n);
@@ -11218,7 +11577,7 @@ async function abSend() {
  _adminIn = true; window._adminIn = true;
  window._streamerOnly = false;
  if (typeof interactUpdateRole === 'function') interactUpdateRole();
- ['atab-streamers','atab-params','atab-notif','atab-users'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='';});
+ ['atab-streamers','atab-params','atab-notif','atab-users','atab-scout'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='';});
  /* Charger les configs depuis Firebase avant d\'ouvrir */
  _fbInit(function() {
  lkLoadConfig();
@@ -11235,7 +11594,7 @@ async function abSend() {
  _adminIn = true; window._adminIn = true;
  window._streamerOnly = true;
  if (typeof interactUpdateRole === 'function') interactUpdateRole();
- ['atab-streamers','atab-params','atab-notif','atab-users'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
+ ['atab-streamers','atab-params','atab-notif','atab-users','atab-scout'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
  _fbInit(function() { lkLoadConfig(); showAdminContent(); });
  document.getElementById('adminOverlay').classList.add('open');
  switchAdmTab('direct');
