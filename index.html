@@ -7160,6 +7160,19 @@ select.f-input {
   </button>
 
   <div id="sp-err-box" class="sp-err-box"></div>
+
+  <!-- Panneau clé API Scout Pro -->
+  <div id="sp-api-panel" style="display:none;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,170,0,.35);border-radius:14px;padding:1rem 1.1rem;margin:.5rem 0">
+    <div style="font-size:13px;font-weight:700;color:#ffd600;margin-bottom:.3rem">&#x1F511; Clé API Anthropic requise</div>
+    <div style="font-size:12px;color:rgba(255,255,255,.55);margin-bottom:.75rem">Obtenez votre clé sur <a href="https://console.anthropic.com" target="_blank" style="color:#a374ff">console.anthropic.com</a> et entrez-la ci-dessous. Elle sera sauvegardée localement dans votre navigateur.</div>
+    <div style="display:flex;gap:.5rem">
+      <input id="sp-key-input" type="password" placeholder="sk-ant-api03-..." autocomplete="off"
+        style="flex:1;background:rgba(0,0,0,.3);border:1.5px solid rgba(255,170,0,.4);border-radius:8px;padding:.6rem .85rem;color:#fff;font-family:monospace;font-size:13px;outline:none">
+      <button onclick="spSaveApiKey()" style="background:linear-gradient(135deg,#a374ff,#7c3aed);color:#fff;border:none;border-radius:8px;padding:.6rem 1.1rem;font-weight:700;cursor:pointer;font-family:Roboto,sans-serif;white-space:nowrap;font-size:13px">Enregistrer</button>
+    </div>
+    <div id="sp-key-status" style="font-size:11px;margin-top:.4rem;color:rgba(255,255,255,.4)"></div>
+  </div>
+
   <div id="sp-steps" class="sp-steps"></div>
 
   <div id="sp-summary" class="sp-summary">
@@ -7308,8 +7321,13 @@ select.f-input {
                    || (typeof _HARDCODED_KEY !== 'undefined' ? _HARDCODED_KEY : '');
 
       if (!apiKey || apiKey.length < 20) {
-        throw new Error('Clé API Anthropic non configurée. Veuillez la renseigner dans l\'onglet ⚙️ Params.');
+        var panel = document.getElementById('sp-api-panel');
+        if (panel) panel.style.display = 'block';
+        throw new Error('Clé API Anthropic requise. Entrez-la dans le champ ci-dessous.');
       }
+      // Masquer le panneau si la clé est valide
+      var panel = document.getElementById('sp-api-panel');
+      if (panel) panel.style.display = 'none';
 
       var response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
@@ -7381,6 +7399,11 @@ select.f-input {
       errBox.innerHTML = '<strong>❌ Erreur :</strong> ' + e.message;
       label.textContent = '🔍 ANALYSER LES MATCHS DU JOUR';
       document.getElementById('sp-steps').innerHTML = '';
+      // Afficher le panneau clé API si l'erreur est liée à la clé
+      if (e.message && (e.message.toLowerCase().indexOf('api') !== -1 || e.message.toLowerCase().indexOf('key') !== -1 || e.message.toLowerCase().indexOf('clé') !== -1)) {
+        var panel = document.getElementById('sp-api-panel');
+        if (panel) panel.style.display = 'block';
+      }
     } finally {
       btn.disabled = false;
       setTimeout(function(){ bar.style.width = '0%'; }, 800);
@@ -7389,6 +7412,29 @@ select.f-input {
 
   var spBtn = document.getElementById('sp-gen-btn');
   if(spBtn) spBtn.addEventListener('click', spAnalyze);
+
+  // Sauvegarder la clé API depuis le panneau Scout Pro
+  window.spSaveApiKey = function() {
+    var inp = document.getElementById('sp-key-input');
+    var st = document.getElementById('sp-key-status');
+    var key = inp ? inp.value.trim() : '';
+    if (!key || !key.startsWith('sk-ant')) {
+      if (st) { st.textContent = '❌ Clé invalide — doit commencer par sk-ant...'; st.style.color = '#ff6b6b'; }
+      return;
+    }
+    try {
+      localStorage.setItem('ab_anthropic_key', key);
+      localStorage.setItem('scout_pro_api_key', key);
+    } catch(e) {}
+    if (st) { st.textContent = '✅ Clé enregistrée ! Cliquez sur Analyser pour démarrer.'; st.style.color = '#69f0ae'; }
+    // Masquer le panneau et l'erreur après 1.2s
+    setTimeout(function(){
+      var panel = document.getElementById('sp-api-panel');
+      if (panel) panel.style.display = 'none';
+      var errBox = document.getElementById('sp-err-box');
+      if (errBox) errBox.className = 'sp-err-box';
+    }, 1200);
+  };
 })();
 </script>
 
@@ -8353,7 +8399,7 @@ function adminSaveAbKey() {
  if (st) st.textContent = '⚠️ Clé invalide — doit commencer par sk-ant…';
  return;
  }
- try{ localStorage.setItem(AB_KEY_STORE, key); }catch(e){}
+ try{ localStorage.setItem(AB_KEY_STORE, key); localStorage.setItem('scout_pro_api_key', key); }catch(e){}
  _fbInit(function() {
  firebase.database().ref('app_config/ab_key').set({key: key, updatedAt: Date.now()});
  firebase.database().ref('streamer_config/ab_key').set({key: key, updatedAt: Date.now()});
@@ -10770,8 +10816,16 @@ var _abEngine = 'baye';
 var _abHistory = [];
 var _abLoading = false;
 var AB_KEY_STORE = 'ab_anthropic_key';
-var _HARDCODED_KEY = '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';
-(function(){try{if(!localStorage.getItem(AB_KEY_STORE)){localStorage.setItem(AB_KEY_STORE,_HARDCODED_KEY);}}catch(e){}})();
+var _HARDCODED_KEY = '';
+(function(){
+  try{
+    // Nettoyer l'ancienne clé expirée si elle est encore stockée
+    var stored = localStorage.getItem(AB_KEY_STORE);
+    if(stored && stored === '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'){
+      localStorage.removeItem(AB_KEY_STORE);
+    }
+  }catch(e){}
+})();
 
 /* ── Prompts systèmes par moteur ── */
 var AB_SYSTEMS = {
