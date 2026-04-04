@@ -7390,43 +7390,45 @@ select.f-input {
       var panel = document.getElementById('sp-api-panel');
       if (panel) panel.style.display = 'none';
 
-      // ── APPEL 1 : Recherche web des matchs ──
+      // ── APPEL UNIQUE : Recherche + JSON en un seul appel Haiku ──
+      // (Haiku = ~5x moins de tokens/min consommés que Sonnet → résout le rate limit)
       spSetStep(steps, 0, 'active');
 
-      var searchPrompt = 'Search for all football/soccer matches scheduled for ' + todayISO + '. ' +
-        'Search: "football matches ' + todayISO + '", "soccer fixtures ' + todayISO + '", "flashscore ' + todayISO + '". ' +
-        'Find matches from: ' + leagueLabel + '. ' +
-        'List every match you find with: teams, league, kickoff time, and any stats available (form, H2H, injuries). ' +
-        'Be exhaustive. Today is ' + todayISO + '.';
+      var unifiedPrompt =
+        'Today is ' + todayISO + '. Search for real football/soccer matches scheduled today for: ' + leagueLabel + '.\n' +
+        'Use web search to find fixtures. Then respond with ONLY a JSON object (no text before or after).\n\n' +
+        'Format strict:\n' +
+        '{"matches":[{"match":"A vs B","league":"🇫🇷 Ligue 1","competition":"J29","time":"21:00",' +
+        '"pick":"Over 2.5","market_type":"over_under","odds":1.75,"prob_win":72,"confidence":75,' +
+        '"home_form":"WDWWL","away_form":"LWDWW","btts_pct":60,"avg_goals_home":1.8,"avg_goals_away":1.2,' +
+        '"avg_corners":10,"h2h_summary":"3V-1N-1D","key_absences":"Aucune","best_market_reason":"Raison courte",' +
+        '"analysis":"Courte analyse 2 phrases.","data_sources":["Forme","H2H"]}]}\n\n' +
+        'RULES: Real matches ' + todayISO + ' only. Max 8 matches. Confidence >= 65. JSON ONLY, start with {';
 
-      var resp1 = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true'
-        },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 4000,
-          tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-          messages: [{ role: 'user', content: searchPrompt }]
-        })
-      });
-
-      // Retry automatique si rate limit (429)
-      if(resp1.status === 429) {
-        spSetStep(steps, 0, 'active');
-        await new Promise(function(r){ setTimeout(r, 5000); });
-        resp1 = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-          body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 4000, tools: [{ type: 'web_search_20250305', name: 'web_search' }], messages: [{ role: 'user', content: searchPrompt }] })
-        });
+      // Fonction helper avec retry sur 429
+      async function spFetchWithRetry(body, retries) {
+        for (var attempt = 0; attempt <= (retries || 1); attempt++) {
+          if (attempt > 0) await new Promise(function(r){ setTimeout(r, 8000 * attempt); });
+          var r = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey,
+              'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+            body: JSON.stringify(body)
+          });
+          if (r.status !== 429) return r;
+        }
+        return r;
       }
-      if(!resp1.ok){
-        var e1 = await resp1.json().catch(function(){return{};});
+
+      var resp1 = await spFetchWithRetry({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 2000,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{ role: 'user', content: unifiedPrompt }]
+      }, 2);
+
+      if (!resp1.ok) {
+        var e1 = await resp1.json().catch(function(){ return {}; });
         throw new Error(e1.error && e1.error.message ? e1.error.message : 'Erreur API ' + resp1.status);
       }
 
@@ -7434,103 +7436,42 @@ select.f-input {
       spSetStep(steps, 0, 'done');
       spSetStep(steps, 1, 'active');
 
-      // Extraire tout le texte de la réponse (tool_result inclus)
-      var searchResults = '';
-      (data1.content || []).forEach(function(b){
-        if(b.type === 'text') searchResults += b.text + '\n';
-      });
+      // Collecter le texte de la réponse
+      var fullText = '';
+      (data1.content || []).forEach(function(b){ if (b.type === 'text') fullText += b.text + '\n'; });
 
-      // Si Claude s'est arrêté sur tool_use, continuer pour obtenir le résumé texte
-      if(data1.stop_reason === 'tool_use') {
-        var msgs2 = [
-          { role: 'user', content: searchPrompt },
-          { role: 'assistant', content: data1.content }
-        ];
-        // Construire les tool_results
+      // Si stop_reason = tool_use, on continue la conversation pour obtenir le JSON final
+      if (data1.stop_reason === 'tool_use') {
+        spSetStep(steps, 1, 'done');
+        spSetStep(steps, 2, 'active');
+
         var toolResults = [];
         (data1.content || []).forEach(function(b){
-          if(b.type === 'tool_use'){
-            toolResults.push({ type: 'tool_result', tool_use_id: b.id, content: 'Search completed for: ' + (b.input && b.input.query ? b.input.query : 'football matches') });
+          if (b.type === 'tool_use') {
+            toolResults.push({ type: 'tool_result', tool_use_id: b.id, content: 'web search results obtained' });
           }
         });
-        if(toolResults.length) msgs2.push({ role: 'user', content: toolResults });
 
-        var resp1b = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-          body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 4000, tools: [{ type: 'web_search_20250305', name: 'web_search' }], messages: msgs2 })
-        });
-        if(resp1b.ok){
-          var data1b = await resp1b.json();
-          (data1b.content || []).forEach(function(b){ if(b.type === 'text') searchResults += b.text + '\n'; });
+        var resp2 = await spFetchWithRetry({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 2000,
+          tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+          messages: [
+            { role: 'user', content: unifiedPrompt },
+            { role: 'assistant', content: data1.content },
+            { role: 'user', content: toolResults }
+          ]
+        }, 2);
+
+        if (resp2.ok) {
+          var data2 = await resp2.json();
+          fullText = '';
+          (data2.content || []).forEach(function(b){ if (b.type === 'text') fullText += b.text + '\n'; });
         }
       }
 
-      spSetStep(steps, 1, 'done');
-      spSetStep(steps, 2, 'active');
-
-      // Tronquer searchResults pour éviter de dépasser la limite de tokens (rate limit)
-      var MAX_SEARCH_CHARS = 6000;
-      var searchResultsTrunc = searchResults.length > MAX_SEARCH_CHARS
-        ? searchResults.substring(0, MAX_SEARCH_CHARS) + '\n[... tronqué pour limite tokens ...]'
-        : searchResults;
-
-      // ── APPEL 2 : Convertir les résultats en JSON structuré ──
-      var jsonPrompt = 'Here are football match results found for ' + todayISO + ':\n\n' + searchResultsTrunc + '\n\n' +
-        'Now convert ALL matches found above into this EXACT JSON format. ' +
-        'Output ONLY the JSON object, starting with { and ending with }. No explanation, no text before or after.' +
-        '\n{"matches":[{' +
-        '"match":"Team A vs Team B",' +
-        '"league":"League name with flag emoji",' +
-        '"competition":"League - Round",' +
-        '"time":"HH:MM",' +
-        '"pick":"Best bet: 1X2 or Over/Under or BTTS or Corners",' +
-        '"market_type":"1x2",' +
-        '"odds":1.85,' +
-        '"prob_win":65,' +
-        '"confidence":72,' +
-        '"home_form":"WDWWL",' +
-        '"away_form":"LWDWW",' +
-        '"btts_pct":60,' +
-        '"avg_goals_home":1.5,' +
-        '"avg_goals_away":1.1,' +
-        '"avg_corners":9.5,' +
-        '"h2h_summary":"3W-1D-1L in last 5",' +
-        '"key_absences":"None known",' +
-        '"best_market_reason":"Why this market is safest",' +
-        '"analysis":"3 sentence analysis of form, H2H, key stats and why this pick.",' +
-        '"data_sources":["Form","H2H","Stats","Odds"]' +
-        '}]}' +
-        '\n\nRULES: Only real confirmed matches for ' + todayISO + '. Confidence >= 60. Max 12 matches. Estimate odds/stats if not available. Output JSON ONLY.';
-
-      // Pause de 2s pour respecter la limite de 30 000 tokens/minute
-      await new Promise(function(r){ setTimeout(r, 2000); });
-
-      var resp2 = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true'
-        },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1500,
-          messages: [{ role: 'user', content: jsonPrompt }]
-        })
-      });
-
-      if(!resp2.ok){
-        var e2 = await resp2.json().catch(function(){return{};});
-        throw new Error(e2.error && e2.error.message ? e2.error.message : 'Erreur API JSON ' + resp2.status);
-      }
-
-      var data2 = await resp2.json();
       spSetStep(steps, 2, 'done');
       spSetStep(steps, 3, 'active');
-
-      var fullText = (data2.content || []).filter(function(b){ return b.type === 'text'; }).map(function(b){ return b.text; }).join('\n');
 
       // ── Parser le JSON ──
       var parsed = null;
