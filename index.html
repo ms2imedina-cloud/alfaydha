@@ -7485,74 +7485,83 @@ select.f-input {
         '"avg_corners":10,"h2h_summary":"3V-1N-1D","key_absences":"Aucune","best_market_reason":"Raison courte",' +
         '"analysis":"Analyse experte 2-3 phrases.","data_sources":["Forme","H2H"]}]}';
 
+      // System prompt commun : force le JSON strict
+      var spSystem = 'You are a football betting analyst. You ALWAYS respond with ONLY a valid JSON object. No explanations, no apologies, no markdown. Start your response with { and end with }. If you have no data, return {"matches":[]}.';
+
       if (fixturesList) {
-        // ── Mode API-Sports : Haiku analyse sans web_search (très peu de tokens) ──
+        // ── Mode API-Sports : Haiku analyse la liste de matchs fournie ──
         spSetStep(steps, 1, 'active');
-        var analysisPrompt = 'Tu es un expert en paris sportifs. Voici les matchs de football du ' + todayISO + ' :\n\n' + fixturesList + '\n\n' + 'Pour chaque match, estime les probabilités et le meilleur marché (1X2, Over/Under, BTTS, Corners).\n' + 'Réponds UNIQUEMENT avec ce JSON (pas de texte avant/après) :\n' + jsonFormat + '\n\n' + 'RÈGLES : Max 8 matchs (confiance >= 65 uniquement). JSON ONLY, commence par {';
+        var userMsg = 'Football matches on ' + todayISO + ':\n' + fixturesList + '\n\nAnalyze each match and return this JSON:\n' + jsonFormat + '\nRULES: max 8 matches, confidence >= 65, JSON only.';
 
         var resp1 = await spFetchWithRetry({
           model: 'claude-haiku-4-5-20251001',
           max_tokens: 2000,
-          messages: [{ role: 'user', content: analysisPrompt }]
+          system: spSystem,
+          messages: [
+            { role: 'user', content: userMsg },
+            { role: 'assistant', content: '{"matches":[' }
+          ]
         }, 2);
 
         if (!resp1.ok) {
           var e1 = await resp1.json().catch(function(){ return {}; });
-          throw new Error(e1.error && e1.error.message ? e1.error.message : 'Erreur API Anthropic ' + resp1.status);
+          throw new Error(e1.error && e1.error.message ? e1.error.message : 'Erreur API ' + resp1.status);
         }
         var data1 = await resp1.json();
-        (data1.content || []).forEach(function(b){ if (b.type === 'text') fullText += b.text + '\n'; });
+        // La réponse continue après {"matches":[ — on reconstitue
+        var partial = '';
+        (data1.content || []).forEach(function(b){ if (b.type === 'text') partial += b.text; });
+        fullText = '{"matches":[' + partial;
 
       } else {
-        // ── Mode fallback : Haiku + web_search (sans clé API-Sports) ──
+        // ── Mode fallback : web_search + JSON ──
         spSetStep(steps, 1, 'active');
-        var unifiedPrompt =
-          'Today is ' + todayISO + '. Search for football/soccer matches today for: ' + leagueLabel + '.\n' +
-          'Then respond ONLY with this JSON (no text before or after):\n' + jsonFormat + '\n\n' +
-          'RULES: Real matches only. Max 8 matches. Confidence >= 65. JSON ONLY, start with {';
+        var searchMsg = 'Search for football matches scheduled on ' + todayISO + ' in: ' + leagueLabel + '. Then return this JSON with real matches found:\n' + jsonFormat + '\nRULES: real matches only, max 8, confidence >= 65.';
 
         var resp1 = await spFetchWithRetry({
           model: 'claude-haiku-4-5-20251001',
           max_tokens: 2000,
+          system: spSystem,
           tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-          messages: [{ role: 'user', content: unifiedPrompt }]
+          messages: [{ role: 'user', content: searchMsg }]
         }, 2);
 
         if (!resp1.ok) {
           var e1 = await resp1.json().catch(function(){ return {}; });
-          throw new Error(e1.error && e1.error.message ? e1.error.message : 'Erreur API Anthropic ' + resp1.status);
+          throw new Error(e1.error && e1.error.message ? e1.error.message : 'Erreur API ' + resp1.status);
         }
         var data1 = await resp1.json();
-        (data1.content || []).forEach(function(b){ if (b.type === 'text') fullText += b.text + '\n'; });
+        (data1.content || []).forEach(function(b){ if (b.type === 'text') fullText += b.text; });
 
         // Boucle multi-tours pour gérer tool_use web_search
         var currentData = data1;
-        var messages = [{ role: 'user', content: unifiedPrompt }];
+        var wsMsgs = [{ role: 'user', content: searchMsg }];
         var maxTurns = 5;
         while (currentData.stop_reason === 'tool_use' && maxTurns-- > 0) {
-          messages.push({ role: 'assistant', content: currentData.content });
-          var toolResultBlocks = [];
+          wsMsgs.push({ role: 'assistant', content: currentData.content });
+          var toolBlocks = [];
           (currentData.content || []).forEach(function(b) {
             if (b.type === 'tool_use') {
               var found = null;
               (currentData.content || []).forEach(function(rb) {
                 if (rb.type === 'tool_result' && rb.tool_use_id === b.id) found = rb;
               });
-              toolResultBlocks.push(found || { type: 'tool_result', tool_use_id: b.id,
-                content: [{ type: 'text', text: 'Search done. Generate JSON.' }] });
+              toolBlocks.push(found || { type: 'tool_result', tool_use_id: b.id,
+                content: [{ type: 'text', text: 'No results. Return {"matches":[]}.' }] });
             }
           });
-          if (!toolResultBlocks.length) break;
-          messages.push({ role: 'user', content: toolResultBlocks });
+          if (!toolBlocks.length) break;
+          wsMsgs.push({ role: 'user', content: toolBlocks });
           var respNext = await spFetchWithRetry({
             model: 'claude-haiku-4-5-20251001', max_tokens: 2000,
+            system: spSystem,
             tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-            messages: messages
+            messages: wsMsgs
           }, 2);
           if (!respNext.ok) break;
           currentData = await respNext.json();
           fullText = '';
-          (currentData.content || []).forEach(function(b){ if (b.type === 'text') fullText += b.text + '\n'; });
+          (currentData.content || []).forEach(function(b){ if (b.type === 'text') fullText += b.text; });
         }
       }
 
@@ -7562,24 +7571,28 @@ select.f-input {
       // ── Parser le JSON ──
       var parsed = null;
       try {
-        // Nettoyer les balises markdown éventuelles
-        var cleaned = fullText.replace(/```json/g,'').replace(/```/g,'').trim();
-        // Chercher le JSON entre { et } (le modèle peut ajouter du texte avant/après)
+        var cleaned = fullText.replace(/```json/gi,'').replace(/```/g,'').trim();
         var first = cleaned.indexOf('{');
         var last = cleaned.lastIndexOf('}');
-        if (first === -1 || last === -1) {
-          // Tentative : chercher un tableau JSON direct
-          var fa = cleaned.indexOf('['), la = cleaned.lastIndexOf(']');
-          if (fa !== -1 && la !== -1) {
-            parsed = { matches: JSON.parse(cleaned.substring(fa, la + 1)) };
-          } else {
-            throw new Error('Réponse inattendue du modèle : ' + cleaned.substring(0, 300));
+        if (first !== -1 && last !== -1) {
+          var jsonStr = cleaned.substring(first, last + 1);
+          // Réparer les JSON tronqués (prefill peut couper la fin)
+          try {
+            parsed = JSON.parse(jsonStr);
+          } catch(e1) {
+            // Essayer de fermer un tableau/objet incomplet
+            var attempt = jsonStr;
+            var opens = (attempt.match(/\[/g)||[]).length - (attempt.match(/\]/g)||[]).length;
+            var openb = (attempt.match(/\{/g)||[]).length - (attempt.match(/\}/g)||[]).length;
+            for (var x=0;x<opens;x++) attempt += ']';
+            for (var x=0;x<openb;x++) attempt += '}';
+            parsed = JSON.parse(attempt);
           }
         } else {
-          parsed = JSON.parse(cleaned.substring(first, last + 1));
+          throw new Error('Pas de JSON dans la réponse : ' + cleaned.substring(0, 200));
         }
       } catch(e) {
-        throw new Error('Réponse impossible à analyser. Réessayez. Détail: ' + e.message.substring(0, 120));
+        throw new Error('Erreur JSON : ' + e.message.substring(0, 150));
       }
 
       spSetStep(steps, 3, 'done');
