@@ -7133,7 +7133,7 @@ select.f-input {
   <div class="sp-ai-banner">
     <div class="sp-ai-dot"></div>
     <div class="sp-ai-text">
-      <strong>Mode IA Full Autonome</strong> — Claude recherche les vrais matchs du jour sur le web, puis analyse chaque rencontre avec une méthodologie experte (forme, H2H, stats, blessures, cotes marché).
+      <strong>Mode Hybride API + IA</strong> — Matchs réels via API-Football, analyse experte par Claude IA (forme, H2H, stats, probabilités, Value Bets).
     </div>
   </div>
 
@@ -7154,6 +7154,14 @@ select.f-input {
     <button class="sp-lf-btn" data-league="europa">🟠 UEL</button>
   </div>
 
+  <div style="text-align:center;margin:.3rem 0 .1rem">
+    <button onclick="document.getElementById('sp-apisports-panel').style.display='block'"
+      style="background:none;border:1px solid rgba(0,200,120,.25);border-radius:20px;color:rgba(0,200,120,.7);
+      font-size:11px;padding:.3rem .9rem;cursor:pointer;font-family:Roboto,sans-serif">
+      ⚽ Connecter API-Football (matchs réels)
+    </button>
+  </div>
+
   <button id="sp-gen-btn" class="sp-gen">
     <span id="sp-gen-label">🔍 ANALYSER LES MATCHS DU JOUR</span>
     <div id="sp-gen-bar" class="sp-gen-bar"></div>
@@ -7171,6 +7179,18 @@ select.f-input {
       <button onclick="spSaveApiKey()" style="background:linear-gradient(135deg,#a374ff,#7c3aed);color:#fff;border:none;border-radius:8px;padding:.6rem 1.1rem;font-weight:700;cursor:pointer;font-family:Roboto,sans-serif;white-space:nowrap;font-size:13px">Enregistrer</button>
     </div>
     <div id="sp-key-status" style="font-size:11px;margin-top:.4rem;color:rgba(255,255,255,.4)"></div>
+  </div>
+
+  <!-- Panneau clé API-Sports -->
+  <div id="sp-apisports-panel" style="display:none;background:rgba(255,255,255,.05);border:1.5px solid rgba(0,200,120,.35);border-radius:14px;padding:1rem 1.1rem;margin:.5rem 0">
+    <div style="font-size:13px;font-weight:700;color:#00e676;margin-bottom:.3rem">&#x26BD; Clé API-Football (api-sports.io)</div>
+    <div style="font-size:12px;color:rgba(255,255,255,.55);margin-bottom:.75rem">Clé gratuite sur <a href="https://dashboard.api-football.com" target="_blank" style="color:#00e676">dashboard.api-football.com</a> (100 req/jour gratuits). Sauvegardée localement.</div>
+    <div style="display:flex;gap:.5rem">
+      <input id="sp-apisports-input" type="password" placeholder="Votre clé API-Football..." autocomplete="off"
+        style="flex:1;background:rgba(0,0,0,.3);border:1.5px solid rgba(0,200,120,.4);border-radius:8px;padding:.6rem .85rem;color:#fff;font-family:monospace;font-size:13px;outline:none">
+      <button onclick="spSaveApiSportsKey()" style="background:linear-gradient(135deg,#00c878,#00875a);color:#fff;border:none;border-radius:8px;padding:.6rem 1.1rem;font-weight:700;cursor:pointer;font-family:Roboto,sans-serif;white-space:nowrap;font-size:13px">Enregistrer</button>
+    </div>
+    <div id="sp-apisports-status" style="font-size:11px;margin-top:.4rem;color:rgba(255,255,255,.4)"></div>
   </div>
 
   <div id="sp-steps" class="sp-steps"></div>
@@ -7325,11 +7345,10 @@ select.f-input {
     var leagueLabel = leagueMap[spLeague] || 'toutes les ligues';
 
     var steps = [
-      { ico: '🌐', label: 'Collecte des matchs : SofaScore, FlashScore, BBC Sport, ESPN...' },
-      { ico: '⚽', label: 'Analyse 1X2, Over/Under, BTTS, Corners, Cartons, Mi-temps...' },
-      { ico: '📊', label: 'Calcul probabilités par marché — forme, H2H, blessures, stats...' },
-      { ico: '🧠', label: 'Sélection du marché optimal (max probabilité) par match...' },
-      { ico: '⚡', label: 'Génération picks finaux + Value Bets + Mises Kelly...' },
+      { ico: '⚽', label: apiSportsKey ? 'Chargement des matchs via API-Football...' : 'Recherche des matchs du jour...' },
+      { ico: '🧠', label: 'Analyse IA — forme, H2H, probabilités, marchés...' },
+      { ico: '📊', label: 'Calcul Value Bets + confiance + cotes...' },
+      { ico: '⚡', label: 'Génération picks finaux + mises Kelly...' },
     ];
     spRenderSteps(steps);
 
@@ -7344,6 +7363,7 @@ select.f-input {
 
     var todayDate = spToday.toLocaleDateString('fr-FR', {day:'numeric', month:'long', year:'numeric'});
     var todayISO = spToday.toISOString().split('T')[0];
+    var apiSportsKey = localStorage.getItem('sp_apisports_key') || '';
 
     var prompt = 'SCOUT PRO - '+todayDate+' ('+todayISO+') - Ligues: '+leagueLabel+'\n' +
       '\n' +
@@ -7373,37 +7393,75 @@ select.f-input {
       '- Commence ta réponse par { et termine par }';
 
     try {
-      spSetStep(steps, 0, 'done');
-      spSetStep(steps, 1, 'active');
-
-      // Utilise la clé API stockée dans Alfaydha (AB_KEY_STORE)
+      // ── Récupérer les clés ──
       var apiKey = (typeof AB_KEY_STORE !== 'undefined' ? localStorage.getItem(AB_KEY_STORE) : null)
                    || localStorage.getItem('scout_pro_api_key')
                    || (typeof _HARDCODED_KEY !== 'undefined' ? _HARDCODED_KEY : '');
-
       if (!apiKey || apiKey.length < 20) {
         var panel = document.getElementById('sp-api-panel');
         if (panel) panel.style.display = 'block';
         throw new Error('Clé API Anthropic requise. Entrez-la dans le champ ci-dessous.');
       }
-      // Masquer le panneau si la clé est valide
       var panel = document.getElementById('sp-api-panel');
       if (panel) panel.style.display = 'none';
 
-      // ── APPEL UNIQUE : Recherche + JSON en un seul appel Haiku ──
-      // (Haiku = ~5x moins de tokens/min consommés que Sonnet → résout le rate limit)
+      // ── ÉTAPE 1 : Récupérer les matchs via API-Football ──
       spSetStep(steps, 0, 'active');
+      var fixturesList = '';
 
-      var unifiedPrompt =
-        'Today is ' + todayISO + '. Search for real football/soccer matches scheduled today for: ' + leagueLabel + '.\n' +
-        'Use web search to find fixtures. Then respond with ONLY a JSON object (no text before or after).\n\n' +
-        'Format strict:\n' +
-        '{"matches":[{"match":"A vs B","league":"🇫🇷 Ligue 1","competition":"J29","time":"21:00",' +
-        '"pick":"Over 2.5","market_type":"over_under","odds":1.75,"prob_win":72,"confidence":75,' +
-        '"home_form":"WDWWL","away_form":"LWDWW","btts_pct":60,"avg_goals_home":1.8,"avg_goals_away":1.2,' +
-        '"avg_corners":10,"h2h_summary":"3V-1N-1D","key_absences":"Aucune","best_market_reason":"Raison courte",' +
-        '"analysis":"Courte analyse 2 phrases.","data_sources":["Forme","H2H"]}]}\n\n' +
-        'RULES: Real matches ' + todayISO + ' only. Max 8 matches. Confidence >= 65. JSON ONLY, start with {';
+      if (apiSportsKey && apiSportsKey.length > 5) {
+        // Mapping ligue → IDs API-Football
+        var leagueIds = {
+          all:        [61,39,140,135,78,2,3],   // L1, PL, LaLiga, SerieA, Bundesliga, UCL, UEL
+          ligue1:     [61],
+          pl:         [39],
+          laliga:     [140],
+          bundesliga: [78],
+          seriea:     [135],
+          champions:  [2],
+          europa:     [3]
+        };
+        var ids = leagueIds[spLeague] || leagueIds.all;
+        var season = new Date().getFullYear();
+        // Si après juin, saison courante; sinon saison précédente
+        if (new Date().getMonth() < 6) season = season - 1;
+
+        var fetchPromises = ids.map(function(lid) {
+          return fetch('https://v3.football.api-sports.io/fixtures?league=' + lid + '&season=' + season + '&date=' + todayISO, {
+            headers: { 'x-apisports-key': apiSportsKey }
+          }).then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; });
+        });
+
+        var results = await Promise.all(fetchPromises);
+        var fixtures = [];
+        results.forEach(function(r) {
+          if (r && r.response) fixtures = fixtures.concat(r.response);
+        });
+
+        if (fixtures.length > 0) {
+          fixturesList = fixtures.map(function(f) {
+            var home = f.teams && f.teams.home ? f.teams.home.name : '?';
+            var away = f.teams && f.teams.away ? f.teams.away.name : '?';
+            var league = f.league ? f.league.name : '?';
+            var time = f.fixture && f.fixture.date ? new Date(f.fixture.date).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : '--:--';
+            var venue = f.fixture && f.fixture.venue ? f.fixture.venue.name : '';
+            return home + ' vs ' + away + ' | ' + league + ' | ' + time + (venue ? ' | ' + venue : '');
+          }).join('
+');
+          spSetStep(steps, 0, 'done');
+          document.getElementById('sp-apisports-panel').style.display = 'none';
+        } else {
+          fixturesList = '';
+          spSetStep(steps, 0, 'done');
+        }
+      } else {
+        // Pas de clé API-Sports → montrer le panneau mais continuer avec Haiku web_search
+        var spPanel = document.getElementById('sp-apisports-panel');
+        if (spPanel) spPanel.style.display = 'block';
+        spSetStep(steps, 0, 'done');
+      }
+
+      spSetStep(steps, 1, 'active');
 
       // Fonction helper avec retry sur 429
       async function spFetchWithRetry(body, retries) {
@@ -7420,69 +7478,97 @@ select.f-input {
         return r;
       }
 
-      var resp1 = await spFetchWithRetry({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 2000,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        messages: [{ role: 'user', content: unifiedPrompt }]
-      }, 2);
-
-      if (!resp1.ok) {
-        var e1 = await resp1.json().catch(function(){ return {}; });
-        throw new Error(e1.error && e1.error.message ? e1.error.message : 'Erreur API ' + resp1.status);
-      }
-
-      var data1 = await resp1.json();
-      spSetStep(steps, 0, 'done');
-      spSetStep(steps, 1, 'active');
-
-      // Collecter le texte de la réponse
+      // ── ÉTAPE 2 : Construire le prompt selon si on a des fixtures API-Sports ou pas ──
       var fullText = '';
-      (data1.content || []).forEach(function(b){ if (b.type === 'text') fullText += b.text + '\n'; });
+      var jsonFormat = '{"matches":[{"match":"A vs B","league":"🇫🇷 Ligue 1","competition":"J29","time":"21:00",' +
+        '"pick":"Over 2.5","market_type":"over_under","odds":1.75,"prob_win":72,"confidence":75,' +
+        '"home_form":"WDWWL","away_form":"LWDWW","btts_pct":60,"avg_goals_home":1.8,"avg_goals_away":1.2,' +
+        '"avg_corners":10,"h2h_summary":"3V-1N-1D","key_absences":"Aucune","best_market_reason":"Raison courte",' +
+        '"analysis":"Analyse experte 2-3 phrases.","data_sources":["Forme","H2H"]}]}';
 
-      // Boucle multi-tours : Haiku appelle web_search plusieurs fois avant de répondre
-      // L'API web_search gère les résultats côté serveur — on relance jusqu'à stop_reason = end_turn
-      var currentData = data1;
-      var messages = [{ role: 'user', content: unifiedPrompt }];
-      var maxTurns = 6;
-
-      while (currentData.stop_reason === 'tool_use' && maxTurns-- > 0) {
+      if (fixturesList) {
+        // ── Mode API-Sports : Haiku analyse sans web_search (très peu de tokens) ──
         spSetStep(steps, 1, 'active');
+        var analysisPrompt =
+          'Tu es un expert en paris sportifs. Voici les matchs de football du ' + todayISO + ' :
 
-        // Ajouter le tour assistant
-        messages.push({ role: 'assistant', content: currentData.content });
+' +
+          fixturesList + '
 
-        // Construire les tool_result — l'API web_search stocke les résultats dans les blocs tool_result
-        var toolResultBlocks = [];
-        (currentData.content || []).forEach(function(b) {
-          if (b.type === 'tool_use') {
-            // Chercher le tool_result correspondant dans la même réponse
-            var found = null;
-            (currentData.content || []).forEach(function(rb) {
-              if (rb.type === 'tool_result' && rb.tool_use_id === b.id) found = rb;
-            });
-            toolResultBlocks.push(found || {
-              type: 'tool_result',
-              tool_use_id: b.id,
-              content: [{ type: 'text', text: 'Search completed. Generate the JSON with real matches found.' }]
-            });
-          }
-        });
+' +
+          'Pour chaque match, estime les probabilités et le meilleur marché (1X2, Over/Under, BTTS, Corners).
+' +
+          'Réponds UNIQUEMENT avec ce JSON (pas de texte avant/après) :
+' +
+          jsonFormat + '
 
-        if (!toolResultBlocks.length) break;
-        messages.push({ role: 'user', content: toolResultBlocks });
+' +
+          'RÈGLES : Max 8 matchs (confiance >= 65 uniquement). JSON ONLY, commence par {';
 
-        var respNext = await spFetchWithRetry({
+        var resp1 = await spFetchWithRetry({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 2000,
+          messages: [{ role: 'user', content: analysisPrompt }]
+        }, 2);
+
+        if (!resp1.ok) {
+          var e1 = await resp1.json().catch(function(){ return {}; });
+          throw new Error(e1.error && e1.error.message ? e1.error.message : 'Erreur API Anthropic ' + resp1.status);
+        }
+        var data1 = await resp1.json();
+        (data1.content || []).forEach(function(b){ if (b.type === 'text') fullText += b.text + '\n'; });
+
+      } else {
+        // ── Mode fallback : Haiku + web_search (sans clé API-Sports) ──
+        spSetStep(steps, 1, 'active');
+        var unifiedPrompt =
+          'Today is ' + todayISO + '. Search for football/soccer matches today for: ' + leagueLabel + '.\n' +
+          'Then respond ONLY with this JSON (no text before or after):\n' + jsonFormat + '\n\n' +
+          'RULES: Real matches only. Max 8 matches. Confidence >= 65. JSON ONLY, start with {';
+
+        var resp1 = await spFetchWithRetry({
           model: 'claude-haiku-4-5-20251001',
           max_tokens: 2000,
           tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-          messages: messages
+          messages: [{ role: 'user', content: unifiedPrompt }]
         }, 2);
 
-        if (!respNext.ok) break;
-        currentData = await respNext.json();
-        fullText = '';
-        (currentData.content || []).forEach(function(b){ if (b.type === 'text') fullText += b.text + '\n'; });
+        if (!resp1.ok) {
+          var e1 = await resp1.json().catch(function(){ return {}; });
+          throw new Error(e1.error && e1.error.message ? e1.error.message : 'Erreur API Anthropic ' + resp1.status);
+        }
+        var data1 = await resp1.json();
+        (data1.content || []).forEach(function(b){ if (b.type === 'text') fullText += b.text + '\n'; });
+
+        // Boucle multi-tours pour gérer tool_use web_search
+        var currentData = data1;
+        var messages = [{ role: 'user', content: unifiedPrompt }];
+        var maxTurns = 5;
+        while (currentData.stop_reason === 'tool_use' && maxTurns-- > 0) {
+          messages.push({ role: 'assistant', content: currentData.content });
+          var toolResultBlocks = [];
+          (currentData.content || []).forEach(function(b) {
+            if (b.type === 'tool_use') {
+              var found = null;
+              (currentData.content || []).forEach(function(rb) {
+                if (rb.type === 'tool_result' && rb.tool_use_id === b.id) found = rb;
+              });
+              toolResultBlocks.push(found || { type: 'tool_result', tool_use_id: b.id,
+                content: [{ type: 'text', text: 'Search done. Generate JSON.' }] });
+            }
+          });
+          if (!toolResultBlocks.length) break;
+          messages.push({ role: 'user', content: toolResultBlocks });
+          var respNext = await spFetchWithRetry({
+            model: 'claude-haiku-4-5-20251001', max_tokens: 2000,
+            tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+            messages: messages
+          }, 2);
+          if (!respNext.ok) break;
+          currentData = await respNext.json();
+          fullText = '';
+          (currentData.content || []).forEach(function(b){ if (b.type === 'text') fullText += b.text + '\n'; });
+        }
       }
 
       spSetStep(steps, 2, 'done');
@@ -7579,7 +7665,6 @@ select.f-input {
       localStorage.setItem('scout_pro_api_key', key);
     } catch(e) {}
     if (st) { st.textContent = '✅ Clé enregistrée ! Cliquez sur Analyser pour démarrer.'; st.style.color = '#69f0ae'; }
-    // Masquer le panneau et l'erreur après 1.2s
     setTimeout(function(){
       var panel = document.getElementById('sp-api-panel');
       if (panel) panel.style.display = 'none';
@@ -7587,6 +7672,30 @@ select.f-input {
       if (errBox) errBox.className = 'sp-err-box';
     }, 1200);
   };
+
+  window.spSaveApiSportsKey = function() {
+    var inp = document.getElementById('sp-apisports-input');
+    var st = document.getElementById('sp-apisports-status');
+    var key = inp ? inp.value.trim() : '';
+    if (!key || key.length < 5) {
+      if (st) { st.textContent = '❌ Clé invalide'; st.style.color = '#ff6b6b'; }
+      return;
+    }
+    try { localStorage.setItem('sp_apisports_key', key); } catch(e) {}
+    if (st) { st.textContent = '✅ Clé API-Football enregistrée ! Les matchs réels seront chargés automatiquement.'; st.style.color = '#69f0ae'; }
+    setTimeout(function(){
+      var panel = document.getElementById('sp-apisports-panel');
+      if (panel) panel.style.display = 'none';
+    }, 1500);
+  };
+
+  // Pré-remplir les inputs si clés déjà sauvegardées
+  (function(){
+    var sk = localStorage.getItem('sp_apisports_key');
+    if (sk) { var el = document.getElementById('sp-apisports-input'); if (el) el.value = sk; }
+    var ak = localStorage.getItem('ab_anthropic_key');
+    if (ak) { var el2 = document.getElementById('sp-key-input'); if (el2) el2.value = ak; }
+  })();
 })();
 </script>
 
