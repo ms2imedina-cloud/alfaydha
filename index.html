@@ -7365,7 +7365,12 @@ select.f-input {
 "data_sources":["Forme","H2H","Stats buts","Cotes","Blessures"]
 }]}
 
-RÈGLES: vrais matchs ${todayISO} uniquement | confiance ≥65% | max 10 matchs | NE PAS inventer`;
+RÈGLES STRICTES:
+- Vrais matchs ${todayISO} uniquement, vérifiés
+- Confiance ≥65% | Max 10 matchs
+- NE PAS inventer de match
+- Ta réponse finale = JSON UNIQUEMENT, aucun texte avant ou après
+- Commence ta réponse par { et termine par }\`;
 
     try {
       spSetStep(steps, 0, 'done');
@@ -7413,16 +7418,64 @@ RÈGLES: vrais matchs ${todayISO} uniquement | confiance ≥65% | max 10 matchs 
       spSetStep(steps, 2, 'done');
       spSetStep(steps, 3, 'active');
 
-      var textBlocks = data.content.filter(function(b){ return b.type === 'text'; }).map(function(b){ return b.text; });
-      var fullText = textBlocks.join('\n');
+      // Collect all text from response (including tool_result blocks)
+      var fullText = '';
+      (data.content || []).forEach(function(b){
+        if(b.type === 'text') fullText += b.text + '\n';
+        if(b.type === 'tool_result') fullText += (b.content||'') + '\n';
+      });
 
+      // If stop_reason is tool_use, Claude stopped to search — need to continue
+      // We handle this by making a follow-up call with the full conversation
       var parsed;
+      if(data.stop_reason === 'tool_use' || !fullText.includes('"matches"')) {
+        // Follow-up: send back tool results and ask for JSON output
+        spSetStep(steps, 2, 'active');
+        var messages2 = [
+          { role: 'user', content: prompt },
+          { role: 'assistant', content: data.content },
+          { role: 'user', content: 'Merci pour les recherches. Maintenant génère le JSON final avec tous les matchs trouvés. Réponds UNIQUEMENT avec le JSON, rien d\'autre.' }
+        ];
+        var resp2 = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true'
+          },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 3000,
+            messages: messages2
+          })
+        });
+        if(!resp2.ok){
+          var e2 = await resp2.json().catch(function(){return{};});
+          throw new Error(e2.error&&e2.error.message ? e2.error.message : 'Erreur API follow-up');
+        }
+        var data2 = await resp2.json();
+        fullText = (data2.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('\n');
+      }
+
+      spSetStep(steps, 2, 'done');
+      spSetStep(steps, 3, 'active');
+
       try {
-        var jsonMatch = fullText.match(/\{[\s\S]*"matches"[\s\S]*\}/);
-        if (!jsonMatch) throw new Error('Format JSON non trouvé');
-        parsed = JSON.parse(jsonMatch[0].replace(/```json|```/g,'').trim());
+        // Try to extract JSON object from the text
+        var cleaned = fullText.replace(/```json|```/g,'').trim();
+        // Find the outermost { ... } containing "matches"
+        var jsonMatch = cleaned.match(/\{[\s\S]*?"matches"[\s\S]*\}/);
+        if(!jsonMatch) {
+          // Try array directly
+          var arrMatch = cleaned.match(/\[[\s\S]*\]/);
+          if(arrMatch) parsed = { matches: JSON.parse(arrMatch[0]) };
+          else throw new Error('Aucun JSON trouvé dans la réponse. Réponse reçue: ' + fullText.substring(0,200));
+        } else {
+          parsed = JSON.parse(jsonMatch[0]);
+        }
       } catch(e) {
-        throw new Error('Erreur parsing JSON : ' + e.message);
+        throw new Error('Parsing JSON échoué: ' + e.message);
       }
 
       spSetStep(steps, 3, 'done');
