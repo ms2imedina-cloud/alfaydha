@@ -7254,13 +7254,13 @@ select.f-input {
   function spVbClass(ev){ return ev > 5 ? 'sp-vb-good' : ev > 0 ? 'sp-vb-ok' : 'sp-vb-bad'; }
   function spVbLabel(ev){ return ev > 5 ? '🔥 Value Bet' : ev > 0 ? '⚡ Légère Value' : '⚠️ Peu de Value'; }
 
-  // Market type badge colors
+  // Market type badge colors (1X2 et Corners uniquement)
   function spMarketColor(t){
-    var map={'1x2':'#a374ff','over_under':'#00e676','btts':'#ffd600','corners':'#00b0ff','cards':'#ff6b6b','halftime':'#ff9800','exact_score':'#e040fb'};
+    var map={'1x2':'#a374ff','corners':'#00b0ff'};
     return map[t]||'#a374ff';
   }
   function spMarketLabel(t){
-    var map={'1x2':'1X2','over_under':'Over/Under','btts':'BTTS','corners':'Corners','cards':'Cartons','halftime':'Mi-temps','exact_score':'Score exact'};
+    var map={'1x2':'1X2','corners':'Corners'};
     return map[t]||t||'1X2';
   }
 
@@ -7273,10 +7273,8 @@ select.f-input {
     var mktColor = spMarketColor(m.market_type);
     var mktLabel = spMarketLabel(m.market_type);
 
-    // Extra stats rows
+    // Extra stats rows (uniquement Corners)
     var extraStats = '';
-    if(m.btts_pct) extraStats += '<div class="sp-sb"><div class="sp-sb-l">BTTS %</div><div class="sp-sb-v" style="color:#ffd600">'+m.btts_pct+'%</div></div>';
-    if(m.avg_goals_home||m.avg_goals_away) extraStats += '<div class="sp-sb"><div class="sp-sb-l">Moy. buts</div><div class="sp-sb-v" style="color:#00e676">'+(m.avg_goals_home||'?')+' / '+(m.avg_goals_away||'?')+'</div></div>';
     if(m.avg_corners) extraStats += '<div class="sp-sb"><div class="sp-sb-l">Moy. corners</div><div class="sp-sb-v" style="color:#00b0ff">'+m.avg_corners+'</div></div>';
 
     var h2hRow = m.h2h_summary ? '<div style="font-size:11px;color:rgba(255,255,255,.45);margin:4px 0 2px;padding:5px 8px;background:rgba(255,255,255,.04);border-radius:7px">🔄 H2H : '+m.h2h_summary+'</div>' : '';
@@ -7369,24 +7367,25 @@ select.f-input {
       '\n' +
       'ÉTAPE 1 - RECHERCHE: Cherche "football matches '+todayISO+'" + "flashscore today" + une recherche par ligue ciblée.\n' +
       '\n' +
-      'ÉTAPE 2 - POUR CHAQUE MATCH, analyse ces marchés et choisis LE PLUS SÛR:\n' +
-      '1X2 | Over/Under 0.5/1.5/2.5 buts | BTTS Oui/Non | Corners Over/Under | Cartons | Score mi-temps\n' +
+      'ÉTAPE 2 - POUR CHAQUE MATCH, analyse UNIQUEMENT ces 2 marchés et choisis LE PLUS SÛR:\n' +
+      '1X2 (Victoire équipe domicile / Nul / Victoire équipe extérieure) | Corners Over/Under\n' +
       '\n' +
       'ÉTAPE 3 - Réponds UNIQUEMENT en JSON strict (pas de texte autour):\n' +
       '{"matches":[{\n' +
       '"match":"A vs B","league":"🇫🇷 Ligue 1","competition":"J29","time":"21:00",\n' +
-      '"pick":"Meilleur pari ex: Over 2.5 / BTTS Oui / Victoire 1","market_type":"over_under",\n' +
+      '"pick":"Victoire Domicile OU Nul OU Victoire Extérieur OU Corners Over/Under X","market_type":"1x2",\n' +
       '"odds":1.75,"prob_win":78,"confidence":82,\n' +
       '"home_form":"WDWWL","away_form":"LWDWW",\n' +
-      '"btts_pct":65,"avg_goals_home":1.8,"avg_goals_away":1.2,"avg_corners":10.5,\n' +
+      '"avg_corners":10.5,\n' +
       '"h2h_summary":"4V-1N sur 5 H2H","key_absences":"Joueur blessé (poste)",\n' +
-      '"best_market_reason":"Raison courte du choix de ce marché",\n' +
+      '"best_market_reason":"Raison courte du choix de ce marché (1X2 ou Corners)",\n' +
       '"analysis":"Analyse 3 phrases: forme, H2H, stats, justification.",\n' +
-      '"data_sources":["Forme","H2H","Stats buts","Cotes","Blessures"]\n' +
+      '"data_sources":["Forme","H2H","Stats corners","Cotes","Blessures"]\n' +
       '}]}\n' +
       '\n' +
       'RÈGLES STRICTES:\n' +
       '- Vrais matchs '+todayISO+' uniquement, vérifiés\n' +
+      '- UNIQUEMENT marchés 1X2 et Corners (pas de BTTS, pas Over/Under buts, pas Cartons)\n' +
       '- Confiance ≥65% | Max 10 matchs\n' +
       '- NE PAS inventer de match\n' +
       '- Ta réponse finale = JSON UNIQUEMENT, aucun texte avant ou après\n' +
@@ -7479,7 +7478,7 @@ select.f-input {
 
       // ── ÉTAPE 2 : Construire le prompt selon si on a des fixtures API-Sports ou pas ──
       var fullText = '';
-      var jsonFormat = '{"matches":[{"match":"A vs B","league":"Ligue 1","time":"21:00","pick":"Over 2.5","market_type":"over_under","odds":1.75,"prob_win":72,"confidence":75,"home_form":"WDWWL","away_form":"LWDWW","btts_pct":60,"avg_goals_home":1.8,"avg_goals_away":1.2,"avg_corners":10,"h2h_summary":"3V-1N","key_absences":"None","best_market_reason":"Reason","analysis":"2 sentence analysis.","data_sources":["Form"]}]}';
+      var jsonFormat = '{"matches":[{"match":"A vs B","league":"Ligue 1","time":"21:00","pick":"Victoire Domicile","market_type":"1x2","odds":1.75,"prob_win":72,"confidence":75,"home_form":"WDWWL","away_form":"LWDWW","avg_corners":10,"h2h_summary":"3V-1N","key_absences":"None","best_market_reason":"Raison 1X2 ou Corners","analysis":"2 sentence analysis.","data_sources":["Forme","H2H","Corners"]}]}';
 
       // System prompt commun : force le JSON strict
       var spSystem = 'Football analyst. JSON only. No text before or after. Start with {. No data: {"matches":[]}. ';
@@ -7487,7 +7486,7 @@ select.f-input {
       if (fixturesList) {
         // ── Mode API-Sports : Haiku analyse la liste de matchs fournie ──
         spSetStep(steps, 1, 'active');
-        var userMsg = 'Matches ' + todayISO + ':\n' + fixturesList + '\nReturn JSON:\n' + jsonFormat + '\nMax 8 picks, confidence>=65.';
+        var userMsg = 'Matches ' + todayISO + ':\n' + fixturesList + '\nReturn JSON (ONLY 1X2 and Corners markets):\n' + jsonFormat + '\nMax 8 picks, confidence>=65, ONLY market_type "1x2" or "corners".';
 
         var resp1 = await spFetchWithRetry({
           model: 'claude-haiku-4-5-20251001',
@@ -7512,7 +7511,7 @@ select.f-input {
       } else {
         // ── Mode fallback : web_search + JSON ──
         spSetStep(steps, 1, 'active');
-        var searchMsg = 'Find football matches ' + todayISO + ' leagues: ' + leagueLabel + '. Return JSON:\n' + jsonFormat + '\nMax 8, confidence>=65.';
+        var searchMsg = 'Find football matches ' + todayISO + ' leagues: ' + leagueLabel + '. Return JSON (ONLY 1X2 and Corners markets):\n' + jsonFormat + '\nMax 8, confidence>=65, ONLY market_type "1x2" or "corners".';
 
         var resp1 = await spFetchWithRetry({
           model: 'claude-haiku-4-5-20251001',
