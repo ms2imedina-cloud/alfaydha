@@ -7234,14 +7234,38 @@ select.f-input {
   function spVbClass(ev){ return ev > 5 ? 'sp-vb-good' : ev > 0 ? 'sp-vb-ok' : 'sp-vb-bad'; }
   function spVbLabel(ev){ return ev > 5 ? '🔥 Value Bet' : ev > 0 ? '⚡ Légère Value' : '⚠️ Peu de Value'; }
 
+  // Market type badge colors
+  function spMarketColor(t){
+    var map={'1x2':'#a374ff','over_under':'#00e676','btts':'#ffd600','corners':'#00b0ff','cards':'#ff6b6b','halftime':'#ff9800','exact_score':'#e040fb'};
+    return map[t]||'#a374ff';
+  }
+  function spMarketLabel(t){
+    var map={'1x2':'1X2','over_under':'Over/Under','btts':'BTTS','corners':'Corners','cards':'Cartons','halftime':'Mi-temps','exact_score':'Score exact'};
+    return map[t]||t||'1X2';
+  }
+
   function spRenderCard(m, idx, bankroll){
     var cc = spConfClass(m.confidence);
     var ev = ((m.prob_win / 100) * m.odds - 1) * 100;
     var evStr = (ev > 0 ? '+' : '') + ev.toFixed(1) + '%';
     var kellyMise = spKelly(m.prob_win / 100, m.odds, bankroll);
     var tags = (m.data_sources || []).map(function(t){ return '<span class="sp-dtag">'+t+'</span>'; }).join(' ');
-    return '<div class="sp-card" style="animation-delay:'+( idx*0.08)+'s">' +
+    var mktColor = spMarketColor(m.market_type);
+    var mktLabel = spMarketLabel(m.market_type);
+
+    // Extra stats rows
+    var extraStats = '';
+    if(m.btts_pct) extraStats += '<div class="sp-sb"><div class="sp-sb-l">BTTS %</div><div class="sp-sb-v" style="color:#ffd600">'+m.btts_pct+'%</div></div>';
+    if(m.avg_goals_home||m.avg_goals_away) extraStats += '<div class="sp-sb"><div class="sp-sb-l">Moy. buts</div><div class="sp-sb-v" style="color:#00e676">'+(m.avg_goals_home||'?')+' / '+(m.avg_goals_away||'?')+'</div></div>';
+    if(m.avg_corners) extraStats += '<div class="sp-sb"><div class="sp-sb-l">Moy. corners</div><div class="sp-sb-v" style="color:#00b0ff">'+m.avg_corners+'</div></div>';
+
+    var h2hRow = m.h2h_summary ? '<div style="font-size:11px;color:rgba(255,255,255,.45);margin:4px 0 2px;padding:5px 8px;background:rgba(255,255,255,.04);border-radius:7px">🔄 H2H : '+m.h2h_summary+'</div>' : '';
+    var absRow = m.key_absences ? '<div style="font-size:11px;color:#ff6b6b;margin:2px 0;padding:5px 8px;background:rgba(255,107,107,.07);border-radius:7px">🚑 Absences : '+m.key_absences+'</div>' : '';
+    var reasonRow = m.best_market_reason ? '<div style="font-size:11px;color:'+mktColor+';margin:4px 0;padding:5px 8px;background:rgba(255,255,255,.04);border-radius:7px;border-left:2px solid '+mktColor+'">💡 '+m.best_market_reason+'</div>' : '';
+
+    return '<div class="sp-card" style="animation-delay:'+(idx*0.08)+'s">' +
       '<div class="sp-card-top '+cc+'"></div>' +
+      // Header
       '<div class="sp-ch">' +
         '<div class="sp-ch-n">'+String(idx+1).padStart(2,'0')+'</div>' +
         '<div class="sp-ch-m">' +
@@ -7250,20 +7274,31 @@ select.f-input {
         '</div>' +
         '<div class="sp-ch-time">'+m.time+'</div>' +
       '</div>' +
-      '<div class="sp-vb-badge '+spVbClass(ev)+'">'+spVbLabel(ev)+'</div>' +
+      // Market badge
+      '<div style="display:flex;gap:6px;align-items:center;margin:4px 0 6px">' +
+        '<span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:'+mktColor+'22;color:'+mktColor+';border:1px solid '+mktColor+'55">📌 '+mktLabel+'</span>' +
+        '<div class="sp-vb-badge '+spVbClass(ev)+'" style="margin:0">'+spVbLabel(ev)+' '+evStr+'</div>' +
+      '</div>' +
+      // Bet
       '<div class="sp-bet">' +
-        '<div><div class="sp-bet-lbl">Sélection</div><div class="sp-bet-pick">'+m.pick+'</div></div>' +
+        '<div><div class="sp-bet-lbl">Meilleure sélection</div><div class="sp-bet-pick" style="color:'+mktColor+'">'+m.pick+'</div></div>' +
         '<div class="sp-bet-cote">'+m.odds.toFixed(2)+'</div>' +
       '</div>' +
       '<div class="sp-kelly-row"><span class="sp-kelly-lbl">💰 Mise Kelly</span><span class="sp-kelly-val">'+kellyMise+'€</span></div>' +
+      // Stats grid
       '<div class="sp-stats">' +
         '<div class="sp-sb"><div class="sp-sb-l">Prob. réelle</div><div class="sp-sb-v" style="color:#00f0ff">'+m.prob_win+'%</div></div>' +
         '<div class="sp-sb"><div class="sp-sb-l">Forme dom.</div><div class="sp-sb-v" style="color:#00e676">'+(m.home_form||'—')+'</div></div>' +
         '<div class="sp-sb"><div class="sp-sb-l">Forme ext.</div><div class="sp-sb-v" style="color:#ffd600">'+(m.away_form||'—')+'</div></div>' +
+        extraStats +
       '</div>' +
+      // H2H, absences, reason
+      h2hRow + absRow + reasonRow +
+      // Confidence bar
       '<div class="sp-conf-bg"><div class="sp-conf-fill '+cc+'" style="width:'+m.confidence+'%"></div></div>' +
       '<div class="sp-conf-row"><span>Confiance</span><span class="sp-cp '+cc+'">'+m.confidence+'%</span></div>' +
-      '<div class="sp-ana"><div class="sp-ana-lbl">Analyse Expert</div>'+m.analysis+'<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:5px">'+tags+'</div></div>' +
+      // Analysis
+      '<div class="sp-ana"><div class="sp-ana-lbl">Analyse Expert Multi-Marchés</div>'+m.analysis+'<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:5px">'+tags+'</div></div>' +
     '</div>';
   }
 
@@ -7290,16 +7325,17 @@ select.f-input {
     var leagueLabel = leagueMap[spLeague] || 'toutes les ligues';
 
     var steps = [
-      { ico: '🔍', label: 'Recherche des matchs du jour sur le web...' },
-      { ico: '📊', label: 'Collecte des stats, forme, H2H, blessures...' },
-      { ico: '🧠', label: 'Analyse probabiliste et calcul des value bets...' },
-      { ico: '⚡', label: 'Génération des picks finaux et mises Kelly...' },
+      { ico: '🌐', label: 'Collecte des matchs : SofaScore, FlashScore, BBC Sport, ESPN...' },
+      { ico: '⚽', label: 'Analyse 1X2, Over/Under, BTTS, Corners, Cartons, Mi-temps...' },
+      { ico: '📊', label: 'Calcul probabilités par marché — forme, H2H, blessures, stats...' },
+      { ico: '🧠', label: 'Sélection du marché optimal (max probabilité) par match...' },
+      { ico: '⚡', label: 'Génération picks finaux + Value Bets + Mises Kelly...' },
     ];
     spRenderSteps(steps);
 
     var barWidth = 0;
     var barInterval = setInterval(function(){
-      barWidth = Math.min(barWidth + 0.4, 90);
+      barWidth = Math.min(barWidth + 0.18, 88);
       bar.style.width = barWidth + '%';
     }, 200);
 
@@ -7309,7 +7345,104 @@ select.f-input {
     var todayDate = spToday.toLocaleDateString('fr-FR', {day:'numeric', month:'long', year:'numeric'});
     var todayISO = spToday.toISOString().split('T')[0];
 
-    var prompt = 'Scout Pro - Expert football IA. Date: '+todayDate+' ('+todayISO+'). Ligues: '+leagueLabel+'.\n\nCherche avec web_search les matchs de football du '+todayISO+' dans ces ligues, puis analyse-les.\n\nRéponds UNIQUEMENT en JSON valide, sans texte ni backticks:\n{"matches":[{"match":"Équipe A vs Équipe B","league":"🇫🇷 Ligue 1","competition":"Ligue 1 - J28","time":"21:00","pick":"Pari recommandé","odds":1.85,"prob_win":62,"confidence":74,"home_form":"WDWWL","away_form":"LWDWW","analysis":"Analyse 2-3 phrases : forme, H2H, absences, valeur du pari.","data_sources":["Forme","H2H","Blessures","Cotes"]}]}\n\nRègles: vrais matchs du '+todayISO+' uniquement, cotes 1.40-4.50, confiance ≥50%, analyse en français.';
+    var prompt = `Tu es SCOUT PRO ELITE — le système d'analyse football le plus avancé au monde. Date : ${todayDate} (${todayISO}). Ligues : ${leagueLabel}.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PHASE 1 — COLLECTE EXHAUSTIVE DES MATCHS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Effectue ces recherches web dans l'ordre, sans exception :
+1. "football matches today ${todayISO} schedule"
+2. "matchs football ${todayISO} programme complet"
+3. "sofascore football ${todayISO}"
+4. "flashscore today ${todayISO}"
+5. "Ligue 1 fixtures ${todayISO}", "Premier League ${todayISO}", "La Liga ${todayISO}", "Bundesliga ${todayISO}", "Serie A ${todayISO}", "Champions League ${todayISO}", "Europa League ${todayISO}"
+Objectif : récolter TOUS les matchs confirmés de la journée.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PHASE 2 — ANALYSE ULTRA-PROFONDE PAR MATCH
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Pour CHAQUE match collecté, analyse TOUS ces marchés :
+
+A) RÉSULTAT 1X2
+   - Forme domicile/extérieur sur 10 derniers matchs
+   - H2H sur 5 dernières confrontations
+   - Classement, points, buts marqués/concédés
+   - Probabilité 1 / X / 2 calculée
+
+B) TOTAL BUTS (Over/Under 0.5 / 1.5 / 2.5 / 3.5)
+   - Moyenne buts/match domicile et extérieur
+   - Tendance Over/Under des 10 derniers matchs
+   - Matchs récents des deux équipes
+
+C) LES DEUX ÉQUIPES MARQUENT (BTTS Oui/Non)
+   - % de matchs avec BTTS pour chaque équipe
+   - Solidité défensive (clean sheets)
+   - Attaque efficace (matchs sans marquer)
+
+D) CORNERS
+   - Moyenne corners/match domicile + extérieur
+   - Total corners habituel de ces équipes
+   - Over/Under 8.5 corners
+
+E) CARTONS (Jaunes/Rouges)
+   - Arbitre désigné et sa moyenne de cartons
+   - Historique disciplinaire des deux équipes
+   - Over/Under cartons jaunes
+
+F) MI-TEMPS / FIN DE MATCH
+   - Tendance de scores à la mi-temps
+   - Équipes qui marquent tard ou tôt
+   - Double chance mi-temps/final
+
+G) SCORE EXACT (si très haute confiance)
+   - Score le plus fréquent en H2H
+   - Score le plus probable selon les stats
+
+H) HORS-JEU
+   - Équipes avec haut taux de hors-jeu
+   - Stratégie de pressing haut
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PHASE 3 — SÉLECTION DU MEILLEUR PARI
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Pour chaque match, après avoir analysé TOUS les marchés ci-dessus :
+→ Sélectionne LE SEUL pari avec la plus haute probabilité de réussite
+→ Priorité aux marchés les plus sûrs : Over 0.5 buts, BTTS Non si défense solide, 1X2 favori net, Over corners si équipes offensives
+→ Le "pick" doit être le marché le plus probable statistiquement, pas forcément 1X2
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PHASE 4 — FORMAT JSON STRICT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Réponds UNIQUEMENT avec ce JSON valide, sans texte ni backticks autour :
+{"matches":[{
+  "match":"Équipe A vs Équipe B",
+  "league":"🇫🇷 Ligue 1",
+  "competition":"Ligue 1 - J29",
+  "time":"21:00",
+  "pick":"MEILLEUR PARI ex: Over 2.5 buts / BTTS Oui / Victoire domicile / Over 9.5 corners",
+  "market_type":"1x2|over_under|btts|corners|cards|halftime|exact_score",
+  "odds":1.75,
+  "prob_win":78,
+  "confidence":82,
+  "home_form":"WDWWL",
+  "away_form":"LWDWW",
+  "btts_pct":65,
+  "avg_goals_home":1.8,
+  "avg_goals_away":1.2,
+  "avg_corners":10.5,
+  "h2h_summary":"4V-1N-0D sur 5 derniers H2H",
+  "key_absences":"Nom joueur blessé (poste)",
+  "best_market_reason":"Explication courte pourquoi CE marché est le plus sûr",
+  "analysis":"Analyse complète 3-4 phrases : forme, H2H, stats clés, pourquoi ce pari est optimal.",
+  "data_sources":["Forme 10J","H2H 5M","Stats buts","Cotes marché","Blessures"]
+}]}
+
+RÈGLES FINALES :
+- UNIQUEMENT vrais matchs vérifiés sur 2+ sources du ${todayISO}
+- Sélectionne le marché avec probabilité la PLUS HAUTE (pas forcément 1X2)
+- Confiance ≥ 65% obligatoire — qualité > quantité
+- Maximum 12 matchs, mais chacun avec une analyse complète
+- NE JAMAIS inventer un match ou une statistique`;
 
     try {
       spSetStep(steps, 0, 'done');
@@ -7339,7 +7472,7 @@ select.f-input {
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-20250514',
-          max_tokens: 2000,
+          max_tokens: 6000,
           tools: [{ type: 'web_search_20250305', name: 'web_search' }],
           messages: [{ role: 'user', content: prompt }]
         })
