@@ -7345,32 +7345,32 @@ select.f-input {
     var todayDate = spToday.toLocaleDateString('fr-FR', {day:'numeric', month:'long', year:'numeric'});
     var todayISO = spToday.toISOString().split('T')[0];
 
-    var prompt = `SCOUT PRO - ${todayDate} (${todayISO}) - Ligues: ${leagueLabel}
-
-ÉTAPE 1 - RECHERCHE: Cherche "football matches ${todayISO}" + "flashscore today" + une recherche par ligue ciblée.
-
-ÉTAPE 2 - POUR CHAQUE MATCH, analyse ces marchés et choisis LE PLUS SÛR:
-1X2 | Over/Under 0.5/1.5/2.5 buts | BTTS Oui/Non | Corners Over/Under | Cartons | Score mi-temps
-
-ÉTAPE 3 - Réponds UNIQUEMENT en JSON strict (pas de texte autour):
-{"matches":[{
-"match":"A vs B","league":"🇫🇷 Ligue 1","competition":"J29","time":"21:00",
-"pick":"Meilleur pari ex: Over 2.5 / BTTS Oui / Victoire 1","market_type":"over_under",
-"odds":1.75,"prob_win":78,"confidence":82,
-"home_form":"WDWWL","away_form":"LWDWW",
-"btts_pct":65,"avg_goals_home":1.8,"avg_goals_away":1.2,"avg_corners":10.5,
-"h2h_summary":"4V-1N sur 5 H2H","key_absences":"Joueur blessé (poste)",
-"best_market_reason":"Raison courte du choix de ce marché",
-"analysis":"Analyse 3 phrases: forme, H2H, stats, justification.",
-"data_sources":["Forme","H2H","Stats buts","Cotes","Blessures"]
-}]}
-
-RÈGLES STRICTES:
-- Vrais matchs ${todayISO} uniquement, vérifiés
-- Confiance ≥65% | Max 10 matchs
-- NE PAS inventer de match
-- Ta réponse finale = JSON UNIQUEMENT, aucun texte avant ou après
-- Commence ta réponse par { et termine par }\`;
+    var prompt = 'SCOUT PRO - '+todayDate+' ('+todayISO+') - Ligues: '+leagueLabel+'\n' +
+      '\n' +
+      'ÉTAPE 1 - RECHERCHE: Cherche "football matches '+todayISO+'" + "flashscore today" + une recherche par ligue ciblée.\n' +
+      '\n' +
+      'ÉTAPE 2 - POUR CHAQUE MATCH, analyse ces marchés et choisis LE PLUS SÛR:\n' +
+      '1X2 | Over/Under 0.5/1.5/2.5 buts | BTTS Oui/Non | Corners Over/Under | Cartons | Score mi-temps\n' +
+      '\n' +
+      'ÉTAPE 3 - Réponds UNIQUEMENT en JSON strict (pas de texte autour):\n' +
+      '{"matches":[{\n' +
+      '"match":"A vs B","league":"🇫🇷 Ligue 1","competition":"J29","time":"21:00",\n' +
+      '"pick":"Meilleur pari ex: Over 2.5 / BTTS Oui / Victoire 1","market_type":"over_under",\n' +
+      '"odds":1.75,"prob_win":78,"confidence":82,\n' +
+      '"home_form":"WDWWL","away_form":"LWDWW",\n' +
+      '"btts_pct":65,"avg_goals_home":1.8,"avg_goals_away":1.2,"avg_corners":10.5,\n' +
+      '"h2h_summary":"4V-1N sur 5 H2H","key_absences":"Joueur blessé (poste)",\n' +
+      '"best_market_reason":"Raison courte du choix de ce marché",\n' +
+      '"analysis":"Analyse 3 phrases: forme, H2H, stats, justification.",\n' +
+      '"data_sources":["Forme","H2H","Stats buts","Cotes","Blessures"]\n' +
+      '}]}\n' +
+      '\n' +
+      'RÈGLES STRICTES:\n' +
+      '- Vrais matchs '+todayISO+' uniquement, vérifiés\n' +
+      '- Confiance ≥65% | Max 10 matchs\n' +
+      '- NE PAS inventer de match\n' +
+      '- Ta réponse finale = JSON UNIQUEMENT, aucun texte avant ou après\n' +
+      '- Commence ta réponse par { et termine par }';
 
     try {
       spSetStep(steps, 0, 'done');
@@ -7472,7 +7472,7 @@ RÈGLES STRICTES:
 
       // ── Parser le JSON dans la réponse ──
       try {
-        var cleaned = fullText.replace(/```json|```/g,'').trim();
+        var cleaned = fullText.split('```json').join('').split('```').join('').trim();
         var jsonMatch = cleaned.match(/\{[\s\S]*"matches"[\s\S]*\}/);
         if(!jsonMatch) {
           var arrMatch = cleaned.match(/\[[\s\S]*\]/);
