@@ -7446,8 +7446,7 @@ select.f-input {
             var time = f.fixture && f.fixture.date ? new Date(f.fixture.date).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : '--:--';
             var venue = f.fixture && f.fixture.venue ? f.fixture.venue.name : '';
             return home + ' vs ' + away + ' | ' + league + ' | ' + time + (venue ? ' | ' + venue : '');
-          }).join('
-');
+          }).join('\n');
           spSetStep(steps, 0, 'done');
           document.getElementById('sp-apisports-panel').style.display = 'none';
         } else {
@@ -7673,35 +7672,38 @@ select.f-input {
     }, 1200);
   };
 
-  window.spSaveApiSportsKey = function() {
-    var inp = document.getElementById('sp-apisports-input');
-    var st = document.getElementById('sp-apisports-status');
-    var key = inp ? inp.value.trim() : '';
-    if (!key || key.length < 5) {
-      if (st) { st.textContent = '❌ Clé invalide'; st.style.color = '#ff6b6b'; }
-      return;
-    }
-    try { localStorage.setItem('sp_apisports_key', key); } catch(e) {}
-    if (st) { st.textContent = '✅ Clé API-Football enregistrée ! Les matchs réels seront chargés automatiquement.'; st.style.color = '#69f0ae'; }
-    setTimeout(function(){
-      var panel = document.getElementById('sp-apisports-panel');
-      if (panel) panel.style.display = 'none';
-    }, 1500);
-  };
-
-  // Pré-remplir les inputs si clés déjà sauvegardées
-  (function(){
-    var sk = localStorage.getItem('sp_apisports_key');
-    if (sk) { var el = document.getElementById('sp-apisports-input'); if (el) el.value = sk; }
-    var ak = localStorage.getItem('ab_anthropic_key');
-    if (ak) { var el2 = document.getElementById('sp-key-input'); if (el2) el2.value = ak; }
-  })();
 })();
 </script>
 
  </div><!-- /admin-content -->
  </div><!-- /admin-panel -->
 </div><!-- /admin-overlay -->
+
+<script>
+/* ── Scout Pro — fonctions globales ── */
+function spSaveApiSportsKey() {
+  var inp = document.getElementById('sp-apisports-input');
+  var st = document.getElementById('sp-apisports-status');
+  var key = inp ? inp.value.trim() : '';
+  if (!key || key.length < 5) {
+    if (st) { st.textContent = '❌ Clé invalide'; st.style.color = '#ff6b6b'; }
+    return;
+  }
+  try { localStorage.setItem('sp_apisports_key', key); } catch(e) {}
+  if (st) { st.textContent = '✅ Clé API-Football enregistrée !'; st.style.color = '#69f0ae'; }
+  setTimeout(function(){
+    var panel = document.getElementById('sp-apisports-panel');
+    if (panel) panel.style.display = 'none';
+  }, 1500);
+}
+// Pré-remplir les inputs au chargement
+document.addEventListener('DOMContentLoaded', function() {
+  var sk = localStorage.getItem('sp_apisports_key');
+  if (sk) { var el = document.getElementById('sp-apisports-input'); if (el) el.value = sk; }
+  var ak = localStorage.getItem('ab_anthropic_key');
+  if (ak) { var el2 = document.getElementById('sp-key-input'); if (el2) el2.value = ak; }
+});
+</script>
 
 <script>
 /* ── CORE ── */
