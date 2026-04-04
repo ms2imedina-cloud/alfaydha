@@ -7440,34 +7440,49 @@ select.f-input {
       var fullText = '';
       (data1.content || []).forEach(function(b){ if (b.type === 'text') fullText += b.text + '\n'; });
 
-      // Si stop_reason = tool_use, on continue la conversation pour obtenir le JSON final
-      if (data1.stop_reason === 'tool_use') {
-        spSetStep(steps, 1, 'done');
-        spSetStep(steps, 2, 'active');
+      // Boucle multi-tours : Haiku appelle web_search plusieurs fois avant de répondre
+      // L'API web_search gère les résultats côté serveur — on relance jusqu'à stop_reason = end_turn
+      var currentData = data1;
+      var messages = [{ role: 'user', content: unifiedPrompt }];
+      var maxTurns = 6;
 
-        var toolResults = [];
-        (data1.content || []).forEach(function(b){
+      while (currentData.stop_reason === 'tool_use' && maxTurns-- > 0) {
+        spSetStep(steps, 1, 'active');
+
+        // Ajouter le tour assistant
+        messages.push({ role: 'assistant', content: currentData.content });
+
+        // Construire les tool_result — l'API web_search stocke les résultats dans les blocs tool_result
+        var toolResultBlocks = [];
+        (currentData.content || []).forEach(function(b) {
           if (b.type === 'tool_use') {
-            toolResults.push({ type: 'tool_result', tool_use_id: b.id, content: 'web search results obtained' });
+            // Chercher le tool_result correspondant dans la même réponse
+            var found = null;
+            (currentData.content || []).forEach(function(rb) {
+              if (rb.type === 'tool_result' && rb.tool_use_id === b.id) found = rb;
+            });
+            toolResultBlocks.push(found || {
+              type: 'tool_result',
+              tool_use_id: b.id,
+              content: [{ type: 'text', text: 'Search completed. Generate the JSON with real matches found.' }]
+            });
           }
         });
 
-        var resp2 = await spFetchWithRetry({
+        if (!toolResultBlocks.length) break;
+        messages.push({ role: 'user', content: toolResultBlocks });
+
+        var respNext = await spFetchWithRetry({
           model: 'claude-haiku-4-5-20251001',
           max_tokens: 2000,
           tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-          messages: [
-            { role: 'user', content: unifiedPrompt },
-            { role: 'assistant', content: data1.content },
-            { role: 'user', content: toolResults }
-          ]
+          messages: messages
         }, 2);
 
-        if (resp2.ok) {
-          var data2 = await resp2.json();
-          fullText = '';
-          (data2.content || []).forEach(function(b){ if (b.type === 'text') fullText += b.text + '\n'; });
-        }
+        if (!respNext.ok) break;
+        currentData = await respNext.json();
+        fullText = '';
+        (currentData.content || []).forEach(function(b){ if (b.type === 'text') fullText += b.text + '\n'; });
       }
 
       spSetStep(steps, 2, 'done');
@@ -7476,20 +7491,32 @@ select.f-input {
       // ── Parser le JSON ──
       var parsed = null;
       try {
-        var cleaned = fullText.split('```json').join('').split('```').join('').trim();
-        // Chercher le JSON entre { et }
+        // Nettoyer les balises markdown éventuelles
+        var cleaned = fullText.replace(/```json/g,'').replace(/```/g,'').trim();
+        // Chercher le JSON entre { et } (le modèle peut ajouter du texte avant/après)
         var first = cleaned.indexOf('{');
         var last = cleaned.lastIndexOf('}');
-        if(first === -1 || last === -1) throw new Error('Pas de JSON dans: ' + cleaned.substring(0,200));
-        parsed = JSON.parse(cleaned.substring(first, last + 1));
+        if (first === -1 || last === -1) {
+          // Tentative : chercher un tableau JSON direct
+          var fa = cleaned.indexOf('['), la = cleaned.lastIndexOf(']');
+          if (fa !== -1 && la !== -1) {
+            parsed = { matches: JSON.parse(cleaned.substring(fa, la + 1)) };
+          } else {
+            throw new Error('Réponse inattendue du modèle : ' + cleaned.substring(0, 300));
+          }
+        } else {
+          parsed = JSON.parse(cleaned.substring(first, last + 1));
+        }
       } catch(e) {
-        throw new Error('Parsing JSON: ' + e.message);
+        throw new Error('Réponse impossible à analyser. Réessayez. Détail: ' + e.message.substring(0, 120));
       }
 
       spSetStep(steps, 3, 'done');
 
-      var matches = parsed.matches || [];
-      if (!matches.length) throw new Error('Aucun match trouvé pour aujourd\'hui.');
+      var matches = (parsed && parsed.matches) || [];
+      if (!matches.length) {
+        throw new Error('Aucun match trouvé pour aujourd\'hui — les ligues sélectionnées n\'ont peut-être pas de matchs. Essayez "Toutes les ligues".');
+      }
 
       clearInterval(barInterval);
       bar.style.width = '100%';
