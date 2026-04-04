@@ -7439,13 +7439,13 @@ select.f-input {
         });
 
         if (fixtures.length > 0) {
-          fixturesList = fixtures.map(function(f) {
+          var capped = fixtures.slice(0, 20);
+          fixturesList = capped.map(function(f) {
             var home = f.teams && f.teams.home ? f.teams.home.name : '?';
             var away = f.teams && f.teams.away ? f.teams.away.name : '?';
             var league = f.league ? f.league.name : '?';
             var time = f.fixture && f.fixture.date ? new Date(f.fixture.date).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : '--:--';
-            var venue = f.fixture && f.fixture.venue ? f.fixture.venue.name : '';
-            return home + ' vs ' + away + ' | ' + league + ' | ' + time + (venue ? ' | ' + venue : '');
+            return home + ' vs ' + away + ' | ' + league + ' | ' + time;
           }).join('\n');
           spSetStep(steps, 0, 'done');
           document.getElementById('sp-apisports-panel').style.display = 'none';
@@ -7479,19 +7479,15 @@ select.f-input {
 
       // ── ÉTAPE 2 : Construire le prompt selon si on a des fixtures API-Sports ou pas ──
       var fullText = '';
-      var jsonFormat = '{"matches":[{"match":"A vs B","league":"🇫🇷 Ligue 1","competition":"J29","time":"21:00",' +
-        '"pick":"Over 2.5","market_type":"over_under","odds":1.75,"prob_win":72,"confidence":75,' +
-        '"home_form":"WDWWL","away_form":"LWDWW","btts_pct":60,"avg_goals_home":1.8,"avg_goals_away":1.2,' +
-        '"avg_corners":10,"h2h_summary":"3V-1N-1D","key_absences":"Aucune","best_market_reason":"Raison courte",' +
-        '"analysis":"Analyse experte 2-3 phrases.","data_sources":["Forme","H2H"]}]}';
+      var jsonFormat = '{"matches":[{"match":"A vs B","league":"Ligue 1","time":"21:00","pick":"Over 2.5","market_type":"over_under","odds":1.75,"prob_win":72,"confidence":75,"home_form":"WDWWL","away_form":"LWDWW","btts_pct":60,"avg_goals_home":1.8,"avg_goals_away":1.2,"avg_corners":10,"h2h_summary":"3V-1N","key_absences":"None","best_market_reason":"Reason","analysis":"2 sentence analysis.","data_sources":["Form"]}]}';
 
       // System prompt commun : force le JSON strict
-      var spSystem = 'You are a football betting analyst. You ALWAYS respond with ONLY a valid JSON object. No explanations, no apologies, no markdown. Start your response with { and end with }. If you have no data, return {"matches":[]}.';
+      var spSystem = 'Football analyst. JSON only. No text before or after. Start with {. No data: {"matches":[]}. ';
 
       if (fixturesList) {
         // ── Mode API-Sports : Haiku analyse la liste de matchs fournie ──
         spSetStep(steps, 1, 'active');
-        var userMsg = 'Football matches on ' + todayISO + ':\n' + fixturesList + '\n\nAnalyze each match and return this JSON:\n' + jsonFormat + '\nRULES: max 8 matches, confidence >= 65, JSON only.';
+        var userMsg = 'Matches ' + todayISO + ':\n' + fixturesList + '\nReturn JSON:\n' + jsonFormat + '\nMax 8 picks, confidence>=65.';
 
         var resp1 = await spFetchWithRetry({
           model: 'claude-haiku-4-5-20251001',
@@ -7516,7 +7512,7 @@ select.f-input {
       } else {
         // ── Mode fallback : web_search + JSON ──
         spSetStep(steps, 1, 'active');
-        var searchMsg = 'Search for football matches scheduled on ' + todayISO + ' in: ' + leagueLabel + '. Then return this JSON with real matches found:\n' + jsonFormat + '\nRULES: real matches only, max 8, confidence >= 65.';
+        var searchMsg = 'Find football matches ' + todayISO + ' leagues: ' + leagueLabel + '. Return JSON:\n' + jsonFormat + '\nMax 8, confidence>=65.';
 
         var resp1 = await spFetchWithRetry({
           model: 'claude-haiku-4-5-20251001',
