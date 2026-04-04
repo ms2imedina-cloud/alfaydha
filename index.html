@@ -7415,6 +7415,16 @@ select.f-input {
         })
       });
 
+      // Retry automatique si rate limit (429)
+      if(resp1.status === 429) {
+        spSetStep(steps, 0, 'active');
+        await new Promise(function(r){ setTimeout(r, 5000); });
+        resp1 = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+          body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 4000, tools: [{ type: 'web_search_20250305', name: 'web_search' }], messages: [{ role: 'user', content: searchPrompt }] })
+        });
+      }
       if(!resp1.ok){
         var e1 = await resp1.json().catch(function(){return{};});
         throw new Error(e1.error && e1.error.message ? e1.error.message : 'Erreur API ' + resp1.status);
@@ -7459,8 +7469,14 @@ select.f-input {
       spSetStep(steps, 1, 'done');
       spSetStep(steps, 2, 'active');
 
+      // Tronquer searchResults pour éviter de dépasser la limite de tokens (rate limit)
+      var MAX_SEARCH_CHARS = 6000;
+      var searchResultsTrunc = searchResults.length > MAX_SEARCH_CHARS
+        ? searchResults.substring(0, MAX_SEARCH_CHARS) + '\n[... tronqué pour limite tokens ...]'
+        : searchResults;
+
       // ── APPEL 2 : Convertir les résultats en JSON structuré ──
-      var jsonPrompt = 'Here are football match results found for ' + todayISO + ':\n\n' + searchResults + '\n\n' +
+      var jsonPrompt = 'Here are football match results found for ' + todayISO + ':\n\n' + searchResultsTrunc + '\n\n' +
         'Now convert ALL matches found above into this EXACT JSON format. ' +
         'Output ONLY the JSON object, starting with { and ending with }. No explanation, no text before or after.' +
         '\n{"matches":[{' +
@@ -7487,6 +7503,9 @@ select.f-input {
         '}]}' +
         '\n\nRULES: Only real confirmed matches for ' + todayISO + '. Confidence >= 60. Max 12 matches. Estimate odds/stats if not available. Output JSON ONLY.';
 
+      // Pause de 2s pour respecter la limite de 30 000 tokens/minute
+      await new Promise(function(r){ setTimeout(r, 2000); });
+
       var resp2 = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
@@ -7497,7 +7516,7 @@ select.f-input {
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-20250514',
-          max_tokens: 4000,
+          max_tokens: 1500,
           messages: [{ role: 'user', content: jsonPrompt }]
         })
       });
