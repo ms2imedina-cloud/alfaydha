@@ -4738,6 +4738,7 @@ window.toggleStudioPanel = function() {
  <span class="fs-title" id="fsTitle">—</span>
  <button class="fs-btn" onclick="toggleFavCurrentChannel()">☆ Favori</button>
  <button class="fs-btn" onclick="shareCurrentChannel()">⬆ Partager</button>
+ <button class="fs-btn" id="fsMicBtn" style="display:none;background:rgba(39,174,96,.5)" onclick="lkRequestMic();setTimeout(_fsMicUpdateBtn,600)">🎤 Micro</button>
  <button class="fs-btn" onclick="closeFullscreen()">✕ Quitter</button>
  </div>
 </div>
@@ -7729,7 +7730,34 @@ function openFullscreen(){
  var fsPlayer=document.getElementById('fsPlayer');
  overlay.classList.add('open');
  fsPlayer.innerHTML='';
- var player=document.getElementById('mainPlayer').cloneNode(true);
+
+ /* ── Cas LiveKit : le <video> a un srcObject (flux WebRTC) — on ne clone pas ── */
+ var mainPlayer=document.getElementById('mainPlayer');
+ var srcVideo=mainPlayer?mainPlayer.querySelector('video'):null;
+ if(srcVideo && srcVideo.srcObject){
+  /* Créer un nouveau <video> et lui attacher le même MediaStream */
+  var fsVid=document.createElement('video');
+  fsVid.autoplay=true; fsVid.playsInline=true; fsVid.controls=true;
+  fsVid.style.cssText='width:100%;height:100%;object-fit:contain;background:#000;display:block;';
+  fsVid.setAttribute('playsinline','');
+  fsVid.setAttribute('webkit-playsinline','');
+  fsVid.srcObject=srcVideo.srcObject;
+  fsPlayer.appendChild(fsVid);
+  fsVid.play().catch(function(){
+   var pb=document.createElement('div');
+   pb.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);cursor:pointer;z-index:5';
+   pb.innerHTML='<div style="width:60px;height:60px;background:rgba(255,255,255,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px">▶</div>';
+   pb.onclick=function(){fsVid.play();pb.remove();};
+   fsPlayer.appendChild(pb);
+  });
+  /* Mettre à jour le bouton micro dans le fullscreen */
+  _fsMicUpdateBtn();
+  document.body.style.overflow='hidden';
+  return;
+ }
+
+ /* ── Cas normal (iframe YouTube, HLS…) ── */
+ var player=mainPlayer.cloneNode(true);
  player.style.cssText='width:100%;height:100%;';
  player.querySelectorAll('.lk-logo-ovl,#playerLogoOverlay').forEach(function(e){e.remove();});
  fsPlayer.appendChild(player);
@@ -7737,21 +7765,40 @@ function openFullscreen(){
  var _hasMedia=player.querySelector('iframe,video')!==null;
  var _fl=document.getElementById('fsLogo'), _fi=document.getElementById('fsLogoImg');
  if(_fl&&_hasMedia){
- if(_fi&&typeof _LOGO_SRC!=='undefined')_fi.src=_LOGO_SRC;
- _fl.style.display='block';
+  if(_fi&&typeof _LOGO_SRC!=='undefined')_fi.src=_LOGO_SRC;
+  _fl.style.display='block';
  } else if(_fl){ _fl.style.display='none'; }
  // Réactiver autoplay si iframe
  var iframes=player.querySelectorAll('iframe');
  iframes.forEach(function(f){
- var src=f.src;
- if(src&&!src.includes('autoplay')) f.src=src+(src.includes('?')?'&':'?')+'autoplay=1';
+  var src=f.src;
+  if(src&&!src.includes('autoplay')) f.src=src+(src.includes('?')?'&':'?')+'autoplay=1';
  });
  document.body.style.overflow='hidden';
+}
+
+/* Met à jour le bouton micro dans l'overlay fullscreen */
+function _fsMicUpdateBtn(){
+ var btn=document.getElementById('fsMicBtn');
+ if(!btn) return;
+ if(!window._lkViewerRoom){ btn.style.display='none'; return; }
+ btn.style.display='inline-flex';
+ if(_myMicActive){
+  btn.style.background='rgba(231,76,60,.7)';
+  btn.textContent='🔴 Couper micro';
+ } else if(_myMicPending){
+  btn.style.background='rgba(230,126,34,.7)';
+  btn.textContent='⏳ En attente…';
+ } else {
+  btn.style.background='rgba(39,174,96,.5)';
+  btn.textContent='🎤 Micro';
+ }
 }
 function closeFullscreen(){
  var _fso=document.getElementById('fullscreenOverlay'); if(_fso)_fso.classList.remove('open');
  var _fsp=document.getElementById('fsPlayer'); if(_fsp)_fsp.innerHTML='';
  var _fl=document.getElementById('fsLogo'); if(_fl)_fl.style.display='none';
+ var _fmb=document.getElementById('fsMicBtn'); if(_fmb)_fmb.style.display='none';
  document.body.style.overflow='';
 }
 function updateFsTitle(name,isLive){
@@ -9183,6 +9230,23 @@ async function lkJoinAsViewer(url, token){
  updateFsTitle('🔴 App Direct — LiveKit', true);
  showToast('🔴 Live connecté — Bonne écoute !');
  _addLogoOverlay(wrap);
+ /* ── Sync fullscreen : si l'overlay est déjà ouvert, mettre à jour la vidéo ── */
+ (function(){
+  var fsOverlay=document.getElementById('fullscreenOverlay');
+  if(!fsOverlay||!fsOverlay.classList.contains('open')) return;
+  var fsPlayer=document.getElementById('fsPlayer');
+  if(!fsPlayer) return;
+  fsPlayer.innerHTML='';
+  var fsVid=document.createElement('video');
+  fsVid.autoplay=true; fsVid.playsInline=true; fsVid.controls=true;
+  fsVid.style.cssText='width:100%;height:100%;object-fit:contain;background:#000;display:block;';
+  fsVid.setAttribute('playsinline',''); fsVid.setAttribute('webkit-playsinline','');
+  if(vid.srcObject){ fsVid.srcObject=vid.srcObject; }
+  else { track.attach(fsVid); }
+  fsPlayer.appendChild(fsVid);
+  fsVid.play().catch(function(){});
+  if(typeof _fsMicUpdateBtn==='function') _fsMicUpdateBtn();
+ })();
  } else {
  /* Vidéo d'un viewer qui parle → PiP en bas à droite */
  wrap.style.position = 'relative';
@@ -13443,6 +13507,8 @@ function _micUpdateMyStatusUI(state) {
  var txt=document.getElementById('myMicStatusText'), sub=document.getElementById('myMicStatusSub'), btn=document.getElementById('btnMicRequest');
  if (txt) txt.textContent=s[0]; if (sub) sub.textContent=s[1];
  if (btn) { btn.textContent=s[2]; btn.style.background=s[3]; }
+ /* Sync bouton micro dans le plein écran */
+ if(typeof _fsMicUpdateBtn==='function') _fsMicUpdateBtn();
 }
 
 function _micCheckMyStatus(data) {
