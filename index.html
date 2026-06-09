@@ -1244,7 +1244,30 @@ function resolveUrl(url){
 }
 function proxyUrl(u){
   if(!u||u.startsWith("blob:"))return u;
-  return`${PROXY}?url=${encodeURIComponent(u)}`;
+  // CRITIQUE : forcer https:// sinon le navigateur bloque Mixed Content
+  // Le Worker CF peut fetch http:// côté serveur sans problème
+  const safe=u.replace(/^http:\/\//i,"https://");
+  return`${PROXY}?url=${encodeURIComponent(safe)}`;
+}
+
+// Forcer https sur une URL (pour Mixed Content)
+function safeUrl(u){
+  if(!u)return u;
+  return u.replace(/^http:\/\//i,"https://");
+}
+
+// ── Test CORS rapide ────────────────────────────────────
+async function testCORS(url){
+  try{
+    const ctrl=new AbortController();
+    const t=setTimeout(()=>ctrl.abort(),4000);
+    const r=await fetch(safeUrl(url),{method:"GET",mode:"cors",credentials:"omit",signal:ctrl.signal,
+      headers:{"Range":"bytes=0-0"}});
+    clearTimeout(t);
+    return r.ok||r.status===206||r.status===304;
+  }catch(e){
+    return false;
+  }
 }
 
 // ── HLS.js config ────────────────────────────
@@ -1289,8 +1312,8 @@ function buildHlsConfig(useProxy){
 }
 
 // ── doPlay ───────────────────────────────────
-// Stratégie : 1) Direct HLS  2) Native video direct  3) Proxy HLS  4) Proxy native  5) retry
-function doPlay(item,_forceProxy){
+// Stratégie async : test CORS rapide → direct si OK, proxy immédiatement si CORS bloqué
+async function doPlay(item,_strategy){
   if(hlsInst){hlsInst.destroy();hlsInst=null;}
   video.removeAttribute("src");video.load();
   $("qual-tag").style.display="none";
@@ -1301,17 +1324,31 @@ function doPlay(item,_forceProxy){
     $("err-txt").textContent="Mode démo — URL non disponible";
     return;
   }
+  // Garde: si on a changé de chaîne pendant le test CORS, on abandonne
+  if(playing!==item)return;
 
-  const resolved=resolveUrl(item.url);
-  // _forceProxy : 0=direct, 1=proxy manifest+fetch segments, 2=proxy tout natif
-  const strategy=_forceProxy||0;
+  const resolved=safeUrl(resolveUrl(item.url));
 
-  // ── Helpers HLS events ──
+  // ── Détermine la stratégie ──────────────────────────
+  // Si _strategy est fourni (retry), on l'utilise directement
+  // Sinon, on teste CORS pour choisir direct ou proxy
+  let strategy=_strategy;
+  if(strategy===undefined||strategy===null){
+    $("loading-name").textContent="Test connexion...";
+    const corsOK=await testCORS(resolved);
+    if(playing!==item)return; // changé de chaîne pendant le test
+    console.log(`[IPTV] CORS test for ${resolved}: ${corsOK?"✅ OK":"❌ bloqué → proxy"}`);
+    strategy=corsOK?0:1;
+    $("loading-name").textContent=item.name;
+  }
+
+  // ── HLS events communs ──────────────────────────────
   function onHlsReady(hls){
     hls.on(Hls.Events.MANIFEST_PARSED,(_,d)=>{
       if(d.levels?.length>1)hls.startLevel=d.levels.length-1;
       video.play().catch(()=>{});
       updateQualPanel();
+      console.log(`[IPTV] ✅ Manifest OK (stratégie ${strategy}), niveaux: ${d.levels?.length}`);
     });
     hls.on(Hls.Events.LEVEL_SWITCHED,(_,d)=>{
       const l=hls.levels[d.level];
@@ -1329,37 +1366,29 @@ function doPlay(item,_forceProxy){
     });
     hls.on(Hls.Events.ERROR,(_,d)=>{
       if(!d.fatal)return;
+      console.warn(`[IPTV] ❌ HLS fatal (stratégie ${strategy}):`,d.type,d.details);
       hls.destroy();hlsInst=null;
-      const next=strategy+1;
-      if(next<=2)doPlay(item,next);
+      // Strategy 0 → 1 → 2 → retry
+      if(strategy<2)doPlay(item,strategy+1);
       else scheduleRetry(item);
     });
   }
 
-  // ── Stratégie 0 : video natif direct (le + rapide, fonctionne si le serveur accepte) ──
+  // ── Stratégie 0 : Direct (CORS OK) ─────────────────
   if(strategy===0){
-    // D'abord essayer video natif — si le serveur ne bloque pas CORS sur les flux
-    // (beaucoup de serveurs Xtream n'envoient pas de CORS headers mais le browser tente quand même)
     if(Hls.isSupported()){
-      // HLS.js — fetch direct sans proxy, config optimale
       const hls=new Hls({
         maxBufferLength:60,maxMaxBufferLength:120,maxBufferHole:0.3,
-        startLevel:-1,autoStartLoad:true,
-        abrEwmaDefaultEstimate:8000000,
+        startLevel:-1,autoStartLoad:true,abrEwmaDefaultEstimate:8000000,
         fragLoadingMaxRetry:3,manifestLoadingMaxRetry:2,levelLoadingMaxRetry:2,
         fragLoadingTimeOut:15000,manifestLoadingTimeOut:12000,levelLoadingTimeOut:12000,
         enableWorker:true,lowLatencyMode:false,backBufferLength:60,
-        fetchSetup(ctx,initParams){
-          // Fetch natif — pas de proxy
-          return new Request(ctx.url,{...initParams,mode:"cors",credentials:"omit"});
-        },
       });
       hlsInst=hls;
       hls.loadSource(resolved);
       hls.attachMedia(video);
       onHlsReady(hls);
     }else if(video.canPlayType("application/vnd.apple.mpegurl")){
-      // Safari : natif direct
       video.src=resolved;video.load();video.play().catch(()=>{});
       video.onerror=()=>doPlay(item,1);
     }else{
@@ -1369,19 +1398,15 @@ function doPlay(item,_forceProxy){
     return;
   }
 
-  // ── Stratégie 1 : HLS.js avec proxy uniquement pour le manifest, fetch direct pour les segments ──
-  // Le proxy réécrit le manifest M3U8 → les URLs segments passent par le proxy aussi
-  // Mais on utilise fetch() streaming natif (pas XHR) pour éviter le timeout
+  // ── Stratégie 1 : Proxy CF avec fetchSetup (streaming) ─
   if(strategy===1){
     if(Hls.isSupported()){
       const hls=new Hls({
         maxBufferLength:45,maxMaxBufferLength:90,maxBufferHole:0.5,
-        startLevel:-1,autoStartLoad:true,
-        abrEwmaDefaultEstimate:4000000,
+        startLevel:-1,autoStartLoad:true,abrEwmaDefaultEstimate:4000000,
         fragLoadingMaxRetry:4,manifestLoadingMaxRetry:3,levelLoadingMaxRetry:3,
-        fragLoadingTimeOut:25000,manifestLoadingTimeOut:18000,levelLoadingTimeOut:18000,
+        fragLoadingTimeOut:30000,manifestLoadingTimeOut:20000,levelLoadingTimeOut:20000,
         enableWorker:true,lowLatencyMode:false,
-        // fetchSetup intercepte chaque requête HLS — on passe par le proxy
         fetchSetup(ctx,initParams){
           const u=ctx.url;
           const proxied=(!u.includes(PROXY)&&!u.startsWith("blob:"))?proxyUrl(u):u;
@@ -1401,7 +1426,8 @@ function doPlay(item,_forceProxy){
     return;
   }
 
-  // ── Stratégie 2 : video natif via proxy (dernier recours — flux sans playlist) ──
+  // ── Stratégie 2 : video natif via proxy (dernier recours) ──
+  console.log("[IPTV] Stratégie 2 : video natif proxy");
   video.src=proxyUrl(resolved);
   video.load();video.play().catch(()=>{});
   video.onerror=()=>scheduleRetry(item);
