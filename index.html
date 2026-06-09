@@ -1303,10 +1303,11 @@ function doPlay(item,_forceProxy){
   }
 
   const resolved=resolveUrl(item.url);
-  const type=detectType(resolved);
-  const useProxy=!!_forceProxy;
+  // _forceProxy : 0=direct, 1=proxy manifest+fetch segments, 2=proxy tout natif
+  const strategy=_forceProxy||0;
 
-  function attachHlsEvents(hls,src,fallbackProxy){
+  // ── Helpers HLS events ──
+  function onHlsReady(hls){
     hls.on(Hls.Events.MANIFEST_PARSED,(_,d)=>{
       if(d.levels?.length>1)hls.startLevel=d.levels.length-1;
       video.play().catch(()=>{});
@@ -1321,62 +1322,89 @@ function doPlay(item,_forceProxy){
         $("btn-qual").textContent="🎚 "+lbl;
       }
     });
-    hls.on(Hls.Events.FRAG_LOADED,(_,d)=>{
-      retryCount=0;setNet("");
-      const pct=d?.frag?.sn!==undefined?Math.round((d.frag.sn/(hls.levels[hls.currentLevel]?.details?.totalduration||1))*100):0;
-      setBufArc(Math.min(100,pct+10));
-    });
     hls.on(Hls.Events.FRAG_BUFFERED,()=>{
       const buf=video.buffered.length?(video.buffered.end(video.buffered.length-1)-video.currentTime):0;
       setBufArc(Math.min(100,buf*5));
+      retryCount=0;setNet("");
     });
     hls.on(Hls.Events.ERROR,(_,d)=>{
       if(!d.fatal)return;
       hls.destroy();hlsInst=null;
-      // Si échec en direct → réessayer via proxy une fois
-      if(!useProxy&&d.type===Hls.ErrorTypes.NETWORK_ERROR){
-        console.warn("Direct HLS failed, retrying via proxy…");
-        doPlay(item,true);
-      }else if(fallbackProxy){
-        // Fallback native player via proxy
-        video.src=proxyUrl(fallbackProxy);video.load();video.play().catch(()=>{});
-        video.onerror=()=>scheduleRetry(item);
-      }else{
-        scheduleRetry(item);
-      }
+      const next=strategy+1;
+      if(next<=2)doPlay(item,next);
+      else scheduleRetry(item);
     });
   }
 
-  function tryHLS(src,rawFallback){
-    const hls=new Hls(buildHlsConfig(useProxy));
-    hlsInst=hls;
-    const loadSrc=useProxy?proxyUrl(src):src;
-    hls.loadSource(loadSrc);
-    hls.attachMedia(video);
-    attachHlsEvents(hls,src,rawFallback);
+  // ── Stratégie 0 : video natif direct (le + rapide, fonctionne si le serveur accepte) ──
+  if(strategy===0){
+    // D'abord essayer video natif — si le serveur ne bloque pas CORS sur les flux
+    // (beaucoup de serveurs Xtream n'envoient pas de CORS headers mais le browser tente quand même)
+    if(Hls.isSupported()){
+      // HLS.js — fetch direct sans proxy, config optimale
+      const hls=new Hls({
+        maxBufferLength:60,maxMaxBufferLength:120,maxBufferHole:0.3,
+        startLevel:-1,autoStartLoad:true,
+        abrEwmaDefaultEstimate:8000000,
+        fragLoadingMaxRetry:3,manifestLoadingMaxRetry:2,levelLoadingMaxRetry:2,
+        fragLoadingTimeOut:15000,manifestLoadingTimeOut:12000,levelLoadingTimeOut:12000,
+        enableWorker:true,lowLatencyMode:false,backBufferLength:60,
+        fetchSetup(ctx,initParams){
+          // Fetch natif — pas de proxy
+          return new Request(ctx.url,{...initParams,mode:"cors",credentials:"omit"});
+        },
+      });
+      hlsInst=hls;
+      hls.loadSource(resolved);
+      hls.attachMedia(video);
+      onHlsReady(hls);
+    }else if(video.canPlayType("application/vnd.apple.mpegurl")){
+      // Safari : natif direct
+      video.src=resolved;video.load();video.play().catch(()=>{});
+      video.onerror=()=>doPlay(item,1);
+    }else{
+      video.src=item.url;video.load();video.play().catch(()=>{});
+      video.onerror=()=>doPlay(item,2);
+    }
+    return;
   }
 
-  if((type==="hls"||type==="ts")&&Hls.isSupported()){
-    const rawTs=item.url!==resolved?item.url:null;
-    tryHLS(resolved,rawTs);
-  }else if(video.canPlayType("application/vnd.apple.mpegurl")){
-    // Safari natif — direct d'abord
-    video.src=useProxy?proxyUrl(resolved):resolved;
-    video.load();
-    video.play().catch(()=>{});
-    video.onerror=()=>{
-      if(!useProxy){video.src=proxyUrl(resolved);video.load();video.play().catch(()=>{});}
-      else scheduleRetry(item);
-    };
-  }else{
-    // HTML5 direct
-    video.src=useProxy?proxyUrl(item.url):item.url;
-    video.load();video.play().catch(()=>{});
-    video.onerror=()=>{
-      if(!useProxy){video.src=proxyUrl(item.url);video.load();video.play().catch(()=>{});}
-      else scheduleRetry(item);
-    };
+  // ── Stratégie 1 : HLS.js avec proxy uniquement pour le manifest, fetch direct pour les segments ──
+  // Le proxy réécrit le manifest M3U8 → les URLs segments passent par le proxy aussi
+  // Mais on utilise fetch() streaming natif (pas XHR) pour éviter le timeout
+  if(strategy===1){
+    if(Hls.isSupported()){
+      const hls=new Hls({
+        maxBufferLength:45,maxMaxBufferLength:90,maxBufferHole:0.5,
+        startLevel:-1,autoStartLoad:true,
+        abrEwmaDefaultEstimate:4000000,
+        fragLoadingMaxRetry:4,manifestLoadingMaxRetry:3,levelLoadingMaxRetry:3,
+        fragLoadingTimeOut:25000,manifestLoadingTimeOut:18000,levelLoadingTimeOut:18000,
+        enableWorker:true,lowLatencyMode:false,
+        // fetchSetup intercepte chaque requête HLS — on passe par le proxy
+        fetchSetup(ctx,initParams){
+          const u=ctx.url;
+          const proxied=(!u.includes(PROXY)&&!u.startsWith("blob:"))?proxyUrl(u):u;
+          return new Request(proxied,{...initParams,mode:"cors",credentials:"omit"});
+        },
+      });
+      hlsInst=hls;
+      hls.loadSource(proxyUrl(resolved));
+      hls.attachMedia(video);
+      onHlsReady(hls);
+    }else if(video.canPlayType("application/vnd.apple.mpegurl")){
+      video.src=proxyUrl(resolved);video.load();video.play().catch(()=>{});
+      video.onerror=()=>doPlay(item,2);
+    }else{
+      doPlay(item,2);
+    }
+    return;
   }
+
+  // ── Stratégie 2 : video natif via proxy (dernier recours — flux sans playlist) ──
+  video.src=proxyUrl(resolved);
+  video.load();video.play().catch(()=>{});
+  video.onerror=()=>scheduleRetry(item);
 }
 
 function scheduleRetry(item){
@@ -1391,12 +1419,13 @@ function scheduleRetry(item){
   const delay=RETRY_DELAYS[Math.min(retryCount,RETRY_DELAYS.length-1)];
   setNet("retry");
   $("player-loading").classList.add("show");
-  $("loading-name").textContent=`Reconnexion ${retryCount+1}/${MAX_RETRY} dans ${delay}s...`;
-  // Alterner direct/proxy à chaque retry
-  const useProxy=retryCount%2!==0;
+  // Cycle : 0 direct → 1 proxy fetch → 2 proxy natif → 0 direct ...
+  const strategy=retryCount%3;
+  const labels=["direct","proxy-fetch","proxy-natif"];
+  $("loading-name").textContent=`Reconnexion ${retryCount+1}/${MAX_RETRY} (${labels[strategy]}) dans ${delay}s...`;
   retryCount++;
   clearTimeout(retryTimer);
-  retryTimer=setTimeout(()=>{if(playing===item)doPlay(item,useProxy);},delay*1000);
+  retryTimer=setTimeout(()=>{if(playing===item)doPlay(item,strategy);},delay*1000);
 }
 
 function videoStop(){
