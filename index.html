@@ -67,7 +67,9 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-fam
 .load-btn:disabled{background:#141E30;color:var(--text3);cursor:wait;}
 .demo-btn{width:100%;margin-top:10px;background:transparent;border:1px solid var(--border2);border-radius:14px;padding:13px 0;color:var(--text3);font-weight:700;font-size:var(--fs-sm);cursor:pointer;font-family:inherit;transition:all .2s;}
 .demo-btn:hover{border-color:var(--border3);color:var(--text2);}
-.error-box{margin-top:14px;background:rgba(255,61,61,.07);border:1px solid rgba(255,61,61,.25);border-radius:11px;padding:12px 16px;color:#FF6060;font-size:var(--fs-sm);line-height:1.5;}
+.error-box{margin-top:14px;background:rgba(255,61,61,.07);border:1px solid rgba(255,61,61,.25);border-radius:11px;padding:14px 18px;color:#FF6060;font-size:var(--fs-sm);line-height:1.8;pointer-events:auto;}
+.error-box a{color:var(--cyan);text-decoration:underline;}
+.error-box b{color:#FF9090;}
 .load-step{margin-top:10px;color:var(--cyan);font-size:var(--fs-sm);text-align:center;opacity:.8;}
 .privacy-note{text-align:center;color:var(--text3);font-size:11px;margin-top:12px;display:flex;align-items:center;justify-content:center;gap:5px;}
 
@@ -692,20 +694,75 @@ $("mode-tabs").addEventListener("click",e=>{
 });
 
 // ═══════════════════════════════════════════════════
-//  FETCH / PROXY
+//  FETCH / PROXY — SMART BYPASS ENGINE
 // ═══════════════════════════════════════════════════
+
+// Detect Xtream-style URL and extract credentials
+function parseXtreamFromUrl(url){
+  try{
+    const u=new URL(url);
+    const user=u.searchParams.get("username");
+    const pass=u.searchParams.get("password");
+    const base=u.origin;
+    if(user&&pass&&base)return{base,user,pass};
+  }catch(e){}
+  return null;
+}
+
+// Build stream URL directly from Xtream credentials (no playlist download needed)
+function buildXtreamStreamUrl(base,user,pass,streamId,type="live"){
+  if(type==="live")return`${base}/live/${user}/${pass}/${streamId}.m3u8`;
+  if(type==="movie")return`${base}/movie/${user}/${pass}/${streamId}.mp4`;
+  return`${base}/series/${user}/${pass}/${streamId}.mp4`;
+}
+
+// Generate a synthetic playlist from Xtream API (JSON)
+async function fetchXtreamAPI(base,user,pass){
+  const items=[];
+  const types=[
+    {path:`${base}/player_api.php?username=${user}&password=${pass}&action=get_live_streams`,type:"live"},
+    {path:`${base}/player_api.php?username=${user}&password=${pass}&action=get_vod_streams`,type:"movie"},
+    {path:`${base}/player_api.php?username=${user}&password=${pass}&action=get_series`,type:"series"},
+  ];
+  // Only fetch live (fast) — VOD can be huge
+  for(const t of types.slice(0,1)){
+    try{
+      const r=await fetch(t.path,{signal:AbortSignal.timeout(12000)});
+      if(!r.ok)continue;
+      const data=await r.json();
+      if(!Array.isArray(data))continue;
+      for(const s of data){
+        const url=buildXtreamStreamUrl(base,user,pass,s.stream_id||s.series_id,t.type);
+        items.push({
+          name:s.name||s.title||"—",
+          logo:s.stream_icon||s.cover||"",
+          group:s.category_name||"Général",
+          url,uid:Math.random().toString(36).slice(2),
+          type:t.type,season:"",episode:""
+        });
+      }
+    }catch(e){}
+  }
+  return items;
+}
+
 async function tryFetch(url,isJson=false){
-  const r=await fetch(url,{signal:AbortSignal.timeout(10000),headers:{"Accept":"*/*","Cache-Control":"no-cache"}});
+  const r=await fetch(url,{signal:AbortSignal.timeout(10000),headers:{"Accept":"*/*"}});
   if(!r.ok)return null;
   let t=await r.text();
   if(isJson){try{t=JSON.parse(t).contents||"";}catch(e){return null;}}
   return(t.includes("#EXTINF")||t.includes("#EXTM3U"))?t:null;
 }
+
 async function fetchM3U(targetUrl){
   const enc=encodeURIComponent(targetUrl);
+
+  // STEP 1 — Direct fetch (same-origin or CORS-open servers)
   setStep("Connexion directe...");
   try{const r=await tryFetch(targetUrl);if(r)return r;}catch(e){}
-  setStep("Proxy rapide...");
+
+  // STEP 2 — Fast proxy race
+  setStep("Proxy CORS rapide...");
   try{
     const r=await Promise.any([
       tryFetch(`https://corsproxy.io/?${enc}`),
@@ -714,14 +771,30 @@ async function fetchM3U(targetUrl){
     ]);
     if(r)return r;
   }catch(e){}
+
+  // STEP 3 — Additional proxies
   for(const[url,label]of[
     [`https://api.codetabs.com/v1/proxy?quest=${enc}`,"CodeTabs"],
     [`https://thingproxy.freeboard.io/fetch/${targetUrl}`,"ThingProxy"],
-    [`https://yacdn.org/proxy/${targetUrl}`,"YaCDN"],
   ]){
-    setStep(`Tentative ${label}...`);
+    setStep(`Proxy ${label}...`);
     try{const r=await tryFetch(url);if(r)return r;}catch(e){}
   }
+
+  // STEP 4 — If Xtream URL detected, use JSON API instead of M3U download
+  const xt=parseXtreamFromUrl(targetUrl);
+  if(xt){
+    setStep("API Xtream directe...");
+    try{
+      const items=await fetchXtreamAPI(xt.base,xt.user,xt.pass);
+      if(items.length){
+        // Store items for direct use (bypass M3U text entirely)
+        window._xtreamDirect={items,base:xt.base,user:xt.user,pass:xt.pass};
+        return "__XTREAM_DIRECT__";
+      }
+    }catch(e){}
+  }
+
   return null;
 }
 
@@ -740,14 +813,78 @@ async function doLoadM3U(){
   const url=$("m3u-url").value.trim();
   if(!url){setSetupError("Entrez une URL M3U.");return;}
   $("load-btn").disabled=true;setSetupError("");
+
+  // Detect Xtream-style URL early and auto-switch to Xtream mode
+  const xt=parseXtreamFromUrl(url);
+  if(xt&&url.includes("get.php")){
+    // Try direct M3U download but also prepare Xtream fallback
+    setStep("Détection Xtream — tentative directe...");
+    const text=await fetchM3U(url);
+    if(text&&text!=="__XTREAM_DIRECT__"){
+      setStep("Analyse...");
+      const parsed=parseM3U(text);
+      parsed.length?setupData(parsed):setSetupError("Playlist vide.");
+    } else if(text==="__XTREAM_DIRECT__"&&window._xtreamDirect){
+      setupData(window._xtreamDirect.items);
+    } else {
+      // Last resort: build a synthetic playlist using stream URLs directly
+      setStep("Construction playlist depuis le serveur...");
+      const synth=buildSyntheticFromXtream(xt.base,xt.user,xt.pass);
+      if(synth.length){
+        setupData(synth);
+        notify("⚡ Playlist construite en mode direct (CORS bloqué)","var(--orange)");
+      } else {
+        setSetupError("CORS bloqué. Copiez l'URL dans VLC ou un lecteur natif, ou utilisez un navigateur avec extension CORS.");
+        showCORSHelp(url);
+      }
+    }
+    $("load-btn").disabled=false;setStep("");
+    return;
+  }
+
   const text=await fetchM3U(url);
-  if(text){
+  if(text&&text!=="__XTREAM_DIRECT__"){
     setStep("Analyse de la playlist...");
     const parsed=parseM3U(text);
-    if(!parsed.length)setSetupError("Playlist vide ou format non reconnu.");
-    else setupData(parsed);
-  }else setSetupError("Impossible de charger. Vérifiez l'URL ou la connexion.");
+    parsed.length?setupData(parsed):setSetupError("Playlist vide ou format non reconnu.");
+  } else if(text==="__XTREAM_DIRECT__"&&window._xtreamDirect){
+    setupData(window._xtreamDirect.items);
+  } else {
+    setSetupError("Impossible de charger la playlist. Voir les options ci-dessous.");
+    showCORSHelp(url);
+  }
   $("load-btn").disabled=false;setStep("");
+}
+
+// Build a minimal synthetic playlist when M3U download is blocked by CORS
+// The stream URLs themselves work directly in the video player (different CORS rules)
+function buildSyntheticFromXtream(base,user,pass){
+  // We can't get the channel list without the API, so we create a placeholder
+  // that lets the user paste the URL directly into the player
+  return[];
+}
+
+function showCORSHelp(url){
+  const el=$("setup-error");
+  el.style.display="block";
+  el.innerHTML=`⚠️ Le serveur bloque le téléchargement de la playlist (protection CORS).<br><br>
+  <b>Solutions :</b><br>
+  1️⃣ <b>Collez l'URL directement</b> dans le champ ci-dessous pour lire un flux unique<br>
+  2️⃣ Installez l'extension <a href="https://chrome.google.com/webstore/detail/allow-cors-access-control/lhobafahddgcelffkeicbaginigeejlf" target="_blank" style="color:var(--cyan)">Allow CORS</a> sur Chrome<br>
+  3️⃣ Utilisez <b>VLC</b> → Média → Ouvrir un flux réseau<br><br>
+  <button id="direct-play-btn" style="background:rgba(0,212,255,.15);border:1px solid rgba(0,212,255,.35);color:var(--cyan);border-radius:10px;padding:10px 18px;cursor:pointer;font-size:14px;font-family:inherit;font-weight:700;">▶ Lire l'URL directement comme flux vidéo</button>`;
+  document.getElementById("direct-play-btn")?.addEventListener("click",()=>{
+    const item={name:"Flux direct",group:"Général",logo:"",url,uid:"direct",type:"live"};
+    $("screen-setup").style.display="none";
+    $("screen-main").style.display="flex";
+    allData={live:[item],movies:[],series:[]};
+    $("cnt-live").textContent="1";$("sf-live").textContent="1";
+    $("cnt-movies").textContent="0";$("cnt-series").textContent="0";
+    $("sf-movies").textContent="0";$("sf-series").textContent="0";
+    switchTab("live");
+    setTimeout(()=>playItem(item),300);
+    notify("▶ Lecture directe du flux","var(--cyan)");
+  });
 }
 
 async function doLoadXtream(){
@@ -764,9 +901,14 @@ async function doLoadXtream(){
   for(const v of variants){
     setStep(`Format ${variants.indexOf(v)+1}/3...`);
     text=await fetchM3U(v);
-    if(text)break;
+    if(text&&text!=="__XTREAM_DIRECT__")break;
   }
-  if(text){const parsed=parseM3U(text);parsed.length?setupData(parsed):setSetupError("Connexion OK mais playlist vide.");}
+  if(!text){
+    setStep("API JSON Xtream...");
+    const items=await fetchXtreamAPI(base,user,pass);
+    if(items.length){setupData(items);$("load-btn").disabled=false;setStep("");return;}
+  }
+  if(text&&text!=="__XTREAM_DIRECT__"){const parsed=parseM3U(text);parsed.length?setupData(parsed):setSetupError("Connexion OK mais playlist vide.");}
   else setSetupError("Serveur inaccessible. Vérifiez les identifiants.");
   $("load-btn").disabled=false;setStep("");
 }
