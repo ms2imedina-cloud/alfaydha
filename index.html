@@ -727,26 +727,52 @@ function buildXtreamStreamUrl(base,user,pass,streamId,type="live"){
 async function fetchXtreamAPI(base,user,pass,onProgress){
   const api=`${base}/player_api.php?username=${user}&password=${pass}`;
 
-  // ── Self-hosted proxy (set your cPanel URL here after uploading iptv-proxy.php) ──
-  const PROXY_URL="https://www.crous-ussein.sn/iptv-proxy.php";
+  // ── Cloudflare Worker proxy (gratuit, zéro impact sur votre serveur) ──
+  const PROXY_URL="https://faydhaworkerjs.thniass.workers.dev";
 
   // ── Helper: safe JSON fetch — tries proxy first, then direct ─────────
-  async function xFetch(action,timeoutMs=20000){
+  async function xFetch(action,timeoutMs=35000){
     const targetUrl=`${api}&action=${action}`;
-    // Try self-hosted proxy first (if configured)
-    if(PROXY_URL){
+
+    // Safe JSON parse that handles potentially truncated responses
+    async function safeParseResponse(r){
+      const text=await r.text();
+      if(!text||text.length<2)return null;
       try{
-        const r=await fetch(`${PROXY_URL}?url=${encodeURIComponent(targetUrl)}`,
-          {signal:AbortSignal.timeout(timeoutMs)});
-        if(r.ok){const d=await r.json();return Array.isArray(d)?d:(d&&typeof d==="object"?d:null);}
-      }catch(e){}
+        const d=JSON.parse(text);
+        return Array.isArray(d)?d:(d&&typeof d==="object"?d:null);
+      }catch(e){
+        // Try to recover a truncated JSON array by closing it
+        if(text.trimStart().startsWith("[")){
+          try{
+            const lastComma=text.lastIndexOf(",");
+            const truncated=lastComma>0?text.slice(0,lastComma)+"]":text+"]]".slice(text.endsWith("]")?1:0);
+            const d=JSON.parse(truncated);
+            if(Array.isArray(d)&&d.length>0){
+              console.warn(`[xFetch] Recovered truncated array for action=${action}, items=${d.length}`);
+              return d;
+            }
+          }catch(e2){}
+        }
+        return null;
+      }
     }
-    // Direct fetch (works if server has CORS open)
+
+    // Try proxy
+    try{
+      const r=await fetch(`${PROXY_URL}?url=${encodeURIComponent(targetUrl)}`,
+        {signal:AbortSignal.timeout(timeoutMs)});
+      if(r.ok){
+        const d=await safeParseResponse(r);
+        if(d!==null)return d;
+      }
+    }catch(e){}
+
+    // Direct fetch fallback
     try{
       const r=await fetch(targetUrl,{signal:AbortSignal.timeout(timeoutMs)});
       if(!r.ok)return null;
-      const d=await r.json();
-      return Array.isArray(d)?d:(d&&typeof d==="object"?d:null);
+      return await safeParseResponse(r);
     }catch(e){return null;}
   }
 
@@ -768,11 +794,33 @@ async function fetchXtreamAPI(base,user,pass,onProgress){
 
   // ── Step 2: fetch all stream lists in parallel ────────────────────────
   onProgress&&onProgress("Chargement Live + VOD + Séries en parallèle...");
-  const [liveData,vodData,seriesData]=await Promise.all([
-    xFetch("get_live_streams",25000),
-    xFetch("get_vod_streams",40000),
-    xFetch("get_series",30000),
+  let [liveData,vodData,seriesData]=await Promise.all([
+    xFetch("get_live_streams",35000),
+    xFetch("get_vod_streams",60000),
+    xFetch("get_series",45000),
   ]);
+
+  // ── Fallback: fetch live streams per category if bulk fetch failed ─────
+  if(!Array.isArray(liveData)||liveData.length===0){
+    onProgress&&onProgress("Chargement live par catégorie...");
+    const catIds=Object.keys(liveMap);
+    if(catIds.length){
+      const chunks=await Promise.all(
+        catIds.map(cid=>xFetch(`get_live_streams&category_id=${cid}`,20000))
+      );
+      liveData=chunks.filter(Array.isArray).flat();
+    }
+  }
+  if(!Array.isArray(vodData)||vodData.length===0){
+    onProgress&&onProgress("Chargement VOD par catégorie...");
+    const catIds=Object.keys(vodMap);
+    if(catIds.length){
+      const chunks=await Promise.all(
+        catIds.map(cid=>xFetch(`get_vod_streams&category_id=${cid}`,20000))
+      );
+      vodData=chunks.filter(Array.isArray).flat();
+    }
+  }
 
   const items=[];
 
@@ -842,8 +890,8 @@ async function tryFetch(url,isJson=false){
 async function fetchM3U(targetUrl){
   const enc=encodeURIComponent(targetUrl);
 
-  // STEP 0 — Self-hosted proxy (fastest, no rate limit)
-  const PROXY_URL="https://www.crous-ussein.sn/iptv-proxy.php";
+  // STEP 0 — Cloudflare Worker proxy
+  const PROXY_URL="https://faydhaworkerjs.thniass.workers.dev";
   if(PROXY_URL){
     setStep("Proxy personnel...");
     try{const r=await tryFetch(`${PROXY_URL}?url=${enc}`);if(r)return r;}catch(e){}
@@ -883,8 +931,9 @@ function setStep(txt){
 }
 function setSetupError(msg){
   const el=$("setup-error");
-  el.style.display=msg?"block":"none";
-  el.textContent=msg?"⚠️ "+msg:"";
+  if(!msg){el.style.display="none";el.innerHTML="";return;}
+  el.style.display="block";
+  el.innerHTML="⚠️ "+msg;
 }
 
 async function doLoadM3U(){
@@ -964,31 +1013,28 @@ async function doLoadXtream(){
   $("load-btn").disabled=true;setSetupError("");
   const base=host.replace(/\/+$/,"");
 
-  // ── Step 0: test server reachability via /player_api.php (no action) ─
+  // ── Step 0: test server reachability via proxy /player_api.php ────────
   setStep("Test de connexion au serveur...");
+  const PROXY_BASE="https://faydhaworkerjs.thniass.workers.dev";
   let serverReachable=false;
   let authOk=false;
   try{
     const pingUrl=`${base}/player_api.php?username=${user}&password=${pass}`;
-    const r=await fetch(pingUrl,{signal:AbortSignal.timeout(10000)});
+    // Always go through proxy to avoid CORS block on the ping itself
+    const proxyPing=`${PROXY_BASE}?url=${encodeURIComponent(pingUrl)}`;
+    const r=await fetch(proxyPing,{signal:AbortSignal.timeout(12000)});
     if(r.ok){
       const d=await r.json();
       serverReachable=true;
-      // Xtream returns {user_info:{...}, server_info:{...}} on auth success
       if(d&&d.user_info&&d.user_info.auth===1)authOk=true;
       else if(d&&d.user_info&&d.user_info.status==="Active")authOk=true;
-      else if(d&&!d.user_info&&Array.isArray(d))authOk=true; // some servers return array directly
+      else if(d&&!d.user_info&&Array.isArray(d))authOk=true;
     } else if(r.status===403||r.status===401){
-      serverReachable=true; // server responded, but auth issue
+      serverReachable=true;
     }
   }catch(e){
-    // fetch failed = CORS or server down
-    const isCORS=e?.name==="TypeError";
-    if(isCORS){
-      // CORS block — server is likely alive but refuses browser requests
-      // Try a no-cors probe to distinguish
-      serverReachable=true; // optimistic — proceed to API attempts
-    }
+    // Proxy unreachable or server truly down — still try the API steps below
+    serverReachable=true; // optimistic: let fetchXtreamAPI decide
   }
 
   if(!serverReachable){
@@ -1070,9 +1116,10 @@ $("demo-btn").addEventListener("click",()=>setupData([]));
 // ═══════════════════════════════════════════════════
 function setupData(parsed){
   const{live:l,movies:m,series:s}=classifyItems(parsed);
-  allData.live=l.length?l:DEMO_LIVE;
-  allData.movies=m.length?m:DEMO_MOVIES;
-  allData.series=s.length?s:DEMO_SERIES;
+  const usingDemo=!parsed.length;
+  allData.live=l.length?l:(usingDemo?DEMO_LIVE:[]);
+  allData.movies=m.length?m:(usingDemo?DEMO_MOVIES:[]);
+  allData.series=s.length?s:(usingDemo?DEMO_SERIES:[]);
   $("cnt-live").textContent=allData.live.length;
   $("cnt-movies").textContent=allData.movies.length;
   $("cnt-series").textContent=allData.series.length;
@@ -1319,8 +1366,16 @@ function doPlay(item){
     return;
   }
 
+  const STREAM_PROXY="https://faydhaworkerjs.thniass.workers.dev";
+
   const resolvedUrl=resolveStreamUrl(item.url);
   const type=detectStreamType(resolvedUrl);
+
+  function proxyUrl(u){
+    // Route through cPanel proxy to bypass CORS on stream requests
+    if(!u||u.startsWith("blob:"))return u;
+    return`${STREAM_PROXY}?url=${encodeURIComponent(u)}`;
+  }
 
   function tryHLS(srcUrl, fallbackRaw){
     const hls=new Hls({
@@ -1349,13 +1404,30 @@ function doPlay(item){
       lowLatencyMode:false,
       backBufferLength:60,
       progressive:true,
-      // XHR tweaks — some servers need specific headers
+      // ── Route EVERY HLS request through proxy ──────────────────────────
       xhrSetup(xhr, url){
         xhr.withCredentials=false;
+        // If the URL is an IPTV stream URL (not already proxied), wrap it
+        if(url&&!url.includes(STREAM_PROXY)&&!url.startsWith("blob:")){
+          // Abort current open and reopen with proxy URL
+          xhr.open("GET", proxyUrl(url), true);
+        }
       },
+      // Loader override: rewrite URLs before hls.js opens them
+      pLoader: (function(){
+        const fLoader=Hls.DefaultConfig.loader;
+        return class ProxyLoader extends fLoader {
+          load(context,config,callbacks){
+            if(context.url&&!context.url.includes(STREAM_PROXY)&&!context.url.startsWith("blob:")){
+              context.url=proxyUrl(context.url);
+            }
+            super.load(context,config,callbacks);
+          }
+        };
+      })(),
     });
     hlsInst=hls;
-    hls.loadSource(srcUrl);
+    hls.loadSource(proxyUrl(srcUrl));
     hls.attachMedia(video);
     hls.on(Hls.Events.MANIFEST_PARSED,(_,d)=>{
       // Jump to highest level immediately
@@ -1372,9 +1444,8 @@ function doPlay(item){
     hls.on(Hls.Events.ERROR,(_,d)=>{
       if(!d.fatal)return;
       hls.destroy();hlsInst=null;
-      // If HLS manifest failed and we have a raw TS fallback, try it directly
       if(fallbackRaw&&d.type===Hls.ErrorTypes.NETWORK_ERROR&&d.details===Hls.ErrorDetails.MANIFEST_LOAD_ERROR){
-        video.src=fallbackRaw;video.load();
+        video.src=proxyUrl(fallbackRaw);video.load();
         video.play().catch(()=>{});
         video.onerror=()=>scheduleRetry(item);
       } else {
@@ -1388,8 +1459,8 @@ function doPlay(item){
     const rawTs=item.url!==resolvedUrl?item.url:null;
     tryHLS(resolvedUrl, rawTs);
   } else if(video.canPlayType("application/vnd.apple.mpegurl")){
-    // Safari native HLS
-    video.src=resolvedUrl;video.load();video.play().catch(()=>{});
+    // Safari native HLS — still route through proxy for CORS
+    video.src=proxyUrl(resolvedUrl);video.load();video.play().catch(()=>{});
   } else {
     // Direct HTML5 (mp4, ts…)
     video.src=item.url;video.load();video.play().catch(()=>{});
