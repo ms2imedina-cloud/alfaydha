@@ -727,10 +727,23 @@ function buildXtreamStreamUrl(base,user,pass,streamId,type="live"){
 async function fetchXtreamAPI(base,user,pass,onProgress){
   const api=`${base}/player_api.php?username=${user}&password=${pass}`;
 
-  // ── Helper: safe JSON fetch with timeout ──────────────────────────────
+  // ── Self-hosted proxy (set your cPanel URL here after uploading iptv-proxy.php) ──
+  const PROXY_URL="https://www.crous-ussein.sn/iptv-proxy.php";
+
+  // ── Helper: safe JSON fetch — tries proxy first, then direct ─────────
   async function xFetch(action,timeoutMs=20000){
+    const targetUrl=`${api}&action=${action}`;
+    // Try self-hosted proxy first (if configured)
+    if(PROXY_URL){
+      try{
+        const r=await fetch(`${PROXY_URL}?url=${encodeURIComponent(targetUrl)}`,
+          {signal:AbortSignal.timeout(timeoutMs)});
+        if(r.ok){const d=await r.json();return Array.isArray(d)?d:(d&&typeof d==="object"?d:null);}
+      }catch(e){}
+    }
+    // Direct fetch (works if server has CORS open)
     try{
-      const r=await fetch(`${api}&action=${action}`,{signal:AbortSignal.timeout(timeoutMs)});
+      const r=await fetch(targetUrl,{signal:AbortSignal.timeout(timeoutMs)});
       if(!r.ok)return null;
       const d=await r.json();
       return Array.isArray(d)?d:(d&&typeof d==="object"?d:null);
@@ -828,6 +841,13 @@ async function tryFetch(url,isJson=false){
 
 async function fetchM3U(targetUrl){
   const enc=encodeURIComponent(targetUrl);
+
+  // STEP 0 — Self-hosted proxy (fastest, no rate limit)
+  const PROXY_URL="https://www.crous-ussein.sn/iptv-proxy.php";
+  if(PROXY_URL){
+    setStep("Proxy personnel...");
+    try{const r=await tryFetch(`${PROXY_URL}?url=${enc}`);if(r)return r;}catch(e){}
+  }
 
   // STEP 1 — Direct fetch (same-origin or CORS-open servers)
   setStep("Connexion directe...");
