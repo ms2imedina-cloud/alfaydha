@@ -1248,55 +1248,49 @@ function proxyUrl(u){
 }
 
 // ── HLS.js config ────────────────────────────
-function buildHlsConfig(){
+// useProxy: false = lecture directe (segments HLS natifs), true = via CORS proxy
+function buildHlsConfig(useProxy){
   const DefaultLoader=Hls.DefaultConfig.loader;
-  class ProxyLoader extends DefaultLoader{
-    load(ctx,cfg,cb){
-      if(ctx.url&&!ctx.url.includes(PROXY)&&!ctx.url.startsWith("blob:"))
-        ctx.url=proxyUrl(ctx.url);
-      super.load(ctx,cfg,cb);
+  if(useProxy){
+    class ProxyLoader extends DefaultLoader{
+      load(ctx,cfg,cb){
+        if(ctx.url&&!ctx.url.includes(PROXY)&&!ctx.url.startsWith("blob:"))
+          ctx.url=proxyUrl(ctx.url);
+        super.load(ctx,cfg,cb);
+      }
     }
+    return{
+      maxBufferLength:60,maxMaxBufferLength:120,maxBufferHole:0.3,
+      startLevel:-1,autoStartLoad:true,
+      abrEwmaDefaultEstimate:5000000,abrBandWidthFactor:0.9,abrBandWidthUpFactor:0.85,
+      fragLoadingMaxRetry:6,manifestLoadingMaxRetry:4,levelLoadingMaxRetry:4,
+      fragLoadingTimeOut:20000,manifestLoadingTimeOut:15000,levelLoadingTimeOut:15000,
+      enableWorker:true,lowLatencyMode:false,backBufferLength:60,
+      loader:ProxyLoader,
+      xhrSetup(xhr,url){
+        xhr.withCredentials=false;
+        if(url&&!url.includes(PROXY)&&!url.startsWith("blob:"))
+          xhr.open("GET",proxyUrl(url),true);
+      },
+    };
   }
+  // Mode direct — pas de proxy, meilleure performance
   return{
-    // Buffer — max quality, smooth playback
-    maxBufferLength:90,
-    maxMaxBufferLength:180,
-    maxBufferHole:0.25,
-    maxStarvationDelay:3,
-    // ABR — aggressive quality selection
-    startLevel:-1,
-    autoStartLoad:true,
-    abrEwmaDefaultEstimate:10000000,
-    abrBandWidthFactor:0.95,
-    abrBandWidthUpFactor:0.90,
+    maxBufferLength:90,maxMaxBufferLength:180,maxBufferHole:0.25,maxStarvationDelay:3,
+    startLevel:-1,autoStartLoad:true,
+    abrEwmaDefaultEstimate:10000000,abrBandWidthFactor:0.95,abrBandWidthUpFactor:0.90,
     abrMaxWithRealBitrate:true,
-    // Retries
-    fragLoadingMaxRetry:12,
-    manifestLoadingMaxRetry:8,
-    levelLoadingMaxRetry:8,
-    fragLoadingTimeOut:30000,
-    manifestLoadingTimeOut:22000,
-    levelLoadingTimeOut:22000,
-    fragLoadingRetryDelay:300,
-    manifestLoadingRetryDelay:1000,
-    // Performance
-    enableWorker:true,
-    lowLatencyMode:false,
-    backBufferLength:90,
-    progressive:true,
-    testBandwidth:true,
-    // Loader with proxy
-    loader:ProxyLoader,
-    xhrSetup(xhr,url){
-      xhr.withCredentials=false;
-      if(url&&!url.includes(PROXY)&&!url.startsWith("blob:"))
-        xhr.open("GET",proxyUrl(url),true);
-    },
+    fragLoadingMaxRetry:10,manifestLoadingMaxRetry:6,levelLoadingMaxRetry:6,
+    fragLoadingTimeOut:30000,manifestLoadingTimeOut:22000,levelLoadingTimeOut:22000,
+    fragLoadingRetryDelay:300,manifestLoadingRetryDelay:800,
+    enableWorker:true,lowLatencyMode:false,backBufferLength:90,progressive:true,testBandwidth:true,
+    xhrSetup(xhr){xhr.withCredentials=false;},
   };
 }
 
 // ── doPlay ───────────────────────────────────
-function doPlay(item){
+// Stratégie : 1) Direct HLS  2) Native video direct  3) Proxy HLS  4) Proxy native  5) retry
+function doPlay(item,_forceProxy){
   if(hlsInst){hlsInst.destroy();hlsInst=null;}
   video.removeAttribute("src");video.load();
   $("qual-tag").style.display="none";
@@ -1310,13 +1304,9 @@ function doPlay(item){
 
   const resolved=resolveUrl(item.url);
   const type=detectType(resolved);
+  const useProxy=!!_forceProxy;
 
-  function tryHLS(src,rawFallback){
-    const hls=new Hls(buildHlsConfig());
-    hlsInst=hls;
-    hls.loadSource(proxyUrl(src));
-    hls.attachMedia(video);
-
+  function attachHlsEvents(hls,src,fallbackProxy){
     hls.on(Hls.Events.MANIFEST_PARSED,(_,d)=>{
       if(d.levels?.length>1)hls.startLevel=d.levels.length-1;
       video.play().catch(()=>{});
@@ -1343,20 +1333,49 @@ function doPlay(item){
     hls.on(Hls.Events.ERROR,(_,d)=>{
       if(!d.fatal)return;
       hls.destroy();hlsInst=null;
-      if(rawFallback&&d.type===Hls.ErrorTypes.NETWORK_ERROR&&d.details===Hls.ErrorDetails.MANIFEST_LOAD_ERROR){
-        video.src=proxyUrl(rawFallback);video.load();video.play().catch(()=>{});
+      // Si échec en direct → réessayer via proxy une fois
+      if(!useProxy&&d.type===Hls.ErrorTypes.NETWORK_ERROR){
+        console.warn("Direct HLS failed, retrying via proxy…");
+        doPlay(item,true);
+      }else if(fallbackProxy){
+        // Fallback native player via proxy
+        video.src=proxyUrl(fallbackProxy);video.load();video.play().catch(()=>{});
         video.onerror=()=>scheduleRetry(item);
-      }else scheduleRetry(item);
+      }else{
+        scheduleRetry(item);
+      }
     });
+  }
+
+  function tryHLS(src,rawFallback){
+    const hls=new Hls(buildHlsConfig(useProxy));
+    hlsInst=hls;
+    const loadSrc=useProxy?proxyUrl(src):src;
+    hls.loadSource(loadSrc);
+    hls.attachMedia(video);
+    attachHlsEvents(hls,src,rawFallback);
   }
 
   if((type==="hls"||type==="ts")&&Hls.isSupported()){
     const rawTs=item.url!==resolved?item.url:null;
     tryHLS(resolved,rawTs);
   }else if(video.canPlayType("application/vnd.apple.mpegurl")){
-    video.src=proxyUrl(resolved);video.load();video.play().catch(()=>{});
+    // Safari natif — direct d'abord
+    video.src=useProxy?proxyUrl(resolved):resolved;
+    video.load();
+    video.play().catch(()=>{});
+    video.onerror=()=>{
+      if(!useProxy){video.src=proxyUrl(resolved);video.load();video.play().catch(()=>{});}
+      else scheduleRetry(item);
+    };
   }else{
-    video.src=item.url;video.load();video.play().catch(()=>{});
+    // HTML5 direct
+    video.src=useProxy?proxyUrl(item.url):item.url;
+    video.load();video.play().catch(()=>{});
+    video.onerror=()=>{
+      if(!useProxy){video.src=proxyUrl(item.url);video.load();video.play().catch(()=>{});}
+      else scheduleRetry(item);
+    };
   }
 }
 
@@ -1373,9 +1392,11 @@ function scheduleRetry(item){
   setNet("retry");
   $("player-loading").classList.add("show");
   $("loading-name").textContent=`Reconnexion ${retryCount+1}/${MAX_RETRY} dans ${delay}s...`;
+  // Alterner direct/proxy à chaque retry
+  const useProxy=retryCount%2!==0;
   retryCount++;
   clearTimeout(retryTimer);
-  retryTimer=setTimeout(()=>{if(playing===item)doPlay(item);},delay*1000);
+  retryTimer=setTimeout(()=>{if(playing===item)doPlay(item,useProxy);},delay*1000);
 }
 
 function videoStop(){
