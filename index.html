@@ -624,10 +624,17 @@ function classifyItems(items){
   const live=[],movies=[],series=[];
   for(const it of items){
     const g=(it.group||"").toLowerCase(),n=(it.name||"").toLowerCase();
-    if(g.includes("film")||g.includes("movie")||g.includes("vod")||g.includes("cinema")||g.includes("ciné")||n.match(/\(\d{4}\)/))
-      movies.push({...it,type:"movie"});
-    else if(g.includes("serie")||g.includes("série")||g.includes("series")||g.includes("episode")||it.season||it.episode||n.match(/s\d{2}e\d{2}/i))
-      series.push({...it,type:"series"});
+    const isSeries=g.includes("serie")||g.includes("série")||g.includes("series")||
+      g.includes("episode")||g.includes("saison")||g.includes("season")||
+      it.season||it.episode||n.match(/s\d{2}e\d{2}/i)||n.match(/\bs\d+\s*e\d+\b/i);
+    const isMovie=!isSeries&&(
+      g.includes("film")||g.includes("movie")||g.includes("vod")||
+      g.includes("cinema")||g.includes("ciné")||g.includes("افلام")||
+      g.includes("فيلم")||g.includes("أفلام")||g.includes("sinema")||
+      n.match(/\(\d{4}\)/)||it.type==="movie"
+    );
+    if(isSeries)series.push({...it,type:"series"});
+    else if(isMovie)movies.push({...it,type:"movie"});
     else live.push({...it,type:"live"});
   }
   return{live,movies,series};
@@ -716,33 +723,98 @@ function buildXtreamStreamUrl(base,user,pass,streamId,type="live"){
   return`${base}/series/${user}/${pass}/${streamId}.mp4`;
 }
 
-// Generate a synthetic playlist from Xtream API (JSON)
-async function fetchXtreamAPI(base,user,pass){
-  const items=[];
-  const types=[
-    {path:`${base}/player_api.php?username=${user}&password=${pass}&action=get_live_streams`,type:"live"},
-    {path:`${base}/player_api.php?username=${user}&password=${pass}&action=get_vod_streams`,type:"movie"},
-    {path:`${base}/player_api.php?username=${user}&password=${pass}&action=get_series`,type:"series"},
-  ];
-  // Only fetch live (fast) — VOD can be huge
-  for(const t of types.slice(0,1)){
+// Generate a synthetic playlist from Xtream API (JSON) — full parallel fetch
+async function fetchXtreamAPI(base,user,pass,onProgress){
+  const api=`${base}/player_api.php?username=${user}&password=${pass}`;
+
+  // ── Helper: safe JSON fetch with timeout ──────────────────────────────
+  async function xFetch(action,timeoutMs=20000){
     try{
-      const r=await fetch(t.path,{signal:AbortSignal.timeout(12000)});
-      if(!r.ok)continue;
-      const data=await r.json();
-      if(!Array.isArray(data))continue;
-      for(const s of data){
-        const url=buildXtreamStreamUrl(base,user,pass,s.stream_id||s.series_id,t.type);
-        items.push({
-          name:s.name||s.title||"—",
-          logo:s.stream_icon||s.cover||"",
-          group:s.category_name||"Général",
-          url,uid:Math.random().toString(36).slice(2),
-          type:t.type,season:"",episode:""
-        });
-      }
-    }catch(e){}
+      const r=await fetch(`${api}&action=${action}`,{signal:AbortSignal.timeout(timeoutMs)});
+      if(!r.ok)return null;
+      const d=await r.json();
+      return Array.isArray(d)?d:(d&&typeof d==="object"?d:null);
+    }catch(e){return null;}
   }
+
+  // ── Step 1: resolve category maps (fast, small payloads) ─────────────
+  onProgress&&onProgress("Récupération des catégories...");
+  const [liveCats,vodCats,seriesCats]=await Promise.all([
+    xFetch("get_live_categories",8000),
+    xFetch("get_vod_categories",8000),
+    xFetch("get_series_categories",8000),
+  ]);
+  function buildCatMap(cats){
+    const m={};
+    if(Array.isArray(cats))for(const c of cats)m[String(c.category_id)]=c.category_name||"Général";
+    return m;
+  }
+  const liveMap=buildCatMap(liveCats);
+  const vodMap=buildCatMap(vodCats);
+  const seriesMap=buildCatMap(seriesCats);
+
+  // ── Step 2: fetch all stream lists in parallel ────────────────────────
+  onProgress&&onProgress("Chargement Live + VOD + Séries en parallèle...");
+  const [liveData,vodData,seriesData]=await Promise.all([
+    xFetch("get_live_streams",25000),
+    xFetch("get_vod_streams",40000),
+    xFetch("get_series",30000),
+  ]);
+
+  const items=[];
+
+  // ── Live channels ─────────────────────────────────────────────────────
+  if(Array.isArray(liveData)){
+    onProgress&&onProgress(`Traitement de ${liveData.length} chaînes live...`);
+    for(const s of liveData){
+      const ext=s.stream_type||"m3u8";
+      const url=`${base}/live/${user}/${pass}/${s.stream_id}.${ext==="ts"?"ts":"m3u8"}`;
+      items.push({
+        name:s.name||"—",
+        logo:s.stream_icon||"",
+        group:liveMap[String(s.category_id)]||s.category_name||"Live",
+        url,uid:Math.random().toString(36).slice(2),
+        type:"live",season:"",episode:"",
+        streamId:s.stream_id,epgId:s.epg_channel_id||""
+      });
+    }
+  }
+
+  // ── VOD / Movies ──────────────────────────────────────────────────────
+  if(Array.isArray(vodData)){
+    onProgress&&onProgress(`Traitement de ${vodData.length} films VOD...`);
+    for(const s of vodData){
+      const ext=s.container_extension||"mp4";
+      const url=`${base}/movie/${user}/${pass}/${s.stream_id}.${ext}`;
+      items.push({
+        name:s.name||s.title||"—",
+        logo:s.stream_icon||s.cover||"",
+        group:vodMap[String(s.category_id)]||s.category_name||"Films",
+        url,uid:Math.random().toString(36).slice(2),
+        type:"movie",season:"",episode:"",
+        streamId:s.stream_id,rating:s.rating||""
+      });
+    }
+  }
+
+  // ── Series ────────────────────────────────────────────────────────────
+  if(Array.isArray(seriesData)){
+    onProgress&&onProgress(`Traitement de ${seriesData.length} séries...`);
+    for(const s of seriesData){
+      // Series landing page — episodes require a separate call per series; use series_id as ref
+      const url=`${base}/series/${user}/${pass}/${s.series_id}.mp4`;
+      items.push({
+        name:s.name||s.title||"—",
+        logo:s.cover||s.stream_icon||"",
+        group:seriesMap[String(s.category_id)]||s.category_name||"Séries",
+        url,uid:Math.random().toString(36).slice(2),
+        type:"series",season:"",episode:"",
+        seriesId:s.series_id,showName:s.name||""
+      });
+    }
+  }
+
+  onProgress&&onProgress(`${items.length} contenus chargés ✓`);
   return items;
 }
 
@@ -781,20 +853,6 @@ async function fetchM3U(targetUrl){
     try{const r=await tryFetch(url);if(r)return r;}catch(e){}
   }
 
-  // STEP 4 — If Xtream URL detected, use JSON API instead of M3U download
-  const xt=parseXtreamFromUrl(targetUrl);
-  if(xt){
-    setStep("API Xtream directe...");
-    try{
-      const items=await fetchXtreamAPI(xt.base,xt.user,xt.pass);
-      if(items.length){
-        // Store items for direct use (bypass M3U text entirely)
-        window._xtreamDirect={items,base:xt.base,user:xt.user,pass:xt.pass};
-        return "__XTREAM_DIRECT__";
-      }
-    }catch(e){}
-  }
-
   return null;
 }
 
@@ -814,41 +872,41 @@ async function doLoadM3U(){
   if(!url){setSetupError("Entrez une URL M3U.");return;}
   $("load-btn").disabled=true;setSetupError("");
 
-  // Detect Xtream-style URL early and auto-switch to Xtream mode
   const xt=parseXtreamFromUrl(url);
-  if(xt&&url.includes("get.php")){
-    // Try direct M3U download but also prepare Xtream fallback
-    setStep("Détection Xtream — tentative directe...");
+
+  // ── Xtream URL detected → go straight to JSON API, no proxy needed ────
+  if(xt){
+    setStep("Connexion à l'API Xtream...");
+    try{
+      const items=await fetchXtreamAPI(xt.base,xt.user,xt.pass,txt=>setStep(txt));
+      if(items.length){
+        setupData(items);
+        $("load-btn").disabled=false;setStep("");
+        return;
+      }
+    }catch(e){}
+
+    // JSON API failed → try direct M3U download
+    setStep("Tentative téléchargement M3U direct...");
     const text=await fetchM3U(url);
     if(text&&text!=="__XTREAM_DIRECT__"){
-      setStep("Analyse...");
       const parsed=parseM3U(text);
-      parsed.length?setupData(parsed):setSetupError("Playlist vide.");
-    } else if(text==="__XTREAM_DIRECT__"&&window._xtreamDirect){
-      setupData(window._xtreamDirect.items);
-    } else {
-      // Last resort: build a synthetic playlist using stream URLs directly
-      setStep("Construction playlist depuis le serveur...");
-      const synth=buildSyntheticFromXtream(xt.base,xt.user,xt.pass);
-      if(synth.length){
-        setupData(synth);
-        notify("⚡ Playlist construite en mode direct (CORS bloqué)","var(--orange)");
-      } else {
-        setSetupError("CORS bloqué. Copiez l'URL dans VLC ou un lecteur natif, ou utilisez un navigateur avec extension CORS.");
-        showCORSHelp(url);
-      }
+      if(parsed.length){setupData(parsed);$("load-btn").disabled=false;setStep("");return;}
     }
+
+    // All methods exhausted
+    setSetupError("CORS bloqué — le serveur refuse la connexion depuis le navigateur.");
+    showCORSHelp(url);
     $("load-btn").disabled=false;setStep("");
     return;
   }
 
+  // ── Standard M3U URL ──────────────────────────────────────────────────
   const text=await fetchM3U(url);
-  if(text&&text!=="__XTREAM_DIRECT__"){
+  if(text){
     setStep("Analyse de la playlist...");
     const parsed=parseM3U(text);
     parsed.length?setupData(parsed):setSetupError("Playlist vide ou format non reconnu.");
-  } else if(text==="__XTREAM_DIRECT__"&&window._xtreamDirect){
-    setupData(window._xtreamDirect.items);
   } else {
     setSetupError("Impossible de charger la playlist. Voir les options ci-dessous.");
     showCORSHelp(url);
@@ -856,13 +914,6 @@ async function doLoadM3U(){
   $("load-btn").disabled=false;setStep("");
 }
 
-// Build a minimal synthetic playlist when M3U download is blocked by CORS
-// The stream URLs themselves work directly in the video player (different CORS rules)
-function buildSyntheticFromXtream(base,user,pass){
-  // We can't get the channel list without the API, so we create a placeholder
-  // that lets the user paste the URL directly into the player
-  return[];
-}
 
 function showCORSHelp(url){
   const el=$("setup-error");
@@ -892,24 +943,32 @@ async function doLoadXtream(){
   if(!host||!user||!pass){setSetupError("Remplissez tous les champs.");return;}
   $("load-btn").disabled=true;setSetupError("");
   const base=host.replace(/\/+$/,"");
+
+  // Try full JSON API first (best data quality)
+  setStep("Connexion API Xtream...");
+  try{
+    const items=await fetchXtreamAPI(base,user,pass,txt=>setStep(txt));
+    if(items.length){setupData(items);$("load-btn").disabled=false;setStep("");return;}
+  }catch(e){}
+
+  // Fallback: try M3U download variants
   const variants=[
     `${base}/get.php?username=${user}&password=${pass}&type=m3u_plus&output=ts`,
     `${base}/get.php?username=${user}&password=${pass}&type=m3u_plus`,
     `${base}/get.php?username=${user}&password=${pass}&type=m3u`,
   ];
   let text=null;
-  for(const v of variants){
-    setStep(`Format ${variants.indexOf(v)+1}/3...`);
+  for(const[i,v]of variants.entries()){
+    setStep(`Téléchargement M3U (format ${i+1}/3)...`);
     text=await fetchM3U(v);
     if(text&&text!=="__XTREAM_DIRECT__")break;
   }
-  if(!text){
-    setStep("API JSON Xtream...");
-    const items=await fetchXtreamAPI(base,user,pass);
-    if(items.length){setupData(items);$("load-btn").disabled=false;setStep("");return;}
+  if(text&&text!=="__XTREAM_DIRECT__"){
+    const parsed=parseM3U(text);
+    parsed.length?setupData(parsed):setSetupError("Connexion OK mais playlist vide.");
+  } else {
+    setSetupError("Serveur inaccessible ou identifiants incorrects.");
   }
-  if(text&&text!=="__XTREAM_DIRECT__"){const parsed=parseM3U(text);parsed.length?setupData(parsed):setSetupError("Connexion OK mais playlist vide.");}
-  else setSetupError("Serveur inaccessible. Vérifiez les identifiants.");
   $("load-btn").disabled=false;setStep("");
 }
 
@@ -1157,9 +1216,20 @@ function playItem(item){
 
 function detectStreamType(url){
   if(!url)return"html5";
-  if(url.includes(".m3u8")||url.match(/\/live\/|\/timeshift\/|type=m3u/i))return"hls";
+  if(url.includes(".m3u8")||url.match(/\/live\/|\/timeshift\//i))return"hls";
   if(url.includes(".mpd"))return"dash";
+  if(url.match(/\.ts($|\?)/) )return"ts";
+  // Xtream live streams → force HLS (.m3u8)
+  if(url.match(/\/live\/[^/]+\/[^/]+\/\d+/))return"hls";
   return"html5";
+}
+
+// For Xtream .ts live streams, try .m3u8 variant first
+function resolveStreamUrl(url){
+  // /live/user/pass/ID.ts → try .m3u8
+  if(url.match(/\/live\/[^/]+\/[^/]+\/\d+\.ts$/))
+    return url.replace(/\.ts$/,".m3u8");
+  return url;
 }
 
 function doPlay(item){
@@ -1172,24 +1242,48 @@ function doPlay(item){
     $("error-text").textContent="Démo — URL non disponible";
     return;
   }
-  const type=detectStreamType(item.url);
-  if((type==="hls"||item.url.includes(".m3u8"))&&Hls.isSupported()){
+
+  const resolvedUrl=resolveStreamUrl(item.url);
+  const type=detectStreamType(resolvedUrl);
+
+  function tryHLS(srcUrl, fallbackRaw){
     const hls=new Hls({
-      maxBufferLength:45,maxMaxBufferLength:90,
-      maxBufferHole:0.5,
-      startLevel:-1,autoStartLoad:true,
-      fragLoadingMaxRetry:8,manifestLoadingMaxRetry:6,
-      fragLoadingTimeOut:25000,manifestLoadingTimeOut:18000,
-      levelLoadingTimeOut:18000,
+      // Buffer
+      maxBufferLength:60,
+      maxMaxBufferLength:120,
+      maxBufferHole:0.3,
+      maxStarvationDelay:4,
+      // Start at highest quality
+      startLevel:-1,
+      autoStartLoad:true,
+      // ABR — prefer higher bitrate
+      abrEwmaDefaultEstimate:8000000,
+      abrBandWidthFactor:0.92,
+      abrBandWidthUpFactor:0.85,
+      // Retries
+      fragLoadingMaxRetry:10,
+      manifestLoadingMaxRetry:8,
+      levelLoadingMaxRetry:6,
+      fragLoadingTimeOut:30000,
+      manifestLoadingTimeOut:20000,
+      levelLoadingTimeOut:20000,
+      fragLoadingRetryDelay:500,
+      // Performance
       enableWorker:true,
       lowLatencyMode:false,
-      backBufferLength:30,
-      abrEwmaDefaultEstimate:500000,
+      backBufferLength:60,
+      progressive:true,
+      // XHR tweaks — some servers need specific headers
+      xhrSetup(xhr, url){
+        xhr.withCredentials=false;
+      },
     });
     hlsInst=hls;
-    hls.loadSource(item.url);
+    hls.loadSource(srcUrl);
     hls.attachMedia(video);
-    hls.on(Hls.Events.MANIFEST_PARSED,()=>{
+    hls.on(Hls.Events.MANIFEST_PARSED,(_,d)=>{
+      // Jump to highest level immediately
+      if(d.levels&&d.levels.length>1)hls.startLevel=d.levels.length-1;
       video.play().catch(()=>{});
       updateQualityPanel();
     });
@@ -1198,31 +1292,47 @@ function doPlay(item){
       if(l)$("quality-info").textContent="🎚 "+(l.height?l.height+"p":Math.round((l.bitrate||0)/1000)+"k");
       $("quality-info").style.display="";
     });
-    hls.on(Hls.Events.FRAG_LOADED,()=>{retryCount=0;});
+    hls.on(Hls.Events.FRAG_LOADED,()=>{retryCount=0;setNetSt("");});
     hls.on(Hls.Events.ERROR,(_,d)=>{
       if(!d.fatal)return;
       hls.destroy();hlsInst=null;
-      scheduleRetry(item);
+      // If HLS manifest failed and we have a raw TS fallback, try it directly
+      if(fallbackRaw&&d.type===Hls.ErrorTypes.NETWORK_ERROR&&d.details===Hls.ErrorDetails.MANIFEST_LOAD_ERROR){
+        video.src=fallbackRaw;video.load();
+        video.play().catch(()=>{});
+        video.onerror=()=>scheduleRetry(item);
+      } else {
+        scheduleRetry(item);
+      }
     });
+  }
+
+  if((type==="hls"||type==="ts")&&Hls.isSupported()){
+    // Always try HLS (.m3u8); pass raw TS as fallback
+    const rawTs=item.url!==resolvedUrl?item.url:null;
+    tryHLS(resolvedUrl, rawTs);
   } else if(video.canPlayType("application/vnd.apple.mpegurl")){
-    video.src=item.url;video.load();video.play().catch(()=>{});
+    // Safari native HLS
+    video.src=resolvedUrl;video.load();video.play().catch(()=>{});
   } else {
+    // Direct HTML5 (mp4, ts…)
     video.src=item.url;video.load();video.play().catch(()=>{});
   }
 }
 
 function scheduleRetry(item){
+  if(playing!==item)return; // user changed channel
   if(retryCount>=MAX_RETRIES){
     $("player-loading").classList.remove("show");
     $("player-error").classList.add("show");
-    $("error-text").textContent="Connexion impossible";
+    $("error-text").textContent="Connexion impossible après "+MAX_RETRIES+" tentatives";
     $("alt-url-btn").classList.add("show");
     return;
   }
-  const delay=RETRY_DELAYS[retryCount]||30;
+  const delay=RETRY_DELAYS[Math.min(retryCount,RETRY_DELAYS.length-1)]||30;
   setNetSt("retry");
-  $("loading-text").textContent=`Reconnexion dans ${delay}s...`;
   $("player-loading").classList.add("show");
+  $("loading-text").textContent=`Reconnexion ${retryCount+1}/${MAX_RETRIES} dans ${delay}s...`;
   retryCount++;
   clearTimeout(retryTimer);
   retryTimer=setTimeout(()=>{if(playing===item)doPlay(item);},delay*1000);
@@ -1488,6 +1598,22 @@ window.addEventListener("load",()=>{
   // Restore last volume
   const savedVol=parseFloat(localStorage.getItem("iptv_vol")||"1");
   video.volume=savedVol;$("vol-slider").value=savedVol;
+
+  // ── Auto-load preset URL ──────────────────────────────────────────────
+  const PRESET_URL="http://techovip.com/get.php?username=82c9bfa458&password=160842ab745b&type=m3u_plus&output=ts";
+  const xt=parseXtreamFromUrl(PRESET_URL);
+  if(xt){
+    // Switch to Xtream tab and pre-fill fields
+    const xtBtn=document.querySelector(".tab-btn[data-mode='xtream']");
+    if(xtBtn)xtBtn.click();
+    $("xt-host").value=xt.base;
+    $("xt-user").value=xt.user;
+    $("xt-pass").value=xt.pass;
+  } else {
+    $("m3u-url").value=PRESET_URL;
+  }
+  // Auto-trigger load after short delay (let UI settle)
+  setTimeout(()=>$("load-btn").click(),400);
 });
 video.addEventListener("volumechange",()=>localStorage.setItem("iptv_vol",video.volume));
 </script>
