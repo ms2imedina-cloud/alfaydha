@@ -944,14 +944,48 @@ async function doLoadXtream(){
   $("load-btn").disabled=true;setSetupError("");
   const base=host.replace(/\/+$/,"");
 
-  // Try full JSON API first (best data quality)
+  // ── Step 0: test server reachability via /player_api.php (no action) ─
+  setStep("Test de connexion au serveur...");
+  let serverReachable=false;
+  let authOk=false;
+  try{
+    const pingUrl=`${base}/player_api.php?username=${user}&password=${pass}`;
+    const r=await fetch(pingUrl,{signal:AbortSignal.timeout(10000)});
+    if(r.ok){
+      const d=await r.json();
+      serverReachable=true;
+      // Xtream returns {user_info:{...}, server_info:{...}} on auth success
+      if(d&&d.user_info&&d.user_info.auth===1)authOk=true;
+      else if(d&&d.user_info&&d.user_info.status==="Active")authOk=true;
+      else if(d&&!d.user_info&&Array.isArray(d))authOk=true; // some servers return array directly
+    } else if(r.status===403||r.status===401){
+      serverReachable=true; // server responded, but auth issue
+    }
+  }catch(e){
+    // fetch failed = CORS or server down
+    const isCORS=e?.name==="TypeError";
+    if(isCORS){
+      // CORS block — server is likely alive but refuses browser requests
+      // Try a no-cors probe to distinguish
+      serverReachable=true; // optimistic — proceed to API attempts
+    }
+  }
+
+  if(!serverReachable){
+    setSetupError("❌ Serveur introuvable. Vérifiez l'URL ou votre connexion internet.");
+    $("load-btn").disabled=false;setStep("");return;
+  }
+
+  // ── Step 1: Full JSON API (live + VOD + séries en parallèle) ─────────
   setStep("Connexion API Xtream...");
   try{
     const items=await fetchXtreamAPI(base,user,pass,txt=>setStep(txt));
-    if(items.length){setupData(items);$("load-btn").disabled=false;setStep("");return;}
+    if(items.length){
+      setupData(items);$("load-btn").disabled=false;setStep("");return;
+    }
   }catch(e){}
 
-  // Fallback: try M3U download variants
+  // ── Step 2: M3U download fallback ─────────────────────────────────────
   const variants=[
     `${base}/get.php?username=${user}&password=${pass}&type=m3u_plus&output=ts`,
     `${base}/get.php?username=${user}&password=${pass}&type=m3u_plus`,
@@ -961,15 +995,37 @@ async function doLoadXtream(){
   for(const[i,v]of variants.entries()){
     setStep(`Téléchargement M3U (format ${i+1}/3)...`);
     text=await fetchM3U(v);
-    if(text&&text!=="__XTREAM_DIRECT__")break;
+    if(text)break;
   }
-  if(text&&text!=="__XTREAM_DIRECT__"){
+  if(text){
     const parsed=parseM3U(text);
-    parsed.length?setupData(parsed):setSetupError("Connexion OK mais playlist vide.");
+    if(parsed.length){setupData(parsed);$("load-btn").disabled=false;setStep("");return;}
+    setSetupError("Playlist téléchargée mais vide — identifiants incorrects ?");
   } else {
-    setSetupError("Serveur inaccessible ou identifiants incorrects.");
+    // Final diagnosis
+    setSetupError("⚠️ Le serveur bloque les requêtes depuis le navigateur (CORS). Ce serveur IPTV ne supporte pas la lecture directe depuis un navigateur web. Utilisez VLC, TiviMate, ou un lecteur IPTV natif avec ces identifiants.");
+    showXtreamManualHelp(base,user,pass);
   }
   $("load-btn").disabled=false;setStep("");
+}
+
+function showXtreamManualHelp(base,user,pass){
+  const m3uUrl=`${base}/get.php?username=${user}&password=${pass}&type=m3u_plus&output=ts`;
+  const el=$("setup-error");
+  el.style.display="block";
+  el.innerHTML=`
+  <b style="color:var(--orange)">⚠️ Serveur CORS-restreint</b><br><br>
+  Ce serveur bloque les navigateurs web (protection anti-piratage côté serveur).<br><br>
+  <b>Options :</b><br>
+  📱 <b>TiviMate</b> (Android) — coller l'URL M3U<br>
+  💻 <b>VLC</b> → Média → Ouvrir un flux réseau<br>
+  🖥️ <b>Kodi</b> + addon PVR IPTV<br><br>
+  <b>Votre URL M3U :</b><br>
+  <input readonly style="width:100%;background:#0a0c14;border:1px solid #243050;border-radius:8px;padding:8px;color:#00D4FF;font-size:12px;font-family:monospace;margin-top:6px;" value="${m3uUrl}"/>
+  <button id="copy-m3u-btn" style="margin-top:8px;background:rgba(0,212,255,.15);border:1px solid rgba(0,212,255,.35);color:var(--cyan);border-radius:8px;padding:8px 16px;cursor:pointer;font-size:13px;font-family:inherit;width:100%">📋 Copier l'URL M3U</button>`;
+  document.getElementById("copy-m3u-btn")?.addEventListener("click",()=>{
+    navigator.clipboard?.writeText(m3uUrl).then(()=>notify("✅ URL copiée !","var(--green)"));
+  });
 }
 
 async function doLoadLocal(){
@@ -1594,26 +1650,29 @@ window.addEventListener("online",()=>{setNetSt("ok");if(playing&&video.paused&&!
 //  INIT
 // ═══════════════════════════════════════════════════
 window.addEventListener("load",()=>{
-  document.querySelector(".tab-btn")?.focus();
   // Restore last volume
   const savedVol=parseFloat(localStorage.getItem("iptv_vol")||"1");
   video.volume=savedVol;$("vol-slider").value=savedVol;
 
-  // ── Auto-load preset URL ──────────────────────────────────────────────
-  const PRESET_URL="http://techovip.com/get.php?username=82c9bfa458&password=160842ab745b&type=m3u_plus&output=ts";
-  const xt=parseXtreamFromUrl(PRESET_URL);
-  if(xt){
-    // Switch to Xtream tab and pre-fill fields
-    const xtBtn=document.querySelector(".tab-btn[data-mode='xtream']");
-    if(xtBtn)xtBtn.click();
-    $("xt-host").value=xt.base;
-    $("xt-user").value=xt.user;
-    $("xt-pass").value=xt.pass;
-  } else {
-    $("m3u-url").value=PRESET_URL;
-  }
-  // Auto-trigger load after short delay (let UI settle)
-  setTimeout(()=>$("load-btn").click(),400);
+  // ── Auto-load preset Xtream credentials ───────────────────────────────
+  const PRESET={base:"http://esfluxitv.com",user:"Z39M37B2",pass:"28509614"};
+
+  // Force Xtream tab active (bypass URL M3U tab entirely)
+  setupMode="xtream";
+  document.querySelectorAll(".tab-btn").forEach(b=>{
+    b.classList.toggle("active",b.dataset.mode==="xtream");
+  });
+  $("panel-m3u").style.display="none";
+  $("panel-xtream").style.display="block";
+  $("panel-local").style.display="none";
+
+  // Fill Xtream fields
+  $("xt-host").value=PRESET.base;
+  $("xt-user").value=PRESET.user;
+  $("xt-pass").value=PRESET.pass;
+
+  // Auto-trigger after UI settles
+  setTimeout(()=>$("load-btn").click(), 500);
 });
 video.addEventListener("volumechange",()=>localStorage.setItem("iptv_vol",video.volume));
 </script>
