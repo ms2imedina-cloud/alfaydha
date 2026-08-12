@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gamou de Médina Baye — Directs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --nuit:#0a1c17; --zawiya:#0f2a22; --panneau:#123a2e; --bordure:#1f4d3c;
+    --or:#c9a24b; --or-clair:#e4c77a; --ivoire:#f3ecdd; --ivoire-sourdine:#c9c2ae;
+    --rouge:#c1432a; --vert-ok:#4a9c6d; --gris:#5a6b63;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:radial-gradient(ellipse at top,#10281f 0%,var(--nuit) 55%);color:var(--ivoire);font-family:'Inter',sans-serif;min-height:100vh;}
+  ::selection{background:var(--or);color:var(--nuit);}
+  :focus-visible{outline:2px solid var(--or-clair);outline-offset:3px;}
+  a{color:var(--or-clair);}
+  button{font-family:'Inter',sans-serif;}
+
+  header.arche{
+    max-width:920px;margin:28px auto 0;padding:34px 28px 26px;text-align:center;
+    background:linear-gradient(180deg,var(--panneau),var(--zawiya));
+    border:1.5px solid var(--bordure);
+    border-top-left-radius:160px;border-top-right-radius:160px;
+    border-bottom-left-radius:14px;border-bottom-right-radius:14px;position:relative;
+  }
+  header.arche::before{
+    content:"";position:absolute;inset:10px 10px auto 10px;height:calc(100% - 20px);
+    border:1px solid var(--or);opacity:.35;
+    border-top-left-radius:145px;border-top-right-radius:145px;
+    border-bottom-left-radius:8px;border-bottom-right-radius:8px;pointer-events:none;
+  }
+  .eyebrow{font-family:'IBM Plex Mono',monospace;letter-spacing:.22em;text-transform:uppercase;font-size:.7rem;color:var(--or-clair);}
+  h1{font-family:'Amiri',serif;font-weight:700;font-size:2.4rem;margin:.35em 0 .2em;color:var(--ivoire);}
+  .sous-titre{font-size:.92rem;color:var(--ivoire-sourdine);max-width:520px;margin:0 auto;}
+
+  .barre{max-width:1180px;margin:22px auto 0;padding:0 20px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;}
+  .barre .groupe{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+  button.action{font-size:.82rem;font-weight:600;background:transparent;color:var(--ivoire);border:1px solid var(--bordure);padding:9px 16px;border-radius:999px;cursor:pointer;transition:.15s;}
+  button.action:hover{border-color:var(--or);color:var(--or-clair);}
+  .sync-info{font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--ivoire-sourdine);}
+
+  .grille{max-width:1180px;margin:26px auto 60px;padding:0 20px;display:grid;grid-template-columns:repeat(5,1fr);gap:16px;}
+  @media(max-width:980px){.grille{grid-template-columns:repeat(3,1fr);}}
+  @media(max-width:640px){.grille{grid-template-columns:repeat(1,1fr);}}
+  @media(min-width:981px){.carte:nth-child(-n+5){border-bottom:3px dotted var(--or);padding-bottom:16px;}}
+
+  .carte{background:var(--panneau);border:1px solid var(--bordure);border-radius:10px;overflow:hidden;cursor:pointer;position:relative;transition:.15s;}
+  .carte:hover{transform:translateY(-2px);border-color:var(--or);}
+  .carte.inactive{opacity:.55;}
+
+  .media-conteneur{position:relative;width:100%;aspect-ratio:16/9;background:#08120e;overflow:hidden;}
+  .media-conteneur iframe,.media-conteneur video{width:100%;height:100%;border:0;display:block;object-fit:cover;}
+  .vide,.incompatible{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--ivoire-sourdine);font-size:.76rem;text-align:center;padding:12px;}
+  .incompatible{color:var(--or-clair);}
+  .incompatible .icone{font-size:1.3rem;}
+  .incompatible a{font-size:.72rem;margin-top:2px;}
+
+  .numero{position:absolute;top:8px;left:8px;z-index:2;font-family:'IBM Plex Mono',monospace;font-size:.68rem;background:rgba(10,20,17,.75);border:1px solid rgba(255,255,255,.15);padding:4px 8px;border-radius:999px;}
+  .badge-direct{position:absolute;top:8px;right:8px;display:flex;align-items:center;gap:6px;background:rgba(10,20,17,.75);border:1px solid rgba(255,255,255,.15);padding:4px 9px;border-radius:999px;font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.08em;z-index:2;}
+  .point{width:7px;height:7px;border-radius:50%;background:var(--rouge);}
+  .badge-direct.active .point{animation:pulse 1.6s infinite;}
+  .badge-direct.inactive{color:var(--ivoire-sourdine);}
+  .badge-direct.inactive .point{background:var(--gris);}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(193,67,42,.6);}70%{box-shadow:0 0 0 7px rgba(193,67,42,0);}100%{box-shadow:0 0 0 0 rgba(193,67,42,0);}}
+  @media(prefers-reduced-motion:reduce){.badge-direct .point{animation:none;}}
+
+  .texte-carte{padding:12px 14px 14px;}
+  .titre-carte{font-family:'Amiri',serif;font-weight:700;font-size:1.02rem;margin:0 0 4px;}
+  .desc-carte{font-size:.77rem;color:var(--ivoire-sourdine);margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+
+  .plein-ecran{position:fixed;inset:0;background:rgba(6,14,11,.97);z-index:50;display:none;flex-direction:column;padding:18px;}
+  .plein-ecran.ouvert{display:flex;}
+  .barre-retour{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;}
+  .btn-retour{display:flex;align-items:center;gap:8px;background:transparent;border:1px solid var(--or);color:var(--or-clair);padding:9px 18px;border-radius:999px;font-weight:600;font-size:.85rem;cursor:pointer;}
+  .btn-retour:hover{background:var(--or);color:var(--nuit);}
+  .pe-corps{flex:1;display:flex;flex-direction:column;gap:14px;max-width:1100px;width:100%;margin:0 auto;overflow:auto;}
+  .pe-media{width:100%;aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden;border:1px solid var(--bordure);position:relative;}
+  .pe-media iframe,.pe-media video{width:100%;height:100%;border:0;}
+  .pe-info h2{font-family:'Amiri',serif;font-size:1.4rem;margin:0 0 6px;}
+  .pe-info p{color:var(--ivoire-sourdine);font-size:.9rem;line-height:1.6;margin:0;}
+
+  footer{text-align:center;color:var(--ivoire-sourdine);font-size:.72rem;padding:0 20px 40px;}
+  footer a{color:var(--or-clair);text-decoration:none;border-bottom:1px dotted var(--or);}
+
+  /* ---------- Mode mur d'écrans : PC / Smart TV, et tablettes/smartphones en paysage ---------- */
+  @media (min-width:1024px) and (min-height:560px), (orientation:landscape) and (min-width:600px) and (min-height:340px){
+    html,body{height:100%;overflow:hidden;}
+    #vue-publique{display:flex;flex-direction:column;height:100vh;}
+    header.arche{margin:10px auto 0;padding:12px 26px 10px;border-radius:22px;width:fit-content;flex:0 0 auto;}
+    header.arche h1{font-size:1.35rem;margin:.15em 0;}
+    header.arche .sous-titre{display:none;}
+    .barre{margin:8px auto 0;flex:0 0 auto;}
+    .grille{
+      flex:1;min-height:0;margin:8px auto 10px;width:100%;max-width:100%;padding:0 14px;
+      grid-template-columns:repeat(5,1fr);
+      grid-template-rows:repeat(2,1fr);
+      gap:10px;
+    }
+    .carte{position:relative;height:100%;border-bottom:none !important;padding-bottom:0 !important;}
+    .media-conteneur{position:absolute;inset:0;aspect-ratio:auto;}
+    .texte-carte{
+      position:absolute;left:0;right:0;bottom:0;z-index:3;
+      background:linear-gradient(to top, rgba(6,14,11,.94), rgba(6,14,11,0));
+      padding:16px 12px 8px;
+    }
+    .titre-carte{font-size:.82rem;}
+    .desc-carte{font-size:.66rem;-webkit-line-clamp:1;}
+    footer{display:none;}
+  }
+
+  /* ---------- Version resserrée : tablettes / grands smartphones en paysage (écran plus étroit qu'un PC) ---------- */
+  @media (orientation:landscape) and (min-width:600px) and (max-width:1023px){
+    header.arche{padding:8px 20px 7px;border-radius:16px;}
+    header.arche .eyebrow{display:none;}
+    header.arche h1{font-size:1.05rem;}
+    .grille{gap:6px;padding:0 8px;}
+    .numero,.badge-direct{padding:3px 6px;font-size:.58rem;}
+    .texte-carte{padding:10px 8px 6px;}
+    .titre-carte{font-size:.68rem;margin:0;}
+    .desc-carte{display:none;}
+  }
+
+  /* ---------- Admin ---------- */
+  #vue-admin{max-width:760px;margin:30px auto 60px;padding:0 20px;display:none;}
+  .panneau-admin{background:var(--panneau);border:1px solid var(--bordure);border-radius:12px;padding:26px;}
+  .panneau-admin h2{font-family:'Amiri',serif;margin:0 0 6px;font-size:1.5rem;}
+  .panneau-admin .note{font-size:.8rem;color:var(--ivoire-sourdine);margin-bottom:20px;}
+  .champ{margin-bottom:12px;}
+  .champ label{display:block;font-size:.72rem;color:var(--or-clair);margin-bottom:4px;letter-spacing:.03em;text-transform:uppercase;}
+  .champ input,.champ textarea{width:100%;background:var(--nuit);border:1px solid var(--bordure);color:var(--ivoire);border-radius:6px;padding:9px 10px;font-size:.86rem;font-family:'Inter',sans-serif;resize:vertical;}
+  .champ textarea{min-height:52px;}
+  .btn-primaire{background:var(--or);border:1px solid var(--or);color:var(--nuit);padding:9px 18px;border-radius:8px;cursor:pointer;font-weight:600;font-size:.85rem;}
+  .btn-danger{background:transparent;border:1px solid var(--rouge);color:#e08672;padding:9px 18px;border-radius:8px;cursor:pointer;font-size:.85rem;}
+  .erreur{color:#e08672;font-size:.82rem;margin-top:8px;}
+  .ok{color:var(--vert-ok);font-size:.78rem;margin-left:10px;}
+
+  .bloc-live{border:1px solid var(--bordure);border-radius:10px;padding:16px;margin-bottom:14px;background:var(--zawiya);}
+  .bloc-live-titre{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .bloc-live-titre span{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--or-clair);letter-spacing:.05em;}
+  .statut-toggle{display:flex;align-items:center;gap:8px;font-size:.8rem;}
+  .statut-toggle input{width:auto;}
+  .type-detecte{font-size:.7rem;margin-top:4px;font-family:'IBM Plex Mono',monospace;}
+  .type-detecte.ok{color:var(--vert-ok);}
+  .type-detecte.warn{color:var(--or-clair);}
+  .ligne-actions{display:flex;align-items:center;gap:10px;margin-top:10px;}
+  .lien-retour-admin{display:inline-block;margin-bottom:18px;font-size:.82rem;}
+</style>
+</head>
+<body>
+
+<!-- ================= VUE PUBLIQUE ================= -->
+<div id="vue-publique">
+  <header class="arche">
+    <div class="eyebrow">Zawiya de Médina Baye</div>
+    <h1>Gamou — Directs en ligne</h1>
+    <p class="sous-titre">Dix points de diffusion pour suivre l'ensemble des cérémonies. Touchez un écran pour l'agrandir.</p>
+  </header>
+
+  <div class="barre">
+    <span class="sync-info" id="sync-info">Synchronisation…</span>
+    <div class="groupe">
+      <button class="action" id="btn-plein-ecran-nav">⛶ Plein écran</button>
+      <button class="action" id="btn-rafraichir">↻ Actualiser</button>
+    </div>
+  </div>
+
+  <main class="grille" id="grille"></main>
+
+  <div class="plein-ecran" id="plein-ecran">
+    <div class="barre-retour">
+      <button class="btn-retour" id="btn-retour">← Retour aux 10 lives</button>
+    </div>
+    <div class="pe-corps">
+      <div class="pe-media" id="pe-media"></div>
+      <div class="pe-info">
+        <h2 id="pe-titre"></h2>
+        <p id="pe-desc"></p>
+      </div>
+    </div>
+  </div>
+
+  <footer>Gamou de Médina Baye — plateforme de suivi des directs · <a href="#admin">Accès organisateur</a></footer>
+</div>
+
+<!-- ================= VUE ADMIN ================= -->
+<div id="vue-admin">
+  <a class="lien-retour-admin" href="#public">← Retour à la page publique</a>
+
+  <div id="admin-connexion" class="panneau-admin">
+    <h2 id="admin-connexion-titre">Espace administrateur</h2>
+    <p class="note" id="admin-connexion-note">Entrez les identifiants administrateur.</p>
+    <div class="champ">
+      <label for="admin-email">E-mail</label>
+      <input type="email" id="admin-email" autocomplete="username">
+    </div>
+    <div class="champ">
+      <label for="admin-pwd">Mot de passe</label>
+      <input type="password" id="admin-pwd" autocomplete="current-password">
+    </div>
+    <button class="btn-primaire" id="btn-admin-connexion">Se connecter</button>
+    <div class="erreur" id="admin-erreur"></div>
+  </div>
+
+  <div id="admin-panneau" style="display:none;">
+    <div class="panneau-admin" style="margin-bottom:20px;">
+      <h2>Gestion des 10 lives</h2>
+      <p class="note">Collez le lien envoyé par le livreur dans le champ URL, choisissez le statut, puis cliquez sur Enregistrer. Le changement est visible côté public sous quelques secondes.</p>
+    </div>
+    <div id="blocs-lives"></div>
+    <div class="panneau-admin">
+      <button class="btn-danger" id="btn-deconnexion">Se déconnecter</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/latest/hls.min.js"></script>
+
+<script type="module">
+  /* =========================================================
+     0) FIREBASE / FIRESTORE — stockage partagé persistant
+     Remplace window.storage (propre aux artefacts Claude) par
+     Firestore, pour que la page fonctionne sur n'importe quel
+     hébergement. On expose un shim window.storage.get/set qui a
+     exactement la même forme que celui utilisé par le reste du
+     code, donc aucune autre ligne n'a besoin de changer.
+  ========================================================= */
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCuxRfATx51IjK7llELhmo_BmsDQZVmJPk",
+    authDomain: "gamou-baye.firebaseapp.com",
+    projectId: "gamou-baye",
+    storageBucket: "gamou-baye.firebasestorage.app",
+    messagingSenderId: "979966658254",
+    appId: "1:979966658254:web:0f4b5282d296c30659f29f"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+  const COLLECTION = "gamou_kv";
+
+  window.storage = {
+    async get(key /*, shared */){
+      const snap = await getDoc(doc(db, COLLECTION, key));
+      if(!snap.exists()) return null;
+      return { key, value: snap.data().value };
+    },
+    async set(key, value /*, shared */){
+      await setDoc(doc(db, COLLECTION, key), { value, majLe: new Date().toISOString() });
+      return { key, value };
+    }
+  };
+
+  /* Shim d'authentification — seul un compte créé dans la console
+     Firebase (Authentication > Users) peut se connecter. Aucune
+     création de compte n'est possible depuis la page elle-même. */
+  let resoudrePret;
+  window.authFirebase = {
+    ready: new Promise(r => { resoudrePret = r; }),
+    async signIn(email, motDePasse){
+      const cred = await signInWithEmailAndPassword(auth, email, motDePasse);
+      return cred.user;
+    },
+    async signOut(){
+      await signOut(auth);
+    },
+    getUser(){ return auth.currentUser; }
+  };
+  onAuthStateChanged(auth, ()=>{ if(resoudrePret){ resoudrePret(); resoudrePret = null; } });
+</script>
+
+<script defer>
+(function(){
+  /* =========================================================
+     1) DONNÉES / CONFIGURATION — source unique de vérité
+     Stockée en "shared" storage : tous les visiteurs de ce
+     même lien lisent la même config, l'admin seul y écrit.
+  ========================================================= */
+  const CLE_CONFIG = "gamou-lives-config";
+
+  function defauts(){
+    const t = [];
+    for(let i=1;i<=10;i++){
+      t.push({id:i, nom:`Live ${i}`, description:"", url:"", actif:false});
+    }
+    return t;
+  }
+  let lives = defauts();
+
+  async function chargerConfig(){
+    try{
+      const res = await window.storage.get(CLE_CONFIG, true);
+      if(res && res.value){
+        const data = JSON.parse(res.value);
+        if(Array.isArray(data) && data.length === 10) lives = data;
+      }
+    }catch(e){ /* aucune config partagée encore : valeurs par défaut */ }
+  }
+  async function sauvegarderConfig(){
+    try{
+      await window.storage.set(CLE_CONFIG, JSON.stringify(lives), true);
+      return true;
+    }catch(e){ console.error("Échec de l'enregistrement de la config", e); return false; }
+  }
+
+  /* =========================================================
+     2) LECTEUR VIDÉO — détection de type + rendu
+     Types reconnus avec certitude : HLS (.m3u8), fichier vidéo
+     direct (.mp4/.webm/.ogg/.mov), YouTube, Facebook.
+     Tout le reste : message d'incompatibilité + lien de secours.
+  ========================================================= */
+  function classifierUrl(url){
+    if(!url) return null;
+    const u = url.trim();
+    if(!u) return null;
+    const bas = u.toLowerCase();
+    if(bas.includes('.m3u8')) return {type:'hls', label:'HLS (.m3u8)'};
+    if(/\.(mp4|webm|ogg|mov)(\?|#|$)/i.test(bas)) return {type:'video', label:'Vidéo directe'};
+    if(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|live\/|embed\/))([a-zA-Z0-9_-]{6,})/.test(u)) return {type:'youtube', label:'YouTube Live'};
+    if(bas.includes('facebook.com')) return {type:'facebook', label:'Facebook Live'};
+    return {type:'inconnu', label:'Type non reconnu'};
+  }
+
+  function construireLecteur(url, autoplay){
+    const info = classifierUrl(url);
+    const conteneur = document.createElement('div');
+    conteneur.className = 'media-conteneur';
+
+    if(!info){
+      conteneur.innerHTML = `<div class="vide"><div class="icone">▢</div><span>Aucun lien configuré</span></div>`;
+      return conteneur;
+    }
+
+    if(info.type === 'inconnu'){
+      conteneur.innerHTML = `<div class="incompatible">
+        <div class="icone">⚠</div>
+        <span>Ce lien de diffusion n'est pas compatible avec le lecteur intégré.</span>
+        <a href="${escAttr(url)}" target="_blank" rel="noopener">Ouvrir le lien directement ↗</a>
+      </div>`;
+      return conteneur;
+    }
+
+    if(info.type === 'hls'){
+      const video = document.createElement('video');
+      video.controls = true; video.muted = true; video.playsInline = true;
+      if(autoplay) video.autoplay = true;
+      conteneur.appendChild(video);
+      if(window.Hls && window.Hls.isSupported()){
+        const hls = new window.Hls();
+        hls.loadSource(url); hls.attachMedia(video);
+        hls.on(window.Hls.Events.ERROR, (evt, data)=>{
+          if(data.fatal) afficherErreurLecture(conteneur, url);
+        });
+      } else if(video.canPlayType('application/vnd.apple.mpegurl')){
+        video.src = url;
+      } else {
+        afficherErreurLecture(conteneur, url);
+      }
+    } else if(info.type === 'video'){
+      const video = document.createElement('video');
+      video.controls = true; video.playsInline = true;
+      if(autoplay) video.autoplay = true; video.muted = true;
+      video.src = url;
+      video.onerror = ()=> afficherErreurLecture(conteneur, url);
+      conteneur.appendChild(video);
+    } else if(info.type === 'youtube'){
+      const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|live\/|embed\/))([a-zA-Z0-9_-]{6,})/);
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube.com/embed/${m[1]}?autoplay=${autoplay?1:0}&rel=0`;
+      iframe.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+      iframe.allowFullscreen = true;
+      conteneur.appendChild(iframe);
+    } else if(info.type === 'facebook'){
+      const src = url.includes('plugins/video.php') ? url
+        : `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=0&autoplay=${autoplay?'true':'false'}`;
+      const iframe = document.createElement('iframe');
+      iframe.src = src;
+      iframe.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+      iframe.allowFullscreen = true;
+      conteneur.appendChild(iframe);
+    }
+    return conteneur;
+  }
+
+  function afficherErreurLecture(conteneur, url){
+    conteneur.innerHTML = `<div class="incompatible">
+      <div class="icone">⚠</div>
+      <span>Ce lien de diffusion n'est pas compatible avec le lecteur intégré.</span>
+      <a href="${escAttr(url)}" target="_blank" rel="noopener">Ouvrir le lien directement ↗</a>
+    </div>`;
+  }
+
+  function escHtml(s){ const d=document.createElement('div'); d.textContent = s||''; return d.innerHTML; }
+  function escAttr(s){ return (s||'').replace(/"/g,'&quot;'); }
+
+  /* =========================================================
+     3) VUE PUBLIQUE
+  ========================================================= */
+  const grille = document.getElementById('grille');
+  const pleinEcran = document.getElementById('plein-ecran');
+  const peMedia = document.getElementById('pe-media');
+  const peTitre = document.getElementById('pe-titre');
+  const peDesc = document.getElementById('pe-desc');
+  const syncInfo = document.getElementById('sync-info');
+
+  function dessinerGrille(){
+    if(pleinEcran.classList.contains('ouvert')) return; // ne pas perturber une lecture en cours
+    grille.innerHTML = '';
+    lives.forEach(f=>{
+      const carte = document.createElement('article');
+      carte.className = 'carte' + (f.actif ? '' : ' inactive');
+      carte.tabIndex = 0;
+      carte.setAttribute('role','button');
+      carte.setAttribute('aria-label', `${f.actif ? 'Ouvrir' : 'Live inactif :'} ${f.nom}`);
+
+      const mediaWrap = f.actif
+        ? construireLecteur(f.url, false)
+        : (()=>{ const d=document.createElement('div'); d.className='media-conteneur';
+                 d.innerHTML='<div class="vide"><div class="icone">▢</div><span>Live non actif</span></div>'; return d; })();
+
+      const numero = document.createElement('div');
+      numero.className = 'numero'; numero.textContent = `LIVE ${f.id}`;
+      mediaWrap.appendChild(numero);
+
+      const badge = document.createElement('div');
+      badge.className = 'badge-direct ' + (f.actif ? 'active' : 'inactive');
+      badge.innerHTML = `<span class="point"></span>${f.actif ? 'EN DIRECT' : 'HORS LIGNE'}`;
+      mediaWrap.appendChild(badge);
+
+      const texte = document.createElement('div');
+      texte.className = 'texte-carte';
+      texte.innerHTML = `<p class="titre-carte">${escHtml(f.nom)}</p><p class="desc-carte">${escHtml(f.description)}</p>`;
+
+      carte.appendChild(mediaWrap);
+      carte.appendChild(texte);
+
+      const activer = ()=> ouvrirPleinEcran(f.id);
+      carte.addEventListener('click', activer);
+      carte.addEventListener('keypress', e=>{ if(e.key==='Enter') activer(); });
+
+      grille.appendChild(carte);
+    });
+  }
+
+  function ouvrirPleinEcran(id){
+    const f = lives.find(x=>x.id===id);
+    if(!f) return;
+    peMedia.innerHTML = '';
+    if(!f.actif){
+      peMedia.innerHTML = `<div class="incompatible"><div class="icone">●</div><span>Ce live n'est pas actif actuellement.</span></div>`;
+    } else {
+      peMedia.appendChild(construireLecteur(f.url, true));
+    }
+    peTitre.textContent = `Live ${f.id} — ${f.nom}`;
+    peDesc.textContent = f.description;
+    pleinEcran.classList.add('ouvert');
+    document.getElementById('btn-retour').focus();
+  }
+  function fermerPleinEcran(){
+    pleinEcran.classList.remove('ouvert');
+    peMedia.innerHTML = '';
+    dessinerGrille();
+  }
+  document.getElementById('btn-retour').addEventListener('click', fermerPleinEcran);
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape' && pleinEcran.classList.contains('ouvert')) fermerPleinEcran(); });
+  document.getElementById('btn-rafraichir').addEventListener('click', ()=> synchroniserPublic(true));
+
+  document.getElementById('btn-plein-ecran-nav').addEventListener('click', ()=>{
+    try{
+      if(!document.fullscreenElement){ document.documentElement.requestFullscreen(); }
+      else{ document.exitFullscreen(); }
+    }catch(e){ /* API plein écran indisponible sur cet appareil : le mode mur d'écrans s'applique déjà via CSS */ }
+  });
+
+  async function synchroniserPublic(manuel){
+    await chargerConfig();
+    dessinerGrille();
+    const maintenant = new Date();
+    syncInfo.textContent = `Dernière synchronisation : ${maintenant.toLocaleTimeString('fr-FR')}`;
+  }
+  let intervalleSync = null;
+  function demarrerSyncPublic(){
+    synchroniserPublic();
+    if(intervalleSync) clearInterval(intervalleSync);
+    intervalleSync = setInterval(()=> synchroniserPublic(false), 20000);
+  }
+  function arreterSyncPublic(){ if(intervalleSync){ clearInterval(intervalleSync); intervalleSync=null; } }
+
+  /* =========================================================
+     4) ESPACE ADMIN — authentification (Firebase Auth) + gestion
+     des 10 lives. Seul le compte créé dans la console Firebase
+     (Authentication > Users) peut se connecter ; aucune création
+     de compte n'est possible depuis cette page.
+  ========================================================= */
+  const elConnexion = document.getElementById('admin-connexion');
+  const elPanneau = document.getElementById('admin-panneau');
+  const elErreur = document.getElementById('admin-erreur');
+  const elTitreConnexion = document.getElementById('admin-connexion-titre');
+  const elNoteConnexion = document.getElementById('admin-connexion-note');
+
+  function initAdmin(){
+    elErreur.textContent = '';
+    document.getElementById('admin-email').value = '';
+    document.getElementById('admin-pwd').value = '';
+    elTitreConnexion.textContent = "Espace administrateur";
+    elNoteConnexion.textContent = "Entrez les identifiants administrateur.";
+
+    if(window.authFirebase.getUser()){
+      entrerAdmin();
+    } else {
+      elConnexion.style.display = '';
+      elPanneau.style.display = 'none';
+    }
+  }
+
+  document.getElementById('btn-admin-connexion').addEventListener('click', async ()=>{
+    const email = document.getElementById('admin-email').value.trim();
+    const pwd = document.getElementById('admin-pwd').value;
+    elErreur.textContent = '';
+    if(!email || !pwd){ elErreur.textContent = "Merci de saisir l'e-mail et le mot de passe."; return; }
+
+    try{
+      await window.authFirebase.signIn(email, pwd);
+      entrerAdmin();
+    }catch(e){
+      elErreur.textContent = "Identifiants incorrects.";
+    }
+  });
+
+  function entrerAdmin(){
+    elConnexion.style.display = 'none';
+    elPanneau.style.display = '';
+    dessinerBlocsAdmin();
+  }
+  document.getElementById('btn-deconnexion').addEventListener('click', async ()=>{
+    await window.authFirebase.signOut();
+    initAdmin();
+  });
+
+  function dessinerBlocsAdmin(){
+    const conteneur = document.getElementById('blocs-lives');
+    conteneur.innerHTML = '';
+    lives.forEach(f=>{
+      const bloc = document.createElement('div');
+      bloc.className = 'bloc-live';
+      bloc.innerHTML = `
+        <div class="bloc-live-titre">
+          <span>LIVE ${f.id}</span>
+          <label class="statut-toggle">
+            <input type="checkbox" ${f.actif ? 'checked':''} data-role="actif">
+            Actif
+          </label>
+        </div>
+        <div class="champ">
+          <label>Nom du live</label>
+          <input type="text" maxlength="60" value="${escAttr(f.nom)}" data-role="nom">
+        </div>
+        <div class="champ">
+          <label>Description</label>
+          <textarea maxlength="220" data-role="description">${escHtml(f.description)}</textarea>
+        </div>
+        <div class="champ">
+          <label>URL du live</label>
+          <input type="text" value="${escAttr(f.url)}" placeholder="Collez ici le lien envoyé par le livreur" data-role="url">
+          <div class="type-detecte" data-role="type-detecte"></div>
+        </div>
+        <div class="ligne-actions">
+          <button class="btn-primaire" data-role="enregistrer">Enregistrer</button>
+          <span class="ok" data-role="ok" style="display:none;">✓ Enregistré</span>
+        </div>
+      `;
+      const champUrl = bloc.querySelector('[data-role="url"]');
+      const typeDetecte = bloc.querySelector('[data-role="type-detecte"]');
+      function majType(){
+        const info = classifierUrl(champUrl.value);
+        if(!info){ typeDetecte.textContent = ''; return; }
+        if(info.type === 'inconnu'){
+          typeDetecte.textContent = '⚠ Type non reconnu — sera affiché comme incompatible côté public';
+          typeDetecte.className = 'type-detecte warn';
+        } else {
+          typeDetecte.textContent = `✓ Type détecté : ${info.label}`;
+          typeDetecte.className = 'type-detecte ok';
+        }
+      }
+      champUrl.addEventListener('input', majType);
+      majType();
+
+      bloc.querySelector('[data-role="enregistrer"]').addEventListener('click', async ()=>{
+        f.nom = bloc.querySelector('[data-role="nom"]').value.trim() || `Live ${f.id}`;
+        f.description = bloc.querySelector('[data-role="description"]').value.trim();
+        f.url = champUrl.value.trim();
+        f.actif = bloc.querySelector('[data-role="actif"]').checked;
+        const ok = await sauvegarderConfig();
+        const okEl = bloc.querySelector('[data-role="ok"]');
+        okEl.style.display = ok ? '' : 'none';
+        if(ok) setTimeout(()=> okEl.style.display='none', 2500);
+      });
+
+      conteneur.appendChild(bloc);
+    });
+  }
+
+  /* =========================================================
+     5) ROUTAGE — sépare la page publique et l'espace admin
+  ========================================================= */
+  async function route(){
+    const admin = location.hash.startsWith('#admin');
+    document.getElementById('vue-publique').style.display = admin ? 'none' : '';
+    document.getElementById('vue-admin').style.display = admin ? '' : 'none';
+    if(admin){
+      arreterSyncPublic();
+      await chargerConfig();
+      await window.authFirebase.ready;
+      initAdmin();
+    } else {
+      demarrerSyncPublic();
+    }
+  }
+  window.addEventListener('hashchange', route);
+  chargerConfig().then(route);
+})();
+</script>
+</body>
+</html>
