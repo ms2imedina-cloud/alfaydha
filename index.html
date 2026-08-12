@@ -263,8 +263,15 @@
      Firebase (Authentication > Users) peut se connecter. Aucune
      création de compte n'est possible depuis la page elle-même. */
   let resoudrePret;
+  const promesseAuthPret = new Promise(r => { resoudrePret = r; });
   window.authFirebase = {
-    ready: new Promise(r => { resoudrePret = r; }),
+    /* Limite de sécurité à 4s : si Firebase ne répond jamais (domaine non
+       autorisé, réseau bloqué…), on continue quand même au lieu de
+       bloquer la page indéfiniment sur un écran vide. */
+    ready: Promise.race([
+      promesseAuthPret,
+      new Promise(r => setTimeout(()=>{ console.warn('Firebase Auth : délai dépassé, affichage du formulaire de connexion par défaut.'); r(); }, 4000))
+    ]),
     async signIn(email, motDePasse){
       const cred = await signInWithEmailAndPassword(auth, email, motDePasse);
       return cred.user;
@@ -618,13 +625,18 @@
     const admin = location.hash.startsWith('#admin');
     document.getElementById('vue-publique').style.display = admin ? 'none' : '';
     document.getElementById('vue-admin').style.display = admin ? '' : 'none';
-    if(admin){
-      arreterSyncPublic();
-      await chargerConfig();
-      await window.authFirebase.ready;
-      initAdmin();
-    } else {
-      demarrerSyncPublic();
+    try{
+      if(admin){
+        arreterSyncPublic();
+        await chargerConfig();
+        await window.authFirebase.ready;
+        initAdmin();
+      } else {
+        demarrerSyncPublic();
+      }
+    }catch(e){
+      console.error('Erreur de routage :', e);
+      if(admin) initAdmin(); // affiche au moins le formulaire de connexion
     }
   }
   window.addEventListener('hashchange', route);
