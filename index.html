@@ -218,7 +218,7 @@
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/latest/hls.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js"></script>
 
 <script type="module">
   /* =========================================================
@@ -275,9 +275,12 @@
     getUser(){ return auth.currentUser; }
   };
   onAuthStateChanged(auth, ()=>{ if(resoudrePret){ resoudrePret(); resoudrePret = null; } });
-</script>
 
-<script defer>
+  /* =========================================================
+     Suite du programme dans le MÊME script module : plus aucun
+     risque de condition de course, tout s'exécute dans l'ordre,
+     ligne par ligne, garanti par le moteur JS.
+  ========================================================= */
 (function(){
   /* =========================================================
      1) DONNÉES / CONFIGURATION — source unique de vérité
