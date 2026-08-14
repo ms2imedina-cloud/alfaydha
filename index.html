@@ -164,7 +164,6 @@
   <div class="barre">
     <span class="sync-info" id="sync-info">Synchronisation…</span>
     <div class="groupe">
-      <button class="action" id="btn-plein-ecran-nav">⛶ Plein écran</button>
       <button class="action" id="btn-rafraichir">↻ Actualiser</button>
     </div>
   </div>
@@ -369,6 +368,7 @@
         hls.on(window.Hls.Events.ERROR, (evt, data)=>{
           if(data.fatal) afficherErreurLecture(conteneur, url);
         });
+        conteneur._hls = hls; // référence gardée pour nettoyage à la fermeture
       } else if(video.canPlayType('application/vnd.apple.mpegurl')){
         video.src = url;
       } else {
@@ -431,10 +431,11 @@
       carte.setAttribute('role','button');
       carte.setAttribute('aria-label', `${f.actif ? 'Ouvrir' : 'Live inactif :'} ${f.nom}`);
 
-      const mediaWrap = f.actif
-        ? construireLecteur(f.url, false)
-        : (()=>{ const d=document.createElement('div'); d.className='media-conteneur';
-                 d.innerHTML='<div class="vide"><div class="icone">▢</div><span>Live non actif</span></div>'; return d; })();
+      const mediaWrap = (()=>{ const d=document.createElement('div'); d.className='media-conteneur';
+        d.innerHTML = f.actif
+          ? '<div class="vide"><div class="icone">▶</div><span>Cliquez pour regarder en direct</span></div>'
+          : '<div class="vide"><div class="icone">▢</div><span>Live non actif</span></div>';
+        return d; })();
 
       const numero = document.createElement('div');
       numero.className = 'numero'; numero.textContent = `LIVE ${f.id}`;
@@ -463,7 +464,7 @@
   function ouvrirPleinEcran(id){
     const f = lives.find(x=>x.id===id);
     if(!f) return;
-    peMedia.innerHTML = '';
+    nettoyerLecteurPlein();
     if(!f.actif){
       peMedia.innerHTML = `<div class="incompatible"><div class="icone">●</div><span>Ce live n'est pas actif actuellement.</span></div>`;
     } else {
@@ -473,22 +474,28 @@
     peDesc.textContent = f.description;
     pleinEcran.classList.add('ouvert');
     document.getElementById('btn-retour').focus();
+    try{ pleinEcran.requestFullscreen && pleinEcran.requestFullscreen(); }catch(e){ /* plein écran indisponible sur cet appareil : l'agrandissement dans la page reste actif */ }
+  }
+  function nettoyerLecteurPlein(){
+    const enfant = peMedia.firstElementChild;
+    if(enfant && enfant._hls){ try{ enfant._hls.destroy(); }catch(e){} }
+    const video = peMedia.querySelector('video');
+    if(video){ try{ video.pause(); video.removeAttribute('src'); video.load(); }catch(e){} }
+    peMedia.innerHTML = '';
   }
   function fermerPleinEcran(){
     pleinEcran.classList.remove('ouvert');
-    peMedia.innerHTML = '';
+    nettoyerLecteurPlein();
     dessinerGrille();
+    try{ if(document.fullscreenElement) document.exitFullscreen(); }catch(e){ /* rien à faire */ }
   }
   document.getElementById('btn-retour').addEventListener('click', fermerPleinEcran);
   document.addEventListener('keydown', e=>{ if(e.key==='Escape' && pleinEcran.classList.contains('ouvert')) fermerPleinEcran(); });
-  document.getElementById('btn-rafraichir').addEventListener('click', ()=> synchroniserPublic(true));
-
-  document.getElementById('btn-plein-ecran-nav').addEventListener('click', ()=>{
-    try{
-      if(!document.fullscreenElement){ document.documentElement.requestFullscreen(); }
-      else{ document.exitFullscreen(); }
-    }catch(e){ /* API plein écran indisponible sur cet appareil : le mode mur d'écrans s'applique déjà via CSS */ }
+  document.addEventListener('fullscreenchange', ()=>{
+    // si l'utilisateur sort du plein écran natif (ex: touche Échap gérée par le navigateur), on referme aussi la vue
+    if(!document.fullscreenElement && pleinEcran.classList.contains('ouvert')) fermerPleinEcran();
   });
+  document.getElementById('btn-rafraichir').addEventListener('click', ()=> synchroniserPublic(true));
 
   async function synchroniserPublic(manuel){
     await chargerConfig();
