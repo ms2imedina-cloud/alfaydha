@@ -66,6 +66,8 @@
   .badge-direct.active .point{animation:pulse 1.6s infinite;}
   .badge-direct.inactive{color:var(--ivoire-sourdine);}
   .badge-direct.inactive .point{background:var(--gris);}
+  .badge-direct.differe{color:#e8b84b;}
+  .badge-direct.differe .point{background:#e8b84b;}
   @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(193,67,42,.6);}70%{box-shadow:0 0 0 7px rgba(193,67,42,0);}100%{box-shadow:0 0 0 0 rgba(193,67,42,0);}}
   @media(prefers-reduced-motion:reduce){.badge-direct .point{animation:none;}}
 
@@ -144,6 +146,7 @@
   .bloc-live-titre span{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--or-clair);letter-spacing:.05em;}
   .statut-toggle{display:flex;align-items:center;gap:8px;font-size:.8rem;}
   .statut-toggle input{width:auto;}
+  .statut-toggle select{background:var(--nuit);border:1px solid var(--bordure);color:var(--ivoire);border-radius:6px;padding:5px 8px;font-size:.8rem;font-family:'Inter',sans-serif;}
   .type-detecte{font-size:.7rem;margin-top:4px;font-family:'IBM Plex Mono',monospace;}
   .type-detecte.ok{color:var(--vert-ok);}
   .type-detecte.warn{color:var(--or-clair);}
@@ -298,7 +301,7 @@
   function defauts(){
     const t = [];
     for(let i=1;i<=10;i++){
-      t.push({id:i, nom:`Live ${i}`, description:"", url:"", actif:false});
+      t.push({id:i, nom:`Live ${i}`, description:"", url:"", statut:"horsligne"});
     }
     return t;
   }
@@ -309,7 +312,13 @@
       const res = await window.storage.get(CLE_CONFIG, true);
       if(res && res.value){
         const data = JSON.parse(res.value);
-        if(Array.isArray(data) && data.length === 10) lives = data;
+        if(Array.isArray(data) && data.length === 10){
+          // Compatibilité avec l'ancienne config (champ booléen "actif")
+          lives = data.map(f=>{
+            if(f.statut === 'direct' || f.statut === 'differe' || f.statut === 'horsligne') return f;
+            return {...f, statut: f.actif ? 'direct' : 'horsligne'};
+          });
+        }
       }
     }catch(e){ /* aucune config partagée encore : valeurs par défaut */ }
   }
@@ -425,25 +434,27 @@
     if(pleinEcran.classList.contains('ouvert')) return; // ne pas perturber une lecture en cours
     grille.innerHTML = '';
     lives.forEach(f=>{
+      const jouable = f.statut === 'direct' || f.statut === 'differe';
       const carte = document.createElement('article');
-      carte.className = 'carte' + (f.actif ? '' : ' inactive');
+      carte.className = 'carte' + (jouable ? '' : ' inactive');
       carte.tabIndex = 0;
       carte.setAttribute('role','button');
-      carte.setAttribute('aria-label', `${f.actif ? 'Ouvrir' : 'Live inactif :'} ${f.nom}`);
+      carte.setAttribute('aria-label', `${jouable ? 'Ouvrir' : 'Live hors ligne :'} ${f.nom}`);
 
       const mediaWrap = (()=>{ const d=document.createElement('div'); d.className='media-conteneur';
-        d.innerHTML = f.actif
-          ? '<div class="vide"><div class="icone">▶</div><span>Cliquez pour regarder en direct</span></div>'
-          : '<div class="vide"><div class="icone">▢</div><span>Live non actif</span></div>';
+        d.innerHTML = jouable
+          ? '<div class="vide"><div class="icone">▶</div><span>Cliquez pour regarder</span></div>'
+          : '<div class="vide"><div class="icone">▢</div><span>Live hors ligne</span></div>';
         return d; })();
 
       const numero = document.createElement('div');
       numero.className = 'numero'; numero.textContent = `LIVE ${f.id}`;
       mediaWrap.appendChild(numero);
 
+      const libelles = {direct:'EN DIRECT', differe:'DIFFÉRÉ', horsligne:'HORS LIGNE'};
       const badge = document.createElement('div');
-      badge.className = 'badge-direct ' + (f.actif ? 'active' : 'inactive');
-      badge.innerHTML = `<span class="point"></span>${f.actif ? 'EN DIRECT' : 'HORS LIGNE'}`;
+      badge.className = 'badge-direct ' + (f.statut === 'direct' ? 'active' : (f.statut === 'differe' ? 'differe' : 'inactive'));
+      badge.innerHTML = `<span class="point"></span>${libelles[f.statut] || 'HORS LIGNE'}`;
       mediaWrap.appendChild(badge);
 
       const texte = document.createElement('div');
@@ -465,12 +476,12 @@
     const f = lives.find(x=>x.id===id);
     if(!f) return;
     nettoyerLecteurPlein();
-    if(!f.actif){
-      peMedia.innerHTML = `<div class="incompatible"><div class="icone">●</div><span>Ce live n'est pas actif actuellement.</span></div>`;
+    if(f.statut !== 'direct' && f.statut !== 'differe'){
+      peMedia.innerHTML = `<div class="incompatible"><div class="icone">●</div><span>Ce live est hors ligne actuellement.</span></div>`;
     } else {
       peMedia.appendChild(construireLecteur(f.url, true));
     }
-    peTitre.textContent = `Live ${f.id} — ${f.nom}`;
+    peTitre.textContent = `Live ${f.id} — ${f.nom}${f.statut === 'differe' ? ' (différé)' : ''}`;
     peDesc.textContent = f.description;
     pleinEcran.classList.add('ouvert');
     document.getElementById('btn-retour').focus();
@@ -572,8 +583,12 @@
         <div class="bloc-live-titre">
           <span>LIVE ${f.id}</span>
           <label class="statut-toggle">
-            <input type="checkbox" ${f.actif ? 'checked':''} data-role="actif">
-            Actif
+            Statut
+            <select data-role="statut">
+              <option value="direct" ${f.statut==='direct'?'selected':''}>En direct</option>
+              <option value="differe" ${f.statut==='differe'?'selected':''}>Différé</option>
+              <option value="horsligne" ${(f.statut!=='direct'&&f.statut!=='differe')?'selected':''}>Hors ligne</option>
+            </select>
           </label>
         </div>
         <div class="champ">
@@ -614,7 +629,7 @@
         f.nom = bloc.querySelector('[data-role="nom"]').value.trim() || `Live ${f.id}`;
         f.description = bloc.querySelector('[data-role="description"]').value.trim();
         f.url = champUrl.value.trim();
-        f.actif = bloc.querySelector('[data-role="actif"]').checked;
+        f.statut = bloc.querySelector('[data-role="statut"]').value;
         const ok = await sauvegarderConfig();
         const okEl = bloc.querySelector('[data-role="ok"]');
         okEl.style.display = ok ? '' : 'none';
