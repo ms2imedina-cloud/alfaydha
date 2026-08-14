@@ -89,7 +89,7 @@
 
   /* ---------- Mode mur d'écrans : PC / Smart TV, et tablettes/smartphones en paysage ---------- */
   @media (min-width:1024px) and (min-height:560px), (orientation:landscape) and (min-width:600px) and (min-height:340px){
-    html,body{height:100%;overflow:hidden;}
+    html:not(.route-admin),body:not(.route-admin){height:100%;overflow:hidden;}
     #vue-publique{display:flex;flex-direction:column;height:100vh;}
     header.arche{margin:10px auto 0;padding:12px 26px 10px;border-radius:22px;width:fit-content;flex:0 0 auto;}
     header.arche h1{font-size:1.35rem;margin:.15em 0;}
@@ -166,6 +166,7 @@
     <div class="groupe">
       <button class="action" id="btn-plein-ecran-nav">⛶ Plein écran</button>
       <button class="action" id="btn-rafraichir">↻ Actualiser</button>
+      <button class="action" id="btn-organisateur">🔑 Organisateur</button>
     </div>
   </div>
 
@@ -482,6 +483,7 @@
   document.getElementById('btn-retour').addEventListener('click', fermerPleinEcran);
   document.addEventListener('keydown', e=>{ if(e.key==='Escape' && pleinEcran.classList.contains('ouvert')) fermerPleinEcran(); });
   document.getElementById('btn-rafraichir').addEventListener('click', ()=> synchroniserPublic(true));
+  document.getElementById('btn-organisateur').addEventListener('click', ()=>{ location.hash = '#admin'; });
 
   document.getElementById('btn-plein-ecran-nav').addEventListener('click', ()=>{
     try{
@@ -623,6 +625,8 @@
   ========================================================= */
   async function route(){
     const admin = location.hash.startsWith('#admin');
+    document.documentElement.classList.toggle('route-admin', admin);
+    document.body.classList.toggle('route-admin', admin);
     document.getElementById('vue-publique').style.display = admin ? 'none' : '';
     document.getElementById('vue-admin').style.display = admin ? '' : 'none';
     try{
