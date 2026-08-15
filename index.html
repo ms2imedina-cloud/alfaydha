@@ -7,6 +7,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://www.youtube.com">
+<link rel="preconnect" href="https://www.facebook.com">
+<link rel="dns-prefetch" href="https://www.tiktok.com">
 <style>
   :root{
     --nuit:#0a1c17; --zawiya:#0f2a22; --panneau:#123a2e; --bordure:#1f4d3c;
@@ -75,13 +78,19 @@
   .titre-carte{font-family:'Amiri',serif;font-weight:700;font-size:1.02rem;margin:0 0 4px;}
   .desc-carte{font-size:.77rem;color:var(--ivoire-sourdine);margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 
-  .plein-ecran{position:fixed;inset:0;background:rgba(6,14,11,.97);z-index:50;display:none;flex-direction:column;padding:18px;}
+  .plein-ecran{position:fixed;inset:0;background:rgba(6,14,11,.97);z-index:50;display:none;flex-direction:column;padding:18px;opacity:0;transition:opacity .18s ease;}
   .plein-ecran.ouvert{display:flex;}
+  .plein-ecran.ouvert.visible{opacity:1;}
+  @media(prefers-reduced-motion:reduce){.plein-ecran{transition:none;}}
   .barre-retour{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;}
   .btn-retour{display:flex;align-items:center;gap:8px;background:transparent;border:1px solid var(--or);color:var(--or-clair);padding:9px 18px;border-radius:999px;font-weight:600;font-size:.85rem;cursor:pointer;}
   .btn-retour:hover{background:var(--or);color:var(--nuit);}
   .pe-corps{flex:1;display:flex;flex-direction:column;gap:14px;max-width:1100px;width:100%;margin:0 auto;overflow:auto;}
   .pe-media{width:100%;aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden;border:1px solid var(--bordure);position:relative;}
+  .pe-chargement{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#000;z-index:1;}
+  .pe-chargement .anneau{width:34px;height:34px;border-radius:50%;border:3px solid rgba(233,222,199,.25);border-top-color:var(--or-clair);animation:tourner .8s linear infinite;}
+  @keyframes tourner{to{transform:rotate(360deg);}}
+  @media(prefers-reduced-motion:reduce){.pe-chargement .anneau{animation:none;}}
   .pe-media iframe,.pe-media video{width:100%;height:100%;border:0;}
   .pe-info h2{font-family:'Amiri',serif;font-size:1.4rem;margin:0 0 6px;}
   .pe-info p{color:var(--ivoire-sourdine);font-size:.9rem;line-height:1.6;margin:0;}
@@ -220,7 +229,6 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js"></script>
 
 <script type="module">
   /* =========================================================
@@ -344,6 +352,7 @@
     if(/\.(mp4|webm|ogg|mov)(\?|#|$)/i.test(bas)) return {type:'video', label:'Vidéo directe'};
     if(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|live\/|embed\/))([a-zA-Z0-9_-]{6,})/.test(u)) return {type:'youtube', label:'YouTube Live'};
     if(bas.includes('facebook.com')) return {type:'facebook', label:'Facebook Live'};
+    if(bas.includes('tiktok.com')) return {type:'tiktok', label:'TikTok Live'};
     return {type:'inconnu', label:'Type non reconnu'};
   }
 
@@ -371,17 +380,23 @@
       video.controls = true; video.muted = true; video.playsInline = true;
       if(autoplay) video.autoplay = true;
       conteneur.appendChild(video);
-      if(window.Hls && window.Hls.isSupported()){
-        const hls = new window.Hls();
-        hls.loadSource(url); hls.attachMedia(video);
-        hls.on(window.Hls.Events.ERROR, (evt, data)=>{
-          if(data.fatal) afficherErreurLecture(conteneur, url);
-        });
-        conteneur._hls = hls; // référence gardée pour nettoyage à la fermeture
-      } else if(video.canPlayType('application/vnd.apple.mpegurl')){
+      if(video.canPlayType('application/vnd.apple.mpegurl')){
+        // Safari / iOS lisent le HLS nativement, pas besoin de hls.js
         video.src = url;
       } else {
-        afficherErreurLecture(conteneur, url);
+        chargerHlsJs().then(()=>{
+          if(!document.body.contains(conteneur)) return; // la vue a changé entre-temps
+          if(window.Hls && window.Hls.isSupported()){
+            const hls = new window.Hls();
+            hls.loadSource(url); hls.attachMedia(video);
+            hls.on(window.Hls.Events.ERROR, (evt, data)=>{
+              if(data.fatal) afficherErreurLecture(conteneur, url);
+            });
+            conteneur._hls = hls; // référence gardée pour nettoyage à la fermeture
+          } else {
+            afficherErreurLecture(conteneur, url);
+          }
+        }).catch(()=> afficherErreurLecture(conteneur, url));
       }
     } else if(info.type === 'video'){
       const video = document.createElement('video');
@@ -405,6 +420,12 @@
       iframe.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
       iframe.allowFullscreen = true;
       conteneur.appendChild(iframe);
+    } else if(info.type === 'tiktok'){
+      conteneur.innerHTML = `<div class="incompatible">
+        <div class="icone">▶</div>
+        <span>Les lives TikTok ne peuvent pas être intégrés directement dans cette page (limitation de TikTok, pas de notre lecteur).</span>
+        <a href="${escAttr(url)}" target="_blank" rel="noopener">Regarder sur TikTok ↗</a>
+      </div>`;
     }
     return conteneur;
   }
@@ -420,6 +441,20 @@
   function escHtml(s){ const d=document.createElement('div'); d.textContent = s||''; return d.innerHTML; }
   function escAttr(s){ return (s||'').replace(/"/g,'&quot;'); }
 
+  let promesseHls = null;
+  function chargerHlsJs(){
+    if(window.Hls) return Promise.resolve();
+    if(promesseHls) return promesseHls;
+    promesseHls = new Promise((resolve, reject)=>{
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js';
+      s.onload = resolve;
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+    return promesseHls;
+  }
+
   /* =========================================================
      3) VUE PUBLIQUE
   ========================================================= */
@@ -430,8 +465,12 @@
   const peDesc = document.getElementById('pe-desc');
   const syncInfo = document.getElementById('sync-info');
 
+  let dernierRenduGrille = null;
   function dessinerGrille(){
     if(pleinEcran.classList.contains('ouvert')) return; // ne pas perturber une lecture en cours
+    const signature = JSON.stringify(lives);
+    if(signature === dernierRenduGrille) return; // rien n'a changé, on ne touche pas au DOM
+    dernierRenduGrille = signature;
     grille.innerHTML = '';
     lives.forEach(f=>{
       const jouable = f.statut === 'direct' || f.statut === 'differe';
@@ -479,11 +518,25 @@
     if(f.statut !== 'direct' && f.statut !== 'differe'){
       peMedia.innerHTML = `<div class="incompatible"><div class="icone">●</div><span>Ce live est hors ligne actuellement.</span></div>`;
     } else {
-      peMedia.appendChild(construireLecteur(f.url, true));
+      const chargement = document.createElement('div');
+      chargement.className = 'pe-chargement';
+      chargement.innerHTML = '<div class="anneau"></div>';
+      peMedia.appendChild(chargement);
+      const lecteur = construireLecteur(f.url, true);
+      const media = lecteur.querySelector('iframe,video');
+      const retirerSpinner = ()=> chargement.remove();
+      if(media){
+        media.addEventListener(media.tagName==='IFRAME' ? 'load' : 'loadeddata', retirerSpinner, {once:true});
+        setTimeout(retirerSpinner, 4000); // filet de sécurité si l'évènement de chargement ne se déclenche pas
+      } else {
+        retirerSpinner();
+      }
+      peMedia.appendChild(lecteur);
     }
     peTitre.textContent = `Live ${f.id} — ${f.nom}${f.statut === 'differe' ? ' (différé)' : ''}`;
     peDesc.textContent = f.description;
     pleinEcran.classList.add('ouvert');
+    requestAnimationFrame(()=> pleinEcran.classList.add('visible'));
     document.getElementById('btn-retour').focus();
     try{ pleinEcran.requestFullscreen && pleinEcran.requestFullscreen(); }catch(e){ /* plein écran indisponible sur cet appareil : l'agrandissement dans la page reste actif */ }
   }
@@ -495,7 +548,7 @@
     peMedia.innerHTML = '';
   }
   function fermerPleinEcran(){
-    pleinEcran.classList.remove('ouvert');
+    pleinEcran.classList.remove('ouvert','visible');
     nettoyerLecteurPlein();
     dessinerGrille();
     try{ if(document.fullscreenElement) document.exitFullscreen(); }catch(e){ /* rien à faire */ }
